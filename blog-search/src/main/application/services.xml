@@ -12,6 +12,9 @@
 
   <content id='blog_post' version='1.0'>
     <redundancy>1</redundancy>
+    <search>
+      <visibility-delay>1.0</visibility-delay>
+    </search>
     <documents>
       <document mode='index' type='blog_post'/>
     </documents>
