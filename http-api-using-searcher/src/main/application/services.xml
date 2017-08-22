@@ -7,7 +7,7 @@
         <search>
             <chain inherits="vespa" id="default">
                 <searcher id="com.yahoo.demo.DemoSearcher" bundle="sample-app-http-api-searcher">
-                    <config name="demo.demo">
+                    <config name="com.yahoo.demo.demo">
                         <demo>
                             <item>
                                 <term>smurf</term>

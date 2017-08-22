@@ -5,7 +5,7 @@
         <processing>
             <chain id="default">
                 <processor id="com.yahoo.demo.AnnotatingProcessor" bundle="demo">
-                    <config name="demo.demo">
+                    <config name="com.yahoo.demo.demo">
                         <demo>
                             <item>
                                 <term>smurf</term>
