@@ -9,5 +9,6 @@ Please refer to the
 for more information.
 
 When following the above guide, start Vespa with the following command in this folder:
+
 ```docker-compose -p vespa up -d```
 
