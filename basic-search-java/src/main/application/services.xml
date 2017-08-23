@@ -7,8 +7,8 @@
     <jdisc version="1.0">
         <processing>
             <chain id="default">
-                <processor id="com.yahoo.example.ExampleProcessor" bundle="basic-search-java">
-                    <config name="com.yahoo.example.example-processor">
+                <processor id="com.mydomain.example.ExampleProcessor" bundle="basic-search-java">
+                    <config name="com.mydomain.example.example-processor">
                         <message>Hello, services!</message>
                     </config>
                 </processor>
