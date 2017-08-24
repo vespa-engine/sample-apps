@@ -4,8 +4,8 @@
     <container id="default" version="1.0">
         <processing>
             <chain id="default">
-                <processor id="com.yahoo.demo.AnnotatingProcessor" bundle="demo">
-                    <config name="demo.demo">
+                <processor id="com.mydomain.demo.AnnotatingProcessor" bundle="demo">
+                    <config name="com.mydomain.demo.demo">
                         <demo>
                             <item>
                                 <term>smurf</term>
@@ -13,13 +13,13 @@
                         </demo>
                     </config>
                 </processor>
-                <processor id="com.yahoo.demo.DataProcessor" bundle="demo" />
+                <processor id="com.mydomain.demo.DataProcessor" bundle="demo" />
             </chain>
-            <renderer id="demo" class="com.yahoo.demo.DemoRenderer" bundle="demo" />
+            <renderer id="demo" class="com.mydomain.demo.DemoRenderer" bundle="demo" />
         </processing>
-        <handler id="com.yahoo.demo.DemoHandler" bundle="demo">
+        <handler id="com.mydomain.demo.DemoHandler" bundle="demo">
             <binding>http://*/demo</binding>
         </handler>
-        <component id="com.yahoo.demo.DemoComponent" bundle="demo"/>
+        <component id="com.mydomain.demo.DemoComponent" bundle="demo"/>
     </container>
 </services>
