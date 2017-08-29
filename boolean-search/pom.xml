@@ -23,13 +23,13 @@
         </dependency>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
-            <artifactId>application</artifactId> <!-- Is this needed? -->
+            <artifactId>application</artifactId>
             <version>${vespa_version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
-            <artifactId>container-dev</artifactId>  <!-- not container-dev -->
+            <artifactId>container-dev</artifactId>
             <version>${vespa_version}</version>
             <scope>provided</scope>
         </dependency>
