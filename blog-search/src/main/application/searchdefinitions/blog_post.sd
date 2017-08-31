@@ -1,9 +1,12 @@
 # Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 search blog_post {
+
     document blog_post {
+
         field date_gmt type string {
             indexing: summary
         }
+
         field language type string {
             indexing: summary
         }
@@ -48,16 +51,13 @@ search blog_post {
             indexing: summary | attribute
         }
 
+        field popularity type double {
+            indexing: summary | attribute
+        }
     }
 
     fieldset default {
         fields: title, content
     }
 
-    rank-profile post inherits default {
-        first-phase {
-            expression:nativeRank(title, content)
-        }
-    }
 }
-
