@@ -51,9 +51,6 @@ search blog_post {
             indexing: summary | attribute
         }
 
-        field popularity type double {
-            indexing: summary | attribute
-        }
     }
 
     fieldset default {
