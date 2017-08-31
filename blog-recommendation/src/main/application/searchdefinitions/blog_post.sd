@@ -1,9 +1,13 @@
 # Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 search blog_post {
+
     document blog_post {
+
         field date_gmt type string {
             indexing: summary
         }
+
         field language type string {
             indexing: summary
         }
@@ -56,33 +60,39 @@ search blog_post {
 
     }
 
-    rank-profile tensor {
-        first-phase {
-            expression {
-                sum(query(user_item_cf) * attribute(user_item_cf))
-            }
-        }
-    }
 
     constant W_hidden {
         file: constants/W_hidden.json
         type: tensor(input[20],hidden[40])
     }
 
+
     constant b_hidden {
         file: constants/b_hidden.json
         type: tensor(hidden[40])
     }
+
 
     constant W_final {
         file: constants/W_final.json
         type: tensor(hidden[40], final[1])
     }
 
+
     constant b_final {
         file: constants/b_final.json
         type: tensor(final[1])
     }
+
+
+    rank-profile tensor {
+
+        first-phase {
+            expression: sum(query(user_item_cf) * attribute(user_item_cf))
+        }
+
+    }
+
 
     # rank profile with neural network model as second phase
     rank-profile nn_tensor {
@@ -103,7 +113,6 @@ search blog_post {
             expression: sigmoid(sum(hidden_layer * constant(W_final), hidden) + constant(b_final))
         }
 
-
         # First-phase ranking:
         # Dot-product between user and document latent factors
         first-phase {
@@ -116,6 +125,7 @@ search blog_post {
             rerank-count: 200
             expression: sum(final_layer)
         }
+
     }
 
 }

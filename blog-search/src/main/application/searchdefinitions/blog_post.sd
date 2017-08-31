@@ -53,8 +53,18 @@ search blog_post {
 
     }
 
+
     fieldset default {
         fields: title, content
+    }
+
+
+    rank-profile post inherits default {
+
+        first-phase {
+            expression:nativeRank(title, content)
+        }
+
     }
 
 }
