@@ -1,6 +1,9 @@
 # Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 search music {
+
     document music {
+
         field artist type string {
             indexing: summary | index
         }
@@ -28,15 +31,21 @@ search music {
         field popularity type int {
             indexing: summary | attribute
         }
+
     }
+
 
     fieldset default {
         fields: artist, title, album
     }
 
+
     rank-profile song inherits default {
+
         first-phase {
             expression:nativeRank(artist,title,album) + if(isNan(attribute(popularity)) == 1, 0,attribute(popularity))
         }
+
     }
+
 }
