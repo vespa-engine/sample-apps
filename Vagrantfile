@@ -1,11 +1,11 @@
 # Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "boxcutter/centos73-desktop"
+  config.vm.box = "boxcutter/centos7-desktop"
 
   config.ssh.forward_agent = true
 
-  config.vm.synced_folder ".", "/sample-apps"
+  config.vm.synced_folder ".", "/vespa-sample-apps"
 
   config.vm.provider "virtualbox" do |vb|
     vb.gui = true
