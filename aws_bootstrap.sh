@@ -11,11 +11,10 @@ fi
 echo "Installing Vespa"
 yum -y install yum-utils epel-release
 yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/g/vespa/vespa/repo/epel-7/group_vespa-vespa-epel-7.repo
-yum -y install vespa
+yum -y install vespa bind-utils git
 
-
-echo "Setting hostname to fqdn '$fqdn'"
 fqdn=$(nslookup $(hostname) |grep Name |awk '{print $2}')
+echo "Setting hostname to fqdn '$fqdn'"
 hostnamectl set-hostname $fqdn
 
 echo "Setting VESPA_CONFIGSERVERS=$configserver_addr"
