@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.hostname =  "vespa-test"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.gui = true
+    vb.gui = false 
     vb.name = "vespa-sample-apps"
     vb.memory = "3074"
     vb.cpus = 1
