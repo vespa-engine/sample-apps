@@ -2,13 +2,13 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version="1.0">
 
-  <jdisc version="1.0" id="container">
+  <container id="container" version="1.0">
     <document-api />
     <search />
     <nodes>
       <node hostalias="node1" />
     </nodes>
-  </jdisc>
+  </container>
 
   <content id="music" version="1.0">
     <redundancy>1</redundancy>
