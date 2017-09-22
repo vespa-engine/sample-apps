@@ -1,6 +1,8 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications
 
+Travis-CI build status: [![Build Status](https://travis-ci.org/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.org/vespa-engine/sample-apps)
+
 This is a set of applications that showcase different Vespa features.
 Please refer to the
 [vespa quick start guide](http://docs.vespa.ai/documentation/vespa-quick-start.html)
