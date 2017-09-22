@@ -6,7 +6,7 @@
   </admin>
 
   <!-- duplication of src/main/application due to Ticket 6904654  -->
-  <jdisc version='1.0' id='default'>
+  <container id='default' version='1.0'>
     <search>
       <chain id="default" inherits="vespa">
         <searcher id="com.yahoo.example.SubqueriesSearcher" bundle="boolean-application">
@@ -16,5 +16,5 @@
       </chain>
     </search>
     <nodes count="1" />
-  </jdisc>
+  </container>
 </services>
