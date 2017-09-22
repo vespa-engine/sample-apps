@@ -6,7 +6,7 @@
     <nodes count="1" />
   </admin>
 
-  <jdisc version='1.0' id='default'>
+  <container id='default' version='1.0'>
     <search>
       <config name='container.search.legacy-emulation'>
        <string-backed-feature-data>false</string-backed-feature-data>
@@ -18,7 +18,7 @@
     </search>
     <document-api />
     <nodes count="1" />
-  </jdisc>
+  </container>
 
   <content version="1.0" id="adserver">
     <redundancy>1</redundancy>

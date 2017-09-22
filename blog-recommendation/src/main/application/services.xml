@@ -2,7 +2,7 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version='1.0' xmlns:deploy="vespa" xmlns:preprocess="properties">
 
-  <jdisc id='default' version='1.0'>
+  <container id='default' version='1.0'>
 
     <search>
       <chain id='blog' inherits='vespa'>
@@ -20,7 +20,7 @@
     <nodes>
       <node hostalias='node1'/>
     </nodes>
-  </jdisc>
+  </container>
 
   <content id='content' version='1.0'>
     <redundancy>1</redundancy>
