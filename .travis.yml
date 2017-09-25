@@ -2,8 +2,8 @@
 sudo: false
 dist: trusty
 
-language: java
+language: scala
 
 install: true
 
-script: mvn --batch-mode --no-snapshot-updates install
+script: mvn --batch-mode --no-snapshot-updates install && cd blog-tutorial-shared && sbt package
