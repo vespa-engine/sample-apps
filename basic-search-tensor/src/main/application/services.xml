@@ -10,7 +10,7 @@
     <container version="1.0">
         <search>
             <chain id="default" inherits="vespa">
-                <searcher id="com.yahoo.example.ExampleTensorSearcher" bundle="basic-search-java" />
+                <searcher id="com.yahoo.example.ExampleTensorSearcher" bundle="basic-search-tensor" />
             </chain>
         </search>
         <document-api/>
@@ -18,7 +18,7 @@
             <node hostalias="node1"/>
         </nodes>
 
-        <handler id="com.yahoo.example.playground.TensorPlaygroundHandler" bundle="basic-search-java">
+        <handler id="com.yahoo.example.playground.TensorPlaygroundHandler" bundle="basic-search-tensor">
             <binding>http://*/playground/*</binding>
         </handler>
 
