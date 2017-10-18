@@ -7,13 +7,12 @@
     <packaging>pom</packaging>
     <version>6-SNAPSHOT</version>
     <name>sampleapps-parent</name>
-    <description>Parent artifact for all Vespa sample apps.</description>
+    <description>Parent artifact for all Java Vespa sample apps.</description>
 
     <modules>
         <module>basic-search-java</module>
         <module>basic-search-tensor</module>
         <module>blog-recommendation</module>
-        <module>blog-search</module>
         <module>boolean-search</module>
         <module>http-api-using-request-handlers-and-processors</module>
         <module>http-api-using-searcher</module>
