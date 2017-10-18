@@ -1,12 +1,14 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-Boolean Search
+Predicate Search
 ==================
 
-Boolean Search and how to feed and query is described in 
-[boolean search](http://docs.vespa.ai/documentation/boolean-search.html).
+Predicate/Boolean Search and how to feed and query is described in 
+[predicate search](http://docs.vespa.ai/documentation/predicate-fields.html).
 
-Adding boolean search to an application is easy. Just add a field of
-type predicate to the .sd-file. (Remember to set the arity parameter.)
+To deploy this sample application see [Developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html).
+
+Adding predicate search to an application is easy. Just add a field of
+type predicate to the .sd file. (Remember to set the arity parameter.)
 
 
 ### Feed and search
