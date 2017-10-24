@@ -2,7 +2,7 @@
 Predicate Search
 ==================
 
-Predicate/Boolean Search and how to feed and query is described in 
+Predicate/Boolean Search and how to feed and query is described in
 [predicate search](http://docs.vespa.ai/documentation/predicate-fields.html).
 
 To deploy this sample application see [Developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html).
@@ -21,3 +21,32 @@ type predicate to the .sd file. (Remember to set the arity parameter.)
     ```sh
     curl "<endpoint url>/search/?query=sddocname:ad&yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B"
     ```
+
+
+**Executable example:**
+<pre data-test="exec">
+$ git clone https://github.com/vespa-engine/sample-apps.git
+$ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
+$ cd $VESPA_SAMPLE_APPS/boolean-search &amp;&amp; mvn clean package
+$ docker run --detach --name vespa --hostname vespa-container --privileged \
+  --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
+</pre>
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+</pre>
+<pre data-test="exec">
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/boolean-search/target/application.zip &amp;&amp; \
+  /opt/vespa/bin/vespa-deploy activate'
+</pre>
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head http://localhost:8080/ApplicationStatus
+</pre>
+<pre data-test="exec">
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/boolean-search/adsdata.xml http://localhost:8080/document
+</pre>
+<pre data-test="exec" data-test-assert-contains="ACME Rocket Sled">
+$ curl "http://localhost:8080/search/?query=sddocname:ad&yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B" | python -m json.tool
+</pre>
+<pre data-test="exec">
+$ docker rm -f vespa
+</pre>
