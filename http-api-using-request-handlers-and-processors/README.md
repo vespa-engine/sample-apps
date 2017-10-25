@@ -33,6 +33,6 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 $ curl -s 'http://localhost:8080/demo?terms=1%202%203%204'
 </pre>
 **Shutdown and remove the container:**
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>

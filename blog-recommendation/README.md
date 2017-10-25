@@ -36,6 +36,6 @@ $ curl 'http://localhost:8080/search/?searchChain=blog&user_item_cf=%7B%7Buser_i
 </pre>
 -->
 **Shutdown and remove the container:**
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>
