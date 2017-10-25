@@ -29,7 +29,7 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
   --file /vespa-sample-apps/http-api-using-searcher/feed.json --host localhost --port 8080'
 </pre>
 <pre data-test="exec" data-test-assert-contains="OK">
-$ curl 'http://localhost:8080/demo?extraTerm=something'
+$ curl -s 'http://localhost:8080/demo?extraTerm=something'
 </pre>
 <pre data-test="exec">
 $ docker rm -f vespa
