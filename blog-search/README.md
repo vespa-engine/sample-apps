@@ -38,6 +38,6 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 $ curl -s 'http://localhost:8080/search/?query=music' | python -m json.tool
 </pre>
 **Shutdown and remove the container:**
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>

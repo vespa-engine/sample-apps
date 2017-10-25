@@ -36,6 +36,6 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 $ curl -s http://localhost:8080/processing/
 </pre>
 **Shutdown and remove the container:**
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>
