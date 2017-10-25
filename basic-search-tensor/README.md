@@ -37,17 +37,18 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-a
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
-**Test the application:**
+**Feed data into application:**
 <pre data-test="exec">
 $ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/music-data-1.json \
     http://localhost:8080/document/v1/music/music/docid/1 | python -m json.tool
 $ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/music-data-2.json \
     http://localhost:8080/document/v1/music/music/docid/2 | python -m json.tool
 </pre>
-**Shutdown and remove the container:**
+**Test the application:**
 <pre data-test="exec" data-test-assert-contains="Michael Jackson">
 $ curl -s 'http://localhost:8080/search/?query=sddocname:music&tensor=%7B%7Bx%3A0%7D%3A1.0%2C%7Bx%3A1%7D%3A2.0%2C%7Bx%3A2%7D%3A3.0%2C%7Bx%3A3%7D%3A5.0%7D' | python -m json.tool
 </pre>
+**Shutdown and remove the container:**
 <pre data-test="exec">
 $  docker rm -f vespa
 </pre>
