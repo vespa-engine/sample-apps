@@ -4,7 +4,7 @@
     <container id="default" version="1.0">
         <processing>
             <chain id="default">
-                <processor id="com.mydomain.demo.AnnotatingProcessor" bundle="demo">
+                <processor id="com.mydomain.demo.AnnotatingProcessor" bundle="http-api-using-request-handlers-and-processors">
                     <config name="com.mydomain.demo.demo">
                         <demo>
                             <item>
@@ -13,13 +13,13 @@
                         </demo>
                     </config>
                 </processor>
-                <processor id="com.mydomain.demo.DataProcessor" bundle="demo" />
+                <processor id="com.mydomain.demo.DataProcessor" bundle="http-api-using-request-handlers-and-processors" />
             </chain>
-            <renderer id="demo" class="com.mydomain.demo.DemoRenderer" bundle="demo" />
+            <renderer id="demo" class="com.mydomain.demo.DemoRenderer" bundle="http-api-using-request-handlers-and-processors" />
         </processing>
-        <handler id="com.mydomain.demo.DemoHandler" bundle="demo">
+        <handler id="com.mydomain.demo.DemoHandler" bundle="http-api-using-request-handlers-and-processors">
             <binding>http://*/demo</binding>
         </handler>
-        <component id="com.mydomain.demo.DemoComponent" bundle="demo"/>
+        <component id="com.mydomain.demo.DemoComponent" bundle="http-api-using-request-handlers-and-processors"/>
     </container>
 </services>
