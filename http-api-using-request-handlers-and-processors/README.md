@@ -32,6 +32,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 <pre data-test="exec" data-test-assert-contains="OK">
 $ curl -s 'http://localhost:8080/demo?terms=1%202%203%204'
 </pre>
+**Shutdown and remove the container:**
 <pre data-test="exec">
 $ docker rm -f vespa
 </pre>
