@@ -51,7 +51,7 @@ $ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/boolean-search/adsdata.xml
 </pre>
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains="ACME Rocket Sled">
-$ curl "http://localhost:8080/search/?query=sddocname:ad&yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B" | python -m json.tool
+$ curl "http://localhost:8080/search/?query=sddocname:ad&amp;yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B" | python -m json.tool
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">
