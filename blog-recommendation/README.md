@@ -29,12 +29,10 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-a
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
-<!-- TODO: Bug in test framework causes this to not execute
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains='"coverage":100,"documents":0'>
-$ curl 'http://localhost:8080/search/?searchChain=blog&user_item_cf=%7B%7Buser_item_cf%3A0%7D%3A0.1%2C%7Buser_item_cf%3A1%7D%3A0.1%2C%7Buser_item_cf%3A2%7D%3A0.1%2C%7Buser_item_cf%3A3%7D%3A0.1%2C%7Buser_item_cf%3A4%7D%3A0.1%2C%7Buser_item_cf%3A5%7D%3A0.1%2C%7Buser_item_cf%3A6%7D%3A0.1%2C%7Buser_item_cf%3A7%7D%3A0.1%2C%7Buser_item_cf%3A8%7D%3A0.1%2C%7Buser_item_cf%3A9%7D%3A0.1%7D'
+$ curl 'http://localhost:8080/search/?searchChain=blog&amp;user_item_cf=%7B%7Buser_item_cf%3A0%7D%3A0.1%2C%7Buser_item_cf%3A1%7D%3A0.1%2C%7Buser_item_cf%3A2%7D%3A0.1%2C%7Buser_item_cf%3A3%7D%3A0.1%2C%7Buser_item_cf%3A4%7D%3A0.1%2C%7Buser_item_cf%3A5%7D%3A0.1%2C%7Buser_item_cf%3A6%7D%3A0.1%2C%7Buser_item_cf%3A7%7D%3A0.1%2C%7Buser_item_cf%3A8%7D%3A0.1%2C%7Buser_item_cf%3A9%7D%3A0.1%7D'
 </pre>
--->
 **Shutdown and remove the container:**
 <pre data-test="exec">
 $ docker rm -f vespa
