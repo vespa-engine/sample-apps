@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
-        <vespa_version>6.145.90</vespa_version>
+        <vespa_version>6.169.41</vespa_version>
     </properties>
 
     <dependencies>
@@ -25,15 +25,15 @@
         </dependency>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
-            <artifactId>application</artifactId>
+            <artifactId>container</artifactId>
             <version>${vespa_version}</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
-            <artifactId>container-dev</artifactId>
+            <artifactId>container-test</artifactId>
             <version>${vespa_version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
