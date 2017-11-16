@@ -7,31 +7,31 @@
   <packaging>container-plugin</packaging>
   <version>1.0.0</version>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <test.hide>true</test.hide>
-    <vespa_version>6.145.90</vespa_version>
-  </properties>
-
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <test.hide>true</test.hide>
+        <vespa_version>6.158.42</vespa_version>
+        <junit_version>4.11</junit_version>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.yahoo.vespa</groupId>
-            <artifactId>application</artifactId>
-            <version>${vespa_version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.yahoo.vespa</groupId>
-            <artifactId>container-dev</artifactId>
+            <artifactId>container</artifactId>
             <version>${vespa_version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.vespa</groupId>
+            <artifactId>container-test</artifactId>
+            <version>${vespa_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit_version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -77,6 +77,34 @@
                 <artifactId>bundle-plugin</artifactId>
                 <version>${vespa_version}</version>
                 <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <allowMajorUpdates>false</allowMajorUpdates>
+                    <generateBackupPoms>false</generateBackupPoms>
+                    <includeProperties>junit_version, vespa_version</includeProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- For debugging only -->
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <echo>[Vespa version: ] ${vespa_version}</echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
