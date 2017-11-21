@@ -2,7 +2,6 @@
 package com.yahoo.example;
 
 import com.yahoo.data.access.Inspectable;
-import com.yahoo.data.access.Inspector;
 import com.yahoo.prelude.query.WordItem;
 import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
@@ -12,10 +11,8 @@ import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.searchchain.SearchChain;
 import com.yahoo.tensor.Tensor;
-import com.yahoo.tensor.TensorType;
 
 import java.util.Iterator;
-import java.util.Map;
 
 public class UserProfileSearcher extends Searcher {
 
@@ -56,23 +53,8 @@ public class UserProfileSearcher extends Searcher {
 
     private void addUserProfileTensorToQuery(Query query, Hit userProfile) {
         Object userItemCf = userProfile.getField("user_item_cf");
-        if (userItemCf != null && userItemCf instanceof Inspectable) {
-            Tensor.Builder tensorBuilder = Tensor.Builder.of(new TensorType.Builder().indexed("user_item_cf", 10).build());
-            Inspector cells = ((Inspectable)userItemCf).inspect().field("cells");
-            for (Inspector cell : cells.entries()) {
-                Tensor.Builder.CellBuilder cellBuilder = tensorBuilder.cell();
-
-                Inspector address = cell.field("address");
-                for (Map.Entry<String, Inspector> entry : address.fields()) {
-                    String dim = entry.getKey();
-                    String label = entry.getValue().asString();
-                    cellBuilder.label(dim, label);
-                }
-
-                Inspector value = cell.field("value");
-                cellBuilder.value(value.asDouble());
-            }
-            query.properties().set(new CompoundName("user_item_cf"), tensorBuilder.build());
+        if (userItemCf != null && userItemCf instanceof Tensor) {
+            query.properties().set(new CompoundName("user_item_cf"), (Tensor)userItemCf);
         }
     }
 }
