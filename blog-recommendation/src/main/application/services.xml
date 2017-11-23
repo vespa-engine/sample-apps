@@ -5,15 +5,8 @@
   <container id='default' version='1.0'>
 
     <search>
-      <chain id='blog' inherits='vespa'>
-        <searcher bundle='blog-recommendation' id='com.yahoo.example.BlogTensorSearcher' />
-      </chain>
       <chain id='user' inherits='vespa'>
         <searcher bundle='blog-recommendation' id='com.yahoo.example.UserProfileSearcher' />
-      </chain>
-      <chain id='default' inherits='vespa'>
-        <searcher bundle='blog-recommendation' id='com.yahoo.example.UserProfileSearcher' />
-        <searcher bundle='blog-recommendation' id='com.yahoo.example.BlogTensorSearcher' />
       </chain>
     </search>
     <document-api/>

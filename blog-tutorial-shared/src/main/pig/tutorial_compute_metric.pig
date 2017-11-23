@@ -3,7 +3,7 @@ REGISTER $VESPA_HADOOP_JAR
 
 DEFINE  BlogPostRecommendations
         com.yahoo.vespa.hadoop.pig.VespaQuery(
-            'query=http://$ENDPOINT/search/?user_id=<user_id>&hits=$NUMBER_RECOMMENDATIONS&ranking=$RANKING_NAME',
+            'query=http://$ENDPOINT/search/?user_id=<user_id>&searchChain=user&hits=$NUMBER_RECOMMENDATIONS&ranking=$RANKING_NAME',
             'schema=rank:int,id:chararray,relevance:double,fields/post_id:chararray'
         );
 
