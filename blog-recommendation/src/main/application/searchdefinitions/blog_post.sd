@@ -60,6 +60,10 @@ search blog_post {
 
     }
 
+    fieldset default {
+        fields: author,title,tags,blogname,content,categories
+    }
+
 
     constant W_hidden {
         file: constants/W_hidden.json
