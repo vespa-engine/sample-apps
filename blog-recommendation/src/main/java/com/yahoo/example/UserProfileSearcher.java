@@ -40,7 +40,7 @@ public class UserProfileSearcher extends Searcher {
             }
         }
 
-        // Restric to search in blog_posts
+        // Restrict to search in blog_posts
         query.getModel().setRestrict("blog_post");
 
         // Rank blog posts using tensor rank profile
@@ -68,13 +68,8 @@ public class UserProfileSearcher extends Searcher {
 
     private void addUserProfileTensorToQuery(Query query, Hit userProfile) {
         Object userItemCf = userProfile.getField("user_item_cf");
-        if (userItemCf != null) {
-            if (userItemCf instanceof Tensor) {
-                query.getRanking().getFeatures().put("query(user_item_cf)", (Tensor)userItemCf);
-            }
-            else {
-                query.getRanking().getFeatures().put("query(user_item_cf)", Tensor.from(userItemCf.toString()));
-            }
+        if (userItemCf != null && userItemCf instanceof Tensor) {
+            query.getRanking().getFeatures().put("query(user_item_cf)", (Tensor)userItemCf);
         }
     }
 
