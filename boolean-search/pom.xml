@@ -85,7 +85,7 @@
                 <configuration>
                     <allowMajorUpdates>false</allowMajorUpdates>
                     <generateBackupPoms>false</generateBackupPoms>
-                    <includeProperties>junit_version, vespa_version</includeProperties>
+                    <includeProperties>vespa_version</includeProperties>
                 </configuration>
                 <executions>
                     <execution>
