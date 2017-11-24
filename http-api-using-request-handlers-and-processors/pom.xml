@@ -88,8 +88,16 @@
                 <configuration>
                     <allowMajorUpdates>false</allowMajorUpdates>
                     <generateBackupPoms>false</generateBackupPoms>
-                    <includeProperties>junit_version, vespa_version</includeProperties>
+                    <includeProperties>vespa_version</includeProperties>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>update-properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <!-- For debugging only -->
