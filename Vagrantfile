@@ -19,6 +19,7 @@ Vagrant.configure("2") do |config|
     # Install latest Vespa release
     yum -y install yum-utils epel-release
     yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/g/vespa/vespa/repo/epel-7/group_vespa-vespa-epel-7.repo
+    yum -y install centos-release-scl
     yum -y install vespa
   SHELL
 end
