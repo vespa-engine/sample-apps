@@ -198,7 +198,7 @@ class vespaRunTimeModel:
         dev_summary_op = tf.merge_summary([loss_summary, acc_summary])
         return train_summary_op, dev_summary_op
 
-    def train_step(self, u_batch, d_batch, y_batch, writer=None):
+    def train_step(self, train_op, global_step, train_summary_op, u_batch, d_batch, y_batch, writer=None):
         """
         A single training step
         """
@@ -215,7 +215,7 @@ class vespaRunTimeModel:
         if writer:
             writer.add_summary(summaries, step)
 
-    def dev_step(self, u_batch, d_batch, y_batch, writer=None):
+    def dev_step(self, global_step, dev_summary_op, u_batch, d_batch, y_batch, writer=None):
         """
         Evaluates model on a dev set
         """
@@ -365,21 +365,21 @@ def task_train():
             # Initialize all variables
             sess.run(tf.initialize_all_variables())
 
-        # Generate batches
-        batches = data_pre_processing.batch_iter(
-            list(zip(u_train, d_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
-        # Training loop. For each batch...
-        for batch in batches:
-            u_batch, d_batch, y_batch = zip(*batch)
-            vespa_model.train_step(u_batch, d_batch, y_batch, writer=train_summary_writer)
-            current_step = tf.train.global_step(sess, global_step)
-            if current_step % FLAGS.evaluate_every == 0:
-                print("\nEvaluation:")
-                vespa_model.dev_step(u_dev, d_dev, y_dev, writer=dev_summary_writer)
-                print("")
-            if current_step % FLAGS.checkpoint_every == 0:
-                path = saver.save(sess, checkpoint_prefix, global_step=current_step)
-                print("Saved model checkpoint to {}\n".format(path))
+            # Generate batches
+            batches = data_pre_processing.batch_iter(
+                list(zip(u_train, d_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
+            # Training loop. For each batch...
+            for batch in batches:
+                u_batch, d_batch, y_batch = zip(*batch)
+                vespa_model.train_step(train_op, global_step, train_summary_op, u_batch, d_batch, y_batch, writer=train_summary_writer)
+                current_step = tf.train.global_step(sess, global_step)
+                if current_step % FLAGS.evaluate_every == 0:
+                    print("\nEvaluation:")
+                    vespa_model.dev_step(global_step, dev_summary_op, u_dev, d_dev, y_dev, writer=dev_summary_writer)
+                    print("")
+                if current_step % FLAGS.checkpoint_every == 0:
+                    path = saver.save(sess, checkpoint_prefix, global_step=current_step)
+                    print("Saved model checkpoint to {}\n".format(path))
 
 if __name__ == "__main__":
 
