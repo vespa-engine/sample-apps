@@ -31,10 +31,31 @@ Pre-computed data used throughout the tutorial will be made available shortly.
 
 ### Create Training Dataset
 
-    $ ./src/R/generateDataset.R -d blog_job/user_item_cf_cv/product.json \
-                                -u blog_job/user_item_cf_cv/user.json \
-                                -t blog_job/training_and_test_indices/train.txt \
-                                -o blog_job/nn_model/training_set.txt
+After running the Spark jobs in part 2, you will have created a
+`blog-job/user_item_cf_cv` directory under the `blog-recommendation` sample
+app. In the `blog-recommendation` directory, run:
+
+    $ cat blog-job/user_item_cf_cv/product_features/part-0000* > blog-job/user_item_cf_cv/product.json
+    $ cat blog-job/user_item_cf_cv/user_features/part-0000* > blog-job/user_item_cf_cv/user.json
+    $ cat blog-job/training_and_test_indices/training_set_ids/part-000* > blog-job/training_and_test_indices/train.txt
+
+This creates the JSON files used to create the training set. Before running the
+script to create the dataset, check that you have installed the dependencies
+and created a output directory.
+
+    $ mkdir blog_job/nn_model
+    $ r
+
+    ...
+
+    > install.packages("jsonlite")
+    > install.packages("dplyr")
+
+Then, generate the dataset:
+
+    $ r --vanilla < ../blog-tutorial-shared/src/R/generateDataset.R
+
+The dataset will be put in `blog-job/nn_model/training_set.txt` which will be used next.
 
 ### Train model with TensorFlow
 
