@@ -278,8 +278,8 @@ class serializeVespaModel:
         return json.dumps({'cells': cells})
 
     def serialize_to_disk(self, variable_name, dimension_names):
-        text_file = open(os.path.join(output_dir, variable_name + ".json"), "w")
-        text_file.write(serializer.write_to_vespa_json_format(variable_name, dimension_names))
+        text_file = open(os.path.join(self.output_dir, variable_name + ".json"), "w")
+        text_file.write(self.write_to_vespa_json_format(variable_name, dimension_names))
         text_file.close()
 
 
