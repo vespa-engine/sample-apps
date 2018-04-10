@@ -28,7 +28,7 @@ $ docker service ls
 </pre>
 **Generate the hosts.xml file based on running containers:**
 <pre>
-$ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh > $VESPA_SAMPLE_APP/src/main/application/hosts.xml 
+$ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/main/application/hosts.xml 
 </pre>
 **Deploy the application:**
 <pre>
