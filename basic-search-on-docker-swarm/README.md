@@ -22,7 +22,7 @@ $ export VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
 <pre>
 $ docker stack deploy -c $VESPA_SAMPLE_APP/docker-compose.yml vespa
 </pre>
-**Wait for successful deployment of the stack (the REPLICAS column should show N/N for the Vespa services): configserver to start:**
+**Wait for successful deployment of the stack (the REPLICAS column should show N/N for the Vespa services):**
 <pre>
 $ docker service ls
 </pre>
