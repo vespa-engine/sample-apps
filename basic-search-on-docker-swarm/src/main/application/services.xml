@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright 2018 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version="1.0">
 
   <admin version='2.0'>
-    <adminserver hostalias='config0' />
+    <adminserver hostalias="config0" />
     <configservers>
       <configserver hostalias="config0" />
       <configserver hostalias="config1" />
@@ -26,13 +26,6 @@
     <documents>
       <document type="music" mode="index" />
     </documents>
-    <engine>
-      <proton>
-        <resource-limits>
-          <disk>0.95</disk>
-        </resource-limits>
-      </proton>
-    </engine>
     <nodes>
       <node hostalias="content0" distribution-key="0" />
       <node hostalias="content1" distribution-key="1" />
