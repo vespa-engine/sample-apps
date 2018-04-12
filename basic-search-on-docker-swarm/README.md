@@ -28,23 +28,27 @@ $ docker stack deploy -c $VESPA_SAMPLE_APP/docker-compose.yml vespa
 $ $VESPA_SAMPLE_APP/scripts/wait_until_all_stack_services_running.sh
 </pre>
 **Generate the hosts.xml file based on running containers:**
-<pre>
+<pre data-test="exec">
 $ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/main/application/hosts.xml 
 </pre>
+**Wait for the configuration server to start (should return 200 OK):**
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head $(hostname):19071/ApplicationStatus
+</pre>
 **Deploy the application:**
-<pre>
+<pre data-test="exec">
 $ $VESPA_SAMPLE_APP/scripts/deploy.sh
 </pre>
 **Wait for the application to start (should return 200 OK):**
-<pre>
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://$(hostname):8080/ApplicationStatus
 </pre>
 **Feed data to the application:**
-<pre>
+<pre data-test="exec">
 $ $VESPA_SAMPLE_APP/scripts/feed.sh
 </pre>
 **Do a search:**
-<pre>
+<pre data-test="exec">
 $ curl -s "http://$(hostname):8080/search/?query=bad" | python -m json.tool
 </pre>
 **Remove the stack:**
