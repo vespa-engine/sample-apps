@@ -14,17 +14,18 @@ The example below needs to be executed on one of the master nodes.
 
 ### Executable example
 **Check-out the example repository:**
-<pre>
+<pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
+$ cd `pwd`/sample-apps && git checkout aressem/add-multicontainer-example
 </pre>
 **Deploy the Vespa stack:**
-<pre>
+<pre data-test="exec">
 $ docker stack deploy -c $VESPA_SAMPLE_APP/docker-compose.yml vespa
 </pre>
 **Wait for successful deployment of the stack (the REPLICAS column should show N/N for the Vespa services):**
-<pre>
-$ docker service ls
+<pre data-test="exec">
+$ $VESPA_SAMPLE_APP/scripts/wait_until_all_stack_services_running.sh
 </pre>
 **Generate the hosts.xml file based on running containers:**
 <pre>
@@ -46,4 +47,7 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 <pre>
 $ curl -s "http://$(hostname):8080/search/?query=bad" | python -m json.tool
 </pre>
-
+**Remove the stack:**
+<pre data-test="after">
+$ docker stack rm vespa
+</pre>
