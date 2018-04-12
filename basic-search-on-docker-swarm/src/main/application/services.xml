@@ -14,7 +14,7 @@
   <jdisc version="1.0" id="container">
     <document-api />
     <search />
-    <nodes>
+    <nodes jvmargs="-Xms512m -Xmx512m">
       <node hostalias="container0" />
       <node hostalias="container1" />
       <node hostalias="container2" />
@@ -25,6 +25,7 @@
     <redundancy>2</redundancy>
     <documents>
       <document type="music" mode="index" />
+      <document-processing cluster="container"/>
     </documents>
     <nodes>
       <node hostalias="content0" distribution-key="0" />
