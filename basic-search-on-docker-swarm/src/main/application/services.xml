@@ -13,6 +13,7 @@
 
   <jdisc version="1.0" id="container">
     <document-api />
+    <document-processing/>
     <search />
     <nodes jvmargs="-Xms512m -Xmx512m">
       <node hostalias="container0" />
