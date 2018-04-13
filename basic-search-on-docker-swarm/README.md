@@ -17,7 +17,6 @@ The example below needs to be executed on one of the master nodes.
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
-$ cd `pwd`/sample-apps && git checkout aressem/add-multicontainer-example
 </pre>
 **Deploy the Vespa stack:**
 <pre data-test="exec">
