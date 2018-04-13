@@ -23,7 +23,7 @@ $ cd `pwd`/sample-apps && git checkout aressem/add-multicontainer-example
 <pre data-test="exec">
 $ docker stack deploy -c $VESPA_SAMPLE_APP/docker-compose.yml vespa
 </pre>
-**Wait for successful deployment of the stack (the REPLICAS column should show N/N for the Vespa services):**
+**Wait for successful deployment of the stack:**
 <pre data-test="exec">
 $ $VESPA_SAMPLE_APP/scripts/wait_until_all_stack_services_running.sh
 </pre>
