@@ -1,13 +1,13 @@
 <!-- Copyright 2018 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa basic search example on Docker Swarm 
+# Vespa basic search example on Docker Swarm
 
 Please refer to
 [Vespa quick start using Docker](http://docs.vespa.ai/documentation/vespa-quick-start.html)
 for more information on the basic single container example.
 
-This example assumes that a [Docker Swarm](https://docs.docker.com/engine/swarm/) is up and running and that you have console access to one of the masters. 
+This example assumes that a [Docker Swarm](https://docs.docker.com/engine/swarm/) is up and running and that you have console access to one of the masters.
 
-[Play with Docker](https://labs.play-with-docker.com) is a free service that will provide a Docker Swarm cluster if you do not have access to one. To create 
+[Play with Docker](https://labs.play-with-docker.com) is a free service that will provide a Docker Swarm cluster if you do not have access to one. To create
 Swarm, hit the green start button, click on the wrench in the top left and choose one of the templates. This should give you 5 nodes.
 
 The example below needs to be executed on one of the master nodes.
@@ -29,7 +29,7 @@ $ $VESPA_SAMPLE_APP/scripts/wait_until_all_stack_services_running.sh
 </pre>
 **Generate the hosts.xml file based on running containers:**
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/main/application/hosts.xml 
+$ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/main/application/hosts.xml
 </pre>
 **Wait for the configuration server to start (should return 200 OK):**
 <pre data-test="exec" data-test-wait-for="200 OK">
@@ -49,9 +49,10 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 </pre>
 **Do a search:**
 <pre data-test="exec">
-$ curl -s "http://$(hostname):8080/search/?query=bad" | python -m json.tool
+$ curl -s "http://$(hostname):8080/search/?query=michael" | python -m json.tool
 </pre>
-**Remove the stack:**
+**Congratulations. You have now deployed and tested a Vespa application on a multinode cluster.**
+**After you have finished testing the Vespa appplication excute the following step to delete the services:**
 <pre data-test="after">
 $ docker stack rm vespa
 </pre>
