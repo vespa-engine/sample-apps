@@ -83,18 +83,22 @@ class getData:
         user_id = float(info[0])
         product_id = float(info[1])
         label = int(info[2])
+        if user_id not in lookup_user_features or product_id not in lookup_product_features:
+            return None, None, None
         return lookup_user_features[user_id], lookup_product_features[product_id], [label]
 
     def prepare_dataset(self):
         lookup_product_features = self.get_product_features_lookup()
         lookup_user_features = self.get_user_features_lookup()
         with open(self.data_set_file_path) as f:
+            next(f) # skip first line
             input_u = []; input_d = []; input_y = []
             for line in f:
                 u, d, y = self.parse_dataset(line, lookup_user_features, lookup_product_features)
-                input_u.append(u)
-                input_d.append(d)
-                input_y.append(y)
+                if u is not None and d is not None:
+                    input_u.append(u)
+                    input_d.append(d)
+                    input_y.append(y)
         input_u = np.array(input_u)
         input_d = np.array(input_d)
         input_y = np.array(input_y)
@@ -148,23 +152,17 @@ class vespaRunTimeModel:
         self.input_y = tf.placeholder(tf.float32, [None, 1], name = 'input_y')
 
         # merge user and document vector
-        self.input_concat = tf.concat(1, [self.input_d, self.input_u], name = 'input_concat')
+        self.input_concat = tf.concat([self.input_d, self.input_u], 1, name = 'input_concat')
 
         # hidden layer
-        self.W_hidden = tf.Variable(
-            tf.truncated_normal([user_feature_length +
-                doc_feature_length, hidden_length], stddev=0.1), name = 'W_hidden')
+        self.W_hidden = tf.Variable(tf.truncated_normal([user_feature_length + doc_feature_length, hidden_length], stddev=0.1), name = 'W_hidden')
         self.b_hidden = tf.Variable(tf.constant(0.1, shape=[hidden_length]), name = 'b_hidden')
-
         self.hidden_layer = tf.nn.relu(tf.matmul(self.input_concat, self.W_hidden) + self.b_hidden,
             name = 'hidden_layer')
 
         # output layer
-        self.W_final = tf.Variable(
-                tf.random_uniform([hidden_length, 1], -0.1, 0.1),
-                name="W_final")
+        self.W_final = tf.Variable(tf.random_uniform([hidden_length, 1], -0.1, 0.1), name="W_final")
         self.b_final = tf.Variable(tf.zeros([1]), name="b_final")
-
         self.y = tf.sigmoid(tf.matmul(self.hidden_layer, self.W_final) + self.b_final, name = 'y')
 
         # prediction based on model output
@@ -192,13 +190,13 @@ class vespaRunTimeModel:
         return out_dir
 
     def summary_oprations(self):
-        loss_summary = tf.scalar_summary("loss", self.loss)
-        acc_summary = tf.scalar_summary("accuracy", self.accuracy)
-        train_summary_op = tf.merge_summary([loss_summary, acc_summary])
-        dev_summary_op = tf.merge_summary([loss_summary, acc_summary])
+        loss_summary = tf.summary.scalar("loss", self.loss)
+        acc_summary = tf.summary.scalar("accuracy", self.accuracy)
+        train_summary_op = tf.summary.merge([loss_summary, acc_summary])
+        dev_summary_op = tf.summary.merge([loss_summary, acc_summary])
         return train_summary_op, dev_summary_op
 
-    def train_step(self, u_batch, d_batch, y_batch, writer=None):
+    def train_step(self, sess, train_op, global_step, train_summary_op, u_batch, d_batch, y_batch, writer=None):
         """
         A single training step
         """
@@ -215,7 +213,7 @@ class vespaRunTimeModel:
         if writer:
             writer.add_summary(summaries, step)
 
-    def dev_step(self, u_batch, d_batch, y_batch, writer=None):
+    def dev_step(self, sess, global_step, dev_summary_op, u_batch, d_batch, y_batch, writer=None):
         """
         Evaluates model on a dev set
         """
@@ -231,57 +229,6 @@ class vespaRunTimeModel:
         print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
         if writer:
             writer.add_summary(summaries, step)
-
-class serializeVespaModel:
-    """
-    Serialize TensorFlow variables to Vespa JSON format
-
-    Example:
-        checkpoint_dir = "./runs/1473845959/checkpoints"
-        output_dir = "./runs/1473845959/vespa_variables"
-
-        serializer = serializeVespaModel(checkpoint_dir, output_dir)
-        serializer.serialize_to_disk(variable_name = "W_hidden", dimension_names = ['input', 'hidden'])
-        serializer.serialize_to_disk(variable_name = "b_hidden", dimension_names = ['hidden'])
-        serializer.serialize_to_disk(variable_name = "W_final", dimension_names = ['hidden', 'final'])
-        serializer.serialize_to_disk(variable_name = "b_final", dimension_names = ['final'])
-    """
-    def __init__(self, checkpoint_dir, output_dir):
-        self.checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
-        self.reader = tf.train.NewCheckpointReader(self.checkpoint_file)
-        self.output_dir = output_dir
-
-    def write_cell_value(self, variable, dimension_names, dimension_address = None):
-        if dimension_address is None:
-            dimension_address = []
-        shape = variable.shape
-        if len(shape) == 1:
-            count = 0
-            cells = []
-            for element in variable:
-                dimension_address.append((dimension_names[0], str(count)))
-                count += 1
-                cells.append({ 'address': dict(dimension_address), "value": float(element) })
-            return cells
-        else:
-            count = 0
-            output = []
-            for slice in variable:
-                dimension_address.append((dimension_names[0], str(count)))
-                output.extend(self.write_cell_value(slice, dimension_names[1:], dimension_address))
-                count += 1
-            return output
-
-    def write_to_vespa_json_format(self, variable_name, dimension_names):
-        variable = self.reader.get_tensor(variable_name)
-        cells = self.write_cell_value(variable, dimension_names)
-        return json.dumps({'cells': cells})
-
-    def serialize_to_disk(self, variable_name, dimension_names):
-        text_file = open(os.path.join(self.output_dir, variable_name + ".json"), "w")
-        text_file.write(self.write_to_vespa_json_format(variable_name, dimension_names))
-        text_file.close()
-
 
 def task_train():
     # Data
@@ -349,11 +296,11 @@ def task_train():
 
             # Write train summaries to disk
             train_summary_dir = os.path.join(out_dir, "summaries", "train")
-            train_summary_writer = tf.train.SummaryWriter(train_summary_dir, sess.graph)
+            train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
             # Dev summaries
             dev_summary_dir = os.path.join(out_dir, "summaries", "dev")
-            dev_summary_writer = tf.train.SummaryWriter(dev_summary_dir, sess.graph)
+            dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
             # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
             checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
@@ -365,21 +312,33 @@ def task_train():
             # Initialize all variables
             sess.run(tf.initialize_all_variables())
 
-        # Generate batches
-        batches = data_pre_processing.batch_iter(
-            list(zip(u_train, d_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
-        # Training loop. For each batch...
-        for batch in batches:
-            u_batch, d_batch, y_batch = zip(*batch)
-            vespa_model.train_step(u_batch, d_batch, y_batch, writer=train_summary_writer)
-            current_step = tf.train.global_step(sess, global_step)
-            if current_step % FLAGS.evaluate_every == 0:
-                print("\nEvaluation:")
-                vespa_model.dev_step(u_dev, d_dev, y_dev, writer=dev_summary_writer)
-                print("")
-            if current_step % FLAGS.checkpoint_every == 0:
-                path = saver.save(sess, checkpoint_prefix, global_step=current_step)
-                print("Saved model checkpoint to {}\n".format(path))
+            # Generate batches
+            batches = data_pre_processing.batch_iter(
+                list(zip(u_train, d_train, y_train)), FLAGS.batch_size, FLAGS.num_epochs)
+
+            # Training loop. For each batch...
+            for batch in batches:
+                u_batch, d_batch, y_batch = zip(*batch)
+                vespa_model.train_step(sess, train_op, global_step, train_summary_op, u_batch, d_batch, y_batch, writer=train_summary_writer)
+                current_step = tf.train.global_step(sess, global_step)
+                if current_step % FLAGS.evaluate_every == 0:
+                    print("\nEvaluation:")
+                    vespa_model.dev_step(sess, global_step, dev_summary_op, u_dev, d_dev, y_dev, writer=dev_summary_writer)
+                    print("")
+                if current_step % FLAGS.checkpoint_every == 0:
+                    path = saver.save(sess, checkpoint_prefix, global_step=current_step)
+                    print("Saved model checkpoint to {}\n".format(path))
+
+            # save completed model for import
+            export_path = "saved"
+            builder = tf.saved_model.builder.SavedModelBuilder(export_path)
+            signature = tf.saved_model.signature_def_utils.predict_signature_def(
+                        inputs = {'input_u':vespa_model.input_u, 'input_d':vespa_model.input_d},
+                        outputs = {'y':vespa_model.y})
+            builder.add_meta_graph_and_variables(sess,
+                                [tf.saved_model.tag_constants.SERVING],
+                                signature_def_map={'serving_default':signature})
+            builder.save(as_text=True)
 
 if __name__ == "__main__":
 
@@ -395,3 +354,4 @@ if __name__ == "__main__":
 
     if FLAGS.task == "train":
         task_train()
+

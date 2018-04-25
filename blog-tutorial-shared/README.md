@@ -65,31 +65,19 @@ Train the model with
                            --user_features_file_path vespa_tutorial_data/user_item_cf_cv/user.json \
                            --dataset_file_path vespa_tutorial_data/nn_model/training_set.txt
 
-Model parameters and summary statistics will be saved at folder ```runs/${start_time}``` with ```${start_time}``` representing the time you started to train the model.
+Model summary statistics will be saved at folder
+```runs/${start_time}``` with ```${start_time}``` representing the time you
+started to train the model.
 
 Visualize the accuracy and loss metrics with
 
-    $ tensorboard --logdir runs/1473845959/summaries/
-
-**Note**: The folder ```1473845959``` depends on the time you start to train the model and will be different in your case.
+    $ tensorboard --logdir runs
 
 ### Export model parameters to Tensor Vespa format
 
-```checkpoint_dir``` holds the folder that TensorFlow writes the learned model parameters (stored using protobuf) and ```output_dir``` is the folder that we will output the model parameters in
-Vespa Tensor format.
-
-    import vespaModel
-
-    checkpoint_dir = "./runs/1473845959/checkpoints"
-    output_dir = "application_package/constants"
-
-    serializer = serializeVespaModel(checkpoint_dir, output_dir)
-    serializer.serialize_to_disk(variable_name = "W_hidden", dimension_names = ['input', 'hidden'])
-    serializer.serialize_to_disk(variable_name = "b_hidden", dimension_names = ['hidden'])
-    serializer.serialize_to_disk(variable_name = "W_final", dimension_names = ['hidden', 'final'])
-    serializer.serialize_to_disk(variable_name = "b_final", dimension_names = ['final'])
-
-The python code containing the class ```serializeVespaModel``` can be found at: ```src/python/vespaModel.py```
+The `vespaModel.py` script saves the model to a directory `saved` which can be
+imported directly into Vespa. Please see [Ranking with TensorFlow models in
+Vespa](http://docs.vespa.ai/documentation/tensorflow.html) for more details.
 
 ### Offline evaluation
 

@@ -31,7 +31,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains='"coverage":100,"documents":0'>
-$ curl 'http://localhost:8080/search/?yql=select%20*%20from%20sources%20blog_post%20where%20has_user_item_cf%20=%201;&ranking=tensor&ranking.features.query(user_item_cf)=%7B%7Buser_item_cf%3A0%7D%3A0.1%2C%7Buser_item_cf%3A1%7D%3A0.1%2C%7Buser_item_cf%3A2%7D%3A0.1%2C%7Buser_item_cf%3A3%7D%3A0.1%2C%7Buser_item_cf%3A4%7D%3A0.1%2C%7Buser_item_cf%3A5%7D%3A0.1%2C%7Buser_item_cf%3A6%7D%3A0.1%2C%7Buser_item_cf%3A7%7D%3A0.1%2C%7Buser_item_cf%3A8%7D%3A0.1%2C%7Buser_item_cf%3A9%7D%3A0.1%7D'
+$ curl 'http://localhost:8080/search/?user_id=0&searchChain=user&query=sddocname:blog_post'
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">

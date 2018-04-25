@@ -13,9 +13,9 @@ search user {
             indexing: summary | attribute
         }
 
-        field user_item_cf type tensor(user_item_cf[10]) {
+        field user_item_cf type tensor(d0[1],d1[10]) {
             indexing: summary | attribute
-            attribute: tensor(user_item_cf[10])
+            attribute: tensor(d0[1],d1[10])
         }
 
         field has_user_item_cf type byte {
