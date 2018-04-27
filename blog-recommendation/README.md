@@ -31,7 +31,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains='"coverage":100,"documents":0'>
-$ curl 'http://localhost:8080/search/?user_id=0&searchChain=user&query=sddocname:blog_post'
+$ curl 'http://localhost:8080/search/?user_id=0&amp;searchChain=user&amp;query=sddocname:blog_post'
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">
