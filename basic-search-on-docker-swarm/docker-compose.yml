@@ -6,6 +6,7 @@ services:
     command: configserver
     hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
     environment:
+      - VESPA_HOSTNAME=cfg1.vespa_net
       - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
     ports:
       - "19071:19071"
@@ -36,6 +37,7 @@ services:
     command: configserver
     hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
     environment:
+      - VESPA_HOSTNAME=cfg3.vespa_net
       - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
     networks:
       net:
@@ -50,6 +52,7 @@ services:
     command: services
     hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
     environment:
+      - VESPA_HOSTNAME=cfg3.vespa_net
       - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
     deploy:
        mode: replicated
