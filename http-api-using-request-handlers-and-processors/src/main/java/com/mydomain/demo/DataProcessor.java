@@ -8,8 +8,13 @@ import com.yahoo.docproc.DocumentProcessor.Progress;
 import com.yahoo.docproc.Processing;
 import com.yahoo.docproc.jdisc.DocumentProcessingHandler;
 import com.yahoo.document.Document;
+import com.yahoo.document.DocumentOperation;
 import com.yahoo.document.DocumentPut;
 import com.yahoo.document.DocumentType;
+import com.yahoo.document.DocumentUpdate;
+import com.yahoo.documentapi.DocumentAccess;
+import com.yahoo.documentapi.SyncParameters;
+import com.yahoo.documentapi.SyncSession;
 import com.yahoo.processing.Processor;
 import com.yahoo.processing.Request;
 import com.yahoo.processing.Response;
@@ -19,6 +24,8 @@ import com.yahoo.processing.response.Data;
 import com.yahoo.processing.response.DataList;
 import com.yahoo.yolean.chain.After;
 import com.yahoo.yolean.chain.Provides;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A processor making a nested result sets of "normalized" strings from the
@@ -27,6 +34,7 @@ import com.yahoo.yolean.chain.Provides;
 @Provides(DataProcessor.DemoData.NAME)
 @After(AnnotatingProcessor.DemoProperty.NAME)
 public class DataProcessor extends Processor {
+
     public static class DemoData extends ListenableFreezableClass implements Data {
         public static final String NAME = "DemoData";
 
@@ -54,11 +62,15 @@ public class DataProcessor extends Processor {
 
     private final DemoComponent termChecker;
     private final DocumentProcessingHandler docHandler;
+    private final DemoFreezableComponent docApiClient;
+    private final DocumentType musicType;
 
     @Inject
-    public DataProcessor(DemoComponent termChecker, DocumentProcessingHandler docHandler) {
+    public DataProcessor(DemoComponent termChecker, DemoFreezableComponent docApiClient, DocumentProcessingHandler docHandler) {
         this.termChecker = termChecker;
         this.docHandler = docHandler;
+        this.docApiClient = docApiClient;
+        this.musicType = docHandler.getDocumentTypeManager().getDocumentType("music");
     }
 
     @Override
@@ -69,6 +81,7 @@ public class DataProcessor extends Processor {
         DataList<Data> previous = null;
         String exampleProperty = request.properties().getString(DemoHandler.REQUEST_URI);
         Object o = request.properties().get(AnnotatingProcessor.DemoProperty.NAME_AS_COMPOUND);
+        List<Document> newDocuments = new ArrayList<>();
 
 
         if (exampleProperty != null) {
@@ -90,32 +103,26 @@ public class DataProcessor extends Processor {
                 }
                 previous = current;
                 current = null;
+
+                // For Demo purposes lets create a new Document named after each given term
+                newDocuments.add(new Document(this.musicType, "id:default:music::" + normalized));
             }
         }
 
-        /*
-        NOTE: As example, we are going to attempt storing a new Document (hardcoded data)
-        On a Real application I assume one should be able of creating/updating any number
-        of documents from here by creating corresponding DocumentOperation(s)
-        */
+        // Now lets send those Document down the Document pipeline
+        Processing processing = new com.yahoo.docproc.Processing();
+        for (Document document : newDocuments) {
+            DocumentPut docPut = new DocumentPut(document);
+            processing.addDocumentOperation(docPut);
+        }
 
-        DocumentType type = this.docHandler.getDocumentTypeManager().getDocumentType("music");
-        Document document = new Document(type, "id:default:music::10");
-        document.setFieldValue("title", "My Test Title");
-        DocumentPut docPut = new DocumentPut(document);
-
-        Processing proc = com.yahoo.docproc.Processing.of(docPut);
-
+        // NOTE: I'm not sure if this is needed, seems to work without it
         DocprocService docProcService = this.docHandler.getDocprocServiceRegistry()
             .getComponent("default");
-        proc.setDocprocServiceRegistry(this.docHandler.getDocprocServiceRegistry());
+        processing.setDocprocServiceRegistry(this.docHandler.getDocprocServiceRegistry());
 
-        Progress progress = docProcService.getExecutor().processUntilDone(proc);
-
-        //
-        // At this point, I'll expect that document is created, but it not, this returns 404:
-        //    curl -v "http://localhost:8080/document/v1/default/music/docid/10"
-        //
+        if ( docProcService.getExecutor().processUntilDone(processing).equals(Progress.DONE))
+            docApiClient.syncProcess(processing);
 
         return r;
     }
