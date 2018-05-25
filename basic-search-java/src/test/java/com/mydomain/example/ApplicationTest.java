@@ -11,19 +11,22 @@ import org.junit.Test;
 
 import java.nio.file.FileSystems;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
+/**
+ * Unit test of the container aspect of this application.
+ */
 public class ApplicationTest {
 
     @Test
-    public void requireThatResultContainsHelloWorld() throws Exception {
+    public void requireThatResultContainsHelloWorld() {
         try (Application app = Application.fromApplicationPackage(
                 FileSystems.getDefault().getPath("src/main/application"),
                 Networking.disable)) {
             Processing processing = app.getJDisc("jdisc").processing();
             Response response = processing.process(ComponentSpecification.fromString("default"), new Request());
-            assertThat(response.data().get(0).toString(), containsString("Hello, services!"));
+            assertEquals("Hello, services!", response.data().get(0).toString());
         }
     }
+
 }

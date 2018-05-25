@@ -8,13 +8,13 @@ import java.nio.file.FileSystems;
 
 import static org.junit.Assume.assumeTrue;
 
+/**
+ * This uses the Application class to set up a container instance of this application
+ * in this JVM. All other aspects of the application package than a single container
+ * cluster is ignored. This is useful for e.g starting a container instance in your IDE
+ * and serving real HTTP requests for interactive debugging.
+ */
 public class ApplicationMain {
-
-    @Test
-    public void runFromMaven() throws Exception {
-        assumeTrue(Boolean.valueOf(System.getProperty("isMavenSurefirePlugin")));
-        main(null);
-    }
 
     public static void main(String[] args) throws Exception {
         try (com.yahoo.application.Application app = com.yahoo.application.Application.fromApplicationPackage(
@@ -24,4 +24,5 @@ public class ApplicationMain {
             Thread.sleep(Long.MAX_VALUE);
         }
     }
+
 }

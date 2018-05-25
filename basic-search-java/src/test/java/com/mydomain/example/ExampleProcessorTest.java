@@ -8,9 +8,12 @@ import com.yahoo.processing.Response;
 import com.yahoo.processing.execution.Execution;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
 
+/**
+ * Unit test of the example processor.
+ * If ExampleProcessorConfig you need to run mvn install on this project.
+ */
 public class ExampleProcessorTest {
 
     @Test
@@ -19,10 +22,11 @@ public class ExampleProcessorTest {
         Processor processor = new ExampleProcessor(new ExampleProcessorConfig(config));
 
         Response response = newExecution(processor).process(new Request());
-        assertThat(response.data().get(0).toString(), containsString("Hello, processor!"));
+        assertEquals("Hello, processor!", response.data().get(0).toString());
     }
 
     private static Execution newExecution(Processor... processors) {
         return Execution.createRoot(new Chain<>(processors), 0, Execution.Environment.createEmpty());
     }
+
 }
