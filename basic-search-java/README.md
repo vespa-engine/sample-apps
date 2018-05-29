@@ -1,11 +1,11 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - Basic stateless Vespa application
 
-A simple stateless Vespa application with no data, to demonstrate how to build
-plugins for the Vespa JDisc container.
+Extends the basic-search sample applicationn with a Searcher component in Java
+which does query and result processing.
 
 Please refer to
-[developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html)
+[developing searchers](http://docs.vespa.ai/documentation/searcher-development.html)
 for more information.
 
 
@@ -32,8 +32,8 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-a
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Test the application:**
-<pre data-test="exec" data-test-assert-contains="Hello, services!">
-$ curl -s http://localhost:8080/processing/
+<pre data-test="exec" data-test-assert-contains="test:hit">
+$ curl -s http://localhost:8080/search/?query=title:foo
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">
