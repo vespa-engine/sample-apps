@@ -4,6 +4,9 @@ package com.mydomain.example;
 import com.yahoo.processing.Request;
 import com.yahoo.processing.response.AbstractData;
 
+/**
+ * Example data which can be added to a Response.
+ */
 public class StringData extends AbstractData {
 
     private final String string;
@@ -17,4 +20,5 @@ public class StringData extends AbstractData {
     public String toString() {
         return string;
     }
+
 }

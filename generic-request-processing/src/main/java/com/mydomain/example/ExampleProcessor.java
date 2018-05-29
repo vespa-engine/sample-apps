@@ -7,6 +7,10 @@ import com.yahoo.processing.Request;
 import com.yahoo.processing.Response;
 import com.yahoo.processing.execution.Execution;
 
+/**
+ * An example processor which receives a request and returns a response.
+ * If ExampleProcessorConfig is not found you need to run mvn install on this project.
+ */
 public class ExampleProcessor extends Processor {
 
     private final String message;
@@ -31,4 +35,5 @@ public class ExampleProcessor extends Processor {
         // return the response up the chain
         return response;
     }
+
 }
