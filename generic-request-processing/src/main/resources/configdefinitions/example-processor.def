@@ -1,0 +1,6 @@
+# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+# An example config file declaration containing a single variable
+package=com.mydomain.example
+
+# The single config variable - a string message
+message string default=""
