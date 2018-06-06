@@ -21,7 +21,7 @@ $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationSt
 </pre>
 **Deploy the application:**
 <pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/blog-search/src/main/application &amp;&amp; \
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/blog-search/src/main/application && \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
 **Wait for the application to start:**
