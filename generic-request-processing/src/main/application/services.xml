@@ -5,7 +5,7 @@
     <container id="default" version="1.0">
         <processing>
             <chain id="default">
-                <processor id="com.mydomain.example.ExampleProcessor" bundle="basic-request-processing">
+                <processor id="com.mydomain.example.ExampleProcessor" bundle="generic-request-processing">
                     <config name="com.mydomain.example.example-processor">
                         <message>Hello, services!</message>
                     </config>
