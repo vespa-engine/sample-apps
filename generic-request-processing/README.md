@@ -1,8 +1,12 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa sample applications - Building a HTTP API using request handlers and processors
+# Vespa sample applications - a generic request-response processing application
+
+A simple stateless Vespa application demonstrating general composable request-response processing
+with Vespa. No content cluster is configured just a stateless Java container. A custom config class
+is created and used to control the processing component.
 
 Please refer to
-[building a HTTP API using request handlers and processors](http://docs.vespa.ai/documentation/jdisc/http-api-tutorial.html)
+[developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html)
 for more information.
 
 
@@ -11,7 +15,7 @@ for more information.
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
-$ cd $VESPA_SAMPLE_APPS/http-api-using-request-handlers-and-processors &amp;&amp; mvn clean package
+$ cd $VESPA_SAMPLE_APPS/generic-request-processing &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container --privileged \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
@@ -21,7 +25,7 @@ $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationSt
 </pre>
 **Deploy the application:**
 <pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/http-api-using-request-handlers-and-processors/target/application.zip && \
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/generic-request-processing/target/application.zip && \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
 **Wait for the application to start:**
@@ -29,8 +33,8 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-a
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Test the application:**
-<pre data-test="exec" data-test-assert-contains="OK">
-$ curl -s 'http://localhost:8080/demo?terms=1%202%203%204'
+<pre data-test="exec" data-test-assert-contains="Hello, services!">
+$ curl -s http://localhost:8080/processing/
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">

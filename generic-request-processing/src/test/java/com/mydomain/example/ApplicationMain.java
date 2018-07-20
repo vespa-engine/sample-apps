@@ -16,9 +16,9 @@ import static org.junit.Assume.assumeTrue;
  * cluster is ignored. This is useful for e.g starting a container instance in your IDE
  * and serving real HTTP requests for interactive debugging.
  * <p>
- * After running main you can e.g open
- * http://localhost:8080/search/?query=title:foo&tracelevel=2
- * in a browser.
+ * After starting this you can open
+ * http://localhost:8080/processing/
+ * in your browser.
  */
 public class ApplicationMain {
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <container id="default" version="1.0">
+        <processing>
+            <chain id="default">
+                <processor id="com.mydomain.example.ExampleProcessor" bundle="generic-request-processing">
+                    <config name="com.mydomain.example.example-processor">
+                        <message>Hello, services!</message>
+                    </config>
+                </processor>
+            </chain>
+        </processing>
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
+    </container>
+
+</services>
