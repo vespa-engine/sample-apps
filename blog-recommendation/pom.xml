@@ -40,7 +40,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.8.0</version>
         <configuration>
           <compilerArgs>
             <arg>-Xlint:all</arg>
@@ -49,8 +49,11 @@
           <optimize>true</optimize>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
-          <source>1.8</source>
-          <target>1.8</target>
+          <jdkToolchain>
+            <version>10</version>
+          </jdkToolchain>
+          <source>10</source>
+          <target>10</target>
         </configuration>
       </plugin>
       <plugin>
