@@ -46,10 +46,10 @@
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                     <jdkToolchain>
-                        <version>10</version>
+                        <version>11</version>
                     </jdkToolchain>
-                    <source>10</source>
-                    <target>10</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>

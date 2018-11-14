@@ -35,8 +35,11 @@
                     <optimize>true</optimize>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <jdkToolchain>
+                        <version>11</version>
+                    </jdkToolchain>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
