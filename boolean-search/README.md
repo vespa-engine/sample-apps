@@ -14,7 +14,7 @@ type predicate to the .sd file. (Remember to set the arity parameter.)
 ### Feed and search
 1. **Feed** the data that is to be searched:
     ```sh
-    curl -X POST --data-binary @adsdata.xml <endpoint url>/document
+    java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar --file adsdata.xml --host <endpoint-host> --port 8080
     ```
 
 2. **Search** using yql expressions, e.g. `select * from sources * where predicate(target, {"name":"Wile E. Coyote"},{});`
@@ -47,7 +47,8 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Feed data into application:**
 <pre data-test="exec">
-$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/boolean-search/adsdata.xml http://localhost:8080/document
+$ java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+  --file ${VESPA_SAMPLE_APPS}/boolean-search/adsdata.xml --host localhost --port 8080
 </pre>
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains="ACME Rocket Sled">
