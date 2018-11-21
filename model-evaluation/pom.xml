@@ -67,6 +67,9 @@
                 <artifactId>bundle-plugin</artifactId>
                 <version>${vespa_version}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

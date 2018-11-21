@@ -6,7 +6,7 @@
 
     <model-evaluation />
 
-    <handler id="ai.vespa.example.MyHandler" bundle="my-model-evaluation">
+    <handler id="ai.vespa.example.MyHandler" bundle="ai.vespa.example.model-evaluation">
         <binding>http://*/models/*</binding>
     </handler>
 
