@@ -47,8 +47,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Feed data into application:**
 <pre data-test="exec">
-$ java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-  --file ${VESPA_SAMPLE_APPS}/boolean-search/adsdata.xml --host localhost --port 8080
+$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar --verbose --file /vespa-sample-apps/boolean-search/adsdata.xml --host localhost --port 8080'
 </pre>
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains="ACME Rocket Sled">
