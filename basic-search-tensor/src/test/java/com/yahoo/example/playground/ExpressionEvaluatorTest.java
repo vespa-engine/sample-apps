@@ -28,8 +28,8 @@ public class ExpressionEvaluatorTest {
         Value v = ExpressionEvaluator.evaluate("t1 * t2", context);
 
         assertTrue(v instanceof TensorValue);
-        assertEquals("tensor(x{})", ((TensorValue)v).asTensor().type().toString());
-        assertEquals("{{x:0}:2.0,{x:1}:6.0}", v.toString());
+        assertEquals("tensor(x{})", v.asTensor().type().toString());
+        assertEquals("tensor(x{}):{{x:0}:2.0,{x:1}:6.0}", v.toString());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ExpressionEvaluatorTest {
                 "{",
                 "   \"type\": \"tensor(x[])\",",
                 "   \"value\": {",
-                "       \"literal\": \"{{x:0}:2.0,{x:1}:6.0}\",",
+                "       \"literal\": \"tensor(x[]):{{x:0}:2.0,{x:1}:6.0}\",",
                 "       \"cells\": [{\"address\":{\"x\":\"0\"},\"value\":2.0},{\"address\":{\"x\":\"1\"},\"value\":6.0}]",
                 "   }",
                 "}");

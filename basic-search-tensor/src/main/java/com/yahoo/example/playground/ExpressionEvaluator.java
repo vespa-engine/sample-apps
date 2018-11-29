@@ -117,7 +117,7 @@ public class ExpressionEvaluator {
 
     private static String valueValue(Value value) {
         if (value instanceof TensorValue) {
-            Tensor tensor = ((TensorValue)value).asTensor();
+            Tensor tensor = value.asTensor();
 
             StringBuilder sb = new StringBuilder("{");
             sb.append("\"literal\": \"" + tensor.toString() + "\", ");
