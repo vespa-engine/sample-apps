@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
-        <vespa_version>6.321.2</vespa_version>
+        <vespa_version>6.322.19</vespa_version>
         <junit_version>4.11</junit_version>
     </properties>
 
