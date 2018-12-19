@@ -12,3 +12,6 @@ Note: The applications that contain a pom.xml file must be built before being de
 Please refer to
 [developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html#deploy)
 for more information.
+
+Learn how to [contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md)
+to the Vespa sample applications.
