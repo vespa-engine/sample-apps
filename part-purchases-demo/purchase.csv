@@ -1,0 +1,21 @@
+date,price,tax,item,customer
+2006-09-06 09:00:00,1000,0.24,Intake valve,Smith
+2006-09-07 10:00:00,1000,0.12,Rocker arm,Smith
+2006-09-07 11:00:00,2000,0.24,Spring,Smith
+2006-09-08 12:00:00,3000,0.12,Valve cover,Jones
+2006-09-08 10:00:00,5000,0.24,Intake port,Jones
+2006-09-08 11:00:00,8000,0.12,Head,Brown
+2006-09-09 12:00:00,1300,0.24,Coolant,Smith
+2006-09-09 10:00:00,2100,0.12,Engine block,Jones
+2006-09-09 11:00:00,3400,0.24,Oil pan,Brown
+2006-09-09 12:00:00,5500,0.12,Oil sump,Smith
+2006-09-10 10:00:00,8900,0.24,Camshaft,Jones
+2006-09-10 11:00:00,1440,0.12,Exhaust valve,Brown
+2006-09-10 12:00:00,2330,0.24,Rocker arm,Brown
+2006-09-10 10:00:00,3770,0.12,Spring,Brown
+2006-09-10 11:00:00,6100,0.24,Spark plug,Smith
+2006-09-11 12:00:00,9870,0.12,Exhaust port,Jones
+2006-09-11 10:00:00,1597,0.24,Piston,Brown
+2006-09-11 11:00:00,2584,0.12,Connection rod,Smith
+2006-09-11 12:00:00,4181,0.24,Rod bearing,Jones
+2006-09-11 13:00:00,6765,0.12,Crankshaft,Jones
