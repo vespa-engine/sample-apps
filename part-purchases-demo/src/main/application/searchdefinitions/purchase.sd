@@ -5,7 +5,7 @@ search purchase {
     document purchase {
 
         field date type long {
-            indexing: summary | index | attribute
+            indexing: summary | attribute
         }
 
         field price type int {
@@ -13,15 +13,15 @@ search purchase {
         }
 
         field tax type double {
-            indexing: summary | index | attribute
+            indexing: summary | attribute
         }
 
         field item type string {
-            indexing: summary | index | attribute
+            indexing: summary | attribute
         }
 
         field customer type string {
-            indexing: summary | index | attribute
+            indexing: summary | attribute
         }
 
     }
