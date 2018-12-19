@@ -1,0 +1,37 @@
+# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+search purchase {
+
+    document purchase {
+
+        field date type long {
+            indexing: summary | index | attribute
+        }
+
+        field price type int {
+            indexing: summary | attribute
+        }
+
+        field tax type double {
+            indexing: summary | index | attribute
+        }
+
+        field item type string {
+            indexing: summary | index | attribute
+        }
+
+        field customer type string {
+            indexing: summary | index | attribute
+        }
+
+    }
+
+    rank-profile song inherits default {
+
+        first-phase {
+            expression:nativeRank(price,item)
+        }
+
+    }
+
+}
