@@ -43,6 +43,6 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 **Feed the sample data**
 <pre data-test="exec" data-test-wait-for="feed">
 $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-      --verbose --file /app/part-purchases-demo/purchase.json --host localhost --port 8080';
+      --verbose --file /vespa-sample-apps/part-purchases-demo/purchase.json --host localhost --port 8080';
 
 </pre>
