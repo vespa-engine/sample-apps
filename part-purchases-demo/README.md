@@ -1,5 +1,5 @@
 __<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa sample applications - Basic Search
+# Vespa sample applications - Part Purchases Demo
 
 A sample Vespa application to assist with with learning how to group according to the
 [Grouping Guide](https://docs.vespa.ai/documentation/grouping.html)
@@ -10,7 +10,6 @@ A sample Vespa application to assist with with learning how to group according t
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
-$ cd $VESPA_SAMPLE_APPS/model-evaluation &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container --privileged \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
