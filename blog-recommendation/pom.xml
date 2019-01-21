@@ -10,7 +10,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
-    <vespa_version>6.330.51</vespa_version>
+    <vespa_version>7.0.59</vespa_version>
     <junit_version>4.11</junit_version>
   </properties>
 
@@ -40,7 +40,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.8.0</version>
         <configuration>
           <compilerArgs>
             <arg>-Xlint:all</arg>
@@ -49,8 +49,11 @@
           <optimize>true</optimize>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
-          <source>1.8</source>
-          <target>1.8</target>
+          <jdkToolchain>
+            <version>11</version>
+          </jdkToolchain>
+          <source>11</source>
+          <target>11</target>
         </configuration>
       </plugin>
       <plugin>
