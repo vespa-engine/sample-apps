@@ -2,10 +2,8 @@
 sudo: false
 dist: trusty
 
-language: scala
-
 jdk: openjdk11
 
 install: true
 
-script: mvn --batch-mode --no-snapshot-updates install && cd blog-tutorial-shared && sbt package
+script: mvn --batch-mode --no-snapshot-updates install 
