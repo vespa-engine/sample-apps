@@ -1,0 +1,48 @@
+{{header}}
+
+<div class="search-grouping">
+    {{results-grouping}}
+</div>
+
+<div class="search">
+
+    <div class="title-container">
+        <div class="title-text">{{page-title}}</div><div class="title-line"></div>
+    </div>
+
+    <div class="search-header">
+        <div class="search-results-count">Found {{search-results-count}} results</div>
+        <div class="search-results-per-page">
+            Results per page:
+            <a href="/site/search/?{{search-query-parameters}}&r=10">10</a>
+            |
+            <a href="/site/search/?{{search-query-parameters}}&r=25">25</a>
+            |
+            <a href="/site/search/?{{search-query-parameters}}&r=100">100</a>
+        </div>
+        <div class="search-order-by">
+            Order by:
+            <a href="/site/search/?{{search-query-parameters}}&sort=relevance">relevance</a>
+            |
+            <a href="/site/search/?{{search-query-parameters}}&sort=pl">lowest price</a>
+            |
+            <a href="/site/search/?{{search-query-parameters}}&sort=ph">highest price</a>
+            |
+            <a href="/site/search/?{{search-query-parameters}}&sort=rl">lowest rating</a>
+            |
+            <a href="/site/search/?{{search-query-parameters}}&sort=rh">highest rating</a>
+        </div>
+    </div>
+
+    <div class="search-results">
+        {{results}}
+    </div>
+
+    <div class="search-results-pagination">
+        {{search-results-pagination}}
+    </div>
+
+</div>
+
+{{footer}}
+

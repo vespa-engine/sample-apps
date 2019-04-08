@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+<services version="1.0">
+
+  <container id="container" version="1.0">
+    <document-api />
+    <search />
+
+    <document-processing>
+      <chain id="default">
+        <documentprocessor id="ai.vespa.example.shopping.ReviewProcessor" bundle="shopping" />
+      </chain>
+    </document-processing>
+
+    <handler id="ai.vespa.example.shopping.site.SiteHandler" bundle="shopping">
+      <binding>http://*/site/*</binding>
+      <binding>http://*/site</binding>
+      <config name="ai.vespa.example.shopping.site.site-handler">
+        <vespaHostName>localhost</vespaHostName>
+        <vespaHostPort>8080</vespaHostPort>
+      </config>
+    </handler>
+
+    <nodes jvmargs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8998">
+      <node hostalias="node1" />
+    </nodes>
+
+  </container>
+
+  <content id="shopping" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="item" mode="index" />
+      <document type="review" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>
+

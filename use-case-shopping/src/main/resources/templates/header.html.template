@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<html>
+
+<head>
+    <title>{{page-title}}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/site/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/site/css/site.css"/>
+</head>
+
+<body>
+
+<div class="content">
+
+<div class="header">
+
+    <div class="icon">
+        <a href="/site">
+            <img src="/site/img/vespa-logo-dark.png" />
+            <div>Shopping</div>
+        </a>
+    </div>
+
+    <div class="search">
+        <form action="/site/search/" method="get">
+            <input id="searchtext" type="text" value="{{search-query}}" name="q"/>
+            <input id="searchbutton" type="submit" value="Search" />
+        </form>
+    </div>
+
+    <div class="links">
+        <a href="https://docs.vespa.ai/documentation/use_cases.html">About</a>
+        <a href="https://docs.vespa.ai">Documentation</a>
+        <a href="https://vespa.ai">Vespa.ai</a>
+    </div>
+
+</div>
+
+<div class="main">
+
+
