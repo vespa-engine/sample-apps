@@ -130,7 +130,7 @@ body {
 
     display: grid;
     grid-template-columns: 225px 1fr;
-    align-items: center;
+    align-items: start;
 }
 
 .title-container {
