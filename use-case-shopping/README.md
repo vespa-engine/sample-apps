@@ -75,8 +75,8 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 
 **Test the application:**
 
-<pre data-test="exec" data-test-assert-contains="test:hit">
-$ curl -s http://localhost:8080/search/?query=title:foo
+<pre data-test="exec" data-test-assert-contains="id:item:item::">
+$ curl -s http://localhost:8080/search/?query=default:golf
 </pre>
 
 **Browse the site:**
