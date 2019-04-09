@@ -54,7 +54,7 @@ $ cat meta_sports_20k_sample.json | ./convert_meta.py > feed_items.json
 Next, data feed for reviews:
 
 <pre data-test="exec">
-$ cat reviews_sports_40k_sample.json | ./convert_reviews.py > feed_reviews.json
+$ cat reviews_sports_24k_sample.json | ./convert_reviews.py > feed_reviews.json
 </pre>
 
 **Feed data:**
