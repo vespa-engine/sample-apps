@@ -6,7 +6,6 @@ search item {
 
         field asin type string {
             indexing: summary | attribute
-            summary-to: short
         }
 
         field timestamp type long {
@@ -14,12 +13,11 @@ search item {
         }
 
         field brand type string {
-            indexing: summary | attribute | index
+            indexing: summary | attribute
         }
 
         field title type string {
-            indexing: summary | attribute | index
-            summary-to: short
+            indexing: summary | index
         }
 
         field description type string {
@@ -28,17 +26,18 @@ search item {
 
         field price type float {
             indexing: summary | attribute
-            summary-to: short
         }
 
         field categories type array<string> {
-            indexing: summary | attribute | index
-            summary-to: short
+            indexing: summary | attribute
+        }
+
+        field categories_for_search type string {
+            indexing: index
         }
 
         field images type array<string> {
             indexing: summary | attribute
-            summary-to: short
         }
 
         field related type array<string> {
@@ -47,18 +46,27 @@ search item {
 
         field rating_stars type int {
             indexing: summary | attribute
-            summary-to: short
         }
 
         field rating_count type int {
             indexing: summary | attribute
-            summary-to: short
         }
 
     }
 
+    document-summary short {
+        from-disk
+        summary asin type string { source: asin }
+        summary title type string { source: title }
+        summary price type float { source: price }
+        summary categories type array<string> { source: categories }
+        summary images type array<string> { source: images }
+        summary rating_stars type int { source: rating_stars }
+        summary rating_count type int { source: rating_count }
+    }
+
     fieldset default {
-        fields: brand, title, description, categories
+        fields: title, description, categories_for_search
     }
 
     rank-profile item inherits default {
@@ -68,7 +76,7 @@ search item {
         }
 
         function inline default_ranking() {
-            expression: 3*nativeRank(categories) + 2*nativeRank(title) + 1*nativeRank(description) + 1*nativeRank(brand) + 1*if(attribute(rating_count) > 5, average_rating / 5, 0)
+            expression: 1*nativeRank(categories) + 2*nativeRank(categories_for_search) + 3*nativeRank(title) + 1*nativeRank(description) + 1*nativeRank(brand) + 1*if(attribute(rating_count) > 5, average_rating / 5, 0)
         }
 
         function inline rating_filter() {
@@ -104,7 +112,7 @@ search item {
 
     rank-profile sort_by_rating inherits item {
         function inline default_ranking() {
-            expression: 1000000000 + (query(sort_direction) * average_rating)
+            expression: 1000000000 + (query(sort_direction) * average_rating)  # because rank-score-drop-limit is 0
         }
     }
 

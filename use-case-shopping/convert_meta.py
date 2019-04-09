@@ -26,6 +26,7 @@ def process(data):
         for category in data["categories"]:
             for level in range(len(category)):
                 fields["categories"].append("|".join(category[0:level+1]))
+        fields["categories_for_search"] = " ".join(data["categories"][0][::-1])  # reverse direction
 
     if "related" in data:
         related = []
