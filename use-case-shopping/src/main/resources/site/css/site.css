@@ -203,7 +203,8 @@ body {
 
 .promoted-item-image img {
     width: 100px;
-    max-height: 150px;
+    max-height: 100px;
+    object-fit: contain;
 }
 
 .promoted-item-title {
@@ -305,6 +306,7 @@ body {
 .search-item-image img  {
     width: 100px;
     max-height: 120px;
+    object-fit: contain;
 }
 
 .search-item-title {
@@ -393,6 +395,8 @@ body {
 
 .item-image img  {
     width: 300px;
+    max-height: 300px;
+    object-fit: contain;
 }
 
 .item-details {
@@ -551,6 +555,7 @@ body {
 .related-item-image img {
     max-width: 90%;
     height: 80px;
+    object-fit: contain;
 }
 
 .related-item-rating img {
