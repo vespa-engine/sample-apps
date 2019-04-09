@@ -15,7 +15,12 @@ public class SearchResults {
         String yql = "select * from sources item where ";
 
         StringJoiner where = new StringJoiner(" and ");
-        where.add("userInput(\"" + properties.getOrDefault("q", "sddocname:item") + "\")");
+        if (properties.containsKey("q")) {
+            String q = properties.get("q");
+            String userInput = "userInput(\"" + q + "\")";
+            String brand = "brand contains \"" + q + "\"";
+            where.add(String.format("( %s or %s )", userInput, brand));
+        }
         if (properties.containsKey("cat")) {
             where.add("categories contains \"" + properties.get("cat") + "\"");
         }
@@ -43,6 +48,9 @@ public class SearchResults {
         query.add("summary", "short");
         query.add("hits", properties.getOrDefault("r", "10"));
 
+        // Price is an attribute, so we should use "order by" to sort. However,
+        // since the rating filter depends upon a rank expression, we need to
+        // implement sorting in ranking to combine sorting and filtering.
         switch (properties.getOrDefault("sort", "")) {
             case "pl":
                 query.add("ranking", "sort_by_price");
