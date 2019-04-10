@@ -10,7 +10,6 @@ import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
-import com.yahoo.search.querytransform.QueryTreeUtil;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.searchchain.SearchChain;
@@ -36,7 +35,7 @@ public class UserProfileSearcher extends Searcher {
                 for (String item : getReadItems(userProfile.getField("has_read_items"))){
                     notItem.addItem(new WordItem(item, "post_id"));
                 }
-                QueryTreeUtil.andQueryItemWithRoot(query, notItem);
+                query.getModel().getQueryTree().and(notItem);
             }
         }
 
