@@ -1,0 +1,44 @@
+{{header}}
+
+<div class="item-top">
+    {{iteminfo}}
+</div>
+
+
+<div class="item-bottom">
+    <div class="related-section">
+        {{related}}
+    </div>
+    <div id="review-section" class="review-section">
+
+        <div class="title-container">
+            <div class="title-text">{{review-count}}</div> <div class="title-line"> </div>
+        </div>
+
+        <div class="review-section-count">
+            {{review-count}}
+        </div>
+        <div class="review-section-header">
+            <div class="review-order-by">
+                Order reviews by:
+                <a href="/site/item?i={{asin}}&sortreview=tn">newest</a>
+                |
+                <a href="/site/item?i={{asin}}&sortreview=to">oldest</a>
+                |
+                <a href="/site/item?i={{asin}}&sortreview=hr">highest rating</a>
+                |
+                <a href="/site/item?i={{asin}}&sortreview=lr">lowest rating</a>
+                |
+                <a href="/site/item?i={{asin}}&sortreview=mh">most helpful</a>
+                |
+                <a href="/site/item?i={{asin}}&sortreview=lh">least helpful</a>
+            </div>
+        </div>
+        {{review-distribution}}
+        {{reviews}}
+    </div>
+
+</div>
+
+{{footer}}
+

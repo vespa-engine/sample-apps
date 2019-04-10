@@ -1,0 +1,23 @@
+</div>
+
+<div class="footer">
+    <div class="links">
+        <ul>
+            <li><a href="https://docs.vespa.ai/documentation/use_cases.html">About</a></li>
+            <li><a href="https://docs.vespa.ai">Documentation</a></li>
+            <li><a href="https://vespa.ai">Vespa.ai</a></li>
+        </ul>
+    </div>
+    <div class="icon">
+        <a href="/site">
+            <img src="/site/img/vespa-logo.png" />
+        </a>
+    </div>
+</div>
+
+</div>
+
+</body>
+
+</html>
+

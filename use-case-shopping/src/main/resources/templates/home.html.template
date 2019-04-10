@@ -1,0 +1,17 @@
+{{header}}
+
+<div class="home-navigation">
+    {{home-navigation}}
+</div>
+
+<div class="home">
+
+    <div class="title-container">
+        <div class="title-text">Promoted products</div><div class="title-line"></div>
+    </div>
+
+    {{promoted-items}}
+</div>
+
+{{footer}}
+

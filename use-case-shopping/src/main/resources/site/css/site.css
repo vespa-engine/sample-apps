@@ -1,0 +1,617 @@
+/* Copyright 2019 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.*/
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+	color: #555;
+}
+
+a:hover {
+	color: #555;
+	text-decoration: underline;
+}
+
+body {
+    font-family: Tahoma, Arial, Helvetica, sans-serif;
+	background-color: #eee;
+	color: #555;
+}
+
+.content {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: minmax(1px, auto) 1fr minmax(1px, auto);
+    grid-template-columns: 1fr 1024px 1fr;
+}
+
+
+/*
+ * Header
+ */
+
+.header {
+    background-color: #fff;
+    height: 80px;
+    border-bottom: 1px solid #eee;
+    grid-column-start:2;
+
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+
+    display: grid;
+    grid-template-columns: 225px 1fr auto;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+}
+
+.header .icon img {
+    width: 100px;
+}
+
+.header .search {
+	width: 100%;
+	padding: 20px;
+	text-align: left;
+}
+
+#searchtext {
+	width: 300px;
+}
+
+#searchbutton {
+	text-transform: lowercase;
+	letter-spacing: 1px;
+    font-size: 12px;
+}
+
+.header .links a {
+	margin-right: 20px;
+}
+
+
+/*
+ * Footer
+ */
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    grid-column-start:2;
+
+    display: grid;
+    grid-template-columns: 225px 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+}
+
+.footer .links {
+	grid-column-start: 2;
+}
+
+.footer .icon {
+	grid-column-start: 3;
+}
+
+.footer a {
+	color: #ddd;
+}
+
+.footer ul {
+	list-style-type: none;
+	text-align: left;
+	width: 400px;
+}
+
+.footer li {
+	padding: 10px;
+	border-bottom: 1px solid #555;
+	letter-spacing: 2px;
+	text-transform: lowercase;
+}
+
+.footer .icon img {
+    width: 120px;
+}
+
+/*
+ * Main
+ */
+
+.main {
+    background-color: #fff;
+    grid-column-start:2;
+
+    display: grid;
+    grid-template-columns: 225px 1fr;
+    align-items: start;
+}
+
+.title-container {
+    margin: 20px 0px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    grid-gap: 20px;
+}
+
+.title-text {
+	text-align: left;
+	font-size: 28px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+.title-line {
+    background-color: #eeeeee;
+    height: 12px;
+}
+
+/*
+ * Home
+ */
+
+.home-navigation {
+	min-height: 100%;
+    border-right: 1px solid #eee;
+}
+
+.home-navigation-header-1 {
+    font-size: 1.0em;
+    font-weight: 600;
+    margin: 10px 10px 10px 10px;
+}
+
+.home-navigation-header-2 {
+    font-size: 0.9em;
+    margin-left: 5px;
+    font-weight: 600;
+    margin: 10px 10px 0px 20px;
+}
+
+.home-navigation-header-3 {
+    font-size: 0.8em;
+    margin-left: 30px;
+    margin: 0px 10px 5px 30px;
+}
+
+.home {
+	min-height: 100%;
+	padding: 0 20px;
+}
+
+.promoted-items {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 20px;
+}
+
+.promoted-item {
+    border-bottom: 1px solid #eee;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    padding: 10px;
+}
+
+.promoted-item-image img {
+    width: 100px;
+    max-height: 100px;
+    object-fit: contain;
+}
+
+.promoted-item-title {
+    font-size: 1.0em;
+    font-weight: 500;
+}
+
+.promoted-item-rating {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+}
+
+.promoted-item-rating img {
+    width: 100px;
+}
+
+.promoted-item-rating-count {
+}
+
+.promoted-item-price {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+/*
+ * Search
+ */
+
+.search-grouping {
+	min-height: 100%;
+    border-right: 1px solid #eee;
+    padding: 0;
+}
+
+.search-groups-header {
+    font-size: 1.0em;
+    font-weight: 600;
+    margin: 10px;
+}
+
+.search-groups-list {
+	margin: 0 10px 15px 20px;
+}
+
+.search-groups-item {
+	font-size: 0.8em;
+    margin-bottom: 3px;
+}
+
+.search-groups-list img {
+    width: 100px;
+}
+
+.main .search {
+    padding: 0 20px;
+    min-height: 100%;
+}
+
+.search h2 {
+	text-align: left;
+	font-size: 28px;
+}
+
+.search-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
+.search-results-count {
+	padding: 10px 0 10px 0;
+    font-weight: 600;
+    grid-column-start: 1;
+    grid-row-start: 2;
+}
+
+.search-results-per-page {
+    grid-column-start: 1;
+}
+
+.search-order-by {
+    grid-column-start: 2;
+}
+
+.search-item {
+	display: grid;
+	grid-template-columns: 100px 1fr;
+	grid-template-rows: auto auto auto 1fr;
+	border-bottom: 1px solid #ddd;
+    grid-gap: 5px 20px;
+    padding: 10px;
+}
+
+.search-item-image {
+    grid-column-start:1;
+    grid-row-start:1;
+    grid-row-end:5;
+}
+
+.search-item-image img  {
+    width: 100px;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+.search-item-title {
+    grid-column-start:2;
+    grid-row-start:1;
+    font-size: 1.1em;
+}
+
+.search-item-rating {
+    grid-column-start:2;
+    grid-row-start:3;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-gap: 10px;
+}
+
+.search-item-rating img {
+    width: 100px;
+}
+
+.item-rating span {
+}
+
+.search-item-price {
+    grid-column-start:2;
+    grid-row-start:2;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+
+.search-results-pagination {
+    margin: 20px 0px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 20px;
+}
+
+.search-results-previous {
+    grid-column-start: 1;
+    text-align: right;
+}
+
+.search-results-next {
+    grid-column-start: 2;
+    text-align: left;
+}
+
+/*
+ * Item
+ */
+
+.item-top {
+    margin-top: 20px;
+	grid-column-start: 1;
+	grid-column-end: 3;
+}
+
+.item-bottom {
+	grid-column-start: 1;
+	grid-column-end: 3;
+    display: grid;
+    grid-template-columns: 59% auto;
+    grid-gap: 30px;
+}
+
+.item {
+    margin: 0px 20px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto;
+    grid-gap: 0 20px;
+    padding: 10px;
+}
+
+.item-categories {
+    font-size: 0.9em;
+    grid-column-start: 2;
+}
+
+.item-image {
+    grid-column-start:1;
+    grid-row-start:1;
+    grid-row-end:6;
+}
+
+.item-image img  {
+    width: 300px;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.item-details {
+    display: grid;
+    grid-gap: 10px 0;
+    grid-column-start: 2;
+    grid-row-start: 2;
+}
+
+.item-title {
+    grid-row-start:1;
+    font-size: 1.8em;
+}
+
+.item-description {
+    grid-row-start:4;
+    font-size: 1.1em;
+    padding-top: 30px;
+}
+
+.item-price {
+    grid-row-start:3;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.item-rating {
+    grid-row-start:2;
+    font-size: 1.0em;
+    display: grid;
+    grid-template-columns: 100px auto;
+    grid-template-rows: auto;
+    grid-gap: 10px;
+}
+
+.item-rating img {
+    width: 100px;
+}
+
+.item-rating span {
+}
+
+/*
+ * Reviews
+ */
+
+.review-section {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    margin-top: 20px;
+}
+
+.review-section .title-text {
+    font-size: 1.7em;
+    text-align: center;
+    padding-left: 20px;
+}
+
+
+.review-section-count {
+	display: none;
+    font-size: 1.8em;
+    text-align: center;
+    padding: 10px;
+}
+
+.review-section-header {
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.reviews {
+    margin: 20px 20px;
+}
+
+.review {
+    border-bottom: 1px solid #aaa;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 100px auto;
+    grid-gap: 10px 20px;
+}
+
+.review-name {
+    font-size: 1.0em;
+    font-style: italic;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+}
+
+.review-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    grid-column-start:2;
+    grid-column-end:3;
+    grid-row-start:1;
+}
+
+.review-stars {
+    grid-column-start:1;
+    grid-column-end:1;
+    grid-row-start:1;
+}
+
+.review-stars img {
+    width: 100px;
+}
+
+.review-text {
+    font-size: 1.0em;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 3;
+}
+
+.review-helpful {
+    font-size: 0.9em;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 4;
+}
+
+/*
+ * Related products
+ */
+
+.related-section {
+    margin: 20px 20px 0 0;
+    grid-column-start: 2;
+    grid-row-start: 1;
+}
+
+.related-section .title-text {
+    font-size: 1.7em;
+    text-align: center;
+    padding-left: 20px;
+}
+
+.related-items {
+    padding: 10px;
+}
+
+.related-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-gap: 10px;
+    border-bottom: 1px solid #ddd;
+    padding: 20px;
+}
+
+.related-item-image {
+    grid-column-start: 1;
+}
+
+.related-item-image img {
+    max-width: 90%;
+    height: 80px;
+    object-fit: contain;
+}
+
+.related-item-rating img {
+    width: 100px;
+}
+
+.related-item-price {
+    font-weight: 600;
+}
+
+
+/*
+ * Review distribution
+ */
+
+
+.review-distribution {
+    margin: 20px;
+}
+
+.review-distribution-star {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.review-distribution-star-desc {
+    font-size: 0.8em;
+    grid-column-start: 1;
+    text-align: right;
+}
+
+.review-distribution-star-percent {
+    font-size: 0.8em;
+    grid-column-start: 3;
+    text-align: left;
+}
+
+.review-distribution-star-bar {
+    grid-column-start: 2;
+    height: 16px;
+    grid-row-start: 1;
+    background-image: linear-gradient(#3f9dd8, #6a7ea7);
+    z-index: 1;
+}
+
+.review-distribution-star-bar-back {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    border: 1px solid #bbb;
+    background-image: linear-gradient(#bbb , #eee);
+    height: 16px;
+    z-index: 0;
+}
+
+
+
+
+
