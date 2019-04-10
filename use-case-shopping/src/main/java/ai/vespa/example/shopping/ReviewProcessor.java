@@ -43,7 +43,6 @@ public class ReviewProcessor extends DocumentProcessor {
                     updateItemRating(document);
                 }
             }
-
         }
         return Progress.DONE;
     }
@@ -62,4 +61,12 @@ public class ReviewProcessor extends DocumentProcessor {
             }
         }
     }
+
+    @Override
+    public void deconstruct() {
+        super.deconstruct();
+        session.destroy();
+        access.shutdown();
+    }
+
 }
