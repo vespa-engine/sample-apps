@@ -32,7 +32,7 @@ search item {
             indexing: summary | attribute
         }
 
-        field categories_for_search type string {
+        field categories_text type string {
             indexing: index
         }
 
@@ -66,7 +66,7 @@ search item {
     }
 
     fieldset default {
-        fields: title, description, categories_for_search
+        fields: title, description, categories_text
     }
 
     rank-profile item inherits default {
@@ -76,20 +76,20 @@ search item {
         }
 
         function inline default_ranking() {
-            expression: 1*nativeRank(categories) + 2*nativeRank(categories_for_search) + 3*nativeRank(title) + 1*nativeRank(description) + 1*nativeRank(brand) + 1*if(attribute(rating_count) > 5, average_rating / 5, 0)
+            expression: 1*nativeRank(categories) + 2*nativeRank(categories_text) + 3*nativeRank(title) + 1*nativeRank(description) + 1*nativeRank(brand) + 1*if(attribute(rating_count) > 5, average_rating / 5, 0)
         }
 
-        function inline rating_filter() {
-            expression: if (query(use_rating_filter)==1, if(average_rating >= (query(rating)-0.5) && average_rating < (query(rating)+0.5), 1, 0), 1)
+        function rating_filter(val) {
+            expression: if (query(use_rating_filter)==1, if(average_rating >= (query(rating)-0.5) && average_rating < (query(rating)+0.5), val, -2000000000.0), val)
         }
 
         function apply_ranking_filters(val) {
-            expression: val * rating_filter
+            expression: rating_filter(val)
         }
 
         first-phase {
             expression: apply_ranking_filters(default_ranking)
-            rank-score-drop-limit: 0.0
+            rank-score-drop-limit: -1000000000.0
         }
 
         summary-features {
@@ -106,13 +106,13 @@ search item {
 
     rank-profile sort_by_price inherits item {
         function inline default_ranking() {
-            expression: 1000000000 + (query(sort_direction) * attribute(price))
+            expression: query(sort_direction) * attribute(price)
         }
     }
 
     rank-profile sort_by_rating inherits item {
         function inline default_ranking() {
-            expression: 1000000000 + (query(sort_direction) * average_rating)  # because rank-score-drop-limit is 0
+            expression: query(sort_direction) * average_rating
         }
     }
 

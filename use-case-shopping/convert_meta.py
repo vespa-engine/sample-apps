@@ -21,12 +21,23 @@ def process(data):
     if "brand" in data:
         fields["brand"] = data["brand"]
 
+    # In the data set, categories are of the form
+    #   [ ["Sports & Outdoors", "Accessories", "Sport Watches"] ]
+    # For filtering on categories, these should be matched exactly, so we transform to
+    #   [ "Sports & Outdoors", "Sports & Outdoors|Accessories", "Sports & Outdoors|Accessories|Sport Watches"]
+    # because there are multiple subcategories with the same name, and
+    # we want to maintain the category hierarchy for grouping.
+    # For free text search however, we want to match on stemmed terms.
+    # We have another field for this, and reverse the categories for better relevance:
+    #   "Sport Watches Accessories Sports & Outdoors"
     if "categories" in data:
         fields["categories"] = []
+        fields["categories_text"] = ""
+
         for category in data["categories"]:
             for level in range(len(category)):
                 fields["categories"].append("|".join(category[0:level+1]))
-        fields["categories_for_search"] = " ".join(data["categories"][0][::-1])  # reverse direction
+            fields["categories_text"] += " ".join(category[::-1])
 
     if "related" in data:
         related = []
