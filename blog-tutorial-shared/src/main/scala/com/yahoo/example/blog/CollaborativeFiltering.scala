@@ -129,7 +129,7 @@ object CollaborativeFiltering {
 
     for ( i <- latentVector.indices ){
 
-      latentVectorMap += (("user_item_cf:" + i.toString, latentVector(i)))
+      latentVectorMap += (("d0:0,d1:" + i.toString, latentVector(i)))
 
     }
 
