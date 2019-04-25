@@ -3,7 +3,6 @@ package com.yahoo.example;
 
 import com.yahoo.data.access.Inspectable;
 import com.yahoo.data.access.Inspector;
-import com.yahoo.prelude.query.AndItem;
 import com.yahoo.prelude.query.IntItem;
 import com.yahoo.prelude.query.NotItem;
 import com.yahoo.prelude.query.WordItem;
@@ -11,7 +10,6 @@ import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
-import com.yahoo.search.query.QueryTree;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.searchchain.SearchChain;
@@ -32,19 +30,12 @@ public class UserProfileSearcher extends Searcher {
             if (userProfile != null) {
                 addUserProfileTensorToQuery(query, userProfile);
 
-                // Search for items that have the CF vector but are NOT already read
                 NotItem notItem = new NotItem();
                 notItem.addItem(new IntItem(1, "has_user_item_cf"));
                 for (String item : getReadItems(userProfile.getField("has_read_items"))){
                     notItem.addItem(new WordItem(item, "post_id"));
                 }
-
-                // Add query items to query tree using AND with previous query
-                QueryTree tree = query.getModel().getQueryTree();
-                AndItem root = new AndItem();
-                root.addItem(tree.getRoot());
-                root.addItem(notItem);
-                tree.setRoot(root);
+                query.getModel().getQueryTree().and(notItem);
             }
         }
 
