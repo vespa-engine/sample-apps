@@ -1,7 +1,7 @@
 # Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 import json
 import argparse
-
+import unicodedata
 
 class KaggleRawDataParser:
 
@@ -24,6 +24,12 @@ class KaggleRawDataParser:
             self.calculate_popularity()
         self.parse()
 
+    def remove_control_characters(self,s):
+        if s != None:
+          return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+        else:
+          return s
+
     def calculate_popularity(self):
         unparsed_file = open(self.raw_data_file, "r")
 
@@ -38,6 +44,13 @@ class KaggleRawDataParser:
 
         unparsed_file.close()
 
+    def remove_empty_tags(self,inputTags):
+      tags = []
+      for t in inputTags: 
+          if t != None and len(t) > 0:
+            tags.append(self.remove_control_characters(t))
+      return tags
+
     def parse(self):
         unparsed_file = open(self.raw_data_file, "r")
 
@@ -51,13 +64,13 @@ class KaggleRawDataParser:
                     "post_id": data["post_id"],
                     "author": data["author"],
                     "language": data["language"],
-                    "categories": data["categories"],
-                    "title": data["title"],
+                    "categories": self.remove_empty_tags(data["categories"]),
+                    "title": self.remove_control_characters(data["title"]),
                     "blog": data["blog"],
                     "date_gmt": data["date_gmt"],
                     "url": data["url"],
-                    "content": data["content"],
-                    "tags": data["tags"],
+                    "content": self.remove_control_characters(data["content"]),
+                    "tags": self.remove_empty_tags(data["tags"]),
                     "date": int(data["date_gmt"][0:4] + data["date_gmt"][5:7] + data["date_gmt"][8:10])
                 }
             }
