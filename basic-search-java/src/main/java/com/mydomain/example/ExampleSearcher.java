@@ -19,33 +19,18 @@ public class ExampleSearcher extends Searcher {
 
     @Override
     public Result search(Query query, Execution execution) {
-        // modify the query
-        addItem(new WordItem("hello", "title"), query.getModel().getQueryTree());
+        // modify the query (add a term if it's empty)
+        if (query.getModel().getQueryTree().getRoot() instanceof NullItem)
+            query.getModel().getQueryTree().and(new WordItem("hello", "title"));
 
-        // pass it down the chain to get a resut
+        // pass it down the chain to get a result
         Result result = execution.search(query);
 
-        // process the result
+        // process the result (add a synthetic hit)
         result.hits().add(new Hit("test:hit", 1.0));
 
         // return the result up the chain
         return result;
-    }
-
-    private void addItem(Item item, QueryTree queryTree) {
-        if (queryTree.getRoot() instanceof NullItem) { // No existing query
-            queryTree.setRoot(item);
-        }
-        else if (queryTree.getRoot() instanceof WordItem) { // Existing query is a single word
-            AndItem and = new AndItem();
-            and.addItem(queryTree.getRoot());
-            and.addItem(item);
-            queryTree.setRoot(and);
-        }
-        else if (queryTree.getRoot() instanceof AndItem) { // Existing query is already an and
-            ((AndItem) queryTree.getRoot()).addItem(item);
-        }
-        // Other cases (such as NotItem not handled here)
     }
 
 }

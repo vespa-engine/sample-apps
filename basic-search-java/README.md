@@ -1,7 +1,7 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - Basic stateless Vespa application
 
-Extends the basic-search sample applicationn with a Searcher component in Java
+Extends the basic-search sample application with a Searcher component in Java
 which does query and result processing.
 
 Please refer to
