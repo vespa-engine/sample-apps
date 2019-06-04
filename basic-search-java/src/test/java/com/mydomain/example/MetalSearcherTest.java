@@ -28,6 +28,8 @@ import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,8 +63,13 @@ public class MetalSearcherTest {
 
 
     @Test
-    public void testAddedOrTerm() {
-        Chain<Searcher> myChain = new Chain<>(new MinimalQueryInserter(), new MetalSearcher());  // added to chain in this order
+    public void testAddedOrTerm1() {
+
+        MetalNamesConfig.Builder builder = new MetalNamesConfig.Builder();
+        builder.metalWords(Arrays.asList("hetfield", "metallica", "pantera"));
+        MetalNamesConfig config = new MetalNamesConfig(builder);
+
+        Chain<Searcher> myChain = new Chain<>(new MinimalQueryInserter(), new MetalSearcher(config));  // added to chain in this order
         Execution.Context context = Execution.Context.createContextStub();
         Execution execution = new Execution(myChain, context);
 
@@ -71,6 +78,7 @@ public class MetalSearcherTest {
 
         assertAddedOrTerm(metalQuery.getModel().getQueryTree().getRoot());
     }
+
 
     @Test
     public void testAddedOrTerm2() {
@@ -85,6 +93,7 @@ public class MetalSearcherTest {
             assertAddedOrTerm(metalQuery.getModel().getQueryTree().getRoot());
         }
     }
+
 
     private void assertAddedOrTerm(Item root) {
         // Assert that an OR term is added to the root, with album:metal as one of the or-terms:

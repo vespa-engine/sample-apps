@@ -1,6 +1,7 @@
 // Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package com.mydomain.example;
 
+import com.google.inject.Inject;
 import com.yahoo.prelude.query.IndexedItem;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.OrItem;
@@ -26,6 +27,13 @@ import java.util.List;
 @After("MinimalQueryInserter")
 public class MetalSearcher extends Searcher {
 
+    private final List<String> metalWords;
+
+    @Inject
+    public MetalSearcher(MetalNamesConfig config) {
+        metalWords = config.metalWords();
+    }
+
     @Override
     public Result search(Query query, Execution execution) {
         Model model = query.getModel();
@@ -44,9 +52,8 @@ public class MetalSearcher extends Searcher {
     }
 
     private boolean isMetalQuery(Item items) {
-        List<String> names = Arrays.asList("hetfield", "metallica", "pantera");
         for (IndexedItem posItem : QueryTree.getPositiveTerms(items) ) {
-            return names.contains(posItem.getIndexedString());
+            return metalWords.contains(posItem.getIndexedString());
         }
         return false;
     }

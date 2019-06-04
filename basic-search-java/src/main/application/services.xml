@@ -6,7 +6,15 @@
         <document-api/>
         <search>
             <chain id="mychain" inherits="vespa">
-                <searcher id="com.mydomain.example.MetalSearcher" bundle="basic-search-java"/>
+                <searcher id="com.mydomain.example.MetalSearcher" bundle="basic-search-java">
+                    <config name="com.mydomain.example.metal-names">
+                        <metalWords>
+                            <item>hetfield</item>
+                            <item>metallica</item>
+                            <item>pantera</item>
+                        </metalWords>
+                    </config>
+                </searcher>
             </chain>
         </search>
         <nodes>
