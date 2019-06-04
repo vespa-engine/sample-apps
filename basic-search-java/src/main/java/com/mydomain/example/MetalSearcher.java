@@ -11,6 +11,7 @@ import com.yahoo.search.Searcher;
 import com.yahoo.search.query.Model;
 import com.yahoo.search.query.QueryTree;
 import com.yahoo.search.searchchain.Execution;
+import com.yahoo.yolean.chain.After;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
  *     <li>Use of tracing</li>
  * </ol>
  */
+@After("MinimalQueryInserter")
 public class MetalSearcher extends Searcher {
 
     @Override

@@ -5,8 +5,8 @@
     <container id="default" version="1.0">
         <document-api/>
         <search>
-            <chain id="default">
-                <searcher id="com.mydomain.example.ExampleSearcher" bundle="basic-search-java"/>
+            <chain id="mychain" inherits="vespa">
+                <searcher id="com.mydomain.example.MetalSearcher" bundle="basic-search-java"/>
             </chain>
         </search>
         <nodes>
