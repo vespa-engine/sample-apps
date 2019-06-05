@@ -95,6 +95,11 @@ public class MetalSearcherTest {
     }
 
 
+    // ToDo: From the older versions of this app, a test to demonstrate how to add hits
+    // process the result (add a synthetic hit)
+    // result.hits().add(new Hit("test:hit", 1.0));
+
+
     private void assertAddedOrTerm(Item root) {
         // Assert that an OR term is added to the root, with album:metal as one of the or-terms:
         assertTrue(root instanceof OrItem);
