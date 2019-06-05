@@ -97,7 +97,6 @@ public class MetalSearcherTest {
     }
 
 
-
     @Test
     public void testWithMockBackendProducingHits() {
 
@@ -127,7 +126,7 @@ public class MetalSearcherTest {
     // process the result (add a synthetic hit)
     // result.hits().add(new Hit("test:hit", 1.0));
     //    public void testSearcherOnly() {
-    //        Result result = newExecution(new ExampleSearcher()).search(new Query());
+    //        Result result = newExecution(new MetalSearcher()).search(new Query());
     //        assertEquals("Artificial hit is added", "test:hit", result.hits().get(0).getId().toString());
     //    }
 

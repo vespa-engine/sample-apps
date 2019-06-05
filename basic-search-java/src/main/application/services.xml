@@ -16,9 +16,6 @@
                     </config>
                 </searcher>
             </chain>
-            <chain id="default">
-                <searcher id="com.mydomain.example.ExampleSearcher" bundle="basic-search-java" />
-            </chain>
         </search>
         <nodes>
             <node hostalias="node1"/>
