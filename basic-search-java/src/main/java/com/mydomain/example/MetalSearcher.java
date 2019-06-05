@@ -9,7 +9,6 @@ import com.yahoo.prelude.query.WordItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
-import com.yahoo.search.query.Model;
 import com.yahoo.search.query.QueryTree;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.yolean.chain.After;
@@ -25,6 +24,7 @@ import java.util.List;
  *     <li>Use of tracing</li>
  * </ol>
  */
+@After("MinimalQueryInserter")
 public class MetalSearcher extends Searcher {
 
     private final List<String> metalWords;
@@ -40,18 +40,15 @@ public class MetalSearcher extends Searcher {
 
     @Override
     public Result search(Query query, Execution execution) {
-        Model model = query.getModel();
-        QueryTree tree = model.getQueryTree();
-        if (!tree.isEmpty()) {
-            Item rootItem = tree.getRoot();
-            if (isMetalQuery(rootItem)) {
-                OrItem orItem = new OrItem();
-                orItem.addItem(rootItem);
-                orItem.addItem(new WordItem("metal", "album"));
-                tree.setRoot(orItem);
-            }
+        QueryTree tree = query.getModel().getQueryTree();
+        if (isMetalQuery(tree)) {
+            OrItem orItem = new OrItem();
+            orItem.addItem(tree.getRoot());
+            orItem.addItem(new WordItem("metal", "album"));
+            tree.setRoot(orItem);
+            query.trace("Metal added", true, 2);
         }
-        query.trace("Metal added", true, 2);
+
         Result result = execution.search(query);
 
         // result.hits().add(new Hit("test:hit", 1.0)); ToDo: expand example with a Searcher that adds hits
@@ -62,6 +59,18 @@ public class MetalSearcher extends Searcher {
     private boolean isMetalQuery(Item items) {
         for (IndexedItem posItem : QueryTree.getPositiveTerms(items) ) {
             return metalWords.contains(posItem.getIndexedString());
+        }
+        return false;
+    }
+
+    private boolean isMetalQuery(QueryTree tree) {
+        if (tree.isEmpty()) {
+            return false;
+        }
+        for (IndexedItem posItem : QueryTree.getPositiveTerms(tree.getRoot()) ) {
+            if (metalWords.contains(posItem.getIndexedString())) {
+                return true;
+            }
         }
         return false;
     }
