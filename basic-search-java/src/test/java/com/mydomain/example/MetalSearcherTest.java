@@ -6,9 +6,6 @@ import com.yahoo.application.Networking;
 import com.yahoo.application.container.Search;
 import com.yahoo.component.ComponentSpecification;
 import com.yahoo.component.chain.Chain;
-import com.yahoo.config.model.ConfigModelRepo;
-import com.yahoo.container.Container;
-import com.yahoo.jdisc.handler.RequestHandler;
 import com.yahoo.prelude.query.CompositeItem;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.OrItem;
@@ -16,36 +13,33 @@ import com.yahoo.prelude.query.WordItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
-import com.yahoo.search.handler.SearchHandler;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
-
-import com.yahoo.search.searchchain.SearchChain;
-import com.yahoo.search.searchchain.SearchChainRegistry;
 import com.yahoo.search.searchchain.testutil.DocumentSourceSearcher;
 import com.yahoo.search.yql.MinimalQueryInserter;
-import com.yahoo.yolean.chain.ChainBuilder;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
-import static com.yahoo.component.ComponentSpecification.fromString;
 import static java.net.URLEncoder.encode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+
 /**
- * Unit test - demonstrates:
+ * Unit tests - demonstrates:
  * <ol>
  *     <li>Build queries from YQL</li>
  *     <li>How to get the query tree, and evaluate it</li>
  *     <li>Use of tracing</li>
+ *     <li>using a mock backend for hits</li>
+ *     <li>Use of Application for setting up a full environment (chains) / how to build chains</li>
+ *     <li>Simple use of config injection</li>
  * </ol>
  */
 public class MetalSearcherTest {
