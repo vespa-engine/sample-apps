@@ -17,10 +17,12 @@ import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.handler.SearchHandler;
+import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 
 import com.yahoo.search.searchchain.SearchChain;
 import com.yahoo.search.searchchain.SearchChainRegistry;
+import com.yahoo.search.searchchain.testutil.DocumentSourceSearcher;
 import com.yahoo.search.yql.MinimalQueryInserter;
 import com.yahoo.yolean.chain.ChainBuilder;
 import org.junit.Before;
@@ -48,7 +50,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class MetalSearcherTest {
 
-    Query metalQuery;
+    private Query metalQuery;
 
     /**
      *
@@ -87,7 +89,7 @@ public class MetalSearcherTest {
                 FileSystems.getDefault().getPath("src/main/application"),
                 Networking.disable)) {
             Search search = app.getJDisc("default").search();
-            Result result = search.process(ComponentSpecification.fromString("mychain"), metalQuery);
+            Result result = search.process(ComponentSpecification.fromString("metalchain"), metalQuery);
             System.out.println(result.getContext(false).getTrace());
 
             assertAddedOrTerm(metalQuery.getModel().getQueryTree().getRoot());
@@ -95,9 +97,39 @@ public class MetalSearcherTest {
     }
 
 
-    // ToDo: From the older versions of this app, a test to demonstrate how to add hits
+
+    @Test
+    public void testWithMockBackendProducingHits() {
+
+        DocumentSourceSearcher docSource = new DocumentSourceSearcher();
+        Query testQuery = new Query();
+        testQuery.setTraceLevel(6);
+        testQuery.getModel().getQueryTree().setRoot(new WordItem("drum","title"));
+
+        Result mockResult = new Result(testQuery);
+        mockResult.hits().add(new Hit("hit:1", 0.9));
+        mockResult.hits().add(new Hit("hit:2", 0.8));
+        docSource.addResult(testQuery, mockResult);
+
+        Chain<Searcher> myChain = new Chain<>(new MetalSearcher(), docSource);  // no config to MetalSearcher
+        Execution.Context context = Execution.Context.createContextStub();
+        Execution execution = new Execution(myChain, context);
+
+        Result result = execution.search(testQuery);
+        System.out.println(result.getContext(false).getTrace());
+
+        assertEquals("Document source hits are returned",2, result.hits().size());
+    }
+
+
+
+    // ToDo: From the older versions of this app, a feature and test to demonstrate how to add hits
     // process the result (add a synthetic hit)
     // result.hits().add(new Hit("test:hit", 1.0));
+    //    public void testSearcherOnly() {
+    //        Result result = newExecution(new ExampleSearcher()).search(new Query());
+    //        assertEquals("Artificial hit is added", "test:hit", result.hits().get(0).getId().toString());
+    //    }
 
 
     private void assertAddedOrTerm(Item root) {

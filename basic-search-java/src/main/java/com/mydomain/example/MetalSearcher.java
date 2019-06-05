@@ -14,6 +14,7 @@ import com.yahoo.search.query.QueryTree;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.yolean.chain.After;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +25,6 @@ import java.util.List;
  *     <li>Use of tracing</li>
  * </ol>
  */
-@After("MinimalQueryInserter")
 public class MetalSearcher extends Searcher {
 
     private final List<String> metalWords;
@@ -32,6 +32,10 @@ public class MetalSearcher extends Searcher {
     @Inject
     public MetalSearcher(MetalNamesConfig config) {
         metalWords = config.metalWords();
+    }
+
+    public MetalSearcher() {
+        metalWords = new ArrayList<>();
     }
 
     @Override
@@ -48,7 +52,11 @@ public class MetalSearcher extends Searcher {
             }
         }
         query.trace("Metal added", true, 2);
-        return execution.search(query);
+        Result result = execution.search(query);
+
+        // result.hits().add(new Hit("test:hit", 1.0)); ToDo: expand example with a Searcher that adds hits
+
+        return result;
     }
 
     private boolean isMetalQuery(Item items) {

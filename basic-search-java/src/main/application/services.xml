@@ -5,8 +5,8 @@
     <container id="default" version="1.0">
         <document-api/>
         <search>
-            <chain id="mychain" inherits="vespa">
-                <searcher id="com.mydomain.example.MetalSearcher" bundle="basic-search-java">
+            <chain id="metalchain" inherits="vespa">
+                <searcher id="com.mydomain.example.MetalSearcher" bundle="basic-search-java" after="MinimalQueryInserter">
                     <config name="com.mydomain.example.metal-names">
                         <metalWords>
                             <item>hetfield</item>
@@ -15,6 +15,9 @@
                         </metalWords>
                     </config>
                 </searcher>
+            </chain>
+            <chain id="default">
+                <searcher id="com.mydomain.example.ExampleSearcher" bundle="basic-search-java" />
             </chain>
         </search>
         <nodes>
