@@ -1,6 +1,7 @@
 // Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package com.yahoo.example;
 
+import com.yahoo.component.chain.dependencies.After;
 import com.yahoo.data.access.Inspectable;
 import com.yahoo.data.access.Inspector;
 import com.yahoo.prelude.query.AndItem;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@After("ExternalYql")
 public class UserProfileSearcher extends Searcher {
 
     public Result search(Query query, Execution execution) {
