@@ -32,8 +32,8 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-a
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Test the application:**
-<pre data-test="exec" data-test-assert-contains="test:hit">
-$ curl -s http://localhost:8080/search/?query=title:foo
+<pre data-test="exec" data-test-assert-contains="coverage&quot;:100">
+$ curl -s 'http://localhost:8080/search/?yql=select+*+from+sources+*+where+artist+contains+%22kygo%22;'
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">
