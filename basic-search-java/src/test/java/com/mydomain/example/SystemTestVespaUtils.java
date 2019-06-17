@@ -15,7 +15,7 @@ public class SystemTestVespaUtils {
         if (false) {   // something here when running in pipeline
             return "";
         }
-        return "http://container.publiccd.basic-search-nojava.kraunetest.aws-us-east-1c.dev.public-cd.vespa.oath.cloud:443/";
+        return "http://endpoint:10000/";
     }
 
     public static void removeAllDocuments(String path)  throws Exception {
