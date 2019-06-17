@@ -2,7 +2,9 @@ package com.mydomain.example;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -27,23 +29,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *     <li>Visit the test instance</li>
  * </ol>
  */
-public class SystemTestExample {
+
+@Tag("SystemTest")
+public class ExampleSystemTest {
 
     private String getTestEndpoint() {
         if (false) {   // something here when running in pipeline
             return "";
         }
-        return "http://endpoint:10000/";
+        return "http://container.publiccd.basic-search-nojava.kraunetest.aws-us-east-1c.dev.public-cd.vespa.oath.cloud:443/";
     }
 
 
-    //@BeforeEach
+    @BeforeEach
     public void init() throws Exception {
         removeAllDocuments("document/v1/music/music/docid/");
     }
 
 
-    //@Test  // Another annotation here so it will be run in pipeline
+    @Test  // Another annotation here so it will be run in pipeline
     public void simpleGETSearchTest() throws Exception {
 
         assertEquals(0, getSearchResults(searchDocumentsGET(getTestEndpoint()
@@ -69,7 +73,7 @@ public class SystemTestExample {
     }
 
 
-    //@Test
+    @Test
     public void simpleVisitTest() throws Exception {
         postDocument(getTestEndpoint() + "document/v1/music/music/docid/1", "/music-data-1.json");
         postDocument(getTestEndpoint() + "document/v1/music/music/docid/2", "/music-data-2.json");

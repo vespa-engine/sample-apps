@@ -13,9 +13,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
-        <vespa_version>7.57.40</vespa_version>
-        <junit_version>4.11</junit_version>
+        <vespa_version>7.60.39</vespa_version>
+        <junit_version>4.12</junit_version>
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
+        <test.categories>!SystemTest</test.categories>
     </properties>
 
     <dependencies>
@@ -38,8 +39,26 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
@@ -65,13 +84,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>2.22.0</version>
                 <configuration>
                     <systemPropertyVariables>
                         <isMavenSurefirePlugin>true</isMavenSurefirePlugin>
                     </systemPropertyVariables>
                     <redirectTestOutputToFile>${test.hide}</redirectTestOutputToFile>
+                    <groups>${test.categories}</groups>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.0</version>
             </plugin>
             <plugin>
                 <groupId>com.yahoo.vespa</groupId>
