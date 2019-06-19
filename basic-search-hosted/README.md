@@ -29,7 +29,21 @@ mvn clean package vespa:deploy
 </pre>
 Example System, Staging and Production tests can then be run from the IDEA.
 
-
+## Run those JUnit tests against local docker container
+Assuming the below is done, put
+<pre>
+{
+  "application": "this:is:ignored",
+  "zone": "dev.local",
+  "system": "publiccd",
+  "zoneEndpoints": {
+    "dev.local": {
+      "container": "http://localhost:8080/"
+    }
+  }
+}
+</pre>
+in some file `/path/to/test/config`, and run JUnit tests with `-Dvespa.test.config=/path/to/test/config`.
 
 ## Local development
 
