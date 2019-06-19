@@ -30,6 +30,7 @@ mvn clean package vespa:deploy
 Example System, Staging and Production tests can then be run from the IDEA.
 
 ## Run those JUnit tests against local docker container
+<em>This only works with self-hosted `services.xml` and `hosts.xml`.</em>  
 Assuming the below is done, put
 <pre>
 {
