@@ -1,5 +1,37 @@
-<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa sample applications - Basic stateless Vespa application
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+# Hosted Vespa sample applications - Basic stateless Vespa application
+
+## Sign up in hosted Vespa console, and create an application with the wanted name
+
+## Configure pom.xml for your hosted Vespa application
+
+* Set the `tenant` and `application` properties in `pom.xml`.
+
+## Generate and upload key pair
+Install `openssl` and run
+<pre>
+openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem
+openssl ec -pubout -in private_key.pem -out public_key.pem
+</pre>
+to generate a private and public key. Upload the public key to the hosted Vespa API
+and set the path to the private key in the `pom.xml` properties.
+
+## Set up a CI job which deploys your application
+Command to build and submit application to the hosted Vespa API is
+<pre>
+mvn -P fat-test-application -DauthorEmail=<span style="background:yellow">user@domain</span> clean package vespa:submit 
+</pre>
+
+## Deploy to dev and test against it
+Command to build and deploy application to the hosted development environment is
+<pre>
+mvn clean package vespa:deploy 
+</pre>
+Example System, Staging and Production tests can then be run from the IDEA.
+
+
+
+## Local development
 
 Extends the basic-search sample applicationn with a Searcher component in Java
 which does query and result processing.
