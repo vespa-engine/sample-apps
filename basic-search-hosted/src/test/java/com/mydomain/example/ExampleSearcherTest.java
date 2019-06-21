@@ -8,9 +8,9 @@ import com.yahoo.search.Searcher;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.searchchain.testutil.DocumentSourceSearcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test of the example searcher
@@ -20,10 +20,10 @@ public class ExampleSearcherTest {
     @Test
     public void testSearcherOnly() {
         Result result = newExecution(new ExampleSearcher()).search(new Query());
-        assertEquals("Query is rewritten",
-                     "title:hello", result.getQuery().getModel().getQueryTree().toString());
-        assertEquals("Artificial hit is added",
-                     "test:hit", result.hits().get(0).getId().toString());
+        assertEquals("title:hello", result.getQuery().getModel().getQueryTree().toString(),
+                     "Query is rewritten");
+        assertEquals("test:hit", result.hits().get(0).getId().toString(),
+                     "Artificial hit is added");
     }
 
     @Test
@@ -37,10 +37,10 @@ public class ExampleSearcherTest {
         source.addResult(mockQuery, mockResult);
 
         Result result = newExecution(new ExampleSearcher(), source).search(new Query());
-        assertEquals("Query is rewritten",
-                     "title:hello", result.getQuery().getModel().getQueryTree().toString());
-        assertEquals("Artificial hit and document source hits are returned",
-                     4, result.hits().size());
+        assertEquals("title:hello", result.getQuery().getModel().getQueryTree().toString(),
+                     "Query is rewritten");
+        assertEquals(4, result.hits().size(),
+                     "Artificial hit and document source hits are returned");
     }
 
     private static Execution newExecution(Searcher... searchers) {

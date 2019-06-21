@@ -3,12 +3,9 @@ package com.mydomain.example;
 
 import com.yahoo.application.Application;
 import com.yahoo.application.Networking;
-import org.junit.Test;
 
 import java.nio.file.FileSystems;
 import java.util.Objects;
-
-import static org.junit.Assume.assumeTrue;
 
 /**
  * This uses the Application class to set up a container instance of this application

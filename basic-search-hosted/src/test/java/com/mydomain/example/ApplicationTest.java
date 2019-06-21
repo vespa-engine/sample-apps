@@ -7,11 +7,11 @@ import com.yahoo.application.container.Search;
 import com.yahoo.component.ComponentSpecification;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.FileSystems;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test of the container aspect of this application.
@@ -25,8 +25,8 @@ public class ApplicationTest {
                 Networking.disable)) {
             Search search = app.getJDisc("jdisc").search();
             Result result = search.process(ComponentSpecification.fromString("default"), new Query());
-            assertEquals("Artificial hit is added",
-                         "test:hit", result.hits().get(0).getId().toString());
+            assertEquals("test:hit", result.hits().get(0).getId().toString(),
+                         "Artificial hit is added");
         }
     }
 

@@ -1,16 +1,17 @@
 package com.mydomain.example;
 
 import ai.vespa.hosted.cd.Endpoint;
+import ai.vespa.hosted.cd.StagingTest;
 import ai.vespa.hosted.cd.TestRuntime;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-@Category(ai.vespa.hosted.cd.UpgradeTest.class) // This will change to StagingTest again.
+@Tag(StagingTest.name)
 public class ExampleStagingTest {
 
     @Test
