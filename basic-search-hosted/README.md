@@ -19,7 +19,11 @@ and set the path to the private key in the `pom.xml` properties.
 ## Set up a CI job which deploys your application
 Command to build and submit application to the hosted Vespa API is
 <pre>
-mvn -P fat-test-application -DauthorEmail=<span style="background-color: yellow;">user@domain</span> clean package vespa:submit 
+mvn vespa:compileVersion # Stores the version to compile against in target/vespa.compile.version
+mvn -P fat-test-application \
+-Dvespaversion="$(cat target/vespa.compile.version)" \
+-DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
+clean package vespa:submit 
 </pre>
 
 ## Deploy to dev and test against it
