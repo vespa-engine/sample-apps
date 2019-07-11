@@ -11,7 +11,7 @@
     </configservers>
   </admin>
 
-  <jdisc version="1.0" id="container">
+  <container version="1.0">
     <document-api />
     <document-processing/>
     <search />
@@ -20,7 +20,7 @@
       <node hostalias="container1" />
       <node hostalias="container2" />
     </nodes>
-  </jdisc>
+  </container>
 
   <content id="music" version="1.0">
     <redundancy>2</redundancy>
