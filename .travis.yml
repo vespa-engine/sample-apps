@@ -1,9 +1,15 @@
-# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-sudo: false
-dist: trusty
+# Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+sudo: required
 
-jdk: openjdk11
+services:
+  - docker
+
+branches:
+  only:
+    - master
 
 install: true
 
-script: mvn --batch-mode --no-snapshot-updates install 
+language: minimal
+
+script: ./travis/start-docker-container.sh
