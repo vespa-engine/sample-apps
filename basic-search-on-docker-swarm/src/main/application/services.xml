@@ -11,7 +11,7 @@
     </configservers>
   </admin>
 
-  <container version="1.0">
+  <container id="container" version="1.0">
     <document-api />
     <document-processing/>
     <search />
