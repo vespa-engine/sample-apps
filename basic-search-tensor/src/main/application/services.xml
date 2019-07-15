@@ -7,7 +7,7 @@
         <adminserver hostalias="node1"/>
     </admin>
 
-    <container version="1.0">
+    <container id="container" version="1.0">
         <search>
             <chain id="default" inherits="vespa">
                 <searcher id="com.yahoo.example.ExampleTensorSearcher" bundle="basic-search-tensor" />
