@@ -131,7 +131,7 @@ public class MetalSearcherTest {
         for (Iterator<Item> iter = ((CompositeItem)root).getItemIterator(); iter.hasNext(); ) {
             Item item = iter.next();
             if (item instanceof WordItem) {
-                assertEquals(item.toString(), "album:metal");
+                assertEquals("album:metal", item.toString());
             }
         }
     }
