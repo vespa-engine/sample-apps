@@ -18,8 +18,8 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.searchchain.testutil.DocumentSourceSearcher;
 import com.yahoo.search.yql.MinimalQueryInserter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import static java.net.URLEncoder.encode;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -49,7 +49,7 @@ public class MetalSearcherTest {
     /**
      *
      */
-    @Before
+    @BeforeEach
     public void initQuery() {
         metalQuery = new Query("/search/?yql=" +
                 encode("select * from sources * where artist contains \"hetfield\" and title contains\"master of puppets\";",
@@ -111,7 +111,7 @@ public class MetalSearcherTest {
         Result result = execution.search(testQuery);
         System.out.println(result.getContext(false).getTrace());
 
-        assertEquals("Document source hits are returned",2, result.hits().size());
+        assertEquals(2, result.hits().size());
     }
 
 
