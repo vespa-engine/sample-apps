@@ -1,0 +1,17 @@
+search reader {
+
+    document reader inherits person {
+
+        # Like topic_features in book.sd; the dot product of these measures how well a book suits a reader.
+        field interest_features type tensor(topic{}, feature[3]) {
+            indexing: summary | attribute
+        }
+
+        # Like topic_weights in book.sd; also used to compute how relevant a book is to a reader.
+        field interest_weights type tensor(topic{}) {
+            indexing: summary | attribute
+        }
+
+    }
+
+}

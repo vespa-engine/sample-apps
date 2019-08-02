@@ -1,0 +1,13 @@
+search author {
+
+    # The author document inherits the name and birth_year field from the person document
+    document author inherits person {
+
+        # Pseudonyms used to write books under, not part of the summary.
+        field pseudonyms type array<string> {
+            indexing: attribute
+        }
+
+    }
+
+}

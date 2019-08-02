@@ -14,6 +14,9 @@
         <redundancy>1</redundancy>
         <documents>
             <document type="person" mode="index" />
+            <document type="author" mode="index" global="true" />
+            <document type="reader" mode="index" />
+            <document type="book" mode="index" />
         </documents>
         <nodes count="1" />
     </content>
