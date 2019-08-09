@@ -1,9 +1,6 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Hosted Vespa sample applications — Basic hosted stateless Vespa application
 
-## <div style="{color: red;}">The hosted service this application refers to is not yet 
-publicy available — stay tuned</div>
-
 This application demonstrates how to set up and run a basic hosted Vespa application,
 and is intended as an introduction to both Vespa and the hosted Vespa service. <!-- TODO LINK -->  
 
@@ -19,6 +16,9 @@ they are deployed to the production environments, these particular tests also
 The tests require a running Vespa deployment, which is easily obtained in hosted Vespa's
 `dev` environment. <!-- TODO LINK --> It is also possible to run the tests against a local
 Vespa deployment running with, e.g., docker, as in the other [sample apps](../). 
+
+## <div style="{color: red;}">This is work in progress, and the hosted service this application refers to is not yet 
+publicy available. The next items are therefore irrelevant for now.</div>
 
 ## Sign up in hosted Vespa console, and create an application with the wanted name
 
@@ -53,7 +53,8 @@ clean package vespa:submit
 
 ## Local development
 
-<em>This only works with self-hosted `services.xml` and `hosts.xml`, which can be found in any of the other sample apps.</em>
+<!-- TODO: Un-comment the below warning -->
+<!-- em>This only works with self-hosted `services.xml` and `hosts.xml`, which can be found in any of the other sample apps.</em -->
 
 ### Run those JUnit tests against the local docker container
 Assuming the below is done, put
