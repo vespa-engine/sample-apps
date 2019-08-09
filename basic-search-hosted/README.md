@@ -1,20 +1,24 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Hosted Vespa sample applications — Basic hosted stateless Vespa application
 
+## <div style="{color: red;}">The hosted service this application refers to is not yet 
+publicy available — stay tuned</div>
+
 This application demonstrates how to set up and run a basic hosted Vespa application,
 and is intended as an introduction to both Vespa and the hosted Vespa service. <!-- TODO LINK -->  
 
-Included are detailed functional tests for the Vespa application, written in JUnit. These tests
+Included are detailed functional tests for the Vespa application, written in JUnit. While the
+main intention for such functional tests is to run them in the hosted Vespa continuous
+deployment pipeline, <!-- TODO LINK --> to verify changes to the Vespa application before
+they are deployed to the production environments, these particular tests also
 
 * demonstrate how to communicate with the Vespa deployment over HTTP,
 * serve as introductory documentation for the most central of Vespa's features, and
 * provide a starting point for thorough functional tests of your own Vespa application.
 
-The tests require a running Vespa deployment, which is easily obtained in hosted Vespa's `dev` environment. <!-- TODO LINK -->
-It is also possible to run the tests against a Vespa deployment using, e.g., docker, as in the other sample apps. 
-
-The real intention for the functional tests is to run them in the hosted Vespa continuous deployment pipeline, <!-- TODO LINK -->
-to verify changes to the Vespa application before they are deployed to the production environments. 
+The tests require a running Vespa deployment, which is easily obtained in hosted Vespa's
+`dev` environment. <!-- TODO LINK --> It is also possible to run the tests against a local
+Vespa deployment running with, e.g., docker, as in the other [sample apps](../). 
 
 ## Sign up in hosted Vespa console, and create an application with the wanted name
 
