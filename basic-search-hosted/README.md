@@ -21,15 +21,9 @@ Vespa deployment running with, e.g., docker, as in the other [sample apps](../).
 
 ## Sign up in the hosted Vespa console, and create an application with the wanted name
 
-## Generate and upload key pair
-Install `openssl` and run
-<pre>
-openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem
-openssl ec -pubout -in private_key.pem -out public_key.pem
-</pre>
-to generate a private and public key. Then upload the public key through the hosted Vespa dashboard.  
-
-Alternatively, use the hosted Vespa console to generate the key pair, and have the public key uploaded automatically. 
+## Generate deploy key pair
+Use the hosted Vespa console to generate a key pair. This uploads the public key for your
+application to the hosted Vespa API. Store the private key for use with CLIs. 
 
 ## Configure pom.xml for your hosted Vespa application
 Set the `tenant`, `application`, and `privateKeyFile` properties in `pom.xml`.  
