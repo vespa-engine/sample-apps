@@ -18,7 +18,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>YOUR TENANT NAME</tenant>			<!-- Set the name used in the console -->
-        <application>YOUR APPLICATION NAME</application>	<!-- Set the name used in the console -->
+        <tenant>YOUR TENANT</tenant>
+        <application>YOUR APPLICATION</application>
+        <privateKeyFile>/path/to/application/deploy/key</privateKeyFile>
+        <!-- Endpoint is temporarily overridden -->
+        <endpoint>https://api.vespa-external-cd.aws.oath.cloud:4443</endpoint>
     </properties>
 </project>
