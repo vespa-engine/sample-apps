@@ -1,11 +1,11 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Hosted Vespa sample applications — Basic hosted stateless Vespa application
 
-This application demonstrates how to set up and run a basic hosted Vespa application,
-and is intended as an introduction to both Vespa and the hosted Vespa service. <!-- TODO LINK -->  
+This application demonstrates how to set up and run a basic Vespa application.
+#and is intended as an introduction to both Vespa and the hosted Vespa service. <!-- TODO LINK -->  
 
 Included are detailed functional tests for the Vespa application, written in JUnit. While the
-main intention for such functional tests is to run them in the hosted Vespa continuous
+main intention for such functional tests is to run them in a continuous
 deployment pipeline, <!-- TODO LINK --> to verify changes to the Vespa application before
 they are deployed to the production environments, these particular tests also
 
@@ -13,43 +13,8 @@ they are deployed to the production environments, these particular tests also
 * serve as introductory documentation for the most central of Vespa's features, and
 * provide a starting point for thorough functional tests of your own Vespa application.
 
-The tests require a running Vespa deployment, which is easily obtained in hosted Vespa's
-`dev` environment. <!-- TODO LINK --> It is also possible to run the tests against a local
-Vespa deployment running with, e.g., docker, as in the other [sample apps](../). 
-
-## <div style="{color: red;}">This is work in progress, and the hosted service this application refers to is not yet 
-publicy available. The next items are therefore irrelevant for now.</div>
-
-## Sign up in hosted Vespa console, and create an application with the wanted name
-
-## Generate and upload key pair
-Install `openssl` and run
-<pre>
-openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem
-openssl ec -pubout -in private_key.pem -out public_key.pem
-</pre>
-to generate a private and public key. Then upload the public key through the hosted Vespa dashboard.
-
-## Configure pom.xml for your hosted Vespa application
-Set the `tenant`, `application`, and `privateKeyFile` properties in `pom.xml`.
-
-## Deploy to dev and test against it
-Command to build and deploy application to the hosted development environment is
-<pre>
-mvn clean package vespa:deploy 
-</pre>
-Example System, Staging and Production tests can then be run from an IDE without further setup.
-<!-- ... or, add a description for users with older than IntelliJ 2012, and Eclipse ... ??? -->
-
-## Set up a CI job which deploys your application
-Command to build and submit application to the hosted Vespa API is
-<pre>
-mvn vespa:compileVersion # Stores the version to compile against in target/vespa.compile.version
-mvn -P fat-test-application \
--Dvespaversion="$(cat target/vespa.compile.version)" \
--DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
-clean package vespa:submit 
-</pre>
+The tests require a running Vespa deployment, e.g., a local
+Vespa deployment running within docker.
 
 ## Local development
 
@@ -60,18 +25,13 @@ clean package vespa:submit
 Assuming the below is done, put
 <pre>
 {
-  "application": "this:is:ignored",
-  "zone": "dev.local",
-  "system": "publiccd",
-  "zoneEndpoints": {
-    "dev.local": {
-      "container": "http://localhost:8080/"
-    }
-  }
+  "clusters": [
+    { "container": "http://localhost:8080/" }
+  ]
 }
 </pre>
-in some file `/path/to/test/config`, and run JUnit tests with `-Dvespa.test.config=/path/to/test/config -Psystem-tests`
-to run all `@SystemTest` classes. `-Pstaging-tests` and `-Pproduction-tests` runs the other suites of tests. 
+in some file `/path/to/test/config`, and run JUnit tests with `-Dvespa.test.config=/path/to/test/config -Dtest.categories=system
+to run all `@SystemTest` classes; `staging` and `production` selects the other suites of tests, and `integration` all of them.
 
 ### Executable example
 **Check-out, compile and run:**
