@@ -10,6 +10,7 @@
     <description>Parent artifact for all Java Vespa sample apps.</description>
 
     <modules>
+        <module>basic-search-hosted</module>
         <module>basic-search-java</module>
         <module>basic-search-tensor</module>
         <module>blog-recommendation</module>

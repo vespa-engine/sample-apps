@@ -1,0 +1,4 @@
+<query-profile-type id="extended">
+    <field name="interest_features" type="tensor(topic{}, feature[3])" mandatory="true"/>
+    <field name="interest_weights" type="tensor(topic{})" mandatory="true"/>
+</query-profile-type>
