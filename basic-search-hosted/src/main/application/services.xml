@@ -8,15 +8,13 @@
         <search />              <!-- Allows searching for documents through the search api. -->
         <nodes count="2" />
         <http>                  <!-- Please ignore the below, temporary work-around. -->
-            <server id="default" port="4080">
-                <filtering>
-                    <access-control domain="vespa.vespa.cd">
-                        <exclude>
-                            <binding>*</binding>
-                        </exclude>
-                    </access-control>
-                </filtering>
-            </server>
+            <filtering>
+                <access-control domain="vespa.vespa.cd">
+                    <exclude>
+                        <binding>*</binding>
+                    </exclude>
+                </access-control>
+            </filtering>
         </http>
     </container>
 
