@@ -18,5 +18,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+         <tenant>vespa</tenant>
+         <application>lalala</application>
+         <privateKeyFile>../private_key.pem</privateKeyFile>
+         <endpoint>https://api.vespa-external-cd.aws.oath.cloud:4443</endpoint>
     </properties>
 </project>
