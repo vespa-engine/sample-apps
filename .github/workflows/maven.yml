@@ -16,6 +16,6 @@ jobs:
     - name: Stash the key
       env:
         LALALA_KEY: ${{ secrets.lalala_key }}
-      run: ls -lah && ls -lah basic-search-hosted && echo $LALALA_KEY > basic-search-hosted/private_key.pem
+      run: ls -lah && ls -lah basic-search-hosted && echo $LALALA_KEY > private_key.pem
     - name: Build with Maven
       run: mvn clean package vespa:submit -Pfat-test-application -DauthorEmail=jvenstad@verizonmedia.com -Drepository='git@github.com:jonmv/sample-apps' -Dbranch=master -Dcommit=$(git rev-parse HEAD)
