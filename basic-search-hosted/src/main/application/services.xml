@@ -6,9 +6,7 @@
     <container id="container" version="1.0">
         <document-api />        <!-- Allows creating, updating, removing, and reading documents based on docid. -->
         <search />              <!-- Allows searching for documents through the search api. -->
-        <nodes>
-            <node hostalias="node1" />
-        </nodes>
+        <nodes count="2" />
     </container>
 
     <!-- The search and storage nodes which hold the data and perform the searches. -->
@@ -20,9 +18,7 @@
             <document type="reader" mode="index" />
             <document type="book" mode="index" />
         </documents>
-        <nodes>
-            <node hostalias="node1" />
-        </nodes>
+        <nodes count="2" />
     </content>
 
 </services>

@@ -13,5 +13,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Build with Maven
-      run: mvn clean package --file pom.xml
+    - name: Build and submit
+      env:
+        LALALA_KEY: ${{ secrets.lalala_key }}
+      run: cd basic-search-hosted && echo "$LALALA_KEY" > private_key.pem && echo "" >> private_key.pem && mvn clean package vespa:submit -Pfat-test-application -DauthorEmail=jvenstad@verizonmedia.com -Drepository='git@github.com:jonmv/sample-apps' -Dbranch=master -Dcommit=$(git rev-parse HEAD)
