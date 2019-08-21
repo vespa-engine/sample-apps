@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - stash_key:
+    - name: Stash the key
       env:
         LALALA_KEY: ${{ secrets.lalala_key }}
       run: echo $LALALA_KEY > private_key.pem
