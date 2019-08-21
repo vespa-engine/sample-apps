@@ -1,0 +1,106 @@
+# Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+search book {
+
+    document book {
+
+        # Book title, indexed and part of the summary.
+        field title type string {
+            indexing: summary | index
+        }
+
+        # Author reference, see the author.sd for its definition.
+        field author_ref type reference<author> {
+            indexing: attribute             # A reference must be an attribute.
+        }
+
+        # The content of the book. Indexing sweetness!
+        field content type string {
+            indexing: summary | index
+            summary: dynamic                # Adds excerpts around hits to the summary.
+        }
+
+        # The year the book was published.
+        field year type int {
+            indexing: summary | attribute
+        }
+
+        # Topics covered by the book, each described as a feature vector, e.g.,
+        # for each topic like 'horses', cars', 'politics': [enthusiasm, detail, factuality].
+        field topic_features type tensor(topic{}, feature[3]) {
+            indexing: summary | attribute
+        }
+
+        # Weights for each of the topics in the book.
+        field topic_weights type tensor(topic{}) {
+            indexing: summary | attribute
+        }
+
+    }
+
+
+    # The author's name, imported. It is implicitly an attribute; we can't generate a reverse-index over it here.
+    import field author_ref.name as author_name { }
+
+    # The author's pseudonyms, imported.
+    import field author_ref.pseudonyms as author_pseudonyms { }
+
+    # The author's year of birth, imported.
+    import field author_ref.birth_year as author_birth_year { }
+
+
+    # Let queries search these fields by default.
+    fieldset default {
+        fields: title, content, author_name, author_pseudonyms
+    }
+
+
+    rank-profile common inherits default {
+
+        # How well the query matches the text fields in this document.
+        function query_match() {
+            expression: nativeRank(title, content, author_name, author_pseudonyms)
+        }
+
+        # How compatible each of the topics of this book are with the reader's interests.
+        function topics_compatibility() {
+            expression: sum(attribute(topic_features) * query(interest_features), feature)
+        }
+
+        # How relevant the topics of this book are to someone with the given interests.
+        # The score is the weighted sum of the compatibilities (dot product) of the book's
+        # topics and the reader's interests: the book's topics weights are normalized, so
+        # a book which covers only relevant topics score higher; however, the reader's weights
+        # are not normalized, so a reader with broad interests gets the same score for a book
+        # as a reader with narrow interests does, given their compatibility with the book is equals.
+        function topics_match() {
+            expression: sum(topics_compatibility * attribute(topic_weights) * query(interest_weights)) / sum(attribute(topic_weights))
+        }
+
+        # How close the reader is in age to the age of the author when writing the book.
+        function age_match() {
+            expression: sigmoid(attribute(year) - attribute(author_birth_year) - query(reader_age))
+        }
+
+    }
+
+    # Rank profile which uses only the document fields and query terms for ranking.
+    rank-profile simple inherits common {
+
+        first-phase {
+            expression: query_match
+        }
+
+    }
+
+    rank-profile extended inherits simple {
+
+        second-phase {
+            expression: 0.4 * query_match + 0.4 * topics_match + 0.2 * age_match
+        }
+
+        summary-features: query_match topics_compatibility topics_match age_match
+
+    }
+
+}
