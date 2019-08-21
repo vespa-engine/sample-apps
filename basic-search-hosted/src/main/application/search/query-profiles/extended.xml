@@ -1,0 +1,3 @@
+<query-profile id="extended" inherits="default" type="extended">
+    <field name="ranking.profile">extended</field>
+</query-profile>
