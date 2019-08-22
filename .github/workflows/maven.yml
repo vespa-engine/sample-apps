@@ -1,4 +1,4 @@
-name: Java CI
+name: Vespa build and submit
 
 on: [push]
 
