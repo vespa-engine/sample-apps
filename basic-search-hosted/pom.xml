@@ -21,7 +21,7 @@
         <tenant>vespa</tenant>
         <application>lalala</application>
         <privateKeyFile>private_key.pem</privateKeyFile>
-        <!-- Endpoint is temporarily overridden -->
+        <!-- Endpoint is temporarily overridden -->  
         <endpoint>https://api.vespa-external-cd.aws.oath.cloud:4443</endpoint>
     </properties>
 </project>
