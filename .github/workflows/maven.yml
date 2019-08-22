@@ -7,7 +7,31 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
+    steps:      
+    - name: Dump GitHub context
+       env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Dump strategy context
+      env:
+        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+      run: echo "$STRATEGY_CONTEXT"
+    - name: Dump matrix context
+      env:
+        MATRIX_CONTEXT: ${{ toJson(matrix) }}
+      run: echo "$MATRIX_CONTEXT"
+    - name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: echo "$JOB_CONTEXT"
+    - name: Dump runner context
+      env:
+        RUNNER_CONTEXT: ${{ toJson(runner) }}
+      run: echo "$RUNNER_CONTEXT"
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
     - uses: actions/checkout@v1
     - name: Print environment
       run: env
@@ -15,7 +39,11 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Build and submit
+    - name: Build
+      run: cd basic-search-hosted && mvn clean package -Pfat-test-application 
+    - name: Submit
       env:
         LALALA_KEY: ${{ secrets.lalala_key }}
-      run: cd basic-search-hosted && echo "$LALALA_KEY" > private_key.pem && echo "" >> private_key.pem && mvn clean package vespa:submit -Pfat-test-application -DauthorEmail=jvenstad@verizonmedia.com -Drepository='git@github.com:jonmv/sample-apps' -Dbranch=master -Dcommit=$(git rev-parse HEAD)
+      run: cd basic-search-hosted && echo "$LALALA_KEY\n" > private_key.pem
+      && test "$GITHUB_REF" = "refs/heads/master"
+ && mvn vespa:submit -DauthorEmail=jvenstad@verizonmedia.com -Drepository='git@github.com:jonmv/sample-apps' -Dbranch=master -Dcommit=$(git rev-parse HEAD)
