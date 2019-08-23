@@ -10,10 +10,10 @@ Prerequisites: git, Java 11, mvn 3.6.1
 
 3. Download sample app:
  ```sh
- $ git clone git@github.com:vespa-engine/sample-apps.git && cd basic-search-hosted
+ $ git clone git@github.com:vespa-engine/sample-apps.git && cd sample-apps/basic-search-hosted
  ```
  
-4. Edit properties tenant, application and instance in _pom.xml_ -
+4. Edit properties _tenant_, _application_ and _instance_ in _pom.xml_ -
 use values from the console (what was used to create the application) - use "default" as instance name
 
 5. Build java sample app:
@@ -32,7 +32,7 @@ $ mvn vespa:deploy -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myins
 8. Click "deployment log" to track the deployment. "Installation succeeded!" in the bottom pane indicates success 
 
 9. Click "Instances" at the top, then "endpoints". Click the endpoint to validate it is up. _Temporary workaround: use http (not https) and port 443) - example http://end.point.name:443_.
-One can also use 
+One can also use:
 ```sh
 $ mvn -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myinstancename.pem vespa:endpoints # test this!
 ```
