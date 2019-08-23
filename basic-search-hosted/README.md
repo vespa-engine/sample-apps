@@ -26,20 +26,32 @@ then use this to deploy to Vespa:
 ```sh
 $ mvn vespa:deploy -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myinstancename.pem
 ```
-Alternatively, in the "Deploy to dev" console section, upload _target/application.zip_ - click Deploy
 
-7. Click "deployment log" to track the deployment. "Installation succeeded!" in the bottom pane indicates success 
+7. Alternatively, in the "Deploy to dev" console section, upload _target/application.zip_ - click Deploy
 
-8. Click "Instances" at the top, then "endpoints". Click the endpoint to validate it is up. _Temporary workaround: use http (not https) and port 443) - example http://end.point.name:443_.
+8. Click "deployment log" to track the deployment. "Installation succeeded!" in the bottom pane indicates success 
+
+9. Click "Instances" at the top, then "endpoints". Click the endpoint to validate it is up. _Temporary workaround: use http (not https) and port 443) - example http://end.point.name:443_.
 One can also use 
 ```sh
 $ mvn -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myinstancename.pem vespa:endpoints # test this!
 ```
-9. Feed two documents via REST API
 
-10. Visit documents
+10. Feed documents
+```sh
+$ curl -H "Content-Type:application/json" --data-binary  @music-data-1.json http://endpoint:443/document/v1/music/music/docid/1
+$ curl -H "Content-Type:application/json" --data-binary  @music-data-2.json http://endpoint:443/document/v1/music/music/docid/2
+```
 
-11. Search documents
+11. Visit documents
+```sh
+$ curl http://endpoint:443/document/v1/music/music/docid?wantedDocumentCount=100
+```
+
+12. Search documents
+```sh
+$ curl http://endpoint:443/search/?query=bad
+```
 
 
 ## Local development
