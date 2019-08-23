@@ -1,8 +1,7 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Hosted Vespa sample applications — Basic hosted stateless Vespa application
 
-## <div style="{color: red;}">The hosted service this application refers to is not yet 
-publicy available — stay tuned</div>
+## The hosted service this application refers to is not yet publicy available — stay tuned
 
 This application demonstrates how to set up and run a basic hosted Vespa application,
 and is intended as an introduction to both Vespa and the hosted Vespa service. <!-- TODO LINK -->  
@@ -20,7 +19,7 @@ The tests require a running Vespa deployment, which is easily obtained in hosted
 `dev` environment. <!-- TODO LINK --> It is also possible to run the tests against a local
 Vespa deployment running with, e.g., docker, as in the other [sample apps](../). 
 
-## Sign up in hosted Vespa console, and create an application with the wanted name
+## Sign up in the hosted Vespa console, and create an application with the wanted name
 
 ## Generate and upload key pair
 Install `openssl` and run
@@ -31,7 +30,9 @@ openssl ec -pubout -in private_key.pem -out public_key.pem
 to generate a private and public key. Then upload the public key through the hosted Vespa dashboard.
 
 ## Configure pom.xml for your hosted Vespa application
-Set the `tenant`, `application`, and `privateKeyFile` properties in `pom.xml`.
+Set the `tenant`, `application`, and `privateKeyFile` properties in `pom.xml`.  
+For now, the API endpoint also needs to be overridden, so set the `endpoint` property 
+to `https://api.vespa-external-cd.aws.oath.cloud:4443`. 
 
 ## Deploy to dev and test against it
 Command to build and deploy application to the hosted development environment is
@@ -50,22 +51,18 @@ mvn -P fat-test-application \
 -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
 clean package vespa:submit 
 </pre>
-
+To track versions through the pipeline, assuming you're using `git` for version control, you can also specify
+`-Drepository=$(git config --get remote.origin.url) -Dbranch=$(git rev-parse --abbrev-ref HEAD) -Dcommit=$(git rev-parse HEAD) -DauthorEmail=$(git log -1 --format=$aE)`
 ## Local development
 
 <em>This only works with self-hosted `services.xml` and `hosts.xml`, which can be found in any of the other sample apps.</em>
 
 ### Run those JUnit tests against the local docker container
-Assuming the below is done, put
+Assuming the below is done, and self-hosted `services.xml` and `hosts.xml` are present in `src/main/application`, put
 <pre>
 {
-  "application": "this:is:ignored",
-  "zone": "dev.local",
-  "system": "publiccd",
-  "zoneEndpoints": {
-    "dev.local": {
-      "container": "http://localhost:8080/"
-    }
+  "clusters": {
+    "container": "http://localhost:8080/"
   }
 }
 </pre>
