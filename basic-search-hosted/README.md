@@ -5,27 +5,41 @@
 Prerequisites: git, Java 11, mvn 3.6.1
 
 1. Go to https://console.vespa-external.aws.oath.cloud/
-2. Create Tenant and app (Steps here)
-3. Edit properties tenant, application and instance pom.xml -
-use values from the console (what was used to create the applications)
-4. Build java sample app:
+
+2. Click "Create new tenant", then go to this tenant and click "Create application"
+
+3. Download sample app:
  ```sh
  $ git clone git@github.com:vespa-engine/sample-apps.git && cd basic-search-hosted
+ ```
+ 
+4. Edit properties tenant, application and instance in _pom.xml_ -
+use values from the console (what was used to create the application) - use "default" as instance name
+
+5. Build java sample app:
+ ```sh
  $ mvn install package
  ```
-5. In the console, generate the deploy key - then use this to deploy to Vespa:
+ 
+6. In the console, click "Deploy". Generate the deploy key (this downloads the key file),
+then use this to deploy to Vespa:
 ```sh
 $ mvn vespa:deploy -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myinstancename.pem
 ```
-- or upload application.zip in the console: click Deploy, then "deploy to Dev"
-6. Go to the instance view and find endpoints - example: https://console.vespa-external.aws.oath.cloud/tenant/mytenantname/application/myappname/instance - 
-alternatively, use 
+Alternatively, in the "Deploy to dev" console section, upload _target/application.zip_ - click Deploy
+
+7. Click "deployment log" to track the deployment. "Installation succeeded!" in the bottom pane indicates success 
+
+8. Click "Instances" at the top, then "endpoints". Click the endpoint to validate it is up. _Temporary workaround: use http (not https) and port 443) - example http://end.point.name:443_.
+One can also use 
 ```sh
-$ mvn vespa:endpoints # test this!
+$ mvn -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myinstancename.pem vespa:endpoints # test this!
 ```
-7. Feeding two documents via REST API
-8. Visit documents
-9. Search documents
+9. Feed two documents via REST API
+
+10. Visit documents
+
+11. Search documents
 
 
 ## Local development
