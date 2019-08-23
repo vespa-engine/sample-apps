@@ -14,6 +14,9 @@
         <groupId>com.yahoo.vespa</groupId>
         <artifactId>tenant-base</artifactId>
         <version>[7,999)</version>
+        <tenant>mytenantname</tenant>
+        <application>myapplname</application>
+        <instance>default</instance>
     </parent>
 
     <properties>
