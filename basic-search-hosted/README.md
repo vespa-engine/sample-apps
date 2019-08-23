@@ -1,8 +1,34 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Hosted Vespa sample applications — Basic hosted stateless Vespa application
 
-This application demonstrates how to set up and run a basic Vespa application.
-#and is intended as an introduction to both Vespa and the hosted Vespa service. <!-- TODO LINK -->  
+## Getting started
+Prerequisites: git, Java 11, mvn 3.6.1
+
+1. Go to https://console.vespa-external.aws.oath.cloud/
+2. Create Tenant and app (Steps here)
+3. Edit properties tenant, application and instance pom.xml -
+use values from the console (what was used to create the applications)
+4. Build java sample app:
+ ```sh
+ $ git clone git@github.com:vespa-engine/sample-apps.git && cd basic-search-hosted
+ $ mvn install package
+ ```
+5. In the console, generate the deploy key - then use this to deploy to Vespa:
+```sh
+$ mvn vespa:deploy -DprivateKeyFile=$HOME/Downloads/mytenantname.myappname.myinstancename.pem
+```
+- or upload application.zip in the console: click Deploy, then "deploy to Dev"
+6. Go to the instance view and find endpoints - example: https://console.vespa-external.aws.oath.cloud/tenant/mytenantname/application/myappname/instance - 
+alternatively, use 
+```sh
+$ mvn vespa:endpoints # test this!
+```
+7. Feeding two documents via REST API
+8. Visit documents
+9. Search documents
+
+
+## Local development
 
 Included are detailed functional tests for the Vespa application, written in JUnit. While the
 main intention for such functional tests is to run them in a continuous
@@ -15,8 +41,6 @@ they are deployed to the production environments, these particular tests also
 
 The tests require a running Vespa deployment, e.g., a local
 Vespa deployment running within docker.
-
-## Local development
 
 <!-- TODO: Un-comment the below warning -->
 <!-- em>This only works with self-hosted `services.xml` and `hosts.xml`, which can be found in any of the other sample apps.</em -->
@@ -68,5 +92,3 @@ $ curl -s http://localhost:8080/search/?query=name:foo
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
-
-

@@ -18,5 +18,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tenant>mytenantname</tenant>
+        <application>myapplname</application>
+        <instance>default</instance>
     </properties>
 </project>
