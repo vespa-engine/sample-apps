@@ -18,8 +18,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>mytenantname</tenant>
-        <application>myapplname</application>
-        <instance>default</instance>
+        <tenant>YOUR TENANT NAME</tenant>			<!-- Set the name used in the console -->
+        <application>YOUR APPLICATION NAME</application>	<!-- Set the name used in the console -->
     </properties>
 </project>

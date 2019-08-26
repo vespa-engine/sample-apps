@@ -1,5 +1,6 @@
 package com.mydomain.example;
 
+import ai.vespa.hosted.cd.StagingTest;
 import ai.vespa.hosted.cd.SystemTest;
 import com.yahoo.data.access.Inspector;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author jonmv
  */
 @SystemTest
+@StagingTest
 @DisplayName("Test that the application")
 class _01_BasicTest {
 
