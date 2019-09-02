@@ -32,7 +32,7 @@ search music {
             indexing: summary | attribute
         }
 
-        field tensor_attribute type tensor(x{}) {
+        field tensor_attribute type tensor<double>(x{}) {
             indexing: summary | attribute
         }
 
@@ -41,7 +41,7 @@ search music {
 
     constant tensor_constant {
         file: constants/constant_tensor_file.json
-        type: tensor(x{})
+        type: tensor<double>(x{})
     }
 
 
