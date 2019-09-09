@@ -28,7 +28,7 @@ application to the hosted Vespa API. Store the private key for use with CLIs.
 ## Configure pom.xml for your hosted Vespa application
 Set the `tenant`, `application`, and `privateKeyFile` properties in `pom.xml`.  
 For now, the API endpoint also needs to be overridden, so set the `endpoint` property 
-to `https://api.vespa-external-cd.aws.oath.cloud:4443`. 
+to `https://api.vespa-external.aws.oath.cloud:4443`. 
 
 ## Deploy to dev and test against it
 Command to build and deploy application to the hosted development environment is
@@ -41,14 +41,14 @@ Example System, Staging and Production tests can then be run from an IDE without
 ## Set up a CI job which deploys your application
 Command to build and submit application to the hosted Vespa API is
 <pre>
-mvn vespa:compileVersion # Stores the version to compile against in target/vespa.compile.version
+mvn clean vespa:compileVersion
 mvn -P fat-test-application \
 -Dvespaversion="$(cat target/vespa.compile.version)" \
 -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
-clean package vespa:submit 
+package vespa:submit 
 </pre>
 To track versions through the pipeline, assuming you're using `git` for version control, you can instead specify
-`-Drepository=$(git config --get remote.origin.url) -Dbranch=$(git rev-parse --abbrev-ref HEAD) -Dcommit=$(git rev-parse HEAD) -DauthorEmail=$(git log -1 --format=$aE)`
+`-Drepository=$(git config --get remote.origin.url) -Dbranch=$(git rev-parse --abbrev-ref HEAD) -Dcommit=$(git rev-parse HEAD) -DauthorEmail=$(git log -1 --format=%aE)`
 ## Local development
 
 <em>This only works with self-hosted `services.xml` and `hosts.xml`, which can be found in any of the other sample apps.</em>
