@@ -8,20 +8,20 @@
     <groupId>com.yahoo.example</groupId>
     <artifactId>basic-search-hosted</artifactId>
     <version>1.0.0</version>
-    <packaging>container-plugin</packaging>  <!-- Use Vespa packaging -->
+    <packaging>container-plugin</packaging>                     <!-- Use Vespa packaging -->
 
     <parent>
         <groupId>com.yahoo.vespa</groupId>
         <artifactId>tenant-base</artifactId>
-        <version>[7,999)</version>
+        <version>[7,999)</version>                              <!-- Keep Vespa up to date -->
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>vespa</tenant>
-        <application>lalala</application>
-        <privateKeyFile>private_key.pem</privateKeyFile>
-        <!-- Endpoint is temporarily overridden -->
+        <tenant>TENANT</tenant>                                 <!-- Use value from console -->
+        <application>APPLICATION</application>                  <!-- Use value from console -->
+        <privateKeyFile>private_key.pem</privateKeyFile>        <!-- Deploy key absolute path -->
+        <!-- Endpoint is temporarily overridden — this will be removed -->
         <endpoint>https://api.vespa-external-cd.aws.oath.cloud:4443</endpoint>
     </properties>
 </project>
