@@ -18,8 +18,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>TENANT</tenant>                                 <!-- Use value from console -->
-        <application>APPLICATION</application>                  <!-- Use value from console -->
+        <tenant>vespa</tenant>                                  <!-- Use value from console -->
+        <application>lalala</application>                       <!-- Use value from console -->
         <privateKeyFile>private_key.pem</privateKeyFile>        <!-- Deploy key absolute path -->
         <!-- Endpoint is temporarily overridden — this will be removed -->
         <endpoint>https://api.vespa-external-cd.aws.oath.cloud:4443</endpoint>
