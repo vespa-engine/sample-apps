@@ -1,7 +1,9 @@
 <deployment version='1.0'>
 
+  <upgrade policy="canary" />
+
   <notifications>
-    <email role="author" /> <!-- Sends email to the author of the last git commit, also whenever the job fails -->
+    <email role="author" /> <!-- Sends email to the author of the last git commit whenever the job fails -->
   </notifications>
 
   <prod>
