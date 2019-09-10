@@ -57,7 +57,7 @@ To track versions through the pipeline, assuming you're using `git` for version 
 Assuming the below is done, and self-hosted `services.xml` and `hosts.xml` are present in `src/main/application`, put
 <pre>
 {
-  "clusters": {
+  "localEndpoints": {
     "container": "http://localhost:8080/"
   }
 }
