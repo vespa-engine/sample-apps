@@ -9,20 +9,14 @@ import com.yahoo.slime.JsonDecoder;
 import com.yahoo.slime.Slime;
 import org.junit.jupiter.api.Assertions;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptyMap;
 
 /**
  * Base class for functional tests of a Vespa deployment, containing only common code.
@@ -66,26 +60,6 @@ class TestUtilities {
                                                              inspector.fieldCount(),
                                                              Spliterator.ORDERED),
                                     false);
-    }
-
-    static HttpResponse<String> send(Endpoint endpoint, HttpRequest.Builder request) {
-        // TODO jvenstad: Allow endpoint.send(request), inline this, and put request(For) in Endpoint.
-        return endpoint.send(request, HttpResponse.BodyHandlers.ofString(UTF_8));
-    }
-
-    static HttpRequest.Builder requestFor(Endpoint endpoint, String path) {
-        return requestFor(endpoint, path, emptyMap());
-    }
-
-    static HttpRequest.Builder requestFor(Endpoint endpoint, String path, Map<String, String> properties) {
-        // TODO jvenstad: Remove scheme/port ugliness; it is needed for now, as certificates are not ready.
-        URI fixedUri = URI.create("http://" + endpoint.uri().getHost() + ":443/")
-                          .resolve(path +
-                                   properties.entrySet().stream()
-                                             .map(entry -> encode(entry.getKey(), UTF_8) + "=" + encode(entry.getValue(), UTF_8))
-                                             .collect(Collectors.joining("&", "?", "")))
-                          .normalize();
-        return HttpRequest.newBuilder(fixedUri);
     }
 
 }
