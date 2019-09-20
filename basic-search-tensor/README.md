@@ -1,18 +1,88 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa sample applications - Basic search with tensors
+# Vespa sample applications - album recommendations
+Vespa is used for online Big Data serving, which means ranking (large) data sets using query data.
+This is an example of how to rank music albums using a user profile -
+match a user's taste to albums with scores for a set of categories:
 
-A basic Vespa application, which supports feeding and running simple queries
-using tensors.
+**User profile**
 
-Also includes the rank expression playground used to visualize rank operations. This sample application is based on [basic-search-java](https://github.com/vespa-engine/sample-apps/tree/master/basic-search-java) which requires building the application using maven before deploying. See [Developing application](http://docs.vespa.ai/documentation/jdisc/developing-applications.html). Once deployed you can view the tensor playground:
+    {
+      { cat:pop  }: 0.8,
+      { cat:rock }: 0.2,
+      { cat:jazz }: 0.1
+    }
 
-    http://<host>:8080/playground/index.html
+ **Albums**
 
-Please refer to the
-[tensor intro](http://docs.vespa.ai/documentation/tensor-intro.html)
-and
-[tensor user guide](http://docs.vespa.ai/documentation/tensor-user-guide.html)
-for more information.
+    {
+      "fields": {
+        "album": "A Head Full of Dreams",
+        "artist": "Coldplay",
+        "year": 2015,
+        "category_scores": {
+          "cells": [
+            { "address": { "cat": "pop"},  "value": 1  },
+            { "address": { "cat": "rock"}, "value": 0.2},
+            { "address": { "cat": "jazz"}, "value": 0  }
+          ]
+        }
+      }
+    }
+
+    {
+      "fields": {
+        "album": "Love Is Here To Stay",
+        "artist": "Diana Krall",
+        "year": 2018,
+        "category_scores": {
+          "cells": [
+            { "address": { "cat": "pop" },  "value": 0.4 },
+            { "address": { "cat": "rock" }, "value": 0   },
+            { "address": { "cat": "jazz" }, "value": 0.8 }
+          ]
+        }
+      }
+    }
+
+    {
+      "fields": {
+        "album": "Hardwired...To Self-Destruct",
+        "artist": "Metallica",
+        "year": 2016,
+        "category_scores": {
+          "cells": [
+            { "address": { "cat": "pop" },  "value": 0 },
+            { "address": { "cat": "rock" }, "value": 1 },
+            { "address": { "cat": "jazz" }, "value": 0 }
+          ]
+        }
+      }
+    }
+
+**Rank profile**
+A rank profile calculates a score per document.
+This is defined by the application - here it is the tensor product.
+As the tensor is one-dimensional (the _cat_ dimension), this a vector,
+hence this is the dot product of the user profile and album categories:
+
+    rank-profile rank_albums inherits default {
+        first-phase {
+            expression: sum(query(user_profile) * attribute(category_scores))
+        }
+    }
+
+Hence, the expected scores are:
+<table>
+<tr><th>Album</th>                                   <th>pop</th>     <th>rock</th>    <th>jazz</th>      <th>total</th></tr>
+<tr><td>A Head Full of Dreams</td>         <td>0.8*1.0</td><td>0.2*0.2</td><td>0.1*0.0</td><td>0.84</td></tr>
+<tr><td>Love Is Here To Stay</td>            <td>0.8*0.4</td><td>0.2*0.0</td><td>0.1*0.8</td><td>0.4</td></tr>
+<tr><td>Hardwired...To Self-Destruct</td><td>0.8*0.0</td><td>0.2*1.0</td><td>0.1*0.0</td><td>0.2</td></tr>
+</table>
+
+The data above is represented using [tensors](http://docs.vespa.ai/documentation/tensor-intro.html).
+
+Build and test the application, and validate that the _relevance_ score per document is the expected value,
+and the results are returned in descending relevance order.
 
 
 ### Executable example
@@ -39,16 +109,25 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 **Feed data into application:**
 <pre data-test="exec">
-$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/music-data-1.json \
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/A-Head-Full-of-Dreams.json \
     http://localhost:8080/document/v1/music/music/docid/1 | python -m json.tool
-$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/music-data-2.json \
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/Love-Is-Here-To-Stay.json \
     http://localhost:8080/document/v1/music/music/docid/2 | python -m json.tool
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/Hardwired...To-Self-Desctruct.json \
+    http://localhost:8080/document/v1/music/music/docid/3 | python -m json.tool
 </pre>
 **Test the application:**
-<pre data-test="exec" data-test-assert-contains="Michael Jackson">
-$ curl -s 'http://localhost:8080/search/?query=sddocname:music&amp;tensor=%7B%7Bx%3A0%7D%3A1.0%2C%7Bx%3A1%7D%3A2.0%2C%7Bx%3A2%7D%3A3.0%2C%7Bx%3A3%7D%3A5.0%7D' | python -m json.tool
+<pre data-test="exec" data-test-assert-contains="Metallica">
+$ curl -s 'http://localhost:8080/search/?ranking=rank_albums&amp;yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B&amp;ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D' | python -m json.tool
 </pre>
 **Shutdown and remove the container:**
 <pre data-test="after">
 $  docker rm -f vespa
 </pre>
+
+
+<hr />
+
+Also includes the rank expression playground used to visualize rank operations. This sample application is based on [basic-search-java](https://github.com/vespa-engine/sample-apps/tree/master/basic-search-java) which requires building the application using maven before deploying. See [Developing application](http://docs.vespa.ai/documentation/jdisc/developing-applications.html). Once deployed you can view the tensor playground:
+
+    http://<host>:8080/playground/index.html
