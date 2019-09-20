@@ -1,8 +1,8 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - album recommendations
 Vespa is used for online Big Data serving, which means ranking (large) data sets using query data.
-This is an example of how to rank music albums using a user profile -
-match a user's taste to albums with scores for a set of categories:
+Below is an example of how to rank music albums using a user profile -
+match albums with scores for a set of categories with a user's preference:
 
 **User profile**
 
@@ -60,8 +60,10 @@ match a user's taste to albums with scores for a set of categories:
     }
 
 **Rank profile**
-A rank profile calculates a score per document.
-This is defined by the application - here it is the tensor product.
+
+A [rank profile](https://docs.vespa.ai/documentation/ranking.html) calculates a _relevance score_ per document.
+This is defined by the application author - in this case, it is the tensor product -
+The data above is represented using [tensors](http://docs.vespa.ai/documentation/tensor-intro.html)..
 As the tensor is one-dimensional (the _cat_ dimension), this a vector,
 hence this is the dot product of the user profile and album categories:
 
@@ -79,9 +81,7 @@ Hence, the expected scores are:
 <tr><td>Hardwired...To Self-Destruct</td><td>0.8*0.0</td><td>0.2*1.0</td><td>0.1*0.0</td><td>0.2</td></tr>
 </table>
 
-The data above is represented using [tensors](http://docs.vespa.ai/documentation/tensor-intro.html).
-
-Build and test the application, and validate that the _relevance_ score per document is the expected value,
+Build and test the application, and validate that the document's _relevance_ is the expected value,
 and the results are returned in descending relevance order.
 
 
@@ -107,16 +107,16 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-a
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
-**Feed data into application:**
+**Feed data:**
 <pre data-test="exec">
-$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/A-Head-Full-of-Dreams.json \
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/src/test/resources/A-Head-Full-of-Dreams.json \
     http://localhost:8080/document/v1/music/music/docid/1 | python -m json.tool
-$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/Love-Is-Here-To-Stay.json \
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/src/test/resources/Love-Is-Here-To-Stay.json \
     http://localhost:8080/document/v1/music/music/docid/2 | python -m json.tool
-$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/Hardwired...To-Self-Desctruct.json \
+$ curl -s -X POST --data-binary @${VESPA_SAMPLE_APPS}/basic-search-tensor/src/test/resources/Hardwired...To-Self-Desctruct.json \
     http://localhost:8080/document/v1/music/music/docid/3 | python -m json.tool
 </pre>
-**Test the application:**
+**Recommend albums, send user profile in query:**
 <pre data-test="exec" data-test-assert-contains="Metallica">
 $ curl -s 'http://localhost:8080/search/?ranking=rank_albums&amp;yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B&amp;ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D' | python -m json.tool
 </pre>
