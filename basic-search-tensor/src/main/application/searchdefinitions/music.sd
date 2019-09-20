@@ -8,58 +8,24 @@ search music {
             indexing: summary | index
         }
 
-        field artistId type string {
-            indexing: summary | attribute
-        }
-
-        field title type string {
-            indexing: summary | index
-        }
-
         field album type string {
-            indexing: index
-        }
-
-        field duration type int {
-            indexing: summary
+            indexing: summary | index
         }
 
         field year type int {
             indexing: summary | attribute
         }
 
-        field popularity type int {
-            indexing: summary | attribute
-        }
-
-        field tensor_attribute type tensor<double>(x{}) {
+        field category_scores type tensor<float>(cat{}) {
             indexing: summary | attribute
         }
 
     }
 
-
-    constant tensor_constant {
-        file: constants/constant_tensor_file.json
-        type: tensor<double>(x{})
-    }
-
-
-    rank-profile simple_tensor_ranking inherits default {
-
+    rank-profile rank_albums inherits default {
         first-phase {
-            expression: sum(query(tensor) * attribute(tensor_attribute))
+            expression: sum(query(user_profile) * attribute(category_scores))
         }
-
-    }
-
-
-    rank-profile constant_tensor_ranking inherits default {
-
-        first-phase {
-            expression: sum(query(tensor) * attribute(tensor_attribute) * constant(tensor_constant))
-        }
-
     }
 
 }
