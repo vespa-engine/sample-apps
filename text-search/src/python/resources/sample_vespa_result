@@ -1,0 +1,47 @@
+{
+    "root": {
+        "id": "toplevel",
+        "relevance": 1.0,
+        "fields": {"totalCount": 75},
+        "coverage": {
+            "coverage": 100,
+            "documents": 99629,
+            "full": True,
+            "nodes": 1,
+            "results": 1,
+            "resultsFull": 1,
+        },
+        "children": [
+            {
+                "id": "id:msmarco:msmarco::D291325",
+                "relevance": 11.752547730721709,
+                "source": "msmarco",
+                "fields": {
+                    "sddocname": "msmarco",
+                    "documentid": "id:msmarco:msmarco::D291325",
+                    "id": "D291325",
+                },
+            },
+            {
+                "id": "id:msmarco:msmarco::D2069873",
+                "relevance": 11.409872385961592,
+                "source": "msmarco",
+                "fields": {
+                    "sddocname": "msmarco",
+                    "documentid": "id:msmarco:msmarco::D2069873",
+                    "id": "D2069873",
+                },
+            },
+            {
+                "id": "id:msmarco:msmarco::D2302833",
+                "relevance": 11.394343513271858,
+                "source": "msmarco",
+                "fields": {
+                    "sddocname": "msmarco",
+                    "documentid": "id:msmarco:msmarco::D2302833",
+                    "id": "D2302833",
+                },
+            },
+        ],
+    }
+}

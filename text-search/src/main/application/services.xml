@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <admin version="2.0">
+        <adminserver hostalias="node1"/>
+        <configservers>
+        	<configserver hostalias="node1"/>
+        </configservers>
+        <cluster-controllers>
+        	<cluster-controller hostalias="node1" />
+        </cluster-controllers>
+    </admin>
+
+  <container id="stuff" version="1.0">
+    <search/>
+    <component id="com.yahoo.language.simple.SimpleLinguistics"/>
+    <document-processing/>
+    <document-api/>
+  </container>
+
+  <content id="msmarco" version="1.0">
+       <redundancy reply-after='1'>1</redundancy>
+       <documents>
+         <document type='msmarco' mode="index"/>
+         <document-processing cluster="stuff"/>
+       </documents>
+       <nodes>
+       	<node distribution-key='0' hostalias='node1'/>
+       </nodes>
+  </content>
+</services>

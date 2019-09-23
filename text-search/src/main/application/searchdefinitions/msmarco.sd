@@ -1,0 +1,60 @@
+# Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+search msmarco {
+    document msmarco {
+
+        field id type string {
+            indexing: summary | attribute
+        }
+
+        field title type string {
+            indexing: index
+            index: enable-bm25
+        }
+
+        field url type string {
+            indexing: index
+        }
+
+        field body type string {
+            indexing: index
+            index: enable-bm25
+        }
+
+    }
+
+    fieldset default {
+        fields: title, body
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: nativeRank(title, body)
+        }
+    }
+
+    rank-profile proximity100 inherits default {
+        rank-properties {
+            nativeRank.proximityWeight: 100
+        }
+    }
+
+    rank-profile proximity0 inherits default {
+        rank-properties {
+            nativeRank.proximityWeight: 0
+        }
+    }
+
+    rank-profile fieldmatch inherits default {
+        first-phase {
+            expression: fieldMatch(title) + fieldMatch(body)
+        }
+    }
+
+    rank-profile bm25 inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(body)
+        }
+    }
+
+}
