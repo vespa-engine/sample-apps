@@ -71,7 +71,7 @@ def main():
     ) as fout:
         reader = csv.reader(fin, delimiter="\t")
         for row in reader:
-            query = row[0]
+            query = row[0].strip()
             relevant_id = row[1]
 
             vespa_result = vespa_search(query=query, rank_profile=RANK_PROFILE)
