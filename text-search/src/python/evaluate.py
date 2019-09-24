@@ -29,6 +29,7 @@ def vespa_search(query, rank_profile, hits=100, offset=0):
             "hits": hits,
             "offset": offset,
             "ranking": rank_profile,
+            "summary": "minimal"
         },
     )
     return response.json()
