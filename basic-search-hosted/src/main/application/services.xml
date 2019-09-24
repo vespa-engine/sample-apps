@@ -4,6 +4,7 @@
 
     <!-- The Java container(s) which serves HTTP requests. -->
     <container id="container" version="1.0">
+        <client-authorize />
         <document-api />        <!-- Allows creating, updating, removing, and reading documents based on docid. -->
         <search />              <!-- Allows searching for documents through the search api. -->
         <nodes count="2" />
