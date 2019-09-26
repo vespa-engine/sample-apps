@@ -1,7 +1,7 @@
 #! /bin/bash
 
 DIR="msmarco"
-DOCTYPE="textir"
+DOCTYPE="msmarco"
 NUM_QUERIES=1000
 NUM_DOCS=100000
 
