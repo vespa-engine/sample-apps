@@ -23,6 +23,12 @@ search msmarco {
 
     }
 
+    document-summary minimal {
+
+        summary id type string {}
+
+    }
+
     fieldset default {
         fields: title, body
     }
@@ -30,24 +36,6 @@ search msmarco {
     rank-profile default {
         first-phase {
             expression: nativeRank(title, body)
-        }
-    }
-
-    rank-profile proximity100 inherits default {
-        rank-properties {
-            nativeRank.proximityWeight: 100
-        }
-    }
-
-    rank-profile proximity0 inherits default {
-        rank-properties {
-            nativeRank.proximityWeight: 0
-        }
-    }
-
-    rank-profile fieldmatch inherits default {
-        first-phase {
-            expression: fieldMatch(title) + fieldMatch(body)
         }
     }
 
