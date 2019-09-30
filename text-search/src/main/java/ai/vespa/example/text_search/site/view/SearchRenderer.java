@@ -38,7 +38,7 @@ public class SearchRenderer {
     static String renderResults(JsonNode root) {
         SimpleHtmlBuilder html = new SimpleHtmlBuilder();
 
-        if (totalCount(root) > 0) {
+        if (totalCount(root) > 0 && root.get("root").has("children")) {
             html.div("search-items", (level_1) -> {
                 for (JsonNode result : root.get("root").get("children")) {
 
@@ -102,7 +102,6 @@ public class SearchRenderer {
             throw new RuntimeException("Unable to retrieve hit count");
         }
         return totalCount.get();
-
     }
 
 }
