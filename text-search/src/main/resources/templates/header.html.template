@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<html>
+
+<head>
+    <title>{{page-title}}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/site/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/site/css/site.css"/>
+</head>
+
+<body>

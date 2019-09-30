@@ -1,0 +1,32 @@
+{{header}}
+
+<div class="home">
+
+    <div>
+        <div class="icon">
+            <a href="/site">
+                <img src="/site/img/vespa-logo-dark.png" />
+                <div>Search</div>
+            </a>
+        </div>
+        <div class="search">
+            <form action="/site/search/" method="get">
+                <input id="searchtext" type="text" value="{{search-query}}" name="q"/>
+                <input id="searchbutton" type="submit" value="Search" />
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="links">
+            <ul>
+                <li><a href="https://docs.vespa.ai/documentation/use-case-text-search.html">About</a></li>
+                <li><a href="https://docs.vespa.ai">Documentation</a></li>
+                <li><a href="https://vespa.ai">Vespa.ai</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{{footer}}

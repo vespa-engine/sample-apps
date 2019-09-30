@@ -1,0 +1,215 @@
+/* Copyright 2019 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.*/
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+	color: #555;
+}
+
+a:hover {
+	color: #555;
+	text-decoration: underline;
+}
+
+body {
+    font-family: Tahoma, Arial, Helvetica, sans-serif;
+	background-color: #fff;
+	color: #555;
+}
+
+/*
+ * Home
+ */
+
+.home {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: 1fr minmax(1px, auto);
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+}
+
+.home .icon {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 20px;
+}
+
+.home .icon img {
+    width: 250px;
+}
+
+.home .search {
+	width: 100%;
+	padding: 40px;
+    font-size: 15px;
+}
+
+.home #searchtext {
+	width: 600px;
+}
+
+/*
+ * Search results
+ */
+
+.searchresults {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: minmax(1px, auto) 1fr minmax(1px, auto);
+}
+
+.searchresults .header {
+    height: 80px;
+    border-bottom: 1px solid #eee;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+    display: grid;
+    grid-template-columns: 250px 1fr auto;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+}
+
+.searchresults .header .icon img {
+    width: 100px;
+}
+
+.searchresults .header .search {
+	width: 100%;
+	padding: 20px;
+	text-align: center;
+}
+
+.searchresults #searchtext {
+	width: 400px;
+}
+
+.searchresults #searchbutton {
+	text-transform: lowercase;
+	letter-spacing: 1px;
+    font-size: 12px;
+}
+
+.header .links a {
+	margin-right: 20px;
+}
+
+.searchresults .results {
+    margin: 20px 50px;
+}
+
+.results .title-text {
+	text-align: left;
+	font-size: 28px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+.search h2 {
+	text-align: left;
+	font-size: 28px;
+}
+
+.search-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
+.search-results-count {
+	padding: 10px 0 10px 0;
+    font-weight: 600;
+    grid-column-start: 1;
+    grid-row-start: 1;
+}
+
+.search-results-per-page {
+    grid-column-start: 2;
+	padding: 10px 0 10px 0;
+}
+
+.search-item {
+    padding: 10px;
+}
+
+.search-item-title {
+    font-size: 1.2em;
+}
+
+.search-item-title a {
+	text-decoration: underline;
+}
+
+.search-item-body {
+    padding-top: 5px;
+}
+
+.search-item-url a {
+    padding-top: 2px;
+    font-size: 0.8em;
+    color: #999;
+}
+
+.search-results-pagination {
+    margin: 20px 0px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-gap: 20px;
+}
+
+.search-results-previous {
+    grid-column-start: 1;
+    text-align: right;
+}
+
+.search-results-next {
+    grid-column-start: 2;
+    text-align: left;
+}
+
+
+/*
+ * Footer
+ */
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    justify-items: center;
+    text-align: center;
+}
+
+.footer .links {
+    grid-column-start: 2;
+}
+
+.footer a {
+	color: #ddd;
+}
+
+.footer ul {
+	list-style-type: none;
+	text-align: center;
+	width: 600px;
+}
+
+.footer li {
+	padding: 10px;
+	border-bottom: 1px solid #555;
+	letter-spacing: 2px;
+	text-transform: lowercase;
+}
+
