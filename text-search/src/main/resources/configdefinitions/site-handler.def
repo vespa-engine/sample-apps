@@ -1,0 +1,4 @@
+package=ai.vespa.example.text_search.site
+
+vespaHostName string
+vespaHostPort int

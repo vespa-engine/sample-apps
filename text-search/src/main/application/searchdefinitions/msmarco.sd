@@ -8,25 +8,26 @@ search msmarco {
         }
 
         field title type string {
-            indexing: index
+            indexing: index | summary
             index: enable-bm25
+            stemming: best
         }
 
         field url type string {
-            indexing: index
+            indexing: index | summary
         }
 
         field body type string {
-            indexing: index
+            indexing: index | summary
             index: enable-bm25
+            summary: dynamic
+            stemming: best
         }
 
     }
 
     document-summary minimal {
-
         summary id type string {}
-
     }
 
     fieldset default {
