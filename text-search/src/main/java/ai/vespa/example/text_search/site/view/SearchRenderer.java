@@ -21,6 +21,7 @@ public class SearchRenderer {
         template.set("page-title", buildPageTitle(properties));
         template.set("search-query", properties.getOrDefault("q", ""));
         template.set("search-query-parameters", new SimpleQueryBuilder().add(properties).toString());
+        template.set("search-profiles", renderProfileOptions(properties));
         template.set("search-results-count", String.valueOf(totalCount(results)));
         template.set("search-results-pagination", renderPagination(properties, results));
         template.set("results", renderResults(results));
@@ -102,6 +103,16 @@ public class SearchRenderer {
             throw new RuntimeException("Unable to retrieve hit count");
         }
         return totalCount.get();
+    }
+
+    static String renderProfileOptions(Map<String, String> properties) {
+        SimpleHtmlBuilder html = new SimpleHtmlBuilder();
+
+        String selectedProfile = properties.getOrDefault("profile", "bm25");
+        html.option("default", selectedProfile.equalsIgnoreCase("default"));
+        html.option("bm25", selectedProfile.equalsIgnoreCase("bm25"));
+
+        return html.build();
     }
 
 }

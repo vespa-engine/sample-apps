@@ -49,6 +49,14 @@ public class SimpleHtmlBuilder {
         sb.append(text);
     }
 
+    public void option(String value, boolean selected) {
+        if (selected) {
+            element("option", Map.of("value", value, "selected", "true"), (v) -> text(value));
+        } else {
+            element("option", Map.of("value", value), (v) -> text(value));
+        }
+    }
+
     public String build() {
         return sb.toString();
     }
