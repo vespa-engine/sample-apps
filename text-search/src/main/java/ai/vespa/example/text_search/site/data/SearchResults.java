@@ -19,6 +19,7 @@ public class SearchResults {
         query.add("summary", properties.getOrDefault("s", "default"));
         query.add("ranking", properties.getOrDefault("r", "bm25"));
         query.add("hits", properties.getOrDefault("h", "10"));
+        query.add("ranking", properties.getOrDefault("profile", "bm25"));
 
         if (properties.containsKey("p")) {
             int pageVal = Integer.parseInt(properties.get("p"));

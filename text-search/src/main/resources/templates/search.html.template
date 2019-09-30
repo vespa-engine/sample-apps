@@ -12,6 +12,9 @@
         <div class="search">
             <form action="/site/search/" method="get">
                 <input id="searchtext" type="text" value="{{search-query}}" name="q"/>
+                <select id="searchprofile" name="profile">
+                    {{search-profiles}}
+                </select>
                 <input id="searchbutton" type="submit" value="Search" />
             </form>
         </div>
