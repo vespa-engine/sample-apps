@@ -46,7 +46,7 @@ public class SearchRenderer {
                     Optional<String> body  = getStringValue(result, "fields", "body");
                     Optional<String> url   = getStringValue(result, "fields", "url");
 
-                    if (title.isPresent() && body.isPresent() && url.isPresent()) {
+                    if (title.isPresent() && title.get().strip().length() > 0 && body.isPresent() && url.isPresent()) {
                         html.div("search-item", (level_2) -> {
                             html.div("search-item-title", (level_3) -> {
                                 html.a(url.get(), (level_4) -> {
