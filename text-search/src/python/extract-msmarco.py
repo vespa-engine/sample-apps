@@ -6,10 +6,10 @@ import csv
 import gzip
 
 
-download_dir = os.path.join("../../msmarco", "download")
-query_file = os.path.join("../../msmarco", "queries.tsv")
-docs_file = os.path.join("../../msmarco", "docs.tsv")
-offset_file = os.path.join("../../msmarco", "docs-offset.tsv")
+download_dir = os.path.join("msmarco", "download")
+query_file = os.path.join("msmarco", "queries.tsv")
+docs_file = os.path.join("msmarco", "docs.tsv")
+offset_file = os.path.join("msmarco", "docs-offset.tsv")
 
 
 # The query string for each queryid is querystring[queryid]
