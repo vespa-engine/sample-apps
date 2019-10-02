@@ -45,13 +45,8 @@ def load_document_offsets():
 
 # Only select queries that have more than a given number of relevance judgements
 def select_queries(queries):
-    qids = [
-        qid
-        for qid in queries.keys()
-        if len(queries[qid]["docs"]) >= min_relevant_docs_per_query
-    ]
-    random.shuffle(qids)
-    qids = qids[:queries_to_generate]
+    qids = [ qid for qid in queries.keys() if len(queries[qid]["docs"]) >= min_relevant_docs_per_query ]
+    qids = random.sample(qids, min(queries_to_generate, len(qids)))
     return set(qids)
 
 
@@ -63,7 +58,7 @@ def select_documents(selected_query_ids, queries, offsets):
             selected_doc_ids.add(docid)
 
     docids = [docid for docid in offsets.keys()]
-    while len(selected_doc_ids) < documents_to_generate:
+    while len(selected_doc_ids) < min(len(docids), documents_to_generate):
         selected_doc_ids.add(random.choice(docids))
 
     return selected_doc_ids
