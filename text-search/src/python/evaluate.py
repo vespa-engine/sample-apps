@@ -3,7 +3,9 @@
 import sys
 import csv
 import os
-from requests import get
+import json
+import urllib.request
+import urllib.parse
 
 
 RANK_PROFILE = sys.argv[1]
@@ -22,17 +24,14 @@ def vespa_search(query, rank_profile, hits=100, offset=0):
     :param offset: Page to be retrieved
     :return: Vespa results in JSON format
     """
-    response = get(
-        url="http://localhost:8080/search/",
-        params={
-            "query": query,
-            "hits": hits,
-            "offset": offset,
-            "ranking": rank_profile,
-            "summary": "minimal"
-        },
+    url = "http://localhost:8080/search/?query={}&hits={}&offset={}&ranking={}&summary={}".format(
+        urllib.parse.quote_plus(query),
+        hits,
+        offset,
+        rank_profile,
+        "minimal"
     )
-    return response.json()
+    return json.loads(urllib.request.urlopen(url).read())
 
 
 def parse_vespa_json(data):
@@ -67,9 +66,8 @@ def compute_reciprocal_rank(ranking, relevant_id):
 
 def main():
 
-    with open(QUERY_RELEVANCE_FILE, encoding="utf8") as fin, open(
-        OUTPUT_METRICS_FILE, "w", encoding="utf8"
-    ) as fout:
+    with open(QUERY_RELEVANCE_FILE, encoding="utf8") as fin, \
+         open(OUTPUT_METRICS_FILE, "w", encoding="utf8") as fout:
         reader = csv.reader(fin, delimiter="\t")
         for row in reader:
             query = row[0].strip()
