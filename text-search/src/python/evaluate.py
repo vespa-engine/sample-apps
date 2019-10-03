@@ -69,6 +69,7 @@ def main():
     with open(QUERY_RELEVANCE_FILE, encoding="utf8") as fin, \
          open(OUTPUT_METRICS_FILE, "w", encoding="utf8") as fout:
         reader = csv.reader(fin, delimiter="\t")
+        rrs = []
         for row in reader:
             query = row[0].strip()
             relevant_id = row[1]
@@ -76,8 +77,11 @@ def main():
             vespa_result = vespa_search(query=query, rank_profile=RANK_PROFILE)
             ranking = parse_vespa_json(data=vespa_result)
             rr = compute_reciprocal_rank(ranking=ranking, relevant_id=relevant_id)
+            rrs.append(rr)
 
             fout.write("{0}\n".format(rr))
+
+        print("MRR: {}".format(sum(rrs) / len(rrs)))
 
 
 if __name__ == "__main__":
