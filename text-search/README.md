@@ -1,81 +1,68 @@
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-# Data
+# Vespa sample application - text search tutorial
 
-Download data from [MS MARCO website](http://msmarco.org). Takes around 21G of space.
+This sample application contains the code for the text search tutorial. Please refer to the
+[text search tutorial](http://docs.vespa.ai/documentation/tutorials/text-search.html)
+for more information.
 
-```bash
-./bin/download-msmarco.sh
-```
+**Executable example:**
 
-Extract, sample and convert data to Vespa JSON format.
+<pre data-test="exec">
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
+$ cd $VESPA_SAMPLE_APPS/text-search &amp;&amp; mvn clean package
+$ docker run --detach --name vespa --hostname vespa-container --privileged \
+  --volume $VESPA_SAMPLE_APPS:/apps --publish 8080:8080 vespaengine/vespa
+</pre>
 
-```bash
-./bin/convert-msmarco.sh
-```
+**Wait for the configserver to start:**
 
-# Deploy the application package
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+</pre>
 
-In the following, we will assume you run all the commands from an empty
-directory, i.e. the `pwd` directory is empty. We will map this directory
-into the `/app` directory inside the Docker container. 
+**Deploy the application:**
 
-Now, to start the Vespa container:
-
-```bash
-docker run -m 12G --detach --name vespa-msmarco --hostname msmarco-app \
-    --privileged --volume `pwd`:/app \
-    --publish 8080:8080 --publish 19112:19112 vespaengine/vespa
-```
-
-
-Make sure that the configuration server is running - signified by a 200 OK response:
-
-```bash
-docker exec vespa-msmarco bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
-```
-
-To deploy theapplication:
-
-```bash
-docker exec vespa-msmarco bash -c '/opt/vespa/bin/vespa-deploy prepare /app/src/main/application && \
+<pre data-test="exec">
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /apps/text-search/target/application.zip && \
     /opt/vespa/bin/vespa-deploy activate'
-```
+</pre>
 
-After a short while, querying the port 8080 should return a 200 status code indicating that your application is up and running.
+**Wait for the application to start:**
 
-```bash
-curl -s --head http://localhost:8080/ApplicationStatus
-```
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head http://localhost:8080/ApplicationStatus
+</pre>
 
-# Feed data
+**Create data feed:** 
 
-```bash
-docker exec vespa-msmarco bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --verbose --file /app/msmarco/vespa.json --host localhost --port 8080'
-```
+To use the entire MS MARCO data set, use the download script. Here we use the sample data. 
 
-# Test query and evaluation scripts
+<pre data-test="exec">
+$ ./bin/convert-msmarco.sh
+</pre>
 
-Test query using `default` ranking profile:
+**Feed data:**
 
-```bash
-curl -s http://localhost:8080/search/?query=is+sicily+a+state
-```
+<pre data-test="exec">
+$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+    --file /apps/text-search/msmarco/vespa.json --host localhost --port 8080'
+</pre>
 
-Test query using `bm25` ranking profile:
+**Test the application:**
 
-```bash
-curl -s http://localhost:8080/search/?query=is+sicily+a+state&ranking=bm25
-```
+<pre data-test="exec" data-test-assert-contains="D2977840">
+$ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod' 
+</pre>
 
-The following two commands will generate two output files `test-output-default.tsv` 
-and `test-output-bm25.tsv`, respectively. The files contain a reciprocal rank metric 
-for each test query sent to Vespa. 
+**Browse the site:**
 
-```bash
-./src/python/evaluate.py default msmarco
-./src/python/evaluate.py bm25 msmarco
-```
+[http://localhost:8080/site](http://localhost:8080/site)
 
-The script `src/R/compare_rr.R` can be used to summarize those output files and to plot 
-a boxplot comparing the performance of the two ranking functions.
+**Shutdown and remove the container:**
+
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
+
