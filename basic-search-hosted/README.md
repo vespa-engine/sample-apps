@@ -21,14 +21,26 @@ Vespa deployment running with, e.g., docker, as in the other [sample apps](../).
 
 ## Sign up in the hosted Vespa console, and create an application with the wanted name
 
-## Generate deploy key pair
-Use the hosted Vespa console to generate a key pair. This uploads the public key for your
-application to the hosted Vespa API. Store the private key for use with CLIs. 
+## Generate developer key pair
+Deployments to the `dev` environment require _developer_ access in the Vespa cloud. Navigate to user
+management under your tenant, and give yourself the developer role. Then, navigate to key management
+for your tenant, generate a key pair if you haven't already got one, and have the public key uploaded.
+The private key is your API key, and lets CLIs and test code access the Vespa cloud API with developer privileges.
+
+## Generate application trust certificate and key pair
+Deployments in the Vespa cloud are secured by mutual TLS. See
+[Data Plane](https://vespa.ai/documentation/security-model.html#data-plane) for more information.
+In short, the application trusts clients with the certificates located in `src/main/application/security/clients.pem`.
+Generate a certificate to put there, and keep the private key for data plane access, with
+```sh
+$ openssl req -x509 -nodes -days 14 -newkey ec:<(openssl ecparam -name prime256v1) \
+  -keyout $HOME/key.pem -out $HOME/clients.pem
+```
+Then copy the certificate to `src/main/application/security/`.
 
 ## Configure pom.xml for your hosted Vespa application
-Set the `tenant`, `application`, and `privateKeyFile` properties in `pom.xml`.  
-For now, the API endpoint also needs to be overridden, so set the `endpoint` property 
-to `https://api.vespa-external.aws.oath.cloud:4443`. 
+Set the `tenant`, `application`, `privateKeyFile`, `dataPlaneCertificateFile`, and `dataPlanePrivateKeyFile`
+properties in `pom.xml`. The `privateKeyFile` is your API key, while the data plane pair is the one from the above step.
 
 ## Deploy to dev and test against it
 Command to build and deploy application to the hosted development environment is
