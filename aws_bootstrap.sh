@@ -23,7 +23,7 @@ echo "override VESPA_CONFIGSERVERS $configserver_addr" >> $VESPA_HOME/conf/vespa
 if [ "$configserver_addr" = "$fqdn" ]; then
 	echo "Starting vespa configuration server "
 	service vespa-configserver start
+else
+    echo "Starting vespa services"
+    service vespa start
 fi
-
-echo "Starting vespa services"
-service vespa start;
