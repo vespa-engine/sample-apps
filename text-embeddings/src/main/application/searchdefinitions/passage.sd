@@ -1,0 +1,84 @@
+# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+search passage {
+
+    document passage {
+        field query type string { indexing: summary } 
+        field query_id type int { indexing: summary |attribute } 
+        field query_type type string { indexing: summary |attribute } 
+        field is_selected type byte { indexing: summary |attribute } 
+
+        field sentences type array<string> {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field passage_text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+        field n_sentences type int { 
+            indexing:summary |attribute
+        }
+        field passage_embedding type tensor<float>(x[512]) {
+          indexing: attribute
+        }
+        field sentence_embeddings type tensor<float>(s{},x[512]) {
+          indexing: attribute 
+        }
+    }
+
+    fieldset default {
+      fields:passage_text,sentences
+    }
+
+    rank-profile random inherits default {
+      first-phase {
+        expression:random
+      }
+    }
+
+    rank-profile bm25 inherits default {
+      first-phase {
+        expression:bm25(passage_text)
+      }
+    }
+
+    rank-profile nativeRank inherits default {
+      first-phase {
+        expression:nativeRank(passage_text)
+      }
+    }
+
+    rank-profile passage-similarity inherits default {
+      first-phase {
+        expression: sum(query(tensor)*attribute(passage_embedding))
+      }
+    }
+
+    rank-profile sentence-similarity  inherits default {
+
+      function sentences_max_similarity() {
+        expression: reduce(sum(query(tensor)*attribute(sentence_embeddings),x),max)
+      }
+
+      first-phase {
+        expression: sentences_max_similarity
+      }
+    }
+
+    rank-profile native-similarity{
+      first-phase {
+        expression: 0.5*reduce(sum(query(tensor)*attribute(sentence_embeddings),x),max) + 0.5*nativeRank(passage_text)
+      }
+    }
+
+    rank-profile native-phased-similarity{
+      first-phase {
+        expression:nativeRank(passage_text)
+      }
+      second-phase {
+        expression: 0.5*reduce(sum(query(tensor)*attribute(sentence_embeddings),x),max) + 0.5*nativeRank(passage_text)
+      }
+    }
+}
