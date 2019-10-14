@@ -1,0 +1,5 @@
+tensorflow
+tensorflow-hub
+numpy==1.16.4 
+nltk 
+requests
