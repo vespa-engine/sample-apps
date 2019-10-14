@@ -9,7 +9,7 @@ This sample application contains code and dependencies for running https://docs.
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample-apps/text-embeddings
 </pre>
 
-** Build a docker image (See [Dockerfile] for details ) which installs python3, tensorflow/tensorflow-hub and Natural Language Toolkit (nltk)
+**Build a docker image (See [Dockerfile] for details ) which installs python3, tensorflow/tensorflow-hub and Natural Language Toolkit (nltk)
 <pre>
 $ docker build . --tag text_embeddings:1.0
 </pre>
