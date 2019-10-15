@@ -43,11 +43,11 @@ session.run([tf.compat.v1.global_variables_initializer(), tf.compat.v1.tables_in
 
 rank_profile_results = {
   "random":[], 
+  "passage-semantic-similarity":[],
+  "max-sentence-semantic-similarity":[],
   "bm25":[],
   "nativeRank":[],
-  "passage-similarity":[],
-  "sentence-similarity":[],
-  "native-similarity":[]
+  "nativeRank-and-max-sentence-linear":[]
 }
 
 for line in sys.stdin:

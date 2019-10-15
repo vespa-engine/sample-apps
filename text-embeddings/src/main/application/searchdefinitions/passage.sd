@@ -38,6 +38,18 @@ search passage {
       }
     }
 
+    rank-profile passage-semantic-similarity inherits default {
+      first-phase {
+        expression: sum(query(tensor)*attribute(passage_embedding))
+      }
+    }
+
+    rank-profile max-sentence-semantic-similarity  inherits default {
+      first-phase {
+        expression: reduce(sum(query(tensor)*attribute(sentence_embeddings),x),max)
+      }
+    }
+
     rank-profile bm25 inherits default {
       first-phase {
         expression:bm25(passage_text)
@@ -50,30 +62,13 @@ search passage {
       }
     }
 
-    rank-profile passage-similarity inherits default {
-      first-phase {
-        expression: sum(query(tensor)*attribute(passage_embedding))
-      }
-    }
-
-    rank-profile sentence-similarity  inherits default {
-
-      function sentences_max_similarity() {
-        expression: reduce(sum(query(tensor)*attribute(sentence_embeddings),x),max)
-      }
-
-      first-phase {
-        expression: sentences_max_similarity
-      }
-    }
-
-    rank-profile native-similarity{
+    rank-profile nativeRank-and-max-sentence-linear inherits default {
       first-phase {
         expression: 0.5*reduce(sum(query(tensor)*attribute(sentence_embeddings),x),max) + 0.5*nativeRank(passage_text)
       }
     }
 
-    rank-profile native-phased-similarity{
+    rank-profile phased-similarity {
       first-phase {
         expression:nativeRank(passage_text)
       }
