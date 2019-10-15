@@ -9,8 +9,8 @@ where we use [Google's Universal Sentence Encoder](https://tfhub.dev/google/univ
 
 **Requirements:**
 
-..* [Docker](https://www.docker.com/) installed and running  
-..* git client to checkout the sample application repository
+* [Docker](https://www.docker.com/) installed and running  
+* git client to checkout the sample application repository
 
 See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html). This setup is slightly different then the official quicks start guide.
 
@@ -47,16 +47,19 @@ The image builds on the [vespaengine/vespa docker image (latest)](https://hub.do
 $ docker build . --tag vespa_text_embeddings:1.0
 </pre>
 **Run the docker container built in the previous step and enter the running docker container**
+
 <pre>
 $ docker run --detach --name vespa_text_embeddings  --hostname vespa-container --privileged vespa_text_embeddings:1.0
 $ docker exec -it vespa_text_embeddings  bash 
 </pre>
 **Deploy the document schema and configuration - this will start Vespa services**
+
 <pre>
 $ vespa-deploy prepare text-embeddings/src/main/application/ && vespa-deploy activate
 </pre>
 
 **Download the MS MARCO Q A V1.1 dataset and convert format to Vespa (Sample of 100 queries)**
+
 Converting the [MS MARCO](http://www.msmarco.org/) Question Answering V1.1 dataset json format to Vespa also includes using the [Google Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) to encode text passages and sentences to their tensor represenation. 
 
 Downloading and converting
@@ -66,15 +69,17 @@ $ ./text-embeddings/bin/download.sh
 $ head -100 dev_v1.1.json |./text-embeddings/bin/convert-to-vespa.py  2> /dev/null
 </pre>
 
-After the above we have two new files in the working directory: _queries.txt_ and _vespa_feed.json_. The _queries.txt_ file contains queries which have at least one relevant passage and in our head 100 sample that equals to 97 queries. The total number of passages is 796 passages.
+After the above we have two new files in the working directory: _queries.txt_ and _vespa_feed.json_. The _queries.txt_ file contains queries which have at least one relevant passage and in our head 100 sample that equals to 97 queries. The total number of passages is 796.
 
 **Feed Vespa json** 
+
 We feed the documents using the [Vespa http feeder client](https://docs.vespa.ai/documentation/vespa-http-client.html):
 <pre>
 $ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file vespa_feed.json --endpoint http://localhost:8080 
 </pre>
 
 **Run query evaluation of 6 different models/rank profiles**
+
 The evaluation script runs all queries read from _stdin_ and for each query it executes n rank-profiles and finally it computes the [mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@10_ metric per rank profile for all queries. The evaluations script uses the [Vespa search api](https://docs.vespa.ai/documentation/search-api.html) and each query limits the recall to the set of passages 
 associated with the query (relevant or not) and the evaluation measures how well we are able to rank the set of passages on a per rank profile basis. The search request looks like this where 
 the recall parameter limits the recall to only match against passages which are associated with the query id. We use _type_ any and include a query term which is always true for the cases
