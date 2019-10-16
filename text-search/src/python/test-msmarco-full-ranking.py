@@ -13,6 +13,7 @@ RUN_ID = sys.argv[2]
 DATA_FOLDER = sys.argv[3]
 QUERIES_FILE = sys.argv[4]
 RELEVANCE_FILE = sys.argv[5] if len(sys.argv) > 5 else None
+GRAMMAR_ANY = sys.argv[6] if len(sys.argv) > 6 else False
 
 QUERIES_FILE_PATH = os.path.join(DATA_FOLDER, QUERIES_FILE)
 OUTPUT_FILE = os.path.join(DATA_FOLDER, RUN_ID + "_" + RANK_PROFILE + ".txt")
@@ -64,19 +65,27 @@ def extract_querie_relevance(qrel, query_strings):
     return query_relevance
 
 
-def vespa_search(query, rank_profile, hits=1000, offset=0):
+def vespa_search(query, rank_profile, grammar_any=False, hits=1000, offset=0):
     """
     Query Vespa and retrieve results in JSON format.
 
     :param query: msmarco query.
     :param rank_profile: Ranking-profile used to sort documents
+    :param grammar_any: Use grammar = any on the query
     :param hits: Number of hits to retrieve per page
     :param offset: Page to be retrieved
     :return: Vespa results in JSON format
     """
-    # "yql": 'select * from sources * where ([{"grammar": "any"}]userInput(@userQuery));',
+
+    if grammar_any:
+        yql = (
+            'select * from sources * where ([{"grammar": "any"}]userInput(@userQuery));'
+        )
+    else:
+        yql = "select * from sources * where (userInput(@userQuery));"
+
     body = {
-        "yql": "select * from sources * where (userInput(@userQuery));",
+        "yql": yql,
         "userQuery": query,
         "hits": hits,
         "offset": offset,
@@ -114,7 +123,7 @@ def evaluate(query_relevance):
             start_time = time()
             for qid, (query, relevant_id) in query_relevance.items():
                 rr = 0
-                vespa_result = vespa_search(query=query, rank_profile=RANK_PROFILE)
+                vespa_result = vespa_search(query=query, rank_profile=RANK_PROFILE, grammar_any=GRAMMAR_ANY)
                 ranking = parse_vespa_json(data=vespa_result)
                 for rank, hit in enumerate(ranking):
                     if hit[0] == relevant_id:
@@ -138,7 +147,7 @@ def evaluate(query_relevance):
 def generate_search_results(queries):
     print("Generate search results ...")
     for qid, query in queries.items():
-        vespa_result = vespa_search(query=query, rank_profile=RANK_PROFILE)
+        vespa_result = vespa_search(query=query, rank_profile=RANK_PROFILE, grammar_any=GRAMMAR_ANY)
         ranking = parse_vespa_json(data=vespa_result)
         for rank, hit in enumerate(ranking):
             with open(OUTPUT_FILE, "a", encoding="utf8") as fout:
