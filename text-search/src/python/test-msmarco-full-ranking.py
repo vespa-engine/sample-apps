@@ -6,7 +6,7 @@ import os
 import csv
 import re
 from time import time
-from requests import get
+from requests import post
 
 RANK_PROFILE = sys.argv[1]
 RUN_ID = sys.argv[2]
@@ -74,17 +74,18 @@ def vespa_search(query, rank_profile, hits=1000, offset=0):
     :param offset: Page to be retrieved
     :return: Vespa results in JSON format
     """
-    response = get(
-        url="http://localhost:8080/search/",
-        params={
-            "query": query,
-            "hits": hits,
-            "offset": offset,
-            "ranking": rank_profile,
-            "summary": "minimal",
-        },
-    )
-    return response.json()
+    # "yql": 'select * from sources * where ([{"grammar": "any"}]userInput(@userQuery));',
+    body = {
+        "yql": "select * from sources * where (userInput(@userQuery));",
+        "userQuery": query,
+        "hits": hits,
+        "offset": offset,
+        "ranking": rank_profile,
+        "summary": "minimal",
+        "presentation.format": "json",
+    }
+    r = post("http://localhost:8080/search/", json=body)
+    return r.json()
 
 
 def parse_vespa_json(data):
