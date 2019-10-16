@@ -34,9 +34,9 @@ def handle_query(query,queryid,rank_profile):
   return selected 
 
 module_url = "https://tfhub.dev/google/universal-sentence-encoder/2"
-embed = hub.Module(module_url)
+module = hub.Module(module_url)
 text_sentences = tf.compat.v1.placeholder(tf.string)
-embeddings = embed(text_sentences)
+embeddings = module(text_sentences)
 
 session = tf.compat.v1.Session() 
 session.run([tf.compat.v1.global_variables_initializer(), tf.compat.v1.tables_initializer()])

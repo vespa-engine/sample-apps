@@ -57,9 +57,9 @@ def generate_vespa_feed(data,queryfile):
 
 print("Downloading universal sentence encoder - about 1GB which needs to be downloaded")
 module_url = "https://tfhub.dev/google/universal-sentence-encoder/2"
-embed = hub.Module(module_url)
+module = hub.Module(module_url)
 text_sentences = tf.compat.v1.placeholder(tf.string)
-embeddings = embed(text_sentences)
+embeddings = module(text_sentences)
 
 print("Done Downloading universal sentence encoder")
 
