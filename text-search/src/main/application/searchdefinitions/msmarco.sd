@@ -46,4 +46,128 @@ search msmarco {
         }
     }
 
+    rank-profile collectAll inherits default  {
+
+      ignore-default-rank-features
+
+      function averageTermSignificance() {
+        expression:foreach(terms,N,term(N).significance,true,average)
+      }
+      function maxTermSignificance() {
+        expression:foreach(terms,N,term(N).significance,true,max)
+      }
+      function averagefieldTermMatchTitleFirstPosition() {
+        expression:foreach(terms,N,fieldTermMatch(title,N).firstPosition,true,average)
+      }
+      function maxfieldTermMatchTitleFirstPosition() {
+        expression:foreach(terms,N,fieldTermMatch(title,N).firstPosition,true,max)
+      }
+      function averagefieldTermMatchTitleOcurrences() {
+        expression:foreach(terms,N,fieldTermMatch(title,N).occurrences,true,average)
+      }
+      function maxfieldTermMatchTitleOcurrences() {
+        expression:foreach(terms,N,fieldTermMatch(title,N).occurrences,true,max)
+      }
+      function averagefieldTermMatchBodyFirstPosition() {
+        expression:foreach(terms,N,fieldTermMatch(body,N).firstPosition,true,average)
+      }
+      function maxfieldTermMatchBodyFirstPosition() {
+        expression:foreach(terms,N,fieldTermMatch(body,N).firstPosition,true,max)
+      }
+      function averagefieldTermMatchBodyOcurrences() {
+        expression:foreach(terms,N,fieldTermMatch(body,N).occurrences,true,average)
+      }
+      function maxfieldTermMatchBodyOcurrences() {
+        expression:foreach(terms,N,fieldTermMatch(body,N).occurrences,true,max)
+      }
+
+      rank-features {
+        rankingExpression(averageTermSignificance)
+        rankingExpression(maxTermSignificance)
+        rankingExpression(averagefieldTermMatchTitleFirstPosition)
+        rankingExpression(maxfieldTermMatchTitleFirstPosition)
+        rankingExpression(averagefieldTermMatchTitleOcurrences)
+        rankingExpression(maxfieldTermMatchTitleOcurrences)
+        rankingExpression(averagefieldTermMatchBodyFirstPosition)
+        rankingExpression(maxfieldTermMatchBodyFirstPosition)
+        rankingExpression(averagefieldTermMatchBodyOcurrences)
+        rankingExpression(maxfieldTermMatchBodyOcurrences)
+
+        fieldMatch(title)
+        fieldMatch(title).proximity
+        fieldMatch(title).completeness
+        fieldMatch(title).queryCompleteness
+        fieldMatch(title).fieldCompleteness
+        fieldMatch(title).orderness
+        fieldMatch(title).relatedness
+        fieldMatch(title).earliness
+        fieldMatch(title).longestSequenceRatio
+        fieldMatch(title).segmentProximity
+        fieldMatch(title).unweightedProximity
+        fieldMatch(title).absoluteProximity
+        fieldMatch(title).occurrence
+        fieldMatch(title).absoluteOccurrence
+        fieldMatch(title).weightedOccurrence
+        fieldMatch(title).weightedAbsoluteOccurrence
+        fieldMatch(title).significantOccurrence
+        fieldMatch(title).weight
+        fieldMatch(title).significance
+        fieldMatch(title).importance
+        textSimilarity(title)
+        textSimilarity(title).proximity
+        textSimilarity(title).order
+        textSimilarity(title).queryCoverage
+        textSimilarity(title).fieldCoverage
+        matchCount(title)
+        matches(title)
+        elementCompleteness(title).completeness
+        elementCompleteness(title).fieldCompleteness
+        elementCompleteness(title).queryCompleteness
+        elementCompleteness(title).elementWeight
+        elementSimilarity(title)
+        bm25(title)
+        nativeRank(title)
+        nativeFieldMatch(title)
+        nativeProximity(title)
+
+        fieldMatch(body)
+        fieldMatch(body).proximity
+        fieldMatch(body).completeness
+        fieldMatch(body).queryCompleteness
+        fieldMatch(body).fieldCompleteness
+        fieldMatch(body).orderness
+        fieldMatch(body).relatedness
+        fieldMatch(body).earliness
+        fieldMatch(body).longestSequenceRatio
+        fieldMatch(body).segmentProximity
+        fieldMatch(body).unweightedProximity
+        fieldMatch(body).absoluteProximity
+        fieldMatch(body).occurrence
+        fieldMatch(body).absoluteOccurrence
+        fieldMatch(body).weightedOccurrence
+        fieldMatch(body).weightedAbsoluteOccurrence
+        fieldMatch(body).significantOccurrence
+        fieldMatch(body).weight
+        fieldMatch(body).significance
+        fieldMatch(body).importance
+        textSimilarity(body)
+        textSimilarity(body).proximity
+        textSimilarity(body).order
+        textSimilarity(body).queryCoverage
+        textSimilarity(body).fieldCoverage
+        matchCount(body)
+        matches(body)
+        elementCompleteness(body).completeness
+        elementCompleteness(body).fieldCompleteness
+        elementCompleteness(body).queryCompleteness
+        elementCompleteness(body).elementWeight
+        elementSimilarity(body)
+        bm25(body)
+        nativeRank(body)
+        nativeFieldMatch(body)
+        nativeProximity(body)
+      }
+
+    }
+
 }
