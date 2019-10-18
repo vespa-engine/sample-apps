@@ -1,12 +1,10 @@
 #! /usr/bin/env python3
 
 import sys
-import gzip
 import os
-import csv
-import re
 from time import time
 from requests import get
+from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
 
 RANK_PROFILE = sys.argv[1]
 RUN_ID = sys.argv[2]
@@ -22,46 +20,6 @@ if RELEVANCE_FILE:
     OUTPUT_METRIC_SUMMARY = os.path.join(
         DATA_FOLDER, RUN_ID + "_" + RANK_PROFILE + "_metric_summary.tsv"
     )
-
-
-def load_msmarco_queries(queries_file_path):
-    print("Loading queries...")
-    queries = {}
-    with gzip.open(queries_file_path, "rt", encoding="utf8") as f:
-        tsvreader = csv.reader(f, delimiter="\t")
-        for [queryid, query] in tsvreader:
-            query = re.sub(r"[^\w ]", " ", query).lower()
-            queries[queryid] = query.strip()
-    return queries
-
-
-def load_msmarco_qrels(relevance_file_path):
-    """
-    Map query id to relevant doc ids
-
-    :return: For each queryid, the list of positive docids is qrel[queryid]
-    """
-    print("Loading query relevance judgements...")
-    qrel = {}
-    with gzip.open(relevance_file_path, "rt", encoding="utf8") as f:
-        tsvreader = csv.reader(f, delimiter="\t")
-        for [queryid, _, docid, rel] in tsvreader:
-            assert rel == "1"
-            if queryid in qrel:
-                qrel[queryid].add(docid)
-            else:
-                qrel[queryid] = set([docid])
-    return qrel
-
-
-def extract_querie_relevance(qrel, query_strings):
-    """Create output file with query id, query string and relevant doc"""
-    print("Extracting {0} queries...".format(len(qrel)))
-    query_relevance = {}
-    for qid in qrel.keys():
-        relevant_documents = ",".join([docid for docid in qrel[qid]])
-        query_relevance[qid] = (query_strings[qid], relevant_documents)
-    return query_relevance
 
 
 def vespa_search(query, rank_profile, hits=1000, offset=0):
