@@ -4,7 +4,7 @@
 ## Steps
 
 1. `git clone git@github.com:vfil/sample-apps.git`
-2. `export VESPA_SAMPLE_APPS=`pwd`/sample-apps`
+2. execute export VESPA_SAMPLE_APPS=`pwd`/sample-apps
 3. Run vespa sample app:
 ```
 docker run --detach --name vespa --hostname vespa-container --privileged   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 -p 19070-19899:19070-19899 --hostname localhost vespaengine/vespa

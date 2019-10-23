@@ -2,19 +2,19 @@ package ai.vespa.example.visit;
 
 import com.yahoo.document.Document;
 import com.yahoo.document.DocumentId;
-import com.yahoo.documentapi.DocumentAccess;
-import com.yahoo.documentapi.DumpVisitorDataHandler;
-import com.yahoo.documentapi.ProgressToken;
-import com.yahoo.documentapi.VisitorControlHandler;
-import com.yahoo.documentapi.VisitorParameters;
-import com.yahoo.documentapi.VisitorSession;
+import com.yahoo.documentapi.*;
+import com.yahoo.log.LogSetup;
+import com.yahoo.messagebus.Message;
 
 import java.util.concurrent.TimeoutException;
 
 public class Visit {
 
     public static void main(String[] args) throws Exception {
+        LogSetup.initVespaLogging("visit-example");
+
         VisitorParameters params = new VisitorParameters("true");
+        params.setVisitInconsistentBuckets(true);
         params.setLocalDataHandler(new DumpVisitorDataHandler() {
 
             @Override
@@ -26,6 +26,9 @@ public class Visit {
             public void onRemove(DocumentId id) {
                 System.out.println("id=" + id);
             }
+
+            @Override
+            public void onMessage(Message m, AckToken token) { System.out.println("message=" + m);}
         });
         params.setControlHandler(new VisitorControlHandler() {
 
@@ -51,5 +54,6 @@ public class Visit {
         }
         session.destroy();
         access.shutdown();
+        System.exit(0);
     }
 }
