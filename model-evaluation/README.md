@@ -13,7 +13,7 @@ for more information.
 
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
+$ VESPA_SAMPLE_APPS=`pwd`/sample-apps
 $ cd $VESPA_SAMPLE_APPS/model-evaluation &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container --privileged \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
