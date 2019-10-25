@@ -39,8 +39,8 @@ $ openssl req -x509 -nodes -days 14 -newkey ec:<(openssl ecparam -name prime256v
 Then copy the certificate to `src/main/application/security/`.
 
 ## Configure pom.xml for your hosted Vespa application
-Set the `tenant`, `application`, `privateKeyFile`, `dataPlaneCertificateFile`, and `dataPlanePrivateKeyFile`
-properties in `pom.xml`. The `privateKeyFile` is your API key, while the data plane pair is the one from the above step.
+Set the `tenant`, `application`, `apiKeyFile`, `dataPlaneCertificateFile`, and `dataPlaneKeyFile`
+properties in `pom.xml`. The `apiKeyFile` is your API key, while the data plane pair is the one from the above step.
 
 ## Deploy to dev and test against it
 Command to build and deploy application to the hosted development environment is
