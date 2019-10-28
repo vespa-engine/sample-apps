@@ -2,14 +2,22 @@
 
 # Vespa sample application - Semantic Retrieval for Question-Answer Applications 
 
-This sample application contains code, document schema and dependencies for running examples from https://docs.vespa.ai/documentation/semantic-recall.html 
+This sample application contains code, document schema and dependencies for running examples from https://docs.vespa.ai/documentation/semantic-qa-retrieval.html 
 where we build a semantic end-to-end answer retrieval system building on the methodology described in the [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) paper released by Google
 October 5th.
-We reproduce the Recall@K and [MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) results as reported in the paper on Vespa over [The Stanford Question Answering Dataset(SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/) dataset. 
+We reproduce [https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)](Recall@K) and 
+[MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) results as reported in the paper on Vespa over [The Stanford Question Answering Dataset(SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/) dataset. 
+
 We hope that this sample
-application can foster more research on semantic retrieval and also enable other organizations than Google to build powerful Question-Answer applications. 
+application can enable more research on semantic retrieval and also enable organization to build powerful question-answer applications. 
+
+## Evaluation results for 87,599 questions
+
+As reported in  [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) versus the Vespa implementation for sentence 
+level retrieval and paragraph level retrieval is given in the tables below:
 
 **Sentence Level Retrieval**
+
 |Model   | MRR  | R@1  | R@5  | R@10  |
 |---|---|---|---|---|
 |USE_QA for sentence answer retrieval | 0.539  | 0.439  | 0.656  | 0.727   |
@@ -22,7 +30,7 @@ application can foster more research on semantic retrieval and also enable other
 |USE_QA for paragraph answer retrieval | 0.634 | 0.533 | 0.757 | 0.823   |
 |USE_QA on Vespa using tensors and Vespa grouping       | 0.633 | 0.532| 0.756  | 0.822|
 
-On average the sentence tensor encoding model described in the paper and realized on the Vespa has the sentence with the correct answer at the top 1 position in 44% of the questions for sentence level retrieval over a collection of 
+On average the sentence tensor encoding model described in the paper and realized on Vespa has the sentence with the correct answer at the top 1 position in 44% of the questions for sentence level retrieval over a collection of 
 91,729 sentences and 53% when doing paragraph retrieval over a collection of 18,896 paragraphs. 
 
 Some sample questions from the SQuAD v1.1 dataset is show below:
@@ -31,7 +39,7 @@ Some sample questions from the SQuAD v1.1 dataset is show below:
 * What color was used to emphasize the 50th anniversary of the Super Bowl?
 * What virus did Walter Reed discover?
 
-One can explore the questions and human labeled answers [here](https://rajpurkar.github.io/SQuAD-explorer/explore/1.1/dev/)
+One can explore the questions and the labeled answers [here](https://rajpurkar.github.io/SQuAD-explorer/explore/1.1/dev/)
 
 **Requirements for running this sample application:**
 
@@ -119,7 +127,7 @@ Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0
 Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.9405
 </pre>
 
-** Reproducing the paper metrics **
+**Reproducing the paper metrics**
 
 To reproduce the paper one need to convert the entire dataset and do evaluation over all questions:
 
