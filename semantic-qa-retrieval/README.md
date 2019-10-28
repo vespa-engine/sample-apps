@@ -41,6 +41,8 @@ Some sample questions from the SQuAD v1.1 dataset is show below:
 
 One can explore the questions and the labeled answers [here](https://rajpurkar.github.io/SQuAD-explorer/explore/1.1/dev/)
 
+## Running this sample application 
+
 **Requirements for running this sample application:**
 
 * [Docker](https://www.docker.com/) installed and running  
