@@ -55,7 +55,7 @@ with the tensorflow dependencies.
 
 This step requires that you have a working git client:
 <pre>
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample-apps/text-embeddings
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample-apps/semantic-qa-retrieval
 </pre>
 
 **Build a docker image (See [Dockerfile](Dockerfile) for details)**
