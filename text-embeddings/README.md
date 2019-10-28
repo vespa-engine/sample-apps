@@ -1,37 +1,47 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-# Vespa sample application - Semantic Search using Text Embedddings 
+# Vespa sample application - Semantic Retrieval for Question-Answer Applications 
 
-This sample application contains code, document schema and dependencies for running examples from https://docs.vespa.ai/documentation/semantic-search-with-word-embeddings.html 
-where we use [Google's Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) to encode text passages and text sentences into dense 512 dimensional tensors 
-.  We index both the textual representation and the tensors fields in the same Vespa document schema and propose several different ranking models to rank passages of text from the 
-[MS Marco](http://www.msmarco.org/)Q & A V1.1 dataset.
+This sample application contains code, document schema and dependencies for running examples from https://docs.vespa.ai/documentation/semantic-recall.html 
+where we build a semantic end-to-end answer retrieval system building on the methodology described in the [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) paper released by Google
+October 5th.
+We reproduce the Recall@K and [MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) results as reported in the paper on Vespa over [The Stanford Question Answering Dataset(SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/) dataset. 
+We hope that this sample
+application can foster more research on semantic retrieval and also enable other organizations than Google to build powerful Question-Answer applications. 
 
-**Requirements:**
+**Sentence Level Retrieval**
+|Model   | MRR  | R@1  | R@5  | R@10  |
+|---|---|---|---|---|
+|USE_QA for sentence answer retrieval | 0.539  | 0.439  | 0.656  | 0.727   |
+|USE_QA on Vespa using tensors        | 0.538  | 0.438  | 0.656  | 0.726   |
+
+**Paragraph Level Retrieval**
+
+|Model   | MRR  | R@1  | R@5  | R@10  |
+|---|---|---|---|---|
+|USE_QA for paragraph answer retrieval | 0.634 | 0.533 | 0.757 | 0.823   |
+|USE_QA on Vespa using tensors and Vespa grouping       | 0.633 | 0.532| 0.756  | 0.822|
+
+On average the sentence tensor encoding model described in the paper and realized on the Vespa has the sentence with the correct answer at the top 1 position in 44% of the questions for sentence level retrieval over a collection of 
+91,729 sentences and 53% when doing paragraph retrieval over a collection of 18,896 paragraphs. 
+
+Some sample questions from the SQuAD v1.1 dataset is show below:
+
+* Which NFL team represented the AFC at Super Bowl 50?
+* What color was used to emphasize the 50th anniversary of the Super Bowl?
+* What virus did Walter Reed discover?
+
+One can explore the questions and human labeled answers [here](https://rajpurkar.github.io/SQuAD-explorer/explore/1.1/dev/)
+
+**Requirements for running this sample application:**
 
 * [Docker](https://www.docker.com/) installed and running  
 * git client to checkout the sample application repository
-
-See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html). This setup is slightly different then the official quicks start guide.
-
-**Tensor definitions**
-
-See the [Tensor Intro](https://docs.vespa.ai/documentation/tensor-intro.html) in the Vespa documentation for an introduction to tensors and tensor operations in Vespa.
- In this sample application we define two tensor type fields in the use case specific [Vespa document schema](src/main/application/searchdefinitions/passage.sd):
-
-<pre>
-#Dense first order tensor with 512 dimensions
-field passage_embedding type tensor<float>(x[512]) {
-  indexing: attribute
-}
-#A second order tensor (matrix) which maps a sparse sentence id to the corresponding dense 
-#sentence embedding of 512 dimensions
-field sentence_embeddings type tensor<float>(s{},x[512]) {
-  indexing: attribute
-}
-</pre>
-
-To install and play around with the ranking models using the data set one needs to:
+* Operating system: macOS or Linux, Architecture: x86_64
+* Minimum 6GB memory dedicated to Docker (the default is 2GB on Macs).
+ 
+See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html). This setup is slightly different then the official quick start guide as we build a custom docker image
+with the tensorflow dependencies.
 
 **Checkout the sample-apps repository**
 
@@ -42,86 +52,80 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample
 
 **Build a docker image (See [Dockerfile](Dockerfile) for details)**
 
-The image builds on the [vespaengine/vespa docker image (latest)](https://hub.docker.com/r/vespaengine/vespa/tags) and installs python3 and the python dependencies tensorflow/tensorflow-hub and Natural Language Toolkit (nltk)
+The image builds on the [vespaengine/vespa docker image (latest)](https://hub.docker.com/r/vespaengine/vespa/tags) and installs python3 and the python dependencies to run tensorflow. This 
+step takes a few minutes. 
 <pre>
-$ docker build . --tag vespa_text_embeddings:1.0
+$ docker build . --tag vespa_semantic_qa_retrieval:1.0 
 </pre>
+
 **Run the docker container built in the previous step and enter the running docker container**
 
 <pre>
-$ docker run --detach --name vespa_text_embeddings  --hostname vespa-container --privileged vespa_text_embeddings:1.0
-$ docker exec -it vespa_text_embeddings  bash 
+$ docker run --detach --name vespa_qa --hostname vespa-container --privileged vespa_semantic_qa_retrieval:1.0
+$ docker exec -it vespa_qa bash 
 </pre>
+
 **Deploy the document schema and configuration - this will start Vespa services**
 
 <pre>
-$ vespa-deploy prepare text-embeddings/src/main/application/ && vespa-deploy activate
+$ vespa-deploy prepare qa/src/main/application/ && vespa-deploy activate
 </pre>
 
-**Download the MS MARCO Q A V1.1 dataset and convert format to Vespa (Sample of 100 queries)**
+**Download the SQuaAD train v1.1 dataset and convert format to Vespa (Sample of 269 questions)**
+The download script will extract a sample set (As processing the whole dataset using the Sentence Encoder for QA takes time).
 
-Converting the [MS MARCO](http://www.msmarco.org/) Question Answering V1.1 dataset json format to Vespa also includes using the [Google Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) to encode text passages and sentences to their tensor represenation. 
-
-Downloading and converting
-the sample 100 queries is not instant so grab a cup of tea while Tensorflow downloads the model from the Tensorflow Hub.
 <pre>
-$ ./text-embeddings/bin/download.sh
-$ head -100 dev_v1.1.json |./text-embeddings/bin/convert-to-vespa.py  2> /dev/null
+$ ./qa/bin/download.sh
+$ ./qa/bin/convert-to-vespa-squad.py sample_squad.json 2> /dev/null
 </pre>
 
-After the above we have two new files in the working directory: _queries.txt_ and _vespa_feed.json_. The _queries.txt_ file contains queries which have at least one relevant passage and in our head 100 sample that equals to 97 queries. The total number of passages is 796.
+After the above we have two new files in the working directory: 
+_squad_queries.txt_ and _squad_vespa_feed.json_. The _queries.txt_ file contains question. The sample question set generates 351 sentence documents and 55
+context documents (The paragraphs). 
 
 **Feed Vespa json** 
 
 We feed the documents using the [Vespa http feeder client](https://docs.vespa.ai/documentation/vespa-http-client.html):
 <pre>
-$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file vespa_feed.json --endpoint http://localhost:8080 
+$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file squad_vespa_feed.json --endpoint http://localhost:8080 
 </pre>
 
-**Run query evaluation of 6 different models/rank profiles**
+**Run evaluation**
 
-The evaluation script runs all queries read from _stdin_ and for each query it executes n rank-profiles and finally it computes the [mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@10_ metric per rank profile for all queries. The evaluations script uses the [Vespa search api](https://docs.vespa.ai/documentation/search-api.html) and each query limits the recall to the set of passages 
-associated with the query (relevant or not) and the evaluation measures how well we are able to rank the set of passages on a per rank profile basis. The search request looks like this where 
-the recall parameter limits the recall to only match against passages which are associated with the query id. We use _type_ any and include a query term which is always true for the cases
-where there is no textual overlap between the user query and the text passage. 
+The evaluation script runs all questions produced by the convertation script and for each question it executes different recall and ranking strategies and finally it computes the 
+[mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_ and the Recall@1,Recall@5 and Recall@10 metrics. 
 
-<pre>
-def handle_query(query,queryid,rank_profile):
-  embedding = session.run(embeddings,feed_dict={text_sentences:[query]})[0].tolist()
-  json_request = {
-    "query": "(query_id:>0 %s)" % query,
-    "type": "any",
-    "hits": 10,
-    "recall": "+query_id:%s" % queryid,
-    "timeout":20, 
-    "ranking.softtimeout.enable":"false",
-    "ranking.features.query(tensor)": embedding,
-    "ranking.profile": rank_profile
-  }
-  r = requests.post('http://localhost:8080/search/', json=json_request)
-  response = r.json()
-  if response["root"]["fields"]["totalCount"] == 0:
-    return [0]
-  selected = []
-  for hit in response["root"]["children"]:
-    selected.append(hit["fields"]["is_selected"])
-  return selected
-</pre> 
+ The evaluations script uses the [Vespa search api](https://docs.vespa.ai/documentation/search-api.html) 
 
 Running the _evaluation.py_ script:
 
 <pre>
-$ cat queries.txt |./text-embeddings/bin/evaluation.py 2> /dev/null
+$ cat squad_queries.txt |./qa/bin/evaluation.py 
 </pre>
 
 Which should produce output like this:
+
 <pre>
-Rank Profile 'random' MRR@10 Result: 0.3010 
-Rank Profile 'passage-semantic-similarity' MRR@10 Result: 0.4323 
-Rank Profile 'max-sentence-semantic-similarity' MRR@10 Result: 0.4456 
-Rank Profile 'bm25' MRR@10 Result: 0.4893 
-Rank Profile 'nativeRank' MRR@10 Result: 0.4924 
-Rank Profile 'nativeRank-and-max-sentence-linear' MRR@10 Result: 0.4901 
+Start query evaluation for 269 queries
+Sentence retrieval metrics:
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   MRR@100  0.5799
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@1 0.4498
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0.7398
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.8290
+Paragraph retrieval metrics:
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   MRR@100  0.7030
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@1 0.5725
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0.8625
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.9405
 </pre>
 
-Please note that the lower bound for MRR@10 in this case where we re-rank 10 passages per query is is 1/10.  
+** Reproducing the paper metrics **
+
+To reproduce the paper one need to convert the entire dataset and do evaluation over all questions:
+
+<pre>
+$ ./qa/bin/convert-to-vespa-squad.py SQuAD_train_v1.1.json 2> /dev/null
+$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file squad_vespa_feed.json --endpoint http://localhost:8080
+$ cat squad_queries.txt |./qa/bin/evaluation.py 2> /dev/null
+</pre>
+

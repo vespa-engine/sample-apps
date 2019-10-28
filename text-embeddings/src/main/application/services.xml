@@ -13,7 +13,8 @@
   <content id="content" version="1.0">
     <redundancy>1</redundancy>
     <documents>
-      <document type="passage" mode="index" />
+      <document type="sentence" mode="index" />
+      <document type="context" mode="index" />
     </documents>
     <nodes>
       <node hostalias="node1" distribution-key="0" />
