@@ -5,11 +5,11 @@
 This sample application contains code, document schema and dependencies for running examples from https://docs.vespa.ai/documentation/semantic-qa-retrieval.html 
 where we build a semantic end-to-end answer retrieval system building on the methodology described in the [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) paper released by Google
 October 5th.
-We reproduce [https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)](Recall@K) and 
+We reproduce [Recall@K](https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)) and 
 [MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) results as reported in the paper on Vespa over [The Stanford Question Answering Dataset(SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/) dataset. 
 
 We hope that this sample
-application can enable more research on semantic retrieval and also enable organization to build powerful question-answer applications. 
+application can enable more research on semantic retrieval and also enable organization to build powerful question-answer applications using Vespa. 
 
 ## Evaluation results for 87,599 questions
 
