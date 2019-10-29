@@ -139,3 +139,19 @@ $ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --f
 $ cat squad_queries.txt |./qa/bin/evaluation.py 2> /dev/null
 </pre>
 
+Which should produce output like this: 
+<pre>
+Start query evaluation for 87599 queries
+Sentence retrieval metrics:
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   MRR@100  0.5376
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@1 0.4380
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0.6551
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.7262
+Paragraph retrieval metrics:
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   MRR@100  0.6330
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@1 0.5322
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0.7555
+Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.8218
+</pre>
+
+
