@@ -19,5 +19,6 @@
         <module>http-api-using-request-handlers-and-processors</module>
         <module>http-api-using-searcher</module>
         <module>model-evaluation</module>
+        <module>basic-visit-java</module>
     </modules>
 </project>
