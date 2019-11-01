@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.yahoo.demo.multibundle</groupId>
+        <artifactId>multiple-bundles</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>application</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yahoo.demo.multibundle</groupId>
+            <artifactId>lib</artifactId>
+            <version>${project.version}</version>
+            <classifier>deploy</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.demo.multibundle</groupId>
+            <artifactId>main</artifactId>
+            <version>${project.version}</version>
+            <classifier>deploy</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Copy the bundles into the target folder -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>compile</includeScope>
+                            <excludeTransitive>true</excludeTransitive>
+                            <!-- The plugin sometimes includes container even if it is in scope provided -->
+                            <excludeArtifactIds>container</excludeArtifactIds>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Package the application - must be listed AFTER the dependency plugin -->
+            <plugin>
+                <groupId>com.yahoo.vespa</groupId>
+                <artifactId>vespa-application-maven-plugin</artifactId>  <!-- Zip the application package -->
+                <version>${vespa_version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>packageApplication</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
