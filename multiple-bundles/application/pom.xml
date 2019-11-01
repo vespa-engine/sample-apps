@@ -16,8 +16,45 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.yahoo.demo.multibundle</groupId>
+            <artifactId>lib</artifactId>
+            <version>${project.version}</version>
+            <classifier>bundle</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.demo.multibundle</groupId>
+            <artifactId>main</artifactId>
+            <version>${project.version}</version>
+            <classifier>bundle</classifier>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
+
+            <!-- Copy the bundles into the application -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <includeScope>compile</includeScope>
+                    <excludeTransitive>true</excludeTransitive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Package the application -->
             <plugin>
                 <groupId>com.yahoo.vespa</groupId>
                 <artifactId>vespa-application-maven-plugin</artifactId>  <!-- Zip the application package -->

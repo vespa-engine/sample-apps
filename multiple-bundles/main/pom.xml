@@ -48,6 +48,8 @@
             <plugin>
                 <groupId>com.yahoo.vespa</groupId>
                 <artifactId>bundle-plugin</artifactId>
+                <version>${vespa_version}</version>
+                <extensions>true</extensions>
                 <configuration>
                     <!-- Use the bundle jars instead of the ordinary artifacts. -->
                     <AttachBundle>true</AttachBundle>
