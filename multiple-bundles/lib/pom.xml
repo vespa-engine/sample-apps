@@ -47,6 +47,7 @@
                 <configuration>
                     <!-- Use the bundle jars instead of the ordinary artifacts. -->
                     <AttachBundle>true</AttachBundle>
+                    <BundleClassifier>deploy</BundleClassifier>
                 </configuration>
             </plugin>
         </plugins>

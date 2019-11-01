@@ -21,13 +21,13 @@
             <groupId>com.yahoo.demo.multibundle</groupId>
             <artifactId>lib</artifactId>
             <version>${project.version}</version>
-            <classifier>bundle</classifier>
+            <classifier>deploy</classifier>
         </dependency>
         <dependency>
             <groupId>com.yahoo.demo.multibundle</groupId>
             <artifactId>main</artifactId>
             <version>${project.version}</version>
-            <classifier>bundle</classifier>
+            <classifier>deploy</classifier>
         </dependency>
     </dependencies>
 
@@ -39,10 +39,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>3.1.1</version>
-                <configuration>
-                    <includeScope>compile</includeScope>
-                    <excludeTransitive>true</excludeTransitive>
-                </configuration>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -50,6 +46,11 @@
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <includeScope>compile</includeScope>
+                            <excludeTransitive>true</excludeTransitive>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
