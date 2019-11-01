@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.yahoo.demo.multibundle</groupId>
+        <artifactId>multiple-bundles</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>main</artifactId>
+    <version>1.0.0</version>
+    <packaging>container-plugin</packaging>  <!-- Use Vespa packaging -->
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yahoo.demo.multibundle</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.vespa</groupId>
+            <artifactId>container</artifactId>
+            <version>${vespa_version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.vespa</groupId>
+            <artifactId>container-test</artifactId>
+            <version>${vespa_version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.yahoo.vespa</groupId>
+                <artifactId>bundle-plugin</artifactId>
+                <configuration>
+                    <!-- Use the bundle jars instead of the ordinary artifacts. -->
+                    <AttachBundle>true</AttachBundle>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
