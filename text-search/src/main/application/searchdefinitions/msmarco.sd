@@ -48,6 +48,10 @@ search msmarco {
 
     rank-profile collectAll inherits default  {
 
+        first-phase {
+            expression: random
+        }
+
       ignore-default-rank-features
 
       function averageTermSignificance() {
