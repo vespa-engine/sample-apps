@@ -9,11 +9,11 @@
 
     <document-processing>
       <chain id="default">
-        <documentprocessor id="ai.vespa.example.shopping.ReviewProcessor" bundle="shopping" />
+        <documentprocessor id="ai.vespa.example.shopping.ReviewProcessor" bundle="use-case-shopping" />
       </chain>
     </document-processing>
 
-    <handler id="ai.vespa.example.shopping.site.SiteHandler" bundle="shopping">
+    <handler id="ai.vespa.example.shopping.site.SiteHandler" bundle="use-case-shopping">
       <binding>http://*/site/*</binding>
       <binding>http://*/site</binding>
       <config name="ai.vespa.example.shopping.site.site-handler">
