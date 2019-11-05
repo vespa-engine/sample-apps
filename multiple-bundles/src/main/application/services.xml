@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <container id="fibonacci" version="1.0">
+        <search>
+            <chain id="default">
+                <searcher id="com.mydomain.search.FibonacciSearcher" bundle="main" />
+            </chain>
+        </search>
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
+    </container>
+
+</services>
