@@ -89,3 +89,15 @@ r5_rr_values <- compute_validation_metrics(validation_data = sample_val_data, mo
 
 summary(r1_rr_values)
 summary(r5_rr_values)
+
+data_to_plot <- rbind(data.frame(rr = r1_rr_values, model = "linear_bm25"), 
+                      data.frame(rr = r5_rr_values, model = "linear_bm25_native"))
+
+ggplot(data_to_plot, aes(x=rr, fill=model)) +
+  geom_histogram(position="dodge")
+
+ggplot(data=data_to_plot, aes(x=as.factor(1/rr), y = (..count..)/sum(..count..), fill=model)) +
+  geom_bar(position=position_dodge()) + labs(x = "Position of the relevant document", y = "Frequency")
+
+
+
