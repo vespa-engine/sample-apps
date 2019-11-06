@@ -23,7 +23,7 @@
 
     <component id="com.yahoo.language.simple.SimpleLinguistics"/>
 
-    <handler id="ai.vespa.example.text_search.site.SiteHandler" bundle="text_search">
+    <handler id="ai.vespa.example.text_search.site.SiteHandler" bundle="text-search">
       <binding>http://*/site/*</binding>
       <binding>http://*/site</binding>
       <config name="ai.vespa.example.text_search.site.site-handler">
