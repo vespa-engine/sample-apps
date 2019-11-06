@@ -12,5 +12,5 @@ source /etc/profile.d/jdk-env.sh
 export JAVA_HOME="$JAVA_11_HOME"
 
 # Compile and test the sample apps
-mvn --batch-mode --no-snapshot-updates install
+mvn -V --batch-mode --no-snapshot-updates install
 
