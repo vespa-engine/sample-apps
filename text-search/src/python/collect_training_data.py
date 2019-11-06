@@ -10,22 +10,20 @@ QUERIES_FILE_PATH = sys.argv[1]
 RELEVANCE_FILE_PATH = sys.argv[2]
 DATA_FOLDER = sys.argv[3]
 RANK_PROFILE = sys.argv[4]
-NAME = sys.argv[5] if len(sys.argv) > 5 else "match_random"
 OUTPUT_FILE = os.path.join(
-    DATA_FOLDER, "training_data_" + RANK_PROFILE + "_" + NAME + ".csv"
+    DATA_FOLDER, "training_data_match_random_" + RANK_PROFILE + ".csv"
 )
 PROCESSED_QUERIES_FILE = os.path.join(
-    DATA_FOLDER, "training_data_" + RANK_PROFILE + "_" + NAME + "_processed_queries.csv"
+    DATA_FOLDER, "training_data_match_random_" + RANK_PROFILE + "_processed_queries.csv"
 )
 
 
 def create_request_specific_ids(query, rankprofile, doc_ids):
     body = {
-        "yql": "select id, rankfeatures from sources * where rank(([{'ranked': false}]weightedSet(id, "
-        + str({k: 1 for k in doc_ids})
-        + ")), userInput(@userQuery));",
+        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
         "userQuery": query,
         "hits": len(doc_ids),
+        "recall": "+(" + " ".join(["id:" + str(doc) for doc in doc_ids]) + ")",
         "timeout": "15s",
         "presentation.format": "json",
         "ranking": {"profile": rankprofile, "listFeatures": "true"},
@@ -88,22 +86,21 @@ def build_dataset(url, query_relevance, rank_profile, number_random_sample):
                 query=query, rankprofile=rank_profile, doc_ids=[relevant_id]
             )
             hits = get_features(url=url, body=relevant_id_request)
-            if len(hits) != 1 or hits[0]["fields"]["id"] != relevant_id:
-                print("relevant id not found")
-                continue
-
-            random_hits_request = create_request_top_hits(
-                query=query, rankprofile=rank_profile, hits=number_random_sample
-            )
-            hits.extend(get_features(url=url, body=random_hits_request))
-
-            features = annotate_data(hits=hits, query_id=qid, relevant_id=relevant_id)
-            if os.path.isfile(OUTPUT_FILE):
-                DataFrame.from_records(features).to_csv(
-                    OUTPUT_FILE, index=None, mode="a", header=False
+            if len(hits) == 1 and hits[0]["fields"]["id"] == relevant_id:
+                random_hits_request = create_request_top_hits(
+                    query=query, rankprofile=rank_profile, hits=number_random_sample
                 )
-            else:
-                DataFrame.from_records(features).to_csv(OUTPUT_FILE, index=None)
+                hits.extend(get_features(url=url, body=random_hits_request))
+
+                features = annotate_data(
+                    hits=hits, query_id=qid, relevant_id=relevant_id
+                )
+                if os.path.isfile(OUTPUT_FILE):
+                    DataFrame.from_records(features).to_csv(
+                        OUTPUT_FILE, index=None, mode="a", header=False
+                    )
+                else:
+                    DataFrame.from_records(features).to_csv(OUTPUT_FILE, index=None)
         with open(PROCESSED_QUERIES_FILE, "a") as f_processed:
             f_processed.write("{0}\n".format(qid))
 
