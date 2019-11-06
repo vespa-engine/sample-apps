@@ -15,15 +15,17 @@
         <test.hide>true</test.hide>
         <vespa_version>7.128.18</vespa_version>
         <junit.version>4.11</junit.version>
+
+        <!-- NB! Must be updated upon changes in the library -->
+        <multiple-bundles-lib.version>1.0.1</multiple-bundles-lib.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.yahoo.demo.multibundle</groupId>
             <artifactId>multiple-bundles-lib</artifactId>
-            <version>1.0.1</version>         <!-- NB! Must be updated upon changes in the library -->
-            <classifier>deploy</classifier>  <!-- Use the bundle jar -->
-            <scope>provided</scope>          <!-- Must use 'provided' to avoid embedding it -->
+            <version>${multiple-bundles-lib.version}</version>
+            <scope>provided</scope>       <!-- Must use 'provided' to avoid embedding it -->
         </dependency>
 
         <dependency>
@@ -57,7 +59,7 @@
                 <extensions>true</extensions>
             </plugin>
 
-            <!-- Copy the lib bundle into the target folder -->
+            <!-- Copy the lib bundle into the target/ folder -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -67,11 +69,17 @@
                         <id>copy-bundles</id>
                         <phase>prepare-package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <includeClassifiers>deploy</includeClassifiers>
-                            <excludeTransitive>true</excludeTransitive>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.yahoo.demo.multibundle</groupId>
+                                    <artifactId>multiple-bundles-lib</artifactId>
+                                    <version>${multiple-bundles-lib.version}</version>
+                                    <classifier>deploy</classifier>  <!-- Copy the bundle jar -->
+                                </artifactItem>
+                            </artifactItems>
                             <outputDirectory>${project.build.directory}</outputDirectory>
                         </configuration>
                     </execution>
