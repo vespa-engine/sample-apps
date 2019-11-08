@@ -47,7 +47,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains="coverage&quot;:100">
-$ curl -s 'http://localhost:8080/search/
+$ curl -s http://localhost:8080/search/
 </pre>
 Sending multiple requests generates the Fibonacci number sequence in the 'message' field
 of the search result.
