@@ -3,9 +3,10 @@
 <services version="1.0">
 
     <container id="fibonacci" version="1.0">
+        <component id="com.mydomain.lib.FibonacciProducer" bundle="multiple-bundles-lib" />
         <search>
             <chain id="default">
-                <searcher id="com.mydomain.search.FibonacciSearcher" bundle="main" />
+                <searcher id="com.mydomain.search.FibonacciSearcher" bundle="multiple-bundles" />
             </chain>
         </search>
         <nodes>
