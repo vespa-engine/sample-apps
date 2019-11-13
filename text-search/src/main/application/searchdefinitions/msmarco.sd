@@ -48,14 +48,13 @@ search msmarco {
 
     rank-profile linear_bm25 inherits default {
         first-phase {
-
             expression: -3.48069 + 0.04490 * bm25(body) + 0.04434 * bm25(title)
         }
     }
 
-    rank-profile linear_bm25_nativeRank inherits default {
+    rank-profile pointwise_linear_bm25 inherits default {
         first-phase {
-            expression: -2.16285 + 0.03269 * bm25(body) + 0.09237 * bm25(title) - 3.23806 * nativeRank(body) - 3.43084 * nativeRank(title)
+            expression: -4.16019 + 0.05083 * bm25(body) + 0.33361 * bm25(title)
         }
     }
 
