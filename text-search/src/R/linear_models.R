@@ -6,31 +6,7 @@ library(arm)
 #
 # Load data
 #
-data <- read.csv("data/training_data_collectAll_match_random.csv")
-drops <- c("docid", 
-           "qid", 
-           "relevant", 
-           "rankingExpression.averagefieldTermMatchBodyFirstPosition.", 
-           "rankingExpression.averagefieldTermMatchTitleFirstPosition.",
-           "rankingExpression.maxfieldTermMatchBodyFirstPosition.",
-           "rankingExpression.maxfieldTermMatchTitleFirstPosition.",
-           "rankingExpression.averagefieldTermMatchBodyOcurrences.",
-           "rankingExpression.maxfieldTermMatchBodyOcurrences.",
-           "rankingExpression.maxfieldTermMatchTitleOcurrences.",
-           "rankingExpression.averagefieldTermMatchTitleOcurrences.",
-           "elementCompleteness.body..elementWeight",
-           "elementCompleteness.title..elementWeight",
-           "matches.body.",
-           "matches.title."
-)
-
-
-#
-# Filter queries that would not have been selected by the query
-#
-invalid_queries <- subset(data, bm25.body. == 0 & bm25.title. == 0) %>%
-  select(qid)
-valid_data <- subset(data, !(qid %in% unique(invalid_queries$qid)))
+valid_data <- read.csv("data/training_data_match_random_collectAll.csv")
 
 #
 # Sample dataset and create train and validation data
@@ -77,27 +53,53 @@ compute_validation_metrics <- function(validation_data, model){
 }
 
 #
-# Fit and compute evaluation metric
+# Fit and compute evaluation metric for linear model
 #
 r1 = glm(formula = relevant ~ bm25.body. + bm25.title., family = binomial(), data = sample_train_data)
 r1
 r1_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r1)
 
-r5 = glm(formula = relevant ~ bm25.body. + bm25.title. + nativeRank.body. + nativeRank.title., family = binomial(), data = sample_train_data)
-r5
-r5_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r5)
+#
+# Fit and compute evaluation metric for default bm25 linear model
+#
+r2 <- r1
+r2$coefficients[1] <- 0
+r2$coefficients[2] <- 1
+r2$coefficients[3] <- 1
+r2
+r2_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r2)
 
 summary(r1_rr_values)
-summary(r5_rr_values)
+summary(r2_rr_values)
 
-data_to_plot <- rbind(data.frame(rr = r1_rr_values, model = "linear_bm25"), 
-                      data.frame(rr = r5_rr_values, model = "linear_bm25_native"))
-
-ggplot(data_to_plot, aes(x=rr, fill=model)) +
-  geom_histogram(position="dodge")
+#
+# Evaluation plots
+#
+data_to_plot <- rbind(data.frame(rr = r2_rr_values, model = "bm25"),
+                      data.frame(rr = r1_rr_values, model = "linear_bm25"))
 
 ggplot(data=data_to_plot, aes(x=as.factor(1/rr), y = (..count..)/sum(..count..), fill=model)) +
   geom_bar(position=position_dodge()) + labs(x = "Position of the relevant document", y = "Frequency")
 
+#
+# Test data plots
+#
+bm25_rr_test_values <- read.csv("data/dev_test_data/text-search-refeed-2_bm25_rr.tsv", 
+                                sep = "\t", header = FALSE, col.names = c("qid", "rr"))
+linear_bm25_rr_test_values <- read.csv("data/dev_test_data/text-search-refeed-2_linear_bm25_random_rr.tsv", 
+                                       sep = "\t", header = FALSE, col.names = c("qid", "rr"))
 
+rr_min_value <- min(subset(bm25_rr_test_values, rr > 0)$rr, subset(linear_bm25_rr_test_values, rr > 0)$rr)
+bm25_rr_test_values[bm25_rr_test_values$rr == 0, ] <- rr_min_value
+linear_bm25_rr_test_values[linear_bm25_rr_test_values$rr == 0, ] <- rr_min_value
+
+test_data_to_plot <- rbind(data.frame(rr = bm25_rr_test_values$rr, model = "bm25"), 
+                      data.frame(rr = linear_bm25_rr_test_values$rr, model = "linear_bm25"))
+
+
+ggplot(data=test_data_to_plot, aes(x=cut(1/rr, c(0,5,10,15,20,50, 100, 500, 1000)), y = (..count..)/sum(..count..), fill=model)) +
+  geom_bar(position=position_dodge()) + labs(x = "Position of the relevant document", y = "Frequency")
+
+ggplot(data=subset(test_data_to_plot, rr >= 1/11), aes(x=as.factor(1/rr), y = (..count..)/sum(..count..), fill=model)) +
+  geom_bar(position=position_dodge()) + labs(x = "Position of the relevant document", y = "Frequency")
 
