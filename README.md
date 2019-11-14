@@ -4,7 +4,7 @@
 This repository has a set of Vespa sample applications.
 Most of the applications are written for [Vespa Cloud](http://cloud.vespa.ai).
 To deploy to a self-hosted, follow steps below -
-refer to [album-recommendation-selfhosted] for a working example
+refer to [album-recommendation-selfhosted](album-recommendation-selfhosted) for a working example
 
 1.  Modify _nodes_ element in services.xml, replace _count_ with _node_ elements:
     ```
