@@ -37,7 +37,7 @@
         -->
         <search>
             <chain id="metalchain" inherits="vespa">
-                <searcher id="com.mydomain.example.MetalSearcher" bundle="albums" after="MinimalQueryInserter">
+                <searcher id="ai.vespa.example.album.MetalSearcher" bundle="albums" after="MinimalQueryInserter">
                     <config name="com.mydomain.example.metal-names">
                         <metalWords>
                             <item>hetfield</item>
