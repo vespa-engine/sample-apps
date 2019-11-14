@@ -1,0 +1,10 @@
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<deployment version="1.0">
+  <notifications>
+    <email address="user@domain.com" when="failing" />
+    <email role="author" />
+  </notifications>
+  <prod>
+    <!-- region active="true">aws-us-east-1c</region -->
+  </prod>
+</deployment>
