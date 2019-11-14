@@ -1,0 +1,9 @@
+<deployment version="1.0">
+  <notifications>
+    <email address="user@domain.com" when="failing" />
+    <email role="author" />
+  </notifications>
+  <prod>
+    <!-- region active="true">aws-us-east-1c</region -->
+  </prod>
+</deployment>

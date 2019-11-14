@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <!--
+        The container cluster answers HTTP requests on behalf of the content cluster (see below).
+
+        You can optionally write Java plugins for the containers to both process content (document processors)
+        and to process search queries and results (searchers).
+
+        See:
+          - Reference: https://docs.vespa.ai/documentation/reference/services-container.html
+    -->
+    <container id="default" version="1.0">
+        <!--
+            <document-api /> tells the container that it should accept documents for indexing. Through the
+            Document REST API you can PUT new documents, UPDATE existing documents, and DELETE documents
+            already in the cluster.
+
+            Documents sent to the Document REST API will be passed through document processors on the way
+            to the content cluster.
+
+            See:
+             - Reference: https://docs.vespa.ai/documentation/reference/services-container.html#document-api
+             - Operations: https://docs.vespa.ai/documentation/document-api.html
+        -->
+        <document-api />
+
+        <!--
+            <search /> tells the container to answers queries and serve results for those queries.
+            Inside the <search /> cluster you can configure "search chains" - a Java plugin that
+            will do chained processing of both queries and results.
+
+            See:
+             - Reference: https://docs.vespa.ai/documentation/search-api.html
+             - Searchers: https://docs.vespa.ai/documentation/searcher-development.html
+        -->
+        <search>
+            <chain id="metalchain" inherits="vespa">
+                <searcher id="com.mydomain.example.MetalSearcher" bundle="albums" after="MinimalQueryInserter">
+                    <config name="com.mydomain.example.metal-names">
+                        <metalWords>
+                            <item>hetfield</item>
+                            <item>metallica</item>
+                            <item>pantera</item>
+                        </metalWords>
+                    </config>
+                </searcher>
+            </chain>
+        </search>
+
+        <!--
+            <nodes /> tells Vespa Cloud how many nodes the container should be scaled across.  You can
+            also add requirements such as vcpus, memory, and disk space.
+
+            See:
+             - Reference: Does-not-exist-yet
+        -->
+        <nodes count="2" />
+    </container>
+
+    <!--
+        <content /> describes the stateful contant nodes in Vespa.  Here all your documents are stored
+        and distributed across the nodes in the cluster.
+
+        See:
+          - Reference: https://docs.vespa.ai/documentation/reference/services-content.html
+    -->
+    <content id="music" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="music" mode="index" />
+        </documents>
+        <nodes count="2" />
+    </content>
+
+</services>
