@@ -52,6 +52,12 @@ search msmarco {
         }
     }
 
+    rank-profile listwise_linear_bm25 inherits default {
+        first-phase {
+            expression: 0.44720617 * bm25(body) + 0.24331133 * bm25(title)
+        }
+    }
+
     rank-profile collectAll inherits default  {
 
         first-phase {
