@@ -69,8 +69,41 @@ r2$coefficients[3] <- 1
 r2
 r2_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r2)
 
+#
+# pointwise
+#
+r3 <- r1
+r3$coefficients[1] <- -5.0927825
+r3$coefficients[2] <- 0.14006317
+r3$coefficients[3] <- 0.35795644
+r3
+r3_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r3)
+
+#
+# mrr
+#
+r4 <- r1
+r4$coefficients[1] <- -1.8088558e-06
+r4$coefficients[2] <- 0.25544205
+r4$coefficients[3] <- 0.23629713
+r4
+r4_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r4)
+
+#
+# softmax
+#
+r5 <- r1
+r5$coefficients[1] <- -5.533127e-09
+r5$coefficients[2] <- 0.44720617
+r5$coefficients[3] <- 0.24331133
+r5
+r5_rr_values <- compute_validation_metrics(validation_data = sample_val_data, model=r5)
+
 summary(r1_rr_values)
 summary(r2_rr_values)
+summary(r3_rr_values)
+summary(r4_rr_values)
+summary(r5_rr_values)
 
 #
 # Evaluation plots
