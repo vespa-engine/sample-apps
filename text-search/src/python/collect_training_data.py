@@ -6,17 +6,6 @@ import requests
 from pandas import DataFrame
 from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
 
-QUERIES_FILE_PATH = sys.argv[1]
-RELEVANCE_FILE_PATH = sys.argv[2]
-DATA_FOLDER = sys.argv[3]
-RANK_PROFILE = sys.argv[4]
-OUTPUT_FILE = os.path.join(
-    DATA_FOLDER, "training_data_match_random_" + RANK_PROFILE + ".csv"
-)
-PROCESSED_QUERIES_FILE = os.path.join(
-    DATA_FOLDER, "training_data_match_random_" + RANK_PROFILE + "_processed_queries.csv"
-)
-
 
 def create_request_specific_ids(query, rankprofile, doc_ids):
     body = {
@@ -68,13 +57,18 @@ def annotate_data(hits, query_id, relevant_id):
     return data
 
 
-def build_dataset(url, query_relevance, rank_profile, number_random_sample):
+def load_processed_queries(file_path):
     try:
-        f_processed = open(PROCESSED_QUERIES_FILE)
+        f_processed = open(file_path)
         processed_queries = [int(x) for x in f_processed.readlines()]
         f_processed.close()
     except FileNotFoundError:
         processed_queries = []
+    return processed_queries
+
+
+def build_dataset(url, query_relevance, rank_profile, number_random_sample):
+    processed_queries = load_processed_queries(file_path=PROCESSED_QUERIES_FILE)
     number_queries = len(query_relevance) - len(processed_queries)
     line = 0
     for qid, (query, relevant_id) in query_relevance.items():
@@ -115,9 +109,31 @@ def main():
         url="http://localhost:8080/search/",
         query_relevance=query_relevance,
         rank_profile=RANK_PROFILE,
-        number_random_sample=10,
+        number_random_sample=NUMBER_RANDOM_SAMPLE,
     )
 
 
 if __name__ == "__main__":
+    QUERIES_FILE_PATH = sys.argv[1]
+    RELEVANCE_FILE_PATH = sys.argv[2]
+    DATA_FOLDER = sys.argv[3]
+    RANK_PROFILE = sys.argv[4]
+    NUMBER_RANDOM_SAMPLE = sys.argv[5]
+    OUTPUT_FILE = os.path.join(
+        DATA_FOLDER,
+        "training_data_"
+        + RANK_PROFILE
+        + "_"
+        + NUMBER_RANDOM_SAMPLE
+        + "_random_samples.csv",
+    )
+    PROCESSED_QUERIES_FILE = os.path.join(
+        DATA_FOLDER,
+        "training_data_"
+        + RANK_PROFILE
+        + "_"
+        + NUMBER_RANDOM_SAMPLE
+        + "_random_samples_processed_queries.csv",
+    )
+
     main()
