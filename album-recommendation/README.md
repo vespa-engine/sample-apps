@@ -104,7 +104,7 @@ and the results are returned in descending relevance order.
 
 1.  Create the application package
     ```sh
-    $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/main/application/security/data-plane-public-cert.pem
+    $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/main/application/security/clients.pem
     $ cd src/main/application && zip -r ../../../application.zip . && cd ../../..
     ```
 
