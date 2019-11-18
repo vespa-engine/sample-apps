@@ -4,3 +4,6 @@
 .vagrant/
 .DS_Store
 target/
+.project
+.settings/
+.classpath
