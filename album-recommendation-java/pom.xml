@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ai.vespa.cloud.example</groupId>
+    <artifactId>albums</artifactId>  <!-- Note: When changing this, also change bundle names in services.xml -->
+    <version>1.0.0</version>
+
+    <!--
+        container-plugin is Vespa's way of signaling we should build this project as a
+        deployable Vespa application.
+    -->
+    <packaging>container-plugin</packaging>
+
+    <parent>
+        <groupId>com.yahoo.vespa</groupId>
+        <artifactId>tenant-base</artifactId>
+        <version>[7,999)</version>  <!-- Use the latest Vespa release on each build -->
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tenant>scoober</tenant>                                      <!-- Name from the web console -->
+        <application>albums</application>                             <!-- Name from the web console -->
+        <apiKeyFile>api_key.pem</apiKeyFile>                      <!-- Absolute path to deploy key -->
+        <dataPlaneKeyFile>dataplane_key.pem</dataPlaneKeyFile>
+        <dataPlaneCertificateFile>src/main/application/security/clients.pem</dataPlaneCertificateFile>
+    </properties>
+</project>
