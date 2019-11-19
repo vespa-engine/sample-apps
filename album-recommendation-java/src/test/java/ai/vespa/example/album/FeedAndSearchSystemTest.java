@@ -3,6 +3,7 @@ package ai.vespa.example.album;
 
 import ai.vespa.hosted.cd.Endpoint;
 import ai.vespa.hosted.cd.SystemTest;
+import ai.vespa.hosted.cd.StagingTest;
 import ai.vespa.hosted.cd.TestRuntime;
 import com.yahoo.slime.JsonDecoder;
 import com.yahoo.slime.Slime;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SystemTest
+@StagingTest
 @DisplayName("Test that the deployment")
 class FeedAndSearchSystemTest {
 
