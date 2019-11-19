@@ -23,5 +23,6 @@
         <module>multiple-bundles</module>
         <module>text-search</module>
         <module>use-case-shopping</module>
+        <module>album-recommendation-java</module>
     </modules>
 </project>
