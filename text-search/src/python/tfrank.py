@@ -15,9 +15,11 @@ losses = [
     tfr.losses.RankingLossKey.APPROX_MRR_LOSS,
     tfr.losses.RankingLossKey.SOFTMAX_LOSS,
 ]
-learning_rates = [0.001, 0.01, 0.1]
+#learning_rates = [0.001, 0.01, 0.1]
+learning_rates = [0.1, 0.5, 1]
 DATA_FOLDER = "../../data"
-
+DATA_FILE_PATH = "../../data/training_data_match_random_collect_rank_features_99_random_samples.csv"
+NUM_DOCS_PER_QUERY = 100
 
 def data_generator(
     dataset: pd.DataFrame, features, label, queries, num_docs, batch_size, num_epochs=1
@@ -70,13 +72,14 @@ def score_fn(context_features, group_features, mode, params, config):
     input_layer = tf.compat.v1.layers.flatten(group_features["x"])
     # logits = tf.keras.layers.Dense(input_layer, units=_GROUP_SIZE)
     # logits = tf.compat.v1.layers.dense(group_features["x"], units=_GROUP_SIZE)
-    logits = tf.compat.v1.layers.dense(input_layer, units=_GROUP_SIZE, kernel_initializer=tf.constant_initializer([-0.1, -0.1]))
+    #logits = tf.compat.v1.layers.dense(input_layer, units=_GROUP_SIZE, kernel_initializer=tf.constant_initializer([-0.1, -0.1]))
+    logits = tf.compat.v1.layers.dense(input_layer, units=_GROUP_SIZE)
     return logits
 
 def score_nn_fn(context_features, group_features, mode, params, config):
     """Defines the network to score a group of documents."""
     input_layer = tf.compat.v1.layers.flatten(group_features["x"])
-    hidden_layer = tf.compat.v1.layers.dense(input_layer, units=4)
+    hidden_layer = tf.compat.v1.layers.dense(input_layer, units=16)
     logits = tf.compat.v1.layers.dense(hidden_layer, units=_GROUP_SIZE)
     return logits
 
@@ -147,9 +150,9 @@ def train_and_eval_fn(
         features=features,
         label=label,
         queries=train_queries,
-        num_docs=11,
+        num_docs=NUM_DOCS_PER_QUERY,
         batch_size=16,
-        num_epochs=1,
+        num_epochs=5,
     )
 
     def train_input_fn():
@@ -160,9 +163,9 @@ def train_and_eval_fn(
         features=features,
         label=label,
         queries=eval_queries,
-        num_docs=11,
+        num_docs=NUM_DOCS_PER_QUERY,
         batch_size=16,
-        num_epochs=1,
+        num_epochs=5,
     )
 
     def eval_input_fn():
@@ -183,8 +186,8 @@ if __name__ == "__main__":
     # Read csv file with data
     #
     full_data = pd.read_csv(
-        "../../data/training_data_match_random_collectAll.csv",
-        usecols=["qid", "docid", "relevant", "bm25(title)", "bm25(body)"],
+        DATA_FILE_PATH,
+        usecols=["qid", "docid", "relevant", "bm25(title)", "bm25(body)", "nativeRank(title)", "nativeRank(body)"],
     )
 
     unique_queries = set(full_data.qid)
@@ -194,12 +197,12 @@ if __name__ == "__main__":
     for loss in losses:
         for lr in learning_rates:
             model_dir = os.path.join(
-                DATA_FOLDER, "tf_ranking_nn_" + str(loss) + "_" + str(lr)
+                DATA_FOLDER, "tf_ranking_100_docs_nn_4_features_" + str(loss) + "_" + str(lr)
             )
 
             ranker, train_spec, eval_spec = train_and_eval_fn(
                 dataset=full_data,
-                features=["bm25(title)", "bm25(body)"],
+                features=["bm25(title)", "bm25(body)", "nativeRank(title)", "nativeRank(body)"],
                 label="relevant",
                 train_queries=train_queries,
                 eval_queries=eval_queries,
