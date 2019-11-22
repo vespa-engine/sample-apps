@@ -7,19 +7,20 @@ import os
 import tensorflow as tf
 import tensorflow_ranking as tfr
 
+_DATA_FOLDER = "data"
+_DATA_FILE_PATH = "data/training_data_collect_rank_features_99_random_samples.csv"
 _GROUP_SIZE = 1  # pointwise scoring
 _NUM_TRAIN_STEPS = 10 * 1000
 _SAVE_CHECKPOINT = 10
-losses = [
+_LOSSES = [
     tfr.losses.RankingLossKey.SIGMOID_CROSS_ENTROPY_LOSS,
-    tfr.losses.RankingLossKey.APPROX_MRR_LOSS,
     tfr.losses.RankingLossKey.SOFTMAX_LOSS,
 ]
-#learning_rates = [0.001, 0.01, 0.1]
-learning_rates = [0.1, 0.5, 1]
-DATA_FOLDER = "../../data"
-DATA_FILE_PATH = "../../data/training_data_match_random_collect_rank_features_99_random_samples.csv"
-NUM_DOCS_PER_QUERY = 100
+_LEARNING_RATES = [0.1, 0.5, 1]
+_NUM_DOCS_PER_QUERY = 100
+_FEATURES = ["bm25(title)", "bm25(body)", "nativeRank(title)", "nativeRank(body)"]
+_LABEL = "relevant"
+
 
 def data_generator(
     dataset: pd.DataFrame, features, label, queries, num_docs, batch_size, num_epochs=1
@@ -68,20 +69,10 @@ def transform_fn(features, mode):
 
 def score_fn(context_features, group_features, mode, params, config):
     """Defines the network to score a group of documents."""
-    # input_layer = tf.keras.layers.Flatten(group_features["x"])
     input_layer = tf.compat.v1.layers.flatten(group_features["x"])
-    # logits = tf.keras.layers.Dense(input_layer, units=_GROUP_SIZE)
-    # logits = tf.compat.v1.layers.dense(group_features["x"], units=_GROUP_SIZE)
-    #logits = tf.compat.v1.layers.dense(input_layer, units=_GROUP_SIZE, kernel_initializer=tf.constant_initializer([-0.1, -0.1]))
     logits = tf.compat.v1.layers.dense(input_layer, units=_GROUP_SIZE)
     return logits
 
-def score_nn_fn(context_features, group_features, mode, params, config):
-    """Defines the network to score a group of documents."""
-    input_layer = tf.compat.v1.layers.flatten(group_features["x"])
-    hidden_layer = tf.compat.v1.layers.dense(input_layer, units=16)
-    logits = tf.compat.v1.layers.dense(hidden_layer, units=_GROUP_SIZE)
-    return logits
 
 def eval_metric_fns():
     metric_fns = {
@@ -150,7 +141,7 @@ def train_and_eval_fn(
         features=features,
         label=label,
         queries=train_queries,
-        num_docs=NUM_DOCS_PER_QUERY,
+        num_docs=_NUM_DOCS_PER_QUERY,
         batch_size=16,
         num_epochs=5,
     )
@@ -163,7 +154,7 @@ def train_and_eval_fn(
         features=features,
         label=label,
         queries=eval_queries,
-        num_docs=NUM_DOCS_PER_QUERY,
+        num_docs=_NUM_DOCS_PER_QUERY,
         batch_size=16,
         num_epochs=5,
     )
@@ -185,35 +176,30 @@ if __name__ == "__main__":
     #
     # Read csv file with data
     #
-    full_data = pd.read_csv(
-        DATA_FILE_PATH,
-        usecols=["qid", "docid", "relevant", "bm25(title)", "bm25(body)", "nativeRank(title)", "nativeRank(body)"],
-    )
+    full_data = pd.read_csv(_DATA_FILE_PATH)
 
     unique_queries = set(full_data.qid)
     train_queries = set(sample(unique_queries, floor(len(unique_queries) / 2)))
     eval_queries = unique_queries - set(train_queries)
 
-    for loss in losses:
-        for lr in learning_rates:
+    for loss in _LOSSES:
+        for lr in _LEARNING_RATES:
             model_dir = os.path.join(
-                DATA_FOLDER, "tf_ranking_100_docs_nn_4_features_" + str(loss) + "_" + str(lr)
+                _DATA_FOLDER, "tf_ranking_" + str(loss) + "_" + str(lr)
             )
 
             ranker, train_spec, eval_spec = train_and_eval_fn(
                 dataset=full_data,
-                features=["bm25(title)", "bm25(body)", "nativeRank(title)", "nativeRank(body)"],
-                label="relevant",
+                features=_FEATURES,
+                label=_LABEL,
                 train_queries=train_queries,
                 eval_queries=eval_queries,
                 loss=loss,
-                score_function=score_nn_fn,
+                score_function=score_fn,
                 learning_rate=lr,
                 model_dir=model_dir,
             )
             tf.estimator.train_and_evaluate(ranker, train_spec, eval_spec)
-            print(ranker.get_variable_value("group_score/dense/bias"))
-            print(ranker.get_variable_value("group_score/dense/kernel"))
             with open(os.path.join(model_dir, "parameters.txt"), "w") as f:
                 f.write(str(ranker.get_variable_value("group_score/dense/bias")))
                 f.write(str(ranker.get_variable_value("group_score/dense/kernel")))
