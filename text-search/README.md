@@ -71,7 +71,7 @@ pip install -r src/python/requirements.txt
 <pre data-test="exec">
 ls -alh
 ls -alh msmarco
-ls -alh msmarco/download
+ls -alh msmarco/sample
 ./src/python/collect_training_data.py msmarco/download collect_rank_features 99
 </pre>
 
