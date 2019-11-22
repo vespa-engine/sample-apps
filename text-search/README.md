@@ -69,10 +69,7 @@ pip install -r src/python/requirements.txt
 **Collect training data:**
 
 <pre data-test="exec">
-ls -alh
-ls -alh msmarco
-ls -alh msmarco/sample
-./src/python/collect_training_data.py msmarco/download collect_rank_features 99
+./src/python/collect_training_data.py msmarco/sample collect_rank_features 99
 </pre>
 
 **Shutdown and remove the container:**
