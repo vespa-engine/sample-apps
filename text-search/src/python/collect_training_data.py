@@ -114,11 +114,13 @@ def main():
 
 
 if __name__ == "__main__":
-    QUERIES_FILE_PATH = sys.argv[1]
-    RELEVANCE_FILE_PATH = sys.argv[2]
-    DATA_FOLDER = sys.argv[3]
-    RANK_PROFILE = sys.argv[4]
-    NUMBER_RANDOM_SAMPLE = sys.argv[5]
+    DATA_FOLDER = sys.argv[1]
+    RANK_PROFILE = sys.argv[2]
+    NUMBER_RANDOM_SAMPLE = sys.argv[3]
+
+    QUERIES_FILE_PATH = os.path.join(DATA_FOLDER, "msmarco-doctrain-queries.tsv.gz")
+    RELEVANCE_FILE_PATH = os.path.join(DATA_FOLDER, "data/msmarco-doctrain-qrels.tsv.gz")
+
     OUTPUT_FILE = os.path.join(
         DATA_FOLDER,
         "training_data_"
