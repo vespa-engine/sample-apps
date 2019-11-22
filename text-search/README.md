@@ -60,6 +60,12 @@ $ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod'
 
 [http://localhost:8080/site](http://localhost:8080/site)
 
+**Install python dependencies:**
+
+<pre data-test="exec">
+pip install -r src/python/requirements.txt
+</pre>
+
 **Collect training data:**
 
 <pre data-test="exec">
