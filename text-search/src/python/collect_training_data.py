@@ -119,7 +119,7 @@ if __name__ == "__main__":
     NUMBER_RANDOM_SAMPLE = sys.argv[3]
 
     QUERIES_FILE_PATH = os.path.join(DATA_FOLDER, "msmarco-doctrain-queries.tsv.gz")
-    RELEVANCE_FILE_PATH = os.path.join(DATA_FOLDER, "data/msmarco-doctrain-qrels.tsv.gz")
+    RELEVANCE_FILE_PATH = os.path.join(DATA_FOLDER, "msmarco-doctrain-qrels.tsv.gz")
 
     OUTPUT_FILE = os.path.join(
         DATA_FOLDER,
