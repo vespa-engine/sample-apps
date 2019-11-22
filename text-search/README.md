@@ -69,7 +69,7 @@ pip install -r src/python/requirements.txt
 **Collect training data:**
 
 <pre data-test="exec">
-./src/python/collect_training_data.py data collect_rank_features 99
+./src/python/collect_training_data.py msmarco collect_rank_features 99
 </pre>
 
 **Shutdown and remove the container:**
