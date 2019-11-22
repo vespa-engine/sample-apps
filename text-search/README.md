@@ -60,6 +60,12 @@ $ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod'
 
 [http://localhost:8080/site](http://localhost:8080/site)
 
+**Collect training data:**
+
+<pre data-test="exec">
+./src/python/collect_training_data.py data collect_rank_features 99
+</pre>
+
 **Shutdown and remove the container:**
 
 <pre data-test="after">
