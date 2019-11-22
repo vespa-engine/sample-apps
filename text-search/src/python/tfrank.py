@@ -18,7 +18,7 @@ _LOSSES = [
 ]
 _LEARNING_RATES = [0.1, 0.5, 1]
 _NUM_DOCS_PER_QUERY = 100
-_FEATURES = ["bm25(title)", "bm25(body)", "nativeRank(title)", "nativeRank(body)"]
+_FEATURES = ["bm25(title)", "bm25(body)"]
 _LABEL = "relevant"
 
 
