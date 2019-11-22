@@ -10,7 +10,7 @@ import tensorflow_ranking as tfr
 _DATA_FOLDER = "data"
 _DATA_FILE_PATH = "data/training_data_collect_rank_features_99_random_samples.csv"
 _GROUP_SIZE = 1  # pointwise scoring
-_NUM_TRAIN_STEPS = 10 * 1000
+_NUM_TRAIN_STEPS = 10 * 10
 _SAVE_CHECKPOINT = 10
 _LOSSES = [
     tfr.losses.RankingLossKey.SIGMOID_CROSS_ENTROPY_LOSS,
@@ -201,5 +201,8 @@ if __name__ == "__main__":
             )
             tf.estimator.train_and_evaluate(ranker, train_spec, eval_spec)
             with open(os.path.join(model_dir, "parameters.txt"), "w") as f:
+                print("Loss: {0}, Learning rate: {1}\n".format(loss, lr))
+                print("Bias: {0}\n".format(str(ranker.get_variable_value("group_score/dense/bias"))))
+                print("Kernel: {0}\n".format(str(ranker.get_variable_value("group_score/dense/kernel"))))
                 f.write(str(ranker.get_variable_value("group_score/dense/bias")))
                 f.write(str(ranker.get_variable_value("group_score/dense/kernel")))

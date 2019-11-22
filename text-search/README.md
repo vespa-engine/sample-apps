@@ -72,6 +72,12 @@ pip install -r src/python/requirements.txt
 ./src/python/collect_training_data.py msmarco/sample collect_rank_features 99
 </pre>
 
+**Train TF-Ranking models:**
+
+<pre data-test="exec">
+./src/python/tfrank.py 
+</pre>
+
 **Shutdown and remove the container:**
 
 <pre data-test="after">
