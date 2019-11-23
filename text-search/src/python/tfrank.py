@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import sys
 import pandas as pd
 import numpy as np
 from random import sample, seed
@@ -9,8 +10,7 @@ import os
 import tensorflow as tf
 import tensorflow_ranking as tfr
 
-_DATA_FOLDER = "data"
-_DATA_FILE_PATH = "data/training_data_collect_rank_features_99_random_samples.csv"
+_DATA_FILE_NAME = "training_data_collect_rank_features_99_random_samples.csv"
 _GROUP_SIZE = 1  # pointwise scoring
 _NUM_TRAIN_STEPS = 10 * 10
 _SAVE_CHECKPOINT = 10
@@ -175,10 +175,13 @@ def train_and_eval_fn(
 
 if __name__ == "__main__":
 
+    DATA_FOLDER = sys.argv[1]
+    DATA_FILE_PATH = os.path.join(DATA_FOLDER, _DATA_FILE_NAME)
+
     #
     # Read csv file with data
     #
-    full_data = pd.read_csv(_DATA_FILE_PATH)
+    full_data = pd.read_csv(DATA_FILE_PATH)
 
     unique_queries = set(full_data.qid)
     train_queries = set(sample(unique_queries, floor(len(unique_queries) / 2)))
@@ -187,7 +190,7 @@ if __name__ == "__main__":
     for loss in _LOSSES:
         for lr in _LEARNING_RATES:
             model_dir = os.path.join(
-                _DATA_FOLDER, "tf_ranking_" + str(loss) + "_" + str(lr)
+                DATA_FOLDER, "tf_ranking_" + str(loss) + "_" + str(lr)
             )
 
             ranker, train_spec, eval_spec = train_and_eval_fn(
