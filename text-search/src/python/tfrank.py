@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import pandas as pd
 import numpy as np
 from random import sample, seed
@@ -23,7 +25,7 @@ _LABEL = "relevant"
 
 
 def data_generator(
-    dataset: pd.DataFrame, features, label, queries, num_docs, batch_size, num_epochs=1
+    dataset, features, label, queries, num_docs, batch_size, num_epochs=1
 ):
     queries = sample(queries, len(queries))
     batches = []
