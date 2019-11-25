@@ -19,9 +19,9 @@ Create an end-to-end E-Commerce shopping engine using [use-case-shopping](use-ca
 
 
 ## Detailed sample applications
-[model-evaluation](model-evaluation): A sample Vespa application to evaluate models in the application package.
+[model-evaluation](model-evaluation): A sample Vespa application which demonstrates Stateless ML Model Evaluation.
 
-[boolean-search](boolean-search): Learn how to use prediates to imlpement boolean search. I.e. how to express in a document a range of values to match, like _"this fits readers in age range 20 to 30"_.
+[boolean-search](boolean-search): Learn how to use prediate fields to implement boolean indexing. I.e. how to express in a document a range of values to match, like _"this fits readers in age range 20 to 30"_.
 
 [multiple-bundles](multiple-bundles): Build a Java application using components and dependencies in other bundles (jars). 
 
