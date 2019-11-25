@@ -19,13 +19,14 @@ The certificate is used to access the application's endpoints.
 
 1.  Download sample apps:
      ```sh
-     $ git clone git@github.com:vespa-cloud/sample-apps.git && cd sample-apps/album-recommendation-java
+     $ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/album-recommendation-java
      ```
 
 1.  Get a X.509 certificate. To create a self-signed certificate
 (more details in  in [Data Plane](https://cloud.vespa.ai/security-model.html#data-plane), see _Client certificate_), do
     ```sh
-    $ openssl req -x509 -nodes -days 14 -newkey ec:<(openssl ecparam -name prime256v1) \
+    $ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
+    -subj "/C=NO/ST=Trondheim/L=Trondheim/O=My Company/OU=My Department/CN=example.com" \
     -keyout data-plane-private-key.pem -out data-plane-public-cert.pem
     ```
 
@@ -51,8 +52,11 @@ the key is downloaded to
        ```sh
        $ mvn vespa:deploy
        ```
-    1. The endpoint URLs are printed when the deployment is successful. First time deployments takes a few minutes,
-    seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
+    1. Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
+    as first time deployments takes a few minutes.
+    Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
+    The endpoint URL is printed in the _Install application_ section when the deployment is successful -
+    copy this for the next step.
 
 1.  ...**or**, deploy through the console:
     1. In the "Deploy to dev" console section, upload _target/application.zip_, then click "Deploy".
@@ -80,13 +84,13 @@ the key is downloaded to
       $ENDPOINT/document/v1/mynamespace/music/docid/3
     ```
 
-1.  Visit documents:
+1.  [https://docs.vespa.ai/documentation/content/visiting.html](Visit) documents:
     ```sh
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
       "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
     ```
     
-1.  Search documents:
+1.  Recommend albums, send user profile in query:
     ```sh
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
       "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
