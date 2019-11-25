@@ -52,8 +52,11 @@ the key is downloaded to
        ```sh
        $ mvn vespa:deploy
        ```
-    1. The endpoint URLs are printed when the deployment is successful. First time deployments takes a few minutes,
-    seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
+    1. Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
+    as first time deployments takes a few minutes.
+    Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
+    The endpoint URL is printed in the _Install application_ section when the deployment is successful -
+    copy this for the next step.
 
 1.  ...**or**, deploy through the console:
     1. In the "Deploy to dev" console section, upload _target/application.zip_, then click "Deploy".
