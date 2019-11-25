@@ -91,15 +91,16 @@ and the results are returned in descending relevance order.
 1.  Get a X.509 certificate. To create a self-signed certificate
     (more details in  in [Data Plane](https://cloud.vespa.ai/security-model.html#data-plane), see _Client certificate_), do
     ```sh
-    $ openssl req -x509 -nodes -days 14 -newkey ec:<(openssl ecparam -name prime256v1) \
+    $ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
+      -subj "/C=NO/ST=Trondheim/L=Trondheim/O=My Company/OU=My Department/CN=example.com" \
       -keyout data-plane-private-key.pem -out data-plane-public-cert.pem
     ```
 
-1.  Go to https://console.vespa.oath.cloud/, click "Create application"
+1.  Go to http://console.vespa.ai/, click "Create application"
 
 1.  Download sample app:
     ```sh
-    $ git clone git@github.com:vespa-cloud/sample-apps.git && cd sample-apps/album-recommendation
+    $ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/album-recommendation
     ```
 
 1.  Create the application package
@@ -110,7 +111,12 @@ and the results are returned in descending relevance order.
 
 1.  Click Deploy. In the "Deploy to dev" console section, upload _application.zip_ - click Deploy
 
-1.  Click "deployment log" to track the deployment. "Installation succeeded!" in the bottom pane indicates success 
+1.  Click "deployment log" to track the deployment.
+    Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
+    as first time deployments takes a few minutes.
+    Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
+    The endpoint URL is printed in the _Install application_ section when the deployment is successful -
+    copy this for the next step.
 
 1.  Click "Instances" at the top, then "endpoints". Try the endpoint to validate it is up:
     ```sh
