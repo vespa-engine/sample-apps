@@ -109,9 +109,8 @@ and the results are returned in descending relevance order.
     $ cd src/main/application && zip -r ../../../application.zip . && cd ../../..
     ```
 
-1.  Click Deploy. In the "Deploy to dev" console section, upload _application.zip_ - click Deploy
-
-1.  Click "deployment log" to track the deployment.
+1.  In the Vespa console, click _Deploy_ on the application created in the start of this guide.
+    In the "Deploy to dev" section, upload _application.zip_ - click _Deploy_.
     Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
     as first time deployments takes a few minutes.
     Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
