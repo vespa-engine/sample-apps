@@ -84,7 +84,7 @@ the key is downloaded to
       $ENDPOINT/document/v1/mynamespace/music/docid/3
     ```
 
-1.  [https://docs.vespa.ai/documentation/content/visiting.html](Visit) documents:
+1.  [Visit](https://docs.vespa.ai/documentation/content/visiting.html) documents:
     ```sh
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
       "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
