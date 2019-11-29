@@ -3,11 +3,11 @@
 package ai.vespa.example.shopping.site;
 
 import ai.vespa.example.shopping.site.view.SimpleHtmlBuilder;
-import org.junit.Test;
-
 import java.util.Map;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class SimpleHtmlBuilderTest {
 
