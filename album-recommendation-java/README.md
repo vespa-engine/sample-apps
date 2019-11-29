@@ -15,7 +15,7 @@ See [getting started](http://cloud.vespa.ai/getting-started.html) for troublesho
 Prerequisites: git, Java 11, mvn 3.6.1 and a X.509 certificate.
 The certificate is used to access the application's endpoints.
 
-1.  Go to https://console.vespa.oath.cloud/, click "Create application"
+1.  Go to http://console.vespa.ai/, click "Create application"
 
 1.  Download sample apps:
      ```sh
@@ -45,7 +45,7 @@ The certificate is used to access the application's endpoints.
 1.  Deploy with a key pair (recommended):
     1. In the console, navigate to your tenant, and click _Keys_, then generate a random key;
 the key is downloaded to
-       `$HOME/Downloads/tenant.application.instance.pem`.
+       `$HOME/Downloads/TENANTNAME.pem`.
     1. Set the `apiKeyFile` property in `pom.xml` to the absolute path of the key, **or**
     1. on _each_ `mvn` invocation throughout, specify `-DapiKeyFile=/path/to/key.pem`
     1. Deploy the application to `dev` and wait for it to start (optionally specifying `-DapiKeyFile`)
