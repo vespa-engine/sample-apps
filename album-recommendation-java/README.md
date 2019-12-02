@@ -26,9 +26,9 @@ Security notes:
 Prerequisites: git, Java 11, mvn 3.6.1 and certificates/keys (above).
 
 1.  Download sample apps:
-```sh
-$ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/album-recommendation-java
-```
+    ```sh
+    $ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/album-recommendation-java
+    ```
 
 1.  Get a X.509 certificate and private key. Create a self-signed certificate / private key:
     ```sh
