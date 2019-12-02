@@ -23,7 +23,7 @@ Security notes:
 
 
 ## Getting started
-Prerequisites: git, Java 11, mvn 3.6.1 and certificates/keys (above).
+Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 
 1.  Download sample apps:
     ```sh
