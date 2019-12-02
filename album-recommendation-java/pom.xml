@@ -23,10 +23,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>scoober</tenant>                                      <!-- Name from the web console -->
-        <application>albums</application>                             <!-- Name from the web console -->
-        <apiKeyFile>api_key.pem</apiKeyFile>                      <!-- Absolute path to deploy key -->
-        <dataPlaneKeyFile>dataplane_key.pem</dataPlaneKeyFile>
-        <dataPlaneCertificateFile>src/main/application/security/clients.pem</dataPlaneCertificateFile>
+        <tenant>MYTENANT</tenant>                                 <!-- Name from the web console -->
+        <application>MYAPP</application>                          <!-- Name from the web console -->
+        <apiKeyFile>TENANTNAME.pem</apiKeyFile>                   <!-- Absolute path to developer or headless key -->
+        <dataPlaneKeyFile>data-plane-private-key.pem</dataPlaneKeyFile>
+        <dataPlaneCertificateFile>data-plane-public-cert.pem</dataPlaneCertificateFile>
     </properties>
 </project>
