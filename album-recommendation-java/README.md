@@ -5,7 +5,7 @@ Extends the [album-recommedations](../album-recommedations) sample application w
 which does query and result processing. Refer to
 [developing searchers](http://docs.vespa.ai/documentation/searcher-development.html) for more information.
 
-This sample app introduces how to write system tests and how to integrate with a CI/CD pipeline
+This sample app introduces how to write system tests and how to integrate with a CI/CD pipeline.
 
 See [getting started](http://cloud.vespa.ai/getting-started.html) for troubleshooting.
 
@@ -104,22 +104,47 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
       "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20album%20contains%20%22to%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
     ```
 
-1.  Run the included integration test _ExampleSystemTest_:
+1.  At this point, the application is built, unit tested, deployed to a _dev_ instance, fed to and a few test queries have been run.
+    Safe deployments depends on automated testing.
+    Vespa Cloud has support for running _system_ and _staging_ tests for every change to an application.
+    These tests are run as JUnit tests, but use the endpoints of a real deployment of the application.
+    When _submitting_ an application to Vespa Cloud, a test instance is set up and tests automatically run using its endpoints.
+    To develop system and staging tests, deploy the application to _dev_ (like above) and run tests like _ExampleSystemTest_:
     ```sh
     $ mvn test -Dtest.categories=system
     ```
     or run it directly from an IDE. 
     ai.vespa.hosted.cd.Endpoint must have access to the data plane key and certificate pair,
     to talk to the application endpoint.
-    Set these with the `dataPlaneCertificateFile` and `dataPlaneKeyFile` properties,
-    in the same manner as the `apiKeyFile`:
-    -   in `pom.xml`, like `<dataPlaneCertificateFile>data-plane-public-cert.pem</dataPlaneCertificateFile>`,
+    Set in `pom.xml` (above) or
     -   as arguments to `mvn` like `-DdataPlaneCertificateFile=data-plane-public-cert.pem`, or
     -   as VM options for the JUnit tests in the IDEA, like `-DdataPlaneCertificateFile=data-plane-public-cert.pem`. 
     This also applies to the `dataPlaneKeyFile`, and the `apiKeyFile`.
 
+    Find more details in the [Vespa Cloud API](https://cloud.vespa.ai/reference/vespa-cloud-api.html) and
+    [automated-deployments](https://cloud.vespa.ai/automated-deployments).
 
-<!-- Troubleshooting notes
-* if the bundle name is changed, it can cause container not to start and deploy fail - hard to get to logs then ...
-*
--->
+1.  To run tests against a deployment running in Docker on localhost (instead of using _dev_),
+    configure endpoint location:
+    ```
+    {
+        "localEndpoints": {
+        "container": "http://localhost:8080/"
+        }
+    }
+    ```
+    in some file `/path/to/test/config`, and run JUnit tests with `-Dvespa.test.config=/path/to/test/config -Dtest.categories=system`.
+    Refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) for how to create the application package.
+
+1.  When System and Staging tests are ready, deploy to production.
+    Command to build and submit application to the hosted Vespa API is
+    ```
+    mvn clean vespa:compileVersion
+    mvn -P fat-test-application \
+    -Dvespaversion="$(cat target/vespa.compile.version)" \
+    -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
+    package vespa:submit
+    ```
+
+    To track versions through the pipeline, assuming you're using `git` for version control, you can instead specify
+    `-Drepository=$(git config --get remote.origin.url) -Dbranch=$(git rev-parse --abbrev-ref HEAD) -Dcommit=$(git rev-parse HEAD) -DauthorEmail=$(git log -1 --format=%aE)`
