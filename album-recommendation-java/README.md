@@ -104,12 +104,12 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
       "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20album%20contains%20%22to%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
     ```
 
-1.  At this point, the application is built, unit tested, deployed to a _dev_ instance, fed to and a few test queries has been run.
+1.  At this point, the application is built, unit tested, deployed to a _dev_ instance, fed to and a few test queries have been run.
     Safe deployments depends on automated testing.
-    Vespa Cloud has support for running System and Staging tests for every change to an application.
-    These tests run like unit tests, but uses the application's endpoints for black-box testing.
-    When _submitting_ an application to Vespa Cloud, a test instance is set up and tests run using it's endpoints.
-    To develop System and Staging tests, deploy the application to _dev_ (like above) and run tests like _ExampleSystemTest_:
+    Vespa Cloud has support for running _system_ and _staging_ tests for every change to an application.
+    These tests are run as JUnit tests, but use the endpoints of a real deployment of the application.
+    When _submitting_ an application to Vespa Cloud, a test instance is set up and tests automatically run using its endpoints.
+    To develop system and staging tests, deploy the application to _dev_ (like above) and run tests like _ExampleSystemTest_:
     ```sh
     $ mvn test -Dtest.categories=system
     ```
@@ -124,8 +124,8 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     Find more details in the [Vespa Cloud API](https://cloud.vespa.ai/reference/vespa-cloud-api.html) and
     [automated-deployments](https://cloud.vespa.ai/automated-deployments).
 
-1.  To run System and Staging tests from a instance running in Docker on localhost (instead of using _dev_),
-    configure endpoint location in a file:
+1.  To run tests against a deployment running in Docker on localhost (instead of using _dev_),
+    configure endpoint location:
     ```
     {
         "localEndpoints": {
