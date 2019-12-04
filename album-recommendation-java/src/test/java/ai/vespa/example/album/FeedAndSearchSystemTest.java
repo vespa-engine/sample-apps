@@ -52,4 +52,7 @@ class FeedAndSearchSystemTest {
                 .get("root").get("fields").get("totalCount").asLong());
     }
 
+    // Add more tests, for inspiration use
+    // https://github.com/vespa-engine/sample-apps/tree/3a05197d549bf36990651636573a1bd810b86c4c/basic-search-hosted and
+    // https://github.com/vespa-engine/sample-apps/tree/e691b706d84b73caa3f5a595ae6c91388a4c2ca0/basic-search-java
 }
