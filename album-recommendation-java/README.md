@@ -1,7 +1,7 @@
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - album recommendations java
 
-Extends the [album-recommedations](../album-recommedations) sample application with a Searcher component in Java
+Extends the [album-recommendations](../album-recommendations) sample application with a Searcher component in Java
 which does query and result processing. Refer to
 [developing searchers](http://docs.vespa.ai/documentation/searcher-development.html) for more information.
 
