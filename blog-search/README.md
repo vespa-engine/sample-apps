@@ -4,7 +4,10 @@
 This sample application contains the code for the blog search tutorial. Refer to
 [Vespa tutorial pt.1 - Blog searching](http://docs.vespa.ai/documentation/tutorials/blog-search.html).
 
-
+**Validate environment, should be 10G:**
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
 **Executable example:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
