@@ -24,6 +24,10 @@ type predicate to the .sd file. (Remember to set the arity parameter.)
 
 
 ### Executable example
+**Validate environment, should be minimum 6G:**
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
 **Check-out, compile and run:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
