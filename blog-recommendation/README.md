@@ -5,6 +5,11 @@ This sample application contains the code for the blog recommendation tutorial. 
 [Vespa tutorial pt.2 - Blog recommendation](http://docs.vespa.ai/documentation/tutorials/blog-recommendation.html).
 
 ### Executable example
+**Validate environment, should be 10G:**
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 **Check-out, compile and run:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
