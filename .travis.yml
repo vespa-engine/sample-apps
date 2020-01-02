@@ -12,4 +12,11 @@ install: true
 
 language: minimal
 
-script: ./travis/start-docker-container.sh
+jobs:
+  include:
+    - stage: compile-and-test
+      script: ./travis/compile-and-test-docker.sh
+    - stage: deploy-album-recommendation
+      if: branch = master AND type = push
+      script: ./travis/deploy-album-recommendation-java-docker.sh
+
