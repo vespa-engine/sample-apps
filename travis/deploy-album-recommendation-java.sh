@@ -31,7 +31,6 @@ echo ${ALBUM_RECOMMENDATION_JAVA_DEPLOY_KEY} | openssl base64 -A -a -d -out ${DE
 mvn \
   -Dtenant=vespa \
   -Dapplication=album-recommendation \
-  -Dinstance=default \
   -Dendpoint=${VESPA_CLOUD_ENDPOINT} \
   -DapiKeyFile=${DEPLOY_KEY_FILE} \
   clean vespa:compileVersion
