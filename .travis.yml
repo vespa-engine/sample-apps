@@ -17,6 +17,6 @@ jobs:
     - stage: compile-and-test
       script: ./travis/compile-and-test-docker.sh
     - stage: deploy-album-recommendation
-      if: branch = master AND type IN (push,cron)
+      if: branch = master AND type = push
       script: ./travis/deploy-album-recommendation-java-docker.sh
 
