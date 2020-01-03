@@ -39,7 +39,6 @@ mvn \
 mvn -P fat-test-application \
   -Dtenant=vespa \
   -Dapplication=album-recommendation \
-  -Dinstance=default \
   -Dendpoint=${VESPA_CLOUD_ENDPOINT} \
   -Drepository=$(git config --get remote.origin.url) \
   -Dbranch=$(git rev-parse --abbrev-ref HEAD) \
