@@ -29,7 +29,7 @@ public class ExpressionEvaluatorTest {
 
         assertTrue(v instanceof TensorValue);
         assertEquals("tensor(x{})", v.asTensor().type().toString());
-        assertEquals("tensor(x{}):{{x:0}:2.0,{x:1}:6.0}", v.toString());
+        assertEquals("tensor(x{}):{0:2.0,1:6.0}", v.toString());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ExpressionEvaluatorTest {
                 "{",
                 "   \"type\": \"tensor(x[])\",",
                 "   \"value\": {",
-                "       \"literal\": \"tensor(x[]):{{x:0}:2.0,{x:1}:6.0}\",",
+                "       \"literal\": \"tensor(x[]):{0:2.0,1:6.0}\",",
                 "       \"cells\": [{\"address\":{\"x\":\"0\"},\"value\":2.0},{\"address\":{\"x\":\"1\"},\"value\":6.0}]",
                 "   }",
                 "}");
