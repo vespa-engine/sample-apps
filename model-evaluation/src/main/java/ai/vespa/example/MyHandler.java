@@ -6,10 +6,13 @@ import com.yahoo.container.jdisc.HttpRequest;
 import com.yahoo.container.jdisc.HttpResponse;
 import com.yahoo.container.jdisc.LoggingRequestHandler;
 import com.yahoo.tensor.Tensor;
+import com.yahoo.tensor.TensorType;
 import com.yahoo.tensor.serialization.JsonFormat;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
+
 
 public class MyHandler extends LoggingRequestHandler {
 
@@ -30,9 +33,13 @@ public class MyHandler extends LoggingRequestHandler {
 
         // Bind input arguments
         String argumentName = request.getProperty("argumentName");
-        if (argumentName != null) {
-            String argumentValue = request.getProperty("argumentValue");
-            evaluator.bind(argumentName, Tensor.from(argumentValue));
+        String argumentValue = request.getProperty("argumentValue");
+        if (argumentName != null && argumentValue != null) {
+            for (Map.Entry<String, TensorType> argumentType : evaluator.function().argumentTypes().entrySet()) {
+                if (argumentName.equals(argumentType.getKey())) {
+                    evaluator.bind(argumentName, Tensor.from(argumentType.getValue(), argumentValue));
+                }
+            }
         }
 
         // Evaluate model
