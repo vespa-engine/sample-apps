@@ -45,18 +45,18 @@ $ curl -s 'http://localhost:8080/model-evaluation/v1/' | python -m json.tool
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="-0.35465">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/mnist_softmax/eval?Placeholder=%7B%7Bd1%3A0%7D%3A0.1%7D' | python -m json.tool
+$ curl -s 'http://localhost:8080/model-evaluation/v1/mnist_softmax/eval?Placeholder=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A0.1%7D' | python -m json.tool
 </pre>
 
 **Test the application - Java API**
 
 <pre data-test="exec" data-test-assert-contains="-0.35465">
-$ curl -s 'http://localhost:8080/models/?model=mnist_softmax&function=default.add&argumentName=Placeholder&argumentValue=%7B%7Bd1%3A0%7D%3A0.1%7D' | python -m json.tool
+$ curl -s 'http://localhost:8080/models/?model=mnist_softmax&function=default.add&argumentName=Placeholder&argumentValue=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A0.1%7D' | python -m json.tool
 </pre>
 
 **Shutdown and remove the container:**
 
 <pre data-test="after">
-$  docker rm -f vespa
+$ docker rm -f vespa
 </pre>
 
