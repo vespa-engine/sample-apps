@@ -10,5 +10,5 @@ data <- rbind(data.frame(rr = rr_pointwise_bm25$rr, model = "pointwise_bm25"),
               data.frame(rr = rr_listwise_bm25$rr, model = "listwise_bm25"))
 
 ggplot(data=subset(data, rr >= 1/10), aes(x=as.factor(1/rr), y = (..count..)/sum(..count..), fill=model)) +
-  geom_bar(position=position_dodge()) + labs(x = "Position of the relevant document", y = "Frequency")
+  geom_bar(position=position_dodge()) + labs(x = "Position of the relevant document", y = "Frequency") + theme(legend.position="top")
 
