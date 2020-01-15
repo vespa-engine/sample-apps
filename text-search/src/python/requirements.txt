@@ -2,3 +2,4 @@ pandas
 requests
 tensorflow
 tensorflow_ranking
+tensorflow_hub
