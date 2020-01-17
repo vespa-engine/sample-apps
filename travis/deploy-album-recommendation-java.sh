@@ -24,7 +24,7 @@ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
 mkdir -p src/main/application/security && cp ${CERT_FILE} src/main/application/security/clients.pem
 
 # Set upgrade policy to canary
-sed -i'' -e '/<deployment.*>/ s,$,\n  <upgrade policy="canary" />,' src/main/application/deployment.xml
+sed -i'' -e '/<deployment[^/>]*>/ s,$,\n  <upgrade policy="canary" />,' src/main/application/deployment.xml
 
 # Write deploy key to file
 # Deploy key must be encoded as single-line base64 (e.g using 'openssl base64 -A -a')
