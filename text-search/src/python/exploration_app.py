@@ -8,8 +8,8 @@ from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_rel
 from pandas import DataFrame
 
 
-QUERIES_FILE_PATH = "data/dev_test_data/msmarco-docdev-queries.tsv.gz"
-RELEVANCE_FILE_PATH = "data/dev_test_data/msmarco-docdev-qrels.tsv.gz"
+QUERIES_FILE_PATH = "msmarco/sample/msmarco-doctrain-queries.tsv.gz"
+RELEVANCE_FILE_PATH = "msmarco/sample/msmarco-doctrain-qrels.tsv.gz"
 RANK_PROFILE_MAP = {"BM25": "bm25", "Native Rank": "default"}
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
 
@@ -41,7 +41,7 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
     hits = st.text_input("Number of hits to evaluate per query", "10")
 
     if st.button("Evaluate"):
-        query_relevance = sample_query_relevance_data(number_queries=10)
+        query_relevance = sample_query_relevance_data(number_queries=100)
 
         records_1, aggregate_metrics_1, position_freq_1 = evaluate(
             query_relevance=query_relevance,
