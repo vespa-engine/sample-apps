@@ -25,7 +25,7 @@ search msmarco {
         }
 
         field title_word2vec type tensor<float>(x[500]) {
-            indexing: attribute
+            indexing: attribute | summary
         }
 
         field body_word2vec type tensor<float>(x[500]) {
@@ -62,7 +62,7 @@ search msmarco {
 
     rank-profile word2vec inherits default {
         first-phase {
-            expression: sum(query(tensor)*attribute(body_word2vec))
+            expression: sum(query(tensor)*attribute(title_word2vec))
         }
     }
 
