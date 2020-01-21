@@ -4,7 +4,6 @@ import sys
 import numpy as np
 import tensorflow_hub as hub
 import json
-from math import isnan
 
 word2vec_embed = hub.load(
     "https://tfhub.dev/google/Wiki-words-500-with-normalization/2"
@@ -17,8 +16,9 @@ def create_document_embedding(text, model="word2vec", normalize=True):
     else:
         raise NotImplementedError
     if normalize:
-        if np.sum(vector) > 0.0:
-            vector = vector / np.linalg.norm(vector)
+        norm = np.linalg.norm(vector)
+        if norm > 0.0:
+            vector = vector / norm
     return vector.tolist()[0]
 
 
