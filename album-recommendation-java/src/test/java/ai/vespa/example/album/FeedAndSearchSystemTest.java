@@ -3,7 +3,6 @@ package ai.vespa.example.album;
 
 import ai.vespa.hosted.cd.Endpoint;
 import ai.vespa.hosted.cd.SystemTest;
-import ai.vespa.hosted.cd.StagingTest;
 import ai.vespa.hosted.cd.TestRuntime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SystemTest
-@StagingTest
 class FeedAndSearchSystemTest {
 
     private final Endpoint endpoint = TestRuntime.get().deploymentToTest().endpoint("default");
@@ -24,11 +22,11 @@ class FeedAndSearchSystemTest {
     @Test
     void feedAndSearch() throws IOException {
         String documentPath = "/document/v1/mynamespace/music/docid/Got-to-be-there";
-        String document = "{\n"
-                     + "    \"fields\": {\n"
-                     + "         \"album\": \"Got to be there\"\n"
-                     + "    }\n"
-                     + "}\n";
+        String document = "{\n" +
+                          "    \"fields\": {\n" +
+                          "         \"album\": \"Got to be there\"\n" +
+                          "    }\n" +
+                          "}\n";
 
         String yql = "SELECT * FROM SOURCES * WHERE album CONTAINS \"Got to be there\";";
 
