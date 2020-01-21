@@ -54,6 +54,18 @@ search msmarco {
         }
     }
 
+    rank-profile bm25_word2vec inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(body) + sum(query(tensor)*attribute(body_word2vec))
+        }
+    }
+
+    rank-profile word2vec inherits default {
+        first-phase {
+            expression: sum(query(tensor)*attribute(body_word2vec))
+        }
+    }
+
     rank-profile pointwise_linear_bm25 inherits default {
         first-phase {
             expression: 0.22499913 * bm25(title) + 0.07596389 * bm25(body)
