@@ -16,7 +16,9 @@ def create_document_embedding(text, model="word2vec", normalize=True):
     else:
         raise NotImplementedError
     if normalize:
-        vector = vector / np.linalg.norm(vector)
+        norm = np.linalg.norm(vector)
+        if norm > 0.0:
+            vector = vector / norm
     return vector.tolist()[0]
 
 
