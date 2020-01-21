@@ -8,9 +8,15 @@ from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_rel
 from pandas import DataFrame
 
 
-QUERIES_FILE_PATH = "msmarco/sample/msmarco-doctrain-queries.tsv.gz"
-RELEVANCE_FILE_PATH = "msmarco/sample/msmarco-doctrain-qrels.tsv.gz"
-RANK_PROFILE_MAP = {"BM25": "bm25", "Native Rank": "default"}
+QUERIES_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-queries.tsv.gz"
+RELEVANCE_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-qrels.tsv.gz"
+RANK_PROFILE_OPTIONS = ("BM25", "Native Rank", "word2vec", "BM25 + word2vec")
+RANK_PROFILE_MAP = {
+    "BM25": "bm25",
+    "Native Rank": "default",
+    "word2vec": "word2vec",
+    "BM25 + word2vec": "bm25_word2vec",
+}
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
 
 
@@ -30,18 +36,18 @@ def main():
 
 def page_ranking_function_comparison(vespa_url, vespa_port):
     rank_profile_1 = st.sidebar.selectbox(
-        "Ranking 1: rank profile", ("BM25", "Native Rank")
+        "Ranking 1: rank profile", RANK_PROFILE_OPTIONS
     )
     grammar_operator_1 = st.sidebar.selectbox("Ranking 1: Grammar", ("AND", "OR"))
     rank_profile_2 = st.sidebar.selectbox(
-        "Ranking 2: rank profile", ("BM25", "Native Rank")
+        "Ranking 2: rank profile", RANK_PROFILE_OPTIONS
     )
     grammar_operator_2 = st.sidebar.selectbox("Ranking 2: Grammar", ("AND", "OR"))
 
     hits = st.text_input("Number of hits to evaluate per query", "10")
 
     if st.button("Evaluate"):
-        query_relevance = sample_query_relevance_data(number_queries=100)
+        query_relevance = sample_query_relevance_data(number_queries=10)
 
         records_1, aggregate_metrics_1, position_freq_1 = evaluate(
             query_relevance=query_relevance,
