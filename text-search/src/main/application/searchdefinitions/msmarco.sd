@@ -24,6 +24,14 @@ search msmarco {
             stemming: best
         }
 
+        field title_word2vec type tensor<float>(x[500]) {
+            indexing: attribute
+        }
+
+        field body_word2vec type tensor<float>(x[500]) {
+            indexing: attribute
+        }
+
     }
 
     document-summary minimal {

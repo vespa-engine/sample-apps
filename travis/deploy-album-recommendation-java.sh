@@ -23,6 +23,9 @@ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
 # Copy certificate to src/main/security/
 mkdir -p src/main/application/security && cp ${CERT_FILE} src/main/application/security/clients.pem
 
+# Set upgrade policy to canary
+sed -i'' -e '/<deployment[^/>]*>/ s,$,\n  <upgrade policy="canary" />,' src/main/application/deployment.xml
+
 # Write deploy key to file
 # Deploy key must be encoded as single-line base64 (e.g using 'openssl base64 -A -a')
 echo ${ALBUM_RECOMMENDATION_JAVA_DEPLOY_KEY} | openssl base64 -A -a -d -out ${DEPLOY_KEY_FILE}
