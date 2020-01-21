@@ -78,7 +78,7 @@ class StagingCommons {
         assertEquals(2, root.get("fields").get("totalCount").asLong());
 
         JsonNode love = root.get("children").get(0).get("fields");
-        assertEquals("Diane Krall", love.get("artist").asText());
+        assertEquals("Diana Krall", love.get("artist").asText());
         assertEquals("Love Is Here To Stay", love.get("artist").asText());
         assertEquals(2018, love.get("year").asLong());
 
