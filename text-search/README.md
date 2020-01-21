@@ -63,6 +63,7 @@ $ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod'
 **Install python dependencies:**
 
 <pre data-test="exec">
+pip3 install --upgrade pip
 pip3 install -r src/python/requirements.txt
 </pre>
 
