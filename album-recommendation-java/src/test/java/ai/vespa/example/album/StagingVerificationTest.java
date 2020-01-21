@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.http.HttpResponse;
 import java.util.Iterator;
+import java.util.List;
 
 import static ai.vespa.example.album.StagingCommons.container;
 import static ai.vespa.example.album.StagingCommons.documentsByPath;
@@ -31,10 +32,8 @@ class StagingVerificationTest {
                 assertEquals(200, documentResponse.statusCode());
                 JsonNode retrieved = mapper.readTree(documentResponse.body()).get("fields");
                 JsonNode expected = mapper.readTree(document).get("fields");
-                for (Iterator<String> names = expected.fieldNames(); names.hasNext(); ) {
-                    String name = names.next();
+                for (String name : List.of("artist", "album", "year"))
                     assertEquals(expected.get(name), retrieved.get(name));
-                }
             }
             catch (IOException e) {
                 throw new UncheckedIOException(e);
