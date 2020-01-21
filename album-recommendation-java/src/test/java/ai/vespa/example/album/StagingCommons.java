@@ -79,12 +79,12 @@ class StagingCommons {
 
         JsonNode love = root.get("children").get(0).get("fields");
         assertEquals("Diana Krall", love.get("artist").asText());
-        assertEquals("Love Is Here To Stay", love.get("artist").asText());
+        assertEquals("Love Is Here To Stay", love.get("album").asText());
         assertEquals(2018, love.get("year").asLong());
 
         JsonNode hardwired = root.get("children").get(1).get("fields");
         assertEquals("Metallica", hardwired.get("artist").asText());
-        assertEquals("Hardwired...To Self-Destruct", hardwired.get("artist").asText());
+        assertEquals("Hardwired...To Self-Destruct", hardwired.get("album").asText());
         assertEquals(2016, hardwired.get("year").asLong());
     }
 
