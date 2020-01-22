@@ -5,6 +5,7 @@ from requests import post
 from time import time
 from random import sample
 from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
+from embedding import create_document_embedding
 from pandas import DataFrame
 
 
@@ -16,6 +17,12 @@ RANK_PROFILE_MAP = {
     "Native Rank": "default",
     "word2vec": "word2vec",
     "BM25 + word2vec": "bm25_word2vec",
+}
+RANK_PROFILE_EMBEDDING = {
+    "bm25": None,
+    "default": None,
+    "word2vec": "word2vec",
+    "bm25_word2vec": "word2vec",
 }
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
 
@@ -91,19 +98,27 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
 def page_simple_query_page(vespa_url, vespa_port):
     query = st.text_input("Query", "")
 
-    rank_profile = st.selectbox("Select desired rank profile", ("BM25", "Native Rank"))
+    rank_profile = st.selectbox("Select desired rank profile", RANK_PROFILE_OPTIONS)
+    rank_profile = RANK_PROFILE_MAP[rank_profile]
 
     grammar_operator = st.selectbox(
         "Which grammar operator to apply fo query tokens", ("AND", "OR")
     )
 
+    embedding = None
+    if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
+        embedding = create_document_embedding(
+            text=query, model="word2vec", normalize=True
+        )
+
     if query != "":
         search_results = vespa_search(
             query=query,
-            rank_profile=RANK_PROFILE_MAP[rank_profile],
+            rank_profile=rank_profile,
             vespa_url=vespa_url,
             vespa_port=vespa_port,
             grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator],
+            embedding=embedding,
         )
         output_format = st.radio(
             "Select output format", ("parsed vespa results", "raw vespa results")
@@ -154,7 +169,7 @@ def parse_vespa_json(data):
     return ranking
 
 
-@st.cache(persist=True)
+# @st.cache(persist=True)
 def evaluate(query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, hits):
     if grammar_any:
         grammar_name = "OR"
@@ -167,6 +182,11 @@ def evaluate(query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, 
     position_count = [0] * hits
     for qid, (query, relevant_id) in query_relevance.items():
         rr = 0
+        embedding = None
+        if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
+            embedding = create_document_embedding(
+                text=query, model="word2vec", normalize=True
+            )
         vespa_result = vespa_search(
             query=query,
             rank_profile=rank_profile,
@@ -176,6 +196,7 @@ def evaluate(query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, 
             hits=hits,
             offset=0,
             summary="minimal",
+            embedding=embedding,
         )
         ranking = parse_vespa_json(data=vespa_result)
         for rank, hit in enumerate(ranking):
@@ -206,6 +227,8 @@ def vespa_search(
     hits=10,
     offset=0,
     summary=None,
+    embedding=None,
+    tracelevel=None,
 ):
 
     if grammar_any:
@@ -224,8 +247,12 @@ def vespa_search(
         "timeout": 1,
         "presentation.format": "json",
     }
+    if tracelevel:
+        body.update({"tracelevel": tracelevel})
     if summary == "minimal":
         body.update({"summary": "minimal"})
+    if embedding:
+        body.update({"ranking.features.query(tensor)": str(embedding)})
     r = post(vespa_url + ":" + vespa_port + "/search/", json=body)
     return r.json()
 
