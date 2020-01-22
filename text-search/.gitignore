@@ -1,3 +1,4 @@
 data/
 .Rhistory
 Pipfile
+*.pyc
