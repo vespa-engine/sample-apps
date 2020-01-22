@@ -32,6 +32,14 @@ search msmarco {
             indexing: attribute
         }
 
+        field title_gse type tensor<float>(x[512]) {
+            indexing: attribute | summary
+        }
+
+        field body_gse type tensor<float>(x[512]) {
+            indexing: attribute
+        }
+
     }
 
     document-summary minimal {
