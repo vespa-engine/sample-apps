@@ -11,18 +11,26 @@ from pandas import DataFrame
 
 QUERIES_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-queries.tsv.gz"
 RELEVANCE_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-qrels.tsv.gz"
-RANK_PROFILE_OPTIONS = ("BM25", "Native Rank", "word2vec", "BM25 + word2vec")
+RANK_PROFILE_OPTIONS = (
+    "BM25",
+    "Native Rank",
+    "BM25 + title word2vec",
+    "BM25 + body word2vec",
+    "BM25 + title and body word2vec",
+)
 RANK_PROFILE_MAP = {
     "BM25": "bm25",
     "Native Rank": "default",
-    "word2vec": "word2vec",
-    "BM25 + word2vec": "bm25_word2vec",
+    "BM25 + title word2vec": "bm25_word2vec_title",
+    "BM25 + body word2vec": "bm25_word2vec_body",
+    "BM25 + title and body word2vec": "bm25_word2vec_body_title",
 }
 RANK_PROFILE_EMBEDDING = {
     "bm25": None,
     "default": None,
-    "word2vec": "word2vec",
-    "bm25_word2vec": "word2vec",
+    "bm25_word2vec_title": "word2vec",
+    "bm25_word2vec_body": "word2vec",
+    "bm25_word2vec_body_title": "word2vec",
 }
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
 
@@ -96,7 +104,16 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
 
 
 def page_simple_query_page(vespa_url, vespa_port):
-    query = st.text_input("Query", "")
+    predefined_queries = st.checkbox("Use pre-defined queries")
+
+    if predefined_queries:
+        query_relevance = sample_query_relevance_data(number_queries=5)
+        query_relevance = {
+            query: relevant_id for _, (query, relevant_id) in query_relevance.items()
+        }
+        query = st.selectbox("Choose a query", list(query_relevance.keys()))
+    else:
+        query = st.text_input("Query", "")
 
     rank_profile = st.selectbox("Select desired rank profile", RANK_PROFILE_OPTIONS)
     rank_profile = RANK_PROFILE_MAP[rank_profile]
@@ -129,15 +146,23 @@ def page_simple_query_page(vespa_url, vespa_port):
         elif output_format == "parsed vespa results":
             st.markdown("## Showing parsed results")
             st.markdown("### Click to see more")
-            results_title = {
-                hit["fields"]["title"]: {
-                    "url": hit["fields"]["url"],
-                    "body": hit["fields"]["body"],
-                    "relevance": hit["relevance"],
-                    "id": hit["id"],
-                }
-                for hit in search_results["root"]["children"]
-            }
+            results_title = {}
+            for hit in search_results["root"]["children"]:
+                if predefined_queries and hit["fields"]["id"] == query_relevance[query]:
+                    results_title["*** " + hit["fields"]["title"] + " ***"] = {
+                        "url": hit["fields"]["url"],
+                        "body": hit["fields"]["body"],
+                        "relevance": hit["relevance"],
+                        "id": hit["id"],
+                    }
+
+                else:
+                    results_title[hit["fields"]["title"]] = {
+                        "url": hit["fields"]["url"],
+                        "body": hit["fields"]["body"],
+                        "relevance": hit["relevance"],
+                        "id": hit["id"],
+                    }
             for title in results_title:
                 if st.checkbox(title):
                     st.markdown(
