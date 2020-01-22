@@ -59,9 +59,9 @@ def main(input_file_path, output_file_path, embedding_method):
                     )
                     data_to_update = create_vespa_update(
                         doc_id=vespa_doc_id,
-                        title_field_name="title_word2vec",
+                        title_field_name="title_" + embedding_method,
                         title_field_values=title_vector,
-                        body_field_name="body_word2vec",
+                        body_field_name="body_" + embedding_method,
                         body_field_values=body_vector,
                     )
                     file_out.write(json.dumps(data_to_update))
