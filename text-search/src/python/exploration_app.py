@@ -1,3 +1,5 @@
+import json
+import os
 import streamlit as st
 import plotly as py
 import plotly.figure_factory as ff
@@ -7,7 +9,7 @@ from random import sample
 from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
 from embedding import create_document_embedding
 from pandas import DataFrame
-
+import tensorflow_hub as hub
 
 QUERIES_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-queries.tsv.gz"
 RELEVANCE_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-qrels.tsv.gz"
@@ -20,7 +22,6 @@ RANK_PROFILE_OPTIONS = (
     "BM25 + title gse",
     "BM25 + body gse",
     "BM25 + title and body gse",
-
 )
 RANK_PROFILE_MAP = {
     "BM25": "bm25",
@@ -31,7 +32,6 @@ RANK_PROFILE_MAP = {
     "BM25 + title gse": "bm25_gse_title",
     "BM25 + body gse": "bm25_gse_body",
     "BM25 + title and body gse": "bm25_gse_body_title",
-
 }
 RANK_PROFILE_EMBEDDING = {
     "bm25": None,
@@ -42,9 +42,17 @@ RANK_PROFILE_EMBEDDING = {
     "bm25_gse_title": "gse",
     "bm25_gse_body": "gse",
     "bm25_gse_body_title": "gse",
-
 }
+AVAILABLE_EMBEDDINGS = ["word2vec", "gse"]
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
+
+
+@st.cache(ignore_hash=True)
+def retrieve_model(model_type):
+    if model_type == "word2vec":
+        return hub.load("https://tfhub.dev/google/Wiki-words-500-with-normalization/2")
+    elif model_type == "gse":
+        return hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 
 
 def main():
@@ -52,13 +60,80 @@ def main():
     vespa_port = st.sidebar.text_input("Vespa port", 8080)
 
     page = st.sidebar.selectbox(
-        "Choose a page", ["Simple query", "Ranking function comparison"]
+        "Choose a page",
+        ["Simple query", "Ranking function comparison", "Results summary"],
     )
 
     if page == "Simple query":
         page_simple_query_page(vespa_url=vespa_url, vespa_port=vespa_port)
     elif page == "Ranking function comparison":
         page_ranking_function_comparison(vespa_url=vespa_url, vespa_port=vespa_port)
+    elif page == "Results summary":
+        page_results_summary(vespa_url=vespa_url, vespa_port=vespa_port)
+
+
+def compute_all_options(
+    vespa_url, vespa_port, output_dir, rank_profiles, grammar_operators
+):
+    query_relevance = sample_query_relevance_data(number_queries=None)
+    hits = 10
+    for rank_profile in rank_profiles:
+        for grammar_operator in grammar_operators:
+            file_name = "full_evaluation_{}_{}".format(
+                RANK_PROFILE_MAP[rank_profile], grammar_operator
+            )
+            file_path = os.path.join(output_dir, file_name)
+            if not os.path.exists(file_path):
+                model1 = retrieve_model(
+                    RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]]
+                )
+                records, aggregate_metrics, position_freq = evaluate(
+                    query_relevance=query_relevance,
+                    rank_profile=RANK_PROFILE_MAP[rank_profile],
+                    grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator],
+                    vespa_url=vespa_url,
+                    vespa_port=vespa_port,
+                    hits=int(hits),
+                    model=model1,
+                )
+                with open(file_path, "w") as f:
+                    f.write(
+                        json.dumps(
+                            {
+                                "aggregate_metrics": aggregate_metrics,
+                                "position_freq": position_freq,
+                            }
+                        )
+                    )
+
+
+def load_all_options(output_dir, rank_profiles, grammar_operators):
+    results = []
+    for rank_profile in rank_profiles:
+        for grammar_operator in grammar_operators:
+            file_name = "full_evaluation_{}_{}".format(
+                RANK_PROFILE_MAP[rank_profile], grammar_operator
+            )
+            file_path = os.path.join(output_dir, file_name)
+            results.append(json.load(open(file_path, "r")))
+    return results
+
+
+def page_results_summary(vespa_url, vespa_port):
+
+    rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
+    grammar_operators = st.multiselect("Choose grammar operators", ["AND", "OR"])
+    output_dir = "data/msmarco/experiments"
+
+    if st.button("Evaluate"):
+
+        compute_all_options(
+            vespa_url, vespa_port, output_dir, rank_profiles, grammar_operators
+        )
+
+        results = load_all_options(output_dir, rank_profiles, grammar_operators)
+
+        st.write(results)
 
 
 def page_ranking_function_comparison(vespa_url, vespa_port):
@@ -74,8 +149,11 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
     hits = st.text_input("Number of hits to evaluate per query", "10")
 
     if st.button("Evaluate"):
-        query_relevance = sample_query_relevance_data(number_queries=10)
+        query_relevance = sample_query_relevance_data(number_queries=20)
 
+        model1 = retrieve_model(
+            RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]]
+        )
         records_1, aggregate_metrics_1, position_freq_1 = evaluate(
             query_relevance=query_relevance,
             rank_profile=RANK_PROFILE_MAP[rank_profile_1],
@@ -83,8 +161,12 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
             vespa_url=vespa_url,
             vespa_port=vespa_port,
             hits=int(hits),
+            model=model1,
         )
 
+        model2 = retrieve_model(
+            RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]]
+        )
         records_2, aggregate_metrics_2, position_freq_2 = evaluate(
             query_relevance=query_relevance,
             rank_profile=RANK_PROFILE_MAP[rank_profile_2],
@@ -92,6 +174,7 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
             vespa_url=vespa_url,
             vespa_port=vespa_port,
             hits=int(hits),
+            model=model2,
         )
 
         z = [[x, y] for x, y in zip(position_freq_1, position_freq_2)]
@@ -135,10 +218,9 @@ def page_simple_query_page(vespa_url, vespa_port):
     )
 
     embedding = None
-    if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
-        embedding = create_document_embedding(
-            text=query, model="word2vec", normalize=True
-        )
+    if RANK_PROFILE_EMBEDDING[rank_profile] in AVAILABLE_EMBEDDINGS:
+        model = retrieve_model(RANK_PROFILE_EMBEDDING[rank_profile])
+        embedding = create_document_embedding(text=query, model=model, normalize=True)
 
     if query != "":
         search_results = vespa_search(
@@ -159,39 +241,46 @@ def page_simple_query_page(vespa_url, vespa_port):
             st.markdown("## Showing parsed results")
             st.markdown("### Click to see more")
             results_title = {}
-            for hit in search_results["root"]["children"]:
-                if predefined_queries and hit["fields"]["id"] == query_relevance[query]:
-                    results_title["*** " + hit["fields"]["title"] + " ***"] = {
-                        "url": hit["fields"]["url"],
-                        "body": hit["fields"]["body"],
-                        "relevance": hit["relevance"],
-                        "id": hit["id"],
-                    }
+            if "children" in search_results["root"]:
+                for hit in search_results["root"]["children"]:
+                    if (
+                        predefined_queries
+                        and hit["fields"]["id"] == query_relevance[query]
+                    ):
+                        results_title["*** " + hit["fields"]["title"] + " ***"] = {
+                            "url": hit["fields"]["url"],
+                            "body": hit["fields"]["body"],
+                            "relevance": hit["relevance"],
+                            "id": hit["id"],
+                        }
 
-                else:
-                    results_title[hit["fields"]["title"]] = {
-                        "url": hit["fields"]["url"],
-                        "body": hit["fields"]["body"],
-                        "relevance": hit["relevance"],
-                        "id": hit["id"],
-                    }
-            for title in results_title:
-                if st.checkbox(title):
-                    st.markdown(
-                        "* relevance: {}".format(results_title[title]["relevance"])
-                    )
-                    st.markdown("* docid: {}".format(results_title[title]["id"]))
-                    st.markdown("* url: {}".format(results_title[title]["url"]))
-                    st.markdown("* text:")
-                    st.write(results_title[title]["body"])
+                    else:
+                        results_title[hit["fields"]["title"]] = {
+                            "url": hit["fields"]["url"],
+                            "body": hit["fields"]["body"],
+                            "relevance": hit["relevance"],
+                            "id": hit["id"],
+                        }
+                for title in results_title:
+                    if st.checkbox(title):
+                        st.markdown(
+                            "* relevance: {}".format(results_title[title]["relevance"])
+                        )
+                        st.markdown("* docid: {}".format(results_title[title]["id"]))
+                        st.markdown("* url: {}".format(results_title[title]["url"]))
+                        st.markdown("* text:")
+                        st.write(results_title[title]["body"])
+            else:
+                st.markdown("## No hits available")
 
 
 @st.cache()
 def sample_query_relevance_data(number_queries):
     queries = load_msmarco_queries(queries_file_path=QUERIES_FILE_PATH)
     qrels = load_msmarco_qrels(relevance_file_path=RELEVANCE_FILE_PATH)
-    sample_qrels = {k: qrels[k] for k in sample(list(qrels), number_queries)}
-    query_relevance = extract_querie_relevance(sample_qrels, queries)
+    if number_queries is not None:
+        qrels = {k: qrels[k] for k in sample(list(qrels), number_queries)}
+    query_relevance = extract_querie_relevance(qrels, queries)
     return query_relevance
 
 
@@ -207,7 +296,9 @@ def parse_vespa_json(data):
 
 
 # @st.cache(persist=True)
-def evaluate(query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, hits):
+def evaluate(
+    query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, hits, model=None
+):
     if grammar_any:
         grammar_name = "OR"
     else:
@@ -220,9 +311,9 @@ def evaluate(query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, 
     for qid, (query, relevant_id) in query_relevance.items():
         rr = 0
         embedding = None
-        if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
+        if model is not None:
             embedding = create_document_embedding(
-                text=query, model="word2vec", normalize=True
+                text=query, model=model, normalize=True
             )
         vespa_result = vespa_search(
             query=query,
@@ -289,7 +380,13 @@ def vespa_search(
     if summary == "minimal":
         body.update({"summary": "minimal"})
     if embedding:
-        body.update({"ranking.features.query(tensor)": str(embedding)})
+        if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
+            body.update({"ranking.features.query(tensor)": str(embedding)})
+        elif RANK_PROFILE_EMBEDDING[rank_profile] == "gse":
+            body.update({"ranking.features.query(tensor_gse)": str(embedding)})
+        else:
+            raise NotImplementedError
+
     r = post(vespa_url + ":" + vespa_port + "/search/", json=body)
     return r.json()
 
