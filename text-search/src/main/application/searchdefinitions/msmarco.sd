@@ -71,6 +71,15 @@ search msmarco {
         }
     }
 
+    rank-profile bm25_gse_title inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(body)
+        }
+        second-phase {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+    }
+
     rank-profile bm25_word2vec_body inherits default {
         first-phase {
             expression: bm25(title) + bm25(body)
@@ -80,12 +89,30 @@ search msmarco {
         }
     }
 
+    rank-profile bm25_gse_body inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(body)
+        }
+        second-phase {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+    }
+
     rank-profile bm25_word2vec_body_title inherits default {
         first-phase {
             expression: bm25(title) + bm25(body)
         }
         second-phase {
             expression: sum(query(tensor)*attribute(body_word2vec)) + sum(query(tensor)*attribute(title_word2vec))
+        }
+    }
+
+    rank-profile bm25_gse_body_title inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(body)
+        }
+        second-phase {
+            expression: sum(query(tensor_gse)*attribute(body_gse)) + sum(query(tensor_gse)*attribute(title_gse))
         }
     }
 
