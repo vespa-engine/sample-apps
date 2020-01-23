@@ -17,6 +17,10 @@ RANK_PROFILE_OPTIONS = (
     "BM25 + title word2vec",
     "BM25 + body word2vec",
     "BM25 + title and body word2vec",
+    "BM25 + title gse",
+    "BM25 + body gse",
+    "BM25 + title and body gse",
+
 )
 RANK_PROFILE_MAP = {
     "BM25": "bm25",
@@ -24,6 +28,10 @@ RANK_PROFILE_MAP = {
     "BM25 + title word2vec": "bm25_word2vec_title",
     "BM25 + body word2vec": "bm25_word2vec_body",
     "BM25 + title and body word2vec": "bm25_word2vec_body_title",
+    "BM25 + title gse": "bm25_gse_title",
+    "BM25 + body gse": "bm25_gse_body",
+    "BM25 + title and body gse": "bm25_gse_body_title",
+
 }
 RANK_PROFILE_EMBEDDING = {
     "bm25": None,
@@ -31,6 +39,10 @@ RANK_PROFILE_EMBEDDING = {
     "bm25_word2vec_title": "word2vec",
     "bm25_word2vec_body": "word2vec",
     "bm25_word2vec_body_title": "word2vec",
+    "bm25_gse_title": "gse",
+    "bm25_gse_body": "gse",
+    "bm25_gse_body_title": "gse",
+
 }
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
 
