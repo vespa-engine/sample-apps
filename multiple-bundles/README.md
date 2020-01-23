@@ -2,11 +2,12 @@
 # Vespa sample applications - Multiple bundles
 
 This sample application demonstrates how to build an application that has split
-some of its code into a separate bundle. The extra bundle for this application 
-resides in the [multiple-bundles-lib][1] folder in this repo.
+some of its code into a separate bundle.
+The extra bundle for this application is found in [multiple-bundles-lib][1] .
 
-Please refer to [container components][2] and the [bundle plugin][3] for more
-information.
+Refer to [container components][2] and the [bundle plugin][3] for more information.
+
+Docker requirements same as in the [quick-start](https://docs.vespa.ai/documentation/vespa-quick-start.html).
 
 
 ### Executable example
@@ -29,7 +30,7 @@ $ docker run --detach --name vespa --hostname vespa-container --privileged \
 </pre>
 
 
-**Wait for the configserver to start:**
+**Wait for the configserver to start - wait for HTTP/1.1 200 OK:**
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
 </pre>
