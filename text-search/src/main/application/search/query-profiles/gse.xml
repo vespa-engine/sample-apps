@@ -1,0 +1,3 @@
+<query-profile id="gse" type="gse">
+  <field name="maxHits">1000</field>
+</query-profile>

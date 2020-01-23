@@ -1,0 +1,3 @@
+<query-profile-type id="gse">
+  <field name="ranking.features.query(tensor_gse)" type="tensor&lt;float&gt;(x[512])" />
+</query-profile-type>
