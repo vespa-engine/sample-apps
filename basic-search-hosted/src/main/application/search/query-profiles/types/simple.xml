@@ -1,0 +1,3 @@
+<query-profile-type id="simple">
+    <field name="age" type="integer" />
+</query-profile-type>
