@@ -148,10 +148,14 @@ def page_results_summary(vespa_url, vespa_port):
         for result in results:
             position_freqs.append(result["position_freq"])
             ranking_names.append(result["aggregate_metrics"]["rank_name"])
-            results_summary.append({"rank_name": result["aggregate_metrics"]["rank_name"],
-                                    "number_queries": result["aggregate_metrics"]["number_queries"],
-                                    "qps": result["aggregate_metrics"]["qps"],
-                                    "MRR": result["aggregate_metrics"]["mrr"]})
+            results_summary.append(
+                {
+                    "rank_name": result["aggregate_metrics"]["rank_name"],
+                    "number_queries": result["aggregate_metrics"]["number_queries"],
+                    "qps": result["aggregate_metrics"]["qps"],
+                    "MRR": result["aggregate_metrics"]["mrr"],
+                }
+            )
         hits = len(position_freqs[0])
 
         z = [list(x) for x in zip(*position_freqs)]
@@ -169,7 +173,11 @@ def page_results_summary(vespa_url, vespa_port):
         fig.update_yaxes(autorange="reversed")
         st.plotly_chart(fig)
 
-        st.write(DataFrame.from_records(results_summary).sort_values(by="MRR", ascending=False))
+        st.write(
+            DataFrame.from_records(results_summary).sort_values(
+                by="MRR", ascending=False
+            )
+        )
 
 
 def page_ranking_function_comparison(vespa_url, vespa_port):
@@ -393,17 +401,17 @@ def vespa_search(
     summary=None,
     embedding=None,
     tracelevel=None,
+    ann=False,
 ):
 
+    yql = "select * from sources * where "
+
     if grammar_any:
-        yql = (
-            'select * from sources * where ([{"grammar": "any"}]userInput(@userQuery));'
-        )
+        yql = yql + '([{"grammar": "any"}]userInput(@userQuery))'
     else:
-        yql = "select * from sources * where (userInput(@userQuery));"
+        yql = yql + "(userInput(@userQuery))"
 
     body = {
-        "yql": yql,
         "userQuery": query,
         "hits": hits,
         "offset": offset,
@@ -418,11 +426,30 @@ def vespa_search(
     if embedding:
         if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
             body.update({"ranking.features.query(tensor)": str(embedding)})
+            # todo: I will hardcode the doc_tensor here to mean title tensor. Also the number of hits
+            if ann:
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "title_word2vec", "tensor"
+                    )
+                )
         elif RANK_PROFILE_EMBEDDING[rank_profile] == "gse":
             body.update({"ranking.features.query(tensor_gse)": str(embedding)})
+            # todo: I will hardcode the doc_tensor here to mean title tensor. Also the number of hits
+            if ann:
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "title_gse", "tensor_gse"
+                    )
+                )
+
         else:
             raise NotImplementedError
 
+    yql = yql + ";"
+    body.update({"yql": yql})
     r = post(vespa_url + ":" + vespa_port + "/search/", json=body)
     return r.json()
 
