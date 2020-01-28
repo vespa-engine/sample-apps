@@ -13,8 +13,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
-        <vespa_version>7.164.8</vespa_version>
+        <vespa_version>7.165.5</vespa_version>
         <junit.version>4.11</junit.version>
+        <jdk.version>11</jdk.version>
     </properties>
 
     <dependencies>
@@ -61,9 +62,9 @@
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
                     <jdkToolchain>
-                        <version>11</version>
+                        <version>${jdk.version}</version>
                     </jdkToolchain>
-                    <release>11</release>
+                    <release>${jdk.version}</release>
                 </configuration>
             </plugin>
             <plugin>
