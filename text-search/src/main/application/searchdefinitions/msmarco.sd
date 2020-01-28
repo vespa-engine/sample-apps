@@ -25,7 +25,7 @@ search msmarco {
         }
 
         field title_word2vec type tensor<float>(x[500]) {
-            indexing: attribute | summary
+            indexing: attribute
         }
 
         field body_word2vec type tensor<float>(x[500]) {
@@ -33,7 +33,7 @@ search msmarco {
         }
 
         field title_gse type tensor<float>(x[512]) {
-            indexing: attribute | summary
+            indexing: attribute
         }
 
         field body_gse type tensor<float>(x[512]) {
