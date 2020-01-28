@@ -22,6 +22,9 @@ RANK_PROFILE_OPTIONS = (
     "BM25 + title gse",
     "BM25 + body gse",
     "BM25 + title and body gse",
+    "BM25 + title gse (all)",
+    "BM25 + body gse (all)",
+    "BM25 + title and body gse (all)",
 )
 RANK_PROFILE_MAP = {
     "BM25": "bm25",
@@ -32,6 +35,9 @@ RANK_PROFILE_MAP = {
     "BM25 + title gse": "bm25_gse_title",
     "BM25 + body gse": "bm25_gse_body",
     "BM25 + title and body gse": "bm25_gse_body_title",
+    "BM25 + title gse (all)": "bm25_gse_title_all",
+    "BM25 + body gse (all)": "bm25_gse_body_all",
+    "BM25 + title and body gse (all)": "bm25_gse_body_title_all",
 }
 RANK_PROFILE_EMBEDDING = {
     "bm25": None,
@@ -42,6 +48,9 @@ RANK_PROFILE_EMBEDDING = {
     "bm25_gse_title": "gse",
     "bm25_gse_body": "gse",
     "bm25_gse_body_title": "gse",
+    "bm25_gse_title_all": "gse",
+    "bm25_gse_body_all": "gse",
+    "bm25_gse_body_title_all": "gse",
 }
 AVAILABLE_EMBEDDINGS = ["word2vec", "gse"]
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
@@ -133,7 +142,34 @@ def page_results_summary(vespa_url, vespa_port):
 
         results = load_all_options(output_dir, rank_profiles, grammar_operators)
 
-        st.write(results)
+        position_freqs = []
+        ranking_names = []
+        results_summary = []
+        for result in results:
+            position_freqs.append(result["position_freq"])
+            ranking_names.append(result["aggregate_metrics"]["rank_name"])
+            results_summary.append({"rank_name": result["aggregate_metrics"]["rank_name"],
+                                    "number_queries": result["aggregate_metrics"]["number_queries"],
+                                    "qps": result["aggregate_metrics"]["qps"],
+                                    "MRR": result["aggregate_metrics"]["mrr"]})
+        hits = len(position_freqs[0])
+
+        z = [list(x) for x in zip(*position_freqs)]
+        z_text = z
+        x = ranking_names
+        y = [str(x + 1) for x in range(int(hits))]
+
+        fig = ff.create_annotated_heatmap(
+            z, x=x, y=y, annotation_text=z_text, colorscale=py.colors.diverging.RdYlGn
+        )
+        fig.update_layout(
+            xaxis_title_text="Rank profile",  # xaxis label
+            yaxis_title_text="Position",  # yaxis label
+        )
+        fig.update_yaxes(autorange="reversed")
+        st.plotly_chart(fig)
+
+        st.write(DataFrame.from_records(results_summary).sort_values(by="MRR", ascending=False))
 
 
 def page_ranking_function_comparison(vespa_url, vespa_port):
