@@ -277,19 +277,29 @@ def page_simple_query_page(vespa_url, vespa_port):
         model = retrieve_model(RANK_PROFILE_EMBEDDING[rank_profile])
         embedding = create_document_embedding(text=query, model=model, normalize=True)
 
+    tracelevel = None
+    trace = st.checkbox("Specify tracelevel?")
+    if trace:
+        tracelevel = st.selectbox("Tracelevel", [3, 9], 0)
+
     if query != "":
-        search_results = vespa_search(
+        request_body = create_vespa_body_request(
             query=query,
             rank_profile=rank_profile,
-            vespa_url=vespa_url,
-            vespa_port=vespa_port,
             grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator],
             embedding=embedding,
+            tracelevel=tracelevel,
             ann=ann_operator,
+        )
+        search_results = vespa_search(
+            vespa_url=vespa_url, vespa_port=vespa_port, body=request_body
         )
         output_format = st.radio(
             "Select output format", ("parsed vespa results", "raw vespa results")
         )
+        print_request_body = st.checkbox("Print request body?")
+        if print_request_body:
+            st.write(request_body)
         if output_format == "raw vespa results":
             st.markdown("## Showing raw results")
             st.write(search_results)
@@ -378,17 +388,18 @@ def evaluate(
             embedding = create_document_embedding(
                 text=query, model=model, normalize=True
             )
-        vespa_result = vespa_search(
+        request_body = create_vespa_body_request(
             query=query,
             rank_profile=rank_profile,
-            vespa_url=vespa_url,
-            vespa_port=vespa_port,
             grammar_any=grammar_any,
             hits=hits,
             offset=0,
             summary="minimal",
             embedding=embedding,
             ann=ann,
+        )
+        vespa_result = vespa_search(
+            vespa_url=vespa_url, vespa_port=vespa_port, body=request_body
         )
         ranking = parse_vespa_json(data=vespa_result)
         for rank, hit in enumerate(ranking):
@@ -409,12 +420,9 @@ def evaluate(
     return records, aggregate_metrics, position_freq
 
 
-@st.cache()
-def vespa_search(
+def create_vespa_body_request(
     query,
     rank_profile,
-    vespa_url,
-    vespa_port,
     grammar_any=False,
     hits=10,
     offset=0,
@@ -423,7 +431,6 @@ def vespa_search(
     tracelevel=None,
     ann=False,
 ):
-
     yql = "select * from sources * where "
 
     if grammar_any:
@@ -470,6 +477,11 @@ def vespa_search(
 
     yql = yql + ";"
     body.update({"yql": yql})
+    return body
+
+
+def vespa_search(vespa_url, vespa_port, body):
+
     r = post(vespa_url + ":" + vespa_port + "/search/", json=body)
     return r.json()
 
