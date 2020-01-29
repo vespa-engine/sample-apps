@@ -1,4 +1,0 @@
-<query-profile id="default" type="simple">
-    <field name="hits">4</field>        <!-- Default of 10 is a bit much for illustration purposes -->
-    <field name="restrict">book</field> <!-- No need to trudge through persons when looking for books -->
-</query-profile>

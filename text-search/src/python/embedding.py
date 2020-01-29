@@ -5,18 +5,13 @@ import numpy as np
 import tensorflow_hub as hub
 import json
 
-word2vec_embed = hub.load(
-    "https://tfhub.dev/google/Wiki-words-500-with-normalization/2"
-)
 
-
-def create_document_embedding(text, model="word2vec", normalize=True):
-    if model == "word2vec":
-        vector = word2vec_embed([text]).numpy()
-    else:
-        raise NotImplementedError
+def create_document_embedding(text, model, normalize=True):
+    vector = model([text]).numpy()
     if normalize:
-        vector = vector / np.linalg.norm(vector)
+        norm = np.linalg.norm(vector)
+        if norm > 0.0:
+            vector = vector / norm
     return vector.tolist()[0]
 
 
@@ -32,7 +27,17 @@ def create_vespa_update(
     }
 
 
-def main(input_file_path, output_file_path):
+def main(input_file_path, output_file_path, embedding_method):
+
+    if embedding_method == "word2vec":
+        print("Using word2vec model")
+        model = hub.load("https://tfhub.dev/google/Wiki-words-500-with-normalization/2")
+    elif embedding_method == "gse":
+        print("Using universal sentence encoder model")
+        model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+    else:
+        raise NotImplementedError
+
     with open(input_file_path, "r") as file_in:
         with open(output_file_path, "w") as file_out:
             count = 0
@@ -46,18 +51,18 @@ def main(input_file_path, output_file_path):
 
                     print("{} - id: {}".format(count, vespa_doc_id))
 
-                    title_word2vec = create_document_embedding(
-                        vespa_doc_title, model="word2vec", normalize=True
+                    title_vector = create_document_embedding(
+                        vespa_doc_title, model=model, normalize=True
                     )
-                    body_word2vec = create_document_embedding(
-                        vespa_doc_body, model="word2vec", normalize=True
+                    body_vector = create_document_embedding(
+                        vespa_doc_body, model=model, normalize=True
                     )
                     data_to_update = create_vespa_update(
                         doc_id=vespa_doc_id,
-                        title_field_name="title_word2vec",
-                        title_field_values=title_word2vec,
-                        body_field_name="body_word2vec",
-                        body_field_values=body_word2vec,
+                        title_field_name="title_" + embedding_method,
+                        title_field_values=title_vector,
+                        body_field_name="body_" + embedding_method,
+                        body_field_values=body_vector,
                     )
                     file_out.write(json.dumps(data_to_update))
                     file_out.write("\n")
@@ -66,4 +71,5 @@ def main(input_file_path, output_file_path):
 if __name__ == "__main__":
     input_file_path = sys.argv[1]
     output_file_path = sys.argv[2]
-    main(input_file_path, output_file_path)
+    embedding_method = sys.argv[3] if len(sys.argv) > 3 else "word2vec"
+    main(input_file_path, output_file_path, embedding_method)
