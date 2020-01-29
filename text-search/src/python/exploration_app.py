@@ -185,10 +185,17 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
         "Ranking 1: rank profile", RANK_PROFILE_OPTIONS
     )
     grammar_operator_1 = st.sidebar.selectbox("Ranking 1: Grammar", ("AND", "OR"))
+    ann_operator_1 = False
+    if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]] in AVAILABLE_EMBEDDINGS:
+        ann_operator_1 = st.sidebar.checkbox("Ranking 1: Use ANN operator?")
+
     rank_profile_2 = st.sidebar.selectbox(
         "Ranking 2: rank profile", RANK_PROFILE_OPTIONS
     )
     grammar_operator_2 = st.sidebar.selectbox("Ranking 2: Grammar", ("AND", "OR"))
+    ann_operator_2 = False
+    if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]] in AVAILABLE_EMBEDDINGS:
+        ann_operator_2 = st.sidebar.checkbox("Ranking 2: Use ANN operator?")
 
     hits = st.text_input("Number of hits to evaluate per query", "10")
 
@@ -206,6 +213,7 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
             vespa_port=vespa_port,
             hits=int(hits),
             model=model1,
+            ann=ann_operator_1,
         )
 
         model2 = retrieve_model(
@@ -219,6 +227,7 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
             vespa_port=vespa_port,
             hits=int(hits),
             model=model2,
+            ann=ann_operator_2,
         )
 
         z = [[x, y] for x, y in zip(position_freq_1, position_freq_2)]
@@ -262,7 +271,9 @@ def page_simple_query_page(vespa_url, vespa_port):
     )
 
     embedding = None
+    ann_operator = False
     if RANK_PROFILE_EMBEDDING[rank_profile] in AVAILABLE_EMBEDDINGS:
+        ann_operator = st.checkbox("Use ANN operator?")
         model = retrieve_model(RANK_PROFILE_EMBEDDING[rank_profile])
         embedding = create_document_embedding(text=query, model=model, normalize=True)
 
@@ -274,6 +285,7 @@ def page_simple_query_page(vespa_url, vespa_port):
             vespa_port=vespa_port,
             grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator],
             embedding=embedding,
+            ann=ann_operator,
         )
         output_format = st.radio(
             "Select output format", ("parsed vespa results", "raw vespa results")
@@ -341,7 +353,14 @@ def parse_vespa_json(data):
 
 # @st.cache(persist=True)
 def evaluate(
-    query_relevance, rank_profile, grammar_any, vespa_url, vespa_port, hits, model=None
+    query_relevance,
+    rank_profile,
+    grammar_any,
+    vespa_url,
+    vespa_port,
+    hits,
+    model=None,
+    ann=False,
 ):
     if grammar_any:
         grammar_name = "OR"
@@ -369,6 +388,7 @@ def evaluate(
             offset=0,
             summary="minimal",
             embedding=embedding,
+            ann=ann,
         )
         ranking = parse_vespa_json(data=vespa_result)
         for rank, hit in enumerate(ranking):
