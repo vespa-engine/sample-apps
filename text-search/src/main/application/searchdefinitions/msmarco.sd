@@ -32,6 +32,14 @@ search msmarco {
             indexing: attribute
         }
 
+        field title_gse type tensor<float>(x[512]) {
+            indexing: attribute
+        }
+
+        field body_gse type tensor<float>(x[512]) {
+            indexing: attribute
+        }
+
     }
 
     document-summary minimal {
@@ -51,6 +59,78 @@ search msmarco {
     rank-profile bm25 inherits default {
         first-phase {
             expression: bm25(title) + bm25(body)
+        }
+    }
+
+    rank-profile word2vec_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor)*attribute(title_word2vec))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor)*attribute(body_word2vec))
+        }
+        first-phase {
+            expression: dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile gse_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile bm25_word2vec_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor)*attribute(title_word2vec))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor)*attribute(body_word2vec))
+        }
+        first-phase {
+            expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile bm25_gse_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
         }
     }
 
