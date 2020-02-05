@@ -134,6 +134,25 @@ search msmarco {
         }
     }
 
+    rank-profile listwise_linear_bm25_gse_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: 0.12408562 * bm25(title) + 0.36673144 * bm25(body) + 6.2273498 * dot_product_title() + 5.671119 * dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
     rank-profile pointwise_linear_bm25 inherits default {
         first-phase {
             expression: 0.22499913 * bm25(title) + 0.07596389 * bm25(body)
@@ -143,6 +162,35 @@ search msmarco {
     rank-profile listwise_linear_bm25 inherits default {
         first-phase {
             expression: 0.13446581 * bm25(title) + 0.5716889 * bm25(body)
+        }
+    }
+
+    rank-profile collect_rank_features_embeddings inherits default {
+        function dot_product_title_word2vec() {
+            expression: sum(query(tensor)*attribute(title_word2vec))
+        }
+        function dot_product_body_word2vec() {
+            expression: sum(query(tensor)*attribute(body_word2vec))
+        }
+        function dot_product_title_gse() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body_gse() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: random
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            nativeRank(title)
+            nativeRank(body)
+            rankingExpression(dot_product_title_word2vec)
+            rankingExpression(dot_product_body_word2vec)
+            rankingExpression(dot_product_title_gse)
+            rankingExpression(dot_product_body_gse)
         }
     }
 
