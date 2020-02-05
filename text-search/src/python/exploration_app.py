@@ -11,8 +11,8 @@ from embedding import create_document_embedding
 from pandas import DataFrame
 import tensorflow_hub as hub
 
-QUERIES_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-queries.tsv.gz"
-RELEVANCE_FILE_PATH = "data/msmarco/sample/msmarco-doctrain-qrels.tsv.gz"
+QUERIES_FILE_PATH = "data/msmarco/train_test_set/msmarco-doctest-queries.tsv.gz"
+RELEVANCE_FILE_PATH = "data/msmarco/train_test_set/msmarco-doctest-qrels.tsv.gz"
 RANK_PROFILE_OPTIONS = (
     "BM25",
     "Native Rank",
@@ -20,6 +20,7 @@ RANK_PROFILE_OPTIONS = (
     "BM25 + title and body word2vec",
     "Title and body gse",
     "BM25 + title and body gse",
+    "Scaled BM25 + title and body gse",
 )
 RANK_PROFILE_MAP = {
     "BM25": "bm25",
@@ -28,6 +29,7 @@ RANK_PROFILE_MAP = {
     "BM25 + title and body word2vec": "bm25_word2vec_title_body_all",
     "Title and body gse": "gse_title_body_all",
     "BM25 + title and body gse": "bm25_gse_title_body_all",
+    "Scaled BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_all",
 }
 RANK_PROFILE_EMBEDDING = {
     "bm25": None,
@@ -36,6 +38,7 @@ RANK_PROFILE_EMBEDDING = {
     "bm25_word2vec_title_body_all": "word2vec",
     "gse_title_body_all": "gse",
     "bm25_gse_title_body_all": "gse",
+    "listwise_linear_bm25_gse_title_body_all": "gse",
 }
 AVAILABLE_EMBEDDINGS = ["word2vec", "gse"]
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
@@ -317,7 +320,6 @@ def page_simple_query_page(vespa_url, vespa_port):
                             "body_dot_product": hit["fields"]["rankfeatures"].get(
                                 "rankingExpression(dot_product_body)"
                             ),
-
                         }
                     )
                 st.write(DataFrame.from_records(debug_data))
