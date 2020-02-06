@@ -178,7 +178,7 @@ search msmarco {
         }
     }
 
-    rank-profile listwise_linear_bm25_gse_title_body_all inherits default {
+    rank-profile listwise_linear_bm25_gse_title_body_and inherits default {
         function dot_product_title() {
             expression: sum(query(tensor_gse)*attribute(title_gse))
         }
@@ -187,6 +187,25 @@ search msmarco {
         }
         first-phase {
             expression: 0.12408562 * bm25(title) + 0.36673144 * bm25(body) + 6.2273498 * dot_product_title() + 5.671119 * dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile listwise_linear_bm25_gse_title_body_or inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: 0.7150663 * bm25(title) + 0.9480147 * bm25(body) + 1.560068 * dot_product_title() + 1.5062317 * dot_product_body()
         }
         ignore-default-rank-features
         rank-features {
