@@ -3,16 +3,22 @@
 import sys
 import numpy as np
 import tensorflow_hub as hub
+from sentence_transformers import SentenceTransformer
 import json
 
 
-def create_document_embedding(text, model, normalize=True):
-    vector = model([text]).numpy()
+def create_document_embedding(text, model, model_source, normalize=True):
+    if model_source == "bert":
+        vector = model.encode([text])[0].tolist()
+    elif model_source == "tf_hub":
+        vector = model([text]).numpy().tolist()[0]
+    else:
+        raise NotImplementedError
     if normalize:
         norm = np.linalg.norm(vector)
         if norm > 0.0:
             vector = vector / norm
-    return vector.tolist()[0]
+    return vector.tolist()
 
 
 def create_vespa_update(
@@ -32,9 +38,15 @@ def main(input_file_path, output_file_path, embedding_method):
     if embedding_method == "word2vec":
         print("Using word2vec model")
         model = hub.load("https://tfhub.dev/google/Wiki-words-500-with-normalization/2")
+        model_source = "tf_hub"
     elif embedding_method == "gse":
         print("Using universal sentence encoder model")
         model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+        model_source = "tf_hub"
+    elif embedding_method == "bert":
+        print("Using bert sentence encoder model")
+        model = SentenceTransformer("distilbert-base-nli-stsb-mean-tokens")
+        model_source = "bert"
     else:
         raise NotImplementedError
 
@@ -52,10 +64,16 @@ def main(input_file_path, output_file_path, embedding_method):
                     print("{} - id: {}".format(count, vespa_doc_id))
 
                     title_vector = create_document_embedding(
-                        vespa_doc_title, model=model, normalize=True
+                        vespa_doc_title,
+                        model=model,
+                        model_source=model_source,
+                        normalize=True,
                     )
                     body_vector = create_document_embedding(
-                        vespa_doc_body, model=model, normalize=True
+                        vespa_doc_body,
+                        model=model,
+                        model_source=model_source,
+                        normalize=True,
                     )
                     data_to_update = create_vespa_update(
                         doc_id=vespa_doc_id,

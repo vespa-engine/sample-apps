@@ -40,6 +40,14 @@ search msmarco {
             indexing: attribute
         }
 
+        field title_bert type tensor<float>(x[768]) {
+            indexing: attribute
+        }
+
+        field body_bert type tensor<float>(x[768]) {
+            indexing: attribute
+        }
+
     }
 
     document-summary minimal {
@@ -62,75 +70,149 @@ search msmarco {
         }
     }
 
-    rank-profile bm25_word2vec_title inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body)
-        }
-        second-phase {
+    rank-profile word2vec_title_body_all inherits default {
+        function dot_product_title() {
             expression: sum(query(tensor)*attribute(title_word2vec))
         }
-    }
-
-    rank-profile bm25_gse_title inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body)
-        }
-        second-phase {
-            expression: sum(query(tensor_gse)*attribute(title_gse))
-        }
-    }
-
-    rank-profile bm25_gse_title_all inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body) + sum(query(tensor_gse)*attribute(title_gse))
-        }
-    }
-
-    rank-profile bm25_word2vec_body inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body)
-        }
-        second-phase {
+        function dot_product_body() {
             expression: sum(query(tensor)*attribute(body_word2vec))
         }
+        first-phase {
+            expression: dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
     }
 
-    rank-profile bm25_gse_body inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body)
+    rank-profile gse_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
         }
-        second-phase {
+        function dot_product_body() {
             expression: sum(query(tensor_gse)*attribute(body_gse))
         }
-    }
-
-    rank-profile bm25_gse_body_all inherits default {
         first-phase {
-            expression: bm25(title) + bm25(body) + sum(query(tensor_gse)*attribute(body_gse))
+            expression: dot_product_title() + dot_product_body()
         }
-    }
-
-    rank-profile bm25_word2vec_body_title inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body)
-        }
-        second-phase {
-            expression: sum(query(tensor)*attribute(body_word2vec)) + sum(query(tensor)*attribute(title_word2vec))
+        ignore-default-rank-features
+        rank-features {
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
         }
     }
 
-    rank-profile bm25_gse_body_title inherits default {
-        first-phase {
-            expression: bm25(title) + bm25(body)
+    rank-profile bert_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
         }
-        second-phase {
-            expression: sum(query(tensor_gse)*attribute(body_gse)) + sum(query(tensor_gse)*attribute(title_gse))
+        function dot_product_body() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
+        }
+        first-phase {
+            expression: dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
         }
     }
 
-    rank-profile bm25_gse_body_title_all inherits default {
+    rank-profile bm25_word2vec_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor)*attribute(title_word2vec))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor)*attribute(body_word2vec))
+        }
         first-phase {
-            expression: bm25(title) + bm25(body) + sum(query(tensor_gse)*attribute(body_gse)) + sum(query(tensor_gse)*attribute(title_gse))
+            expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile bm25_gse_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile bm25_bert_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
+        }
+        first-phase {
+            expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile listwise_linear_bm25_gse_title_body_and inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: 0.12408562 * bm25(title) + 0.36673144 * bm25(body) + 6.2273498 * dot_product_title() + 5.671119 * dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile listwise_linear_bm25_gse_title_body_or inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: 0.7150663 * bm25(title) + 0.9480147 * bm25(body) + 1.560068 * dot_product_title() + 1.5062317 * dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
         }
     }
 
@@ -143,6 +225,35 @@ search msmarco {
     rank-profile listwise_linear_bm25 inherits default {
         first-phase {
             expression: 0.13446581 * bm25(title) + 0.5716889 * bm25(body)
+        }
+    }
+
+    rank-profile collect_rank_features_embeddings inherits default {
+        function dot_product_title_word2vec() {
+            expression: sum(query(tensor)*attribute(title_word2vec))
+        }
+        function dot_product_body_word2vec() {
+            expression: sum(query(tensor)*attribute(body_word2vec))
+        }
+        function dot_product_title_gse() {
+            expression: sum(query(tensor_gse)*attribute(title_gse))
+        }
+        function dot_product_body_gse() {
+            expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: random
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            nativeRank(title)
+            nativeRank(body)
+            rankingExpression(dot_product_title_word2vec)
+            rankingExpression(dot_product_body_word2vec)
+            rankingExpression(dot_product_title_gse)
+            rankingExpression(dot_product_body_gse)
         }
     }
 
