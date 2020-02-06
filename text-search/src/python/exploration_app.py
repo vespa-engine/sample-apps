@@ -10,6 +10,7 @@ from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_rel
 from embedding import create_document_embedding
 from pandas import DataFrame
 import tensorflow_hub as hub
+from sentence_transformers import SentenceTransformer
 
 QUERIES_FILE_PATH = "data/msmarco/train_test_set/msmarco-doctest-queries.tsv.gz"
 RELEVANCE_FILE_PATH = "data/msmarco/train_test_set/msmarco-doctest-qrels.tsv.gz"
@@ -20,6 +21,8 @@ RANK_PROFILE_OPTIONS = (
     "BM25 + title and body word2vec",
     "Title and body gse",
     "BM25 + title and body gse",
+    "Title and body bert",
+    "BM25 + title and body bert",
     "Scaled (AND) BM25 + title and body gse",
     "Scaled (OR) BM25 + title and body gse",
 )
@@ -32,6 +35,8 @@ RANK_PROFILE_MAP = {
     "BM25 + title and body gse": "bm25_gse_title_body_all",
     "Scaled (AND) BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_and",
     "Scaled (OR) BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_or",
+    "Title and body bert": "bert_title_body_all",
+    "BM25 + title and body bert": "bm25_bert_title_body_all",
 }
 RANK_PROFILE_EMBEDDING = {
     "bm25": None,
@@ -42,8 +47,10 @@ RANK_PROFILE_EMBEDDING = {
     "bm25_gse_title_body_all": "gse",
     "listwise_linear_bm25_gse_title_body_and": "gse",
     "listwise_linear_bm25_gse_title_body_or": "gse",
+    "bert_title_body_all": "bert",
+    "bm25_bert_title_body_all": "bert",
 }
-AVAILABLE_EMBEDDINGS = ["word2vec", "gse"]
+AVAILABLE_EMBEDDINGS = ["word2vec", "gse", "bert"]
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
 LIMIT_HITS_GRAPH = 10
 
@@ -51,9 +58,22 @@ LIMIT_HITS_GRAPH = 10
 @st.cache(ignore_hash=True)
 def retrieve_model(model_type):
     if model_type == "word2vec":
-        return hub.load("https://tfhub.dev/google/Wiki-words-500-with-normalization/2")
+        return {
+            "model": hub.load(
+                "https://tfhub.dev/google/Wiki-words-500-with-normalization/2"
+            ),
+            "model_source": "tf_hub",
+        }
     elif model_type == "gse":
-        return hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+        return {
+            "model": hub.load("https://tfhub.dev/google/universal-sentence-encoder/4"),
+            "model_source": "tf_hub",
+        }
+    elif model_type == "bert":
+        return {
+            "model": SentenceTransformer("distilbert-base-nli-stsb-mean-tokens"),
+            "model_source": "bert",
+        }
 
 
 def main():
@@ -74,12 +94,18 @@ def main():
 
 
 def compute_all_options(
-    vespa_url, vespa_port, output_dir, rank_profiles, grammar_operators, hits
+    vespa_url,
+    vespa_port,
+    output_dir,
+    rank_profiles,
+    grammar_operators,
+    ann_operators,
+    hits,
 ):
     query_relevance = sample_query_relevance_data(number_queries=None)
     for rank_profile in rank_profiles:
         for grammar_operator in grammar_operators:
-            for ann in [True, False]:
+            for ann in ann_operators:
                 if (
                     RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
                     and ann
@@ -114,11 +140,11 @@ def compute_all_options(
                         )
 
 
-def load_all_options(output_dir, rank_profiles, grammar_operators, hits):
+def load_all_options(output_dir, rank_profiles, grammar_operators, ann_operators, hits):
     results = []
     for rank_profile in rank_profiles:
         for grammar_operator in grammar_operators:
-            for ann in [True, False]:
+            for ann in ann_operators:
                 if (
                     RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
                     and ann
@@ -136,6 +162,7 @@ def page_results_summary(vespa_url, vespa_port):
 
     rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
     grammar_operators = st.multiselect("Choose grammar operators", ["AND", "OR"])
+    ann_operators = st.multiselect("ANN operator", [True, False])
     output_dir = "data/msmarco/experiments"
 
     if st.button("Evaluate"):
@@ -143,10 +170,18 @@ def page_results_summary(vespa_url, vespa_port):
         hits = 100
 
         compute_all_options(
-            vespa_url, vespa_port, output_dir, rank_profiles, grammar_operators, hits
+            vespa_url,
+            vespa_port,
+            output_dir,
+            rank_profiles,
+            grammar_operators,
+            ann_operators,
+            hits,
         )
 
-        results = load_all_options(output_dir, rank_profiles, grammar_operators, hits)
+        results = load_all_options(
+            output_dir, rank_profiles, grammar_operators, ann_operators, hits
+        )
 
         position_freqs = []
         ranking_names = []
@@ -276,7 +311,12 @@ def page_simple_query_page(vespa_url, vespa_port):
     if RANK_PROFILE_EMBEDDING[rank_profile] in AVAILABLE_EMBEDDINGS:
         ann_operator = st.checkbox("Use ANN operator?")
         model = retrieve_model(RANK_PROFILE_EMBEDDING[rank_profile])
-        embedding = create_document_embedding(text=query, model=model, normalize=True)
+        embedding = create_document_embedding(
+            text=query,
+            model=model["model"],
+            model_source=model["model_source"],
+            normalize=True,
+        )
 
     st.markdown("---")
 
@@ -422,7 +462,10 @@ def evaluate(
         embedding = None
         if model is not None:
             embedding = create_document_embedding(
-                text=query, model=model, normalize=True
+                text=query,
+                model=model["model"],
+                model_source=model["model_source"],
+                normalize=True,
             )
         request_body = create_vespa_body_request(
             query=query,
@@ -510,6 +553,16 @@ def create_vespa_body_request(
                     yql
                     + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
                         "title_gse", "tensor_gse"
+                    )
+                )
+        elif RANK_PROFILE_EMBEDDING[rank_profile] == "bert":
+            body.update({"ranking.features.query(tensor_bert)": str(embedding)})
+            # todo: I will hardcode the doc_tensor here to mean title tensor. Also the number of hits
+            if ann:
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "title_bert", "tensor_bert"
                     )
                 )
 
