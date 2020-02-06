@@ -40,6 +40,14 @@ search msmarco {
             indexing: attribute
         }
 
+        field title_bert type tensor<float>(x[768]) {
+            indexing: attribute
+        }
+
+        field body_bert type tensor<float>(x[768]) {
+            indexing: attribute
+        }
+
     }
 
     document-summary minimal {
@@ -96,6 +104,23 @@ search msmarco {
         }
     }
 
+    rank-profile bert_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
+        }
+        first-phase {
+            expression: dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
     rank-profile bm25_word2vec_title_body_all inherits default {
         function dot_product_title() {
             expression: sum(query(tensor)*attribute(title_word2vec))
@@ -121,6 +146,25 @@ search msmarco {
         }
         function dot_product_body() {
             expression: sum(query(tensor_gse)*attribute(body_gse))
+        }
+        first-phase {
+            expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
+    rank-profile bm25_bert_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
         }
         first-phase {
             expression: bm25(title) + bm25(body) + dot_product_title() + dot_product_body()
