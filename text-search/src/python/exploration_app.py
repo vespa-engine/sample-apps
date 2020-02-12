@@ -82,7 +82,7 @@ def main():
 
     page = st.sidebar.selectbox(
         "Choose a page",
-        ["Simple query", "Ranking function comparison", "Results summary"],
+        ["Simple query", "Ranking function comparison", "Results summary", "Report"],
     )
 
     if page == "Simple query":
@@ -91,6 +91,8 @@ def main():
         page_ranking_function_comparison(vespa_url=vespa_url, vespa_port=vespa_port)
     elif page == "Results summary":
         page_results_summary(vespa_url=vespa_url, vespa_port=vespa_port)
+    elif page == "Report":
+        page_report(vespa_url=vespa_url, vespa_port=vespa_port)
 
 
 def compute_all_options(
@@ -106,11 +108,11 @@ def compute_all_options(
     for rank_profile in rank_profiles:
         for grammar_operator in grammar_operators:
             for ann in ann_operators:
-                if (
-                    RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
-                    and ann
-                ):
-                    continue
+                # if (
+                #     RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
+                #     and ann
+                # ):
+                #     continue
                 file_name = "full_evaluation_{}_{}_ANN_{}_hits_{}".format(
                     RANK_PROFILE_MAP[rank_profile], grammar_operator, ann, hits
                 )
@@ -145,11 +147,11 @@ def load_all_options(output_dir, rank_profiles, grammar_operators, ann_operators
     for rank_profile in rank_profiles:
         for grammar_operator in grammar_operators:
             for ann in ann_operators:
-                if (
-                    RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
-                    and ann
-                ):
-                    continue
+                # if (
+                #     RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
+                #     and ann
+                # ):
+                #     continue
                 file_name = "full_evaluation_{}_{}_ANN_{}_hits_{}".format(
                     RANK_PROFILE_MAP[rank_profile], grammar_operator, ann, hits
                 )
@@ -162,7 +164,9 @@ def page_results_summary(vespa_url, vespa_port):
 
     rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
     grammar_operators = st.multiselect("Choose grammar operators", ["AND", "OR"])
-    ann_operators = st.multiselect("ANN operator", [True, False])
+    ann_operators = st.multiselect(
+        "ANN operator", [None, "title", "body", "title_body"]
+    )
     output_dir = "data/msmarco/experiments"
 
     if st.button("Evaluate"):
@@ -196,28 +200,91 @@ def page_results_summary(vespa_url, vespa_port):
                     "qps": result["aggregate_metrics"]["qps"],
                     "mrr": result["aggregate_metrics"]["mrr"],
                     "recall": result["aggregate_metrics"]["recall"],
+                    "average_matched": result["aggregate_metrics"]["average_matched"],
                 }
             )
 
         display_results(position_freqs, ranking_names, results_summary, hits)
 
 
-def display_results(position_freqs, ranking_names, results_summary, hits):
-    hits = min(hits, LIMIT_HITS_GRAPH)
-    z = [list(x) for x in zip(*position_freqs)]
-    z_text = z
-    x = ranking_names
-    y = [str(x + 1) for x in range(int(hits))]
+def page_report(vespa_url, vespa_port):
 
-    fig = ff.create_annotated_heatmap(
-        z, x=x, y=y, annotation_text=z_text, colorscale=py.colors.diverging.RdYlGn
-    )
-    fig.update_layout(
-        xaxis_title_text="Rank profile",  # xaxis label
-        yaxis_title_text="Position",  # yaxis label
-    )
-    fig.update_yaxes(autorange="reversed")
-    st.plotly_chart(fig)
+    # rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
+    # grammar_operators = st.multiselect("Choose grammar operators", ["AND", "OR"])
+    # ann_operators = st.multiselect(
+    #     "ANN operator", [None, "title", "body", "title_body"]
+    # )
+
+    st.markdown("## AND operator")
+
+    and_rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
+    and_grammar_operators = ["AND"]
+    and_ann_operators = [None]
+
+    output_dir = "data/msmarco/experiments"
+
+    if st.button("Evaluate"):
+
+        hits = 100
+
+        compute_all_options(
+            vespa_url,
+            vespa_port,
+            output_dir,
+            and_rank_profiles,
+            and_grammar_operators,
+            and_ann_operators,
+            hits,
+        )
+
+        results = load_all_options(
+            output_dir,
+            and_rank_profiles,
+            and_grammar_operators,
+            and_ann_operators,
+            hits,
+        )
+
+        position_freqs = []
+        ranking_names = []
+        results_summary = []
+        for result in results:
+            position_freqs.append(result["position_freq"])
+            ranking_names.append(result["aggregate_metrics"]["rank_name"])
+            results_summary.append(
+                {
+                    "rank_name": result["aggregate_metrics"]["rank_name"],
+                    "number_queries": result["aggregate_metrics"]["number_queries"],
+                    "qps": result["aggregate_metrics"]["qps"],
+                    "mrr": result["aggregate_metrics"]["mrr"],
+                    "recall": result["aggregate_metrics"]["recall"],
+                }
+            )
+
+        display_results(
+            position_freqs, ranking_names, results_summary, hits, display_graph=False
+        )
+
+
+def display_results(
+    position_freqs, ranking_names, results_summary, hits, display_graph=True
+):
+    if display_graph:
+        hits = min(hits, LIMIT_HITS_GRAPH)
+        z = [list(x) for x in zip(*position_freqs)]
+        z_text = z
+        x = ranking_names
+        y = [str(x + 1) for x in range(int(hits))]
+
+        fig = ff.create_annotated_heatmap(
+            z, x=x, y=y, annotation_text=z_text, colorscale=py.colors.diverging.RdYlGn
+        )
+        fig.update_layout(
+            xaxis_title_text="Rank profile",  # xaxis label
+            yaxis_title_text="Position",  # yaxis label
+        )
+        fig.update_yaxes(autorange="reversed")
+        st.plotly_chart(fig)
 
     st.write(
         DataFrame.from_records(results_summary).sort_values(by="mrr", ascending=False)
@@ -229,18 +296,20 @@ def page_ranking_function_comparison(vespa_url, vespa_port):
         "Ranking 1: rank profile", RANK_PROFILE_OPTIONS
     )
     grammar_operator_1 = st.sidebar.selectbox("Ranking 1: Grammar", ("AND", "OR"))
-    ann_operator_1 = False
+    ann_operator_1 = None
     if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]] in AVAILABLE_EMBEDDINGS:
-        ann_operator_1 = st.sidebar.checkbox("Ranking 1: Use ANN operator?")
-
+        ann_operator_1 = st.sidebar.selectbox(
+            "Ranking 1: ANN operator", (None, "title", "body", "title_body")
+        )
     rank_profile_2 = st.sidebar.selectbox(
         "Ranking 2: rank profile", RANK_PROFILE_OPTIONS
     )
     grammar_operator_2 = st.sidebar.selectbox("Ranking 2: Grammar", ("AND", "OR"))
-    ann_operator_2 = False
+    ann_operator_2 = None
     if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]] in AVAILABLE_EMBEDDINGS:
-        ann_operator_2 = st.sidebar.checkbox("Ranking 2: Use ANN operator?")
-
+        ann_operator_2 = st.sidebar.selectbox(
+            "Ranking 2: ANN operator", (None, "title", "body", "title_body")
+        )
     number_queries = int(st.text_input("Number of queries to send", "20"))
 
     hits = int(st.text_input("Number of hits to evaluate per query", "10"))
@@ -307,9 +376,11 @@ def page_simple_query_page(vespa_url, vespa_port):
     )
 
     embedding = None
-    ann_operator = False
+    ann_operator = None
     if RANK_PROFILE_EMBEDDING[rank_profile] in AVAILABLE_EMBEDDINGS:
-        ann_operator = st.checkbox("Use ANN operator?")
+        ann_operator = st.selectbox(
+            "ANN operator", (None, "title", "body", "title_body")
+        )
         model = retrieve_model(RANK_PROFILE_EMBEDDING[rank_profile])
         embedding = create_document_embedding(
             text=query,
@@ -428,7 +499,10 @@ def parse_vespa_json(data):
             for hit in data["root"]["children"]
             if "fields" in hit
         ]
-    return ranking
+    return (
+        ranking,
+        data["root"]["fields"]["totalCount"] / data["root"]["coverage"]["documents"],
+    )
 
 
 # @st.cache(persist=True)
@@ -440,7 +514,7 @@ def evaluate(
     vespa_port,
     hits,
     model=None,
-    ann=False,
+    ann=None,
 ):
     if grammar_any:
         grammar_name = "OR"
@@ -449,7 +523,7 @@ def evaluate(
 
     rank_name = rank_profile + ", " + grammar_name
     if ann:
-        rank_name += ", ANN"
+        rank_name += ", ANN {}".format(ann)
 
     number_queries = 0
     total_rr = 0
@@ -457,6 +531,7 @@ def evaluate(
     start_time = time()
     records = []
     position_count = [0] * min(hits, LIMIT_HITS_GRAPH)
+    matched_ratio_sum = 0
     for qid, (query, relevant_id) in query_relevance.items():
         rr = 0
         embedding = None
@@ -480,7 +555,8 @@ def evaluate(
         vespa_result = vespa_search(
             vespa_url=vespa_url, vespa_port=vespa_port, body=request_body
         )
-        ranking = parse_vespa_json(data=vespa_result)
+        ranking, matched_ratio = parse_vespa_json(data=vespa_result)
+        matched_ratio_sum += matched_ratio
         count = 0
         for rank, hit in enumerate(ranking):
             if hit[0] == relevant_id:
@@ -499,6 +575,7 @@ def evaluate(
         "qps": number_queries / execution_time,
         "mrr": total_rr / number_queries,
         "recall": total_count / number_queries,
+        "average_matched": matched_ratio_sum / number_queries,
     }
     position_freq = [count / number_queries for count in position_count]
     return records, aggregate_metrics, position_freq
@@ -513,7 +590,7 @@ def create_vespa_body_request(
     summary=None,
     embedding=None,
     tracelevel=None,
-    ann=False,
+    ann=None,
 ):
     yql = "select * from sources * where "
 
@@ -537,35 +614,73 @@ def create_vespa_body_request(
     if embedding:
         if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
             body.update({"ranking.features.query(tensor)": str(embedding)})
-            # todo: I will hardcode the doc_tensor here to mean title tensor. Also the number of hits
-            if ann:
+            if ann == "title":
                 yql = (
                     yql
                     + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
                         "title_word2vec", "tensor"
                     )
                 )
+            elif ann == "body":
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "body_word2vec", "tensor"
+                    )
+                )
+            elif ann == "title_body":
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{})) or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "title_word2vec", "tensor", "body_word2vec", "tensor"
+                    )
+                )
         elif RANK_PROFILE_EMBEDDING[rank_profile] == "gse":
             body.update({"ranking.features.query(tensor_gse)": str(embedding)})
-            # todo: I will hardcode the doc_tensor here to mean title tensor. Also the number of hits
-            if ann:
+            if ann == "title":
                 yql = (
                     yql
                     + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
                         "title_gse", "tensor_gse"
                     )
                 )
+            elif ann == "body":
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "body_gse", "tensor_gse"
+                    )
+                )
+            elif ann == "title_body":
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{})) or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "title_gse", "tensor_gse", "body_gse", "tensor_gse"
+                    )
+                )
         elif RANK_PROFILE_EMBEDDING[rank_profile] == "bert":
             body.update({"ranking.features.query(tensor_bert)": str(embedding)})
-            # todo: I will hardcode the doc_tensor here to mean title tensor. Also the number of hits
-            if ann:
+            if ann == "title":
                 yql = (
                     yql
                     + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
                         "title_bert", "tensor_bert"
                     )
                 )
-
+            elif ann == "body":
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "body_bert", "tensor_bert"
+                    )
+                )
+            elif ann == "title_body":
+                yql = (
+                    yql
+                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{})) or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
+                        "title_bert", "tensor_bert", "body_bert", "tensor_bert"
+                    )
+                )
         else:
             raise NotImplementedError
 
