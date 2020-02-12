@@ -91,8 +91,6 @@ def main():
         page_ranking_function_comparison(vespa_url=vespa_url, vespa_port=vespa_port)
     elif page == "Results summary":
         page_results_summary(vespa_url=vespa_url, vespa_port=vespa_port)
-    elif page == "Report":
-        page_report(vespa_url=vespa_url, vespa_port=vespa_port)
 
 
 def compute_all_options(
@@ -205,65 +203,6 @@ def page_results_summary(vespa_url, vespa_port):
             )
 
         display_results(position_freqs, ranking_names, results_summary, hits)
-
-
-def page_report(vespa_url, vespa_port):
-
-    # rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
-    # grammar_operators = st.multiselect("Choose grammar operators", ["AND", "OR"])
-    # ann_operators = st.multiselect(
-    #     "ANN operator", [None, "title", "body", "title_body"]
-    # )
-
-    st.markdown("## AND operator")
-
-    and_rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
-    and_grammar_operators = ["AND"]
-    and_ann_operators = [None]
-
-    output_dir = "data/msmarco/experiments"
-
-    if st.button("Evaluate"):
-
-        hits = 100
-
-        compute_all_options(
-            vespa_url,
-            vespa_port,
-            output_dir,
-            and_rank_profiles,
-            and_grammar_operators,
-            and_ann_operators,
-            hits,
-        )
-
-        results = load_all_options(
-            output_dir,
-            and_rank_profiles,
-            and_grammar_operators,
-            and_ann_operators,
-            hits,
-        )
-
-        position_freqs = []
-        ranking_names = []
-        results_summary = []
-        for result in results:
-            position_freqs.append(result["position_freq"])
-            ranking_names.append(result["aggregate_metrics"]["rank_name"])
-            results_summary.append(
-                {
-                    "rank_name": result["aggregate_metrics"]["rank_name"],
-                    "number_queries": result["aggregate_metrics"]["number_queries"],
-                    "qps": result["aggregate_metrics"]["qps"],
-                    "mrr": result["aggregate_metrics"]["mrr"],
-                    "recall": result["aggregate_metrics"]["recall"],
-                }
-            )
-
-        display_results(
-            position_freqs, ranking_names, results_summary, hits, display_graph=False
-        )
 
 
 def display_results(
