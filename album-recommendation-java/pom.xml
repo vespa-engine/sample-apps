@@ -19,6 +19,7 @@
         <groupId>com.yahoo.vespa</groupId>
         <artifactId>tenant-base</artifactId>
         <version>[7,999)</version>  <!-- Use the latest Vespa release on each build -->
+        <relativePath />
     </parent>
 
     <properties>
