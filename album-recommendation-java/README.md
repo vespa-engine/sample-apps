@@ -141,8 +141,7 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     ```
     mvn clean vespa:compileVersion
     mvn -P fat-test-application \
-    -Dvespaversion="$(cat target/vespa.compile.version)" \
-    -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
+    -Dvespa.compile.version="$(cat target/vespa.compile.version)" \
     package vespa:submit
     ```
 
