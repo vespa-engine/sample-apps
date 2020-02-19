@@ -135,10 +135,11 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 1.  When System and Staging tests are ready, deploy to production.
     Command to build and submit application to the hosted Vespa API is
     ```
-    mvn clean vespa:compileVersion
+    mvn clean vespa:compileVersion -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     mvn -P fat-test-application \
     -Dvespaversion="$(cat target/vespa.compile.version)" \
     -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
+    -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem \
     package vespa:submit
     ```
 
