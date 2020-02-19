@@ -10,12 +10,12 @@ This sample app introduces how to write system tests and how to integrate with a
 See [getting started](http://cloud.vespa.ai/getting-started.html) for troubleshooting.
 
 Security notes:
-*   To deploy to your instance, a _personal deploy key_ is required.
+*   To deploy to your instance, a _personal API key_ is required.
     See step 4 below.
 *   To read and write to the instance's endpoint, a certificate and a private key is required.
     See step 2 below.
     Find more details in [Data Plane](https://cloud.vespa.ai/security-model.html#data-plane), see _Client certificate_.
-*   Instead of using a _personal deploy key_, one can also deploy using the console, see step 5 in
+*   Instead of using a _personal API key_, one can also deploy using the console, see step 5 in
     [../album-recommendation/README.md](album-recommendation).
 
 
