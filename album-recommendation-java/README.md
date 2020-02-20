@@ -10,14 +10,12 @@ This sample app introduces how to write system tests and how to integrate with a
 See [getting started](http://cloud.vespa.ai/getting-started.html) for troubleshooting.
 
 Security notes:
-*   To deploy to your instance, a _personal deploy key_ is required.
+*   To deploy to your instance, a _personal API key_ is required.
     See step 4 below.
 *   To read and write to the instance's endpoint, a certificate and a private key is required.
     See step 2 below.
     Find more details in [Data Plane](https://cloud.vespa.ai/security-model.html#data-plane), see _Client certificate_.
-*   Below it is assumed names and key paths are put in `pom.xml`.
-    Alternatively, submit these values using  `mvn ... -DapiKeyFile=/path/to/key.pem`. 
-*   Instead of using a _personal deploy key_, one can also deploy using the console, see step 5 in
+*   Instead of using a _personal API key_, one can also deploy using the console, see step 5 in
     [../album-recommendation/README.md](album-recommendation).
 
 
@@ -42,21 +40,20 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/main/application/security/clients.pem
     ```
 
-1.  Go to http://console.vespa.ai/, choose tenant and click _Keys_ to generate and download the _personal deploy key_.
-    The key is downloaded to `$HOME/Downloads/TENANTNAME.pem`.
+1.  Go to http://console.vespa.ai/, choose tenant and click _Keys_ to generate and save the _personal API key_.
+    The key is saved to `$HOME/Downloads/TENANTNAME.pem`.
     Then click "Create application"
 
 1.  Edit the properties `tenant` and `application` in `pom.xml` — use the values entered in the console in 4.
-    Also add path to _personal deploy key_ in the `apiKeyFile` property.
 
 1.  Build the app:
      ```sh
      $ mvn clean package
      ```
  
-1.  Deploy the application to the `dev` environment and wait for it to start:
+1.  Deploy the application to the `dev` environment and wait for it to start - update the `apiKeyFile` to be the file you downloaded above:
     ```sh
-    $ mvn vespa:deploy
+    $ mvn vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     ```
 
 1. Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
@@ -111,15 +108,14 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     When _submitting_ an application to Vespa Cloud, a test instance is set up and tests automatically run using its endpoints.
     To develop system and staging tests, deploy the application to _dev_ (like above) and run tests like _ExampleSystemTest_:
     ```sh
-    $ mvn test -Dtest.categories=system
+    $ mvn test -Dtest.categories=system \
+      -DdataPlaneKeyFile=data-plane-private-key.pem \
+      -DdataPlaneCertificateFile=data-plane-public-cert.pem \
+      -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     ```
     or run it directly from an IDE. 
     ai.vespa.hosted.cd.Endpoint must have access to the data plane key and certificate pair,
     to talk to the application endpoint.
-    Set in `pom.xml` (above) or
-    -   as arguments to `mvn` like `-DdataPlaneCertificateFile=data-plane-public-cert.pem`, or
-    -   as VM options for the JUnit tests in the IDEA, like `-DdataPlaneCertificateFile=data-plane-public-cert.pem`. 
-    This also applies to the `dataPlaneKeyFile`, and the `apiKeyFile`.
 
     Find more details in the [Vespa Cloud API](https://cloud.vespa.ai/reference/vespa-cloud-api.html) and
     [automated-deployments](https://cloud.vespa.ai/automated-deployments).
@@ -139,10 +135,11 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 1.  When System and Staging tests are ready, deploy to production.
     Command to build and submit application to the hosted Vespa API is
     ```
-    mvn clean vespa:compileVersion
+    mvn clean vespa:compileVersion -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     mvn -P fat-test-application \
     -Dvespaversion="$(cat target/vespa.compile.version)" \
     -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
+    -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem \
     package vespa:submit
     ```
 
