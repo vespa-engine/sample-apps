@@ -16,7 +16,7 @@ Security notes:
     See step 2 below.
     Find more details in [Data Plane](https://cloud.vespa.ai/security-model.html#data-plane), see _Client certificate_.
 *   Instead of using a _personal API key_, one can also deploy using the console, see step 5 in
-    [../album-recommendation/README.md](album-recommendation).
+    [album-recommendation](../album-recommendation/README.md).
 
 
 
@@ -106,7 +106,8 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     Vespa Cloud has support for running _system_ and _staging_ tests for every change to an application.
     These tests are run as JUnit tests, but use the endpoints of a real deployment of the application.
     When _submitting_ an application to Vespa Cloud, a test instance is set up and tests automatically run using its endpoints.
-    To develop system and staging tests, deploy the application to _dev_ (like above) and run tests like _ExampleSystemTest_:
+    To develop system and staging tests, deploy the application to _dev_ (like above) and run tests like
+    [_FeedAndSearchSystemTest_](src/test/java/ai/vespa/example/album/FeedAndSearchSystemTest.java):
     ```sh
     $ mvn test -Dtest.categories=system \
       -DdataPlaneKeyFile=data-plane-private-key.pem \
@@ -138,10 +139,6 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     mvn clean vespa:compileVersion -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     mvn -P fat-test-application \
     -Dvespaversion="$(cat target/vespa.compile.version)" \
-    -DauthorEmail=<span style="{background-color: yellow;}">user@domain</span> \
     -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem \
     package vespa:submit
     ```
-
-    To track versions through the pipeline, assuming you're using `git` for version control, you can instead specify
-    `-Drepository=$(git config --get remote.origin.url) -Dbranch=$(git rev-parse --abbrev-ref HEAD) -Dcommit=$(git rev-parse HEAD) -DauthorEmail=$(git log -1 --format=%aE)`
