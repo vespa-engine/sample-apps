@@ -46,7 +46,7 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 
 1.  Edit the properties `tenant` and `application` in `pom.xml` — use the values entered in the console in 4.
  
-1.  Build the app and deploy the application to the `dev` environment and wait for it to start -
+1.  Build the app and deploy it to the `dev` environment and wait for it to start -
     update the `apiKeyFile` to be the file you downloaded above:
     ```sh
     $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
