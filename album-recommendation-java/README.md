@@ -138,7 +138,7 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     ```
     mvn clean vespa:compileVersion -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     mvn -P fat-test-application \
-    -Dvespaversion="$(cat target/vespa.compile.version)" \
+    -Dvespa.compile.version="$(cat target/vespa.compile.version)" \
     -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem \
     package vespa:submit
     ```
