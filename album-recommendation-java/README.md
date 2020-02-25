@@ -45,18 +45,14 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     Then click "Create application"
 
 1.  Edit the properties `tenant` and `application` in `pom.xml` — use the values entered in the console in 4.
-
-1.  Build the app:
-     ```sh
-     $ mvn clean package
-     ```
  
-1.  Deploy the application to the `dev` environment and wait for it to start - update the `apiKeyFile` to be the file you downloaded above:
+1.  Build the app and deploy the application to the `dev` environment and wait for it to start -
+    update the `apiKeyFile` to be the file you downloaded above:
     ```sh
-    $ mvn vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
+    $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     ```
 
-1. Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
+1.  Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
     as first time deployments takes a few minutes.
     Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
     The endpoint URL is printed in the _Install application_ section when the deployment is successful -
@@ -136,7 +132,7 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 1.  When System and Staging tests are ready, deploy to production.
     Command to build and submit application to the hosted Vespa API is
     ```
-    mvn clean vespa:compileVersion -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
+    mvn clean package vespa:compileVersion -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
     mvn -P fat-test-application \
     -Dvespa.compile.version="$(cat target/vespa.compile.version)" \
     -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem \
