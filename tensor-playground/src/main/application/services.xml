@@ -6,7 +6,7 @@
         <nodes jvmargs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998">
             <node hostalias="node1"/>
         </nodes>
-        <handler id="com.yahoo.example.playground.TensorPlaygroundHandler" bundle="basic-search-tensor">
+        <handler id="ai.vespa.example.playground.TensorPlaygroundHandler" bundle="tensor-playground">
             <binding>http://*/playground/*</binding>
         </handler>
     </container>

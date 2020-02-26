@@ -1,11 +1,17 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - Tensor Playground
 
+The rank expression playground used to visualize rank operations.
+Once deployed, try the Tensor Playground:
+
+    http://localhost:8080/playground/index.html
+
+
 **Check-out, compile and run:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APPS=`pwd`/sample-apps
-$ cd $VESPA_SAMPLE_APPS/basic-search-tensor &amp;&amp; mvn clean package
+$ cd $VESPA_SAMPLE_APPS/tensor-playground &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container --privileged \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
@@ -15,7 +21,7 @@ $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationSt
 </pre>
 **Deploy the application:**
 <pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/basic-search-tensor/target/application.zip && \
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/tensor-playground/target/application.zip && \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
 **Wait for the application to start:**
@@ -26,12 +32,3 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
-
-
-<hr />
-
-Also includes the rank expression playground used to visualize rank operations.
-See [Developing application](http://docs.vespa.ai/documentation/jdisc/developing-applications.html).
-Once deployed, try the tensor playground:
-
-    http://localhost:8080/playground/index.html
