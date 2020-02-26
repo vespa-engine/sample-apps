@@ -1,0 +1,55 @@
+search doc {
+
+    document doc {
+
+        field path type string {
+            indexing: summary | index
+        }
+
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+            stemming: best
+        }
+
+        field content type string {
+            indexing: summary | index
+            summary: dynamic
+            index: enable-bm25
+            stemming: best
+        }
+
+        # e.g. open, cloud
+        field doctype type string {
+            indexing: summary | attribute
+        }
+
+    }
+
+    fieldset default {
+        fields: title, content
+    }
+
+    rank-profile documentation inherits default {
+        rank-properties {
+            $titleWeight: 2.0
+            $contentsWeight: 1.0
+        }
+        first-phase {
+            expression: query(titleWeight) * bm25(title) + query(contentsWeight) * bm25(content)
+        }
+        summary-features {
+            attribute(doctype)
+            query(titleWeight)
+            query(contentsWeight)
+            fieldMatch(title)
+            fieldMatch(content)
+            fieldMatch(content).matches
+            fieldLength(title)
+            fieldLength(content)
+            bm25(title)
+            bm25(content)
+        }
+    }
+
+}
