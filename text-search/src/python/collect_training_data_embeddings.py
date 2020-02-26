@@ -7,39 +7,88 @@ from pandas import DataFrame
 import tensorflow_hub as hub
 from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
 from embedding import create_document_embedding
+from experiments import create_vespa_body_request
 
 
 def create_request_specific_ids(
-    query, rankprofile, doc_ids, word2vec_embedding, gse_embedding
+    query,
+    rankprofile,
+    grammar_operator,
+    ann_operator,
+    embedding_type,
+    doc_ids,
+    embedding_vector,
 ):
-    body = {
-        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
-        "userQuery": query,
-        "hits": len(doc_ids),
-        "recall": "+(" + " ".join(["id:" + str(doc) for doc in doc_ids]) + ")",
-        "timeout": "15s",
-        "presentation.format": "json",
-        "ranking.features.query(tensor)": str(word2vec_embedding),
-        "ranking.features.query(tensor_gse)": str(gse_embedding),
-        "ranking": {"profile": rankprofile, "listFeatures": "true"},
-    }
+    """
+    Create request to retrieve document with specific id.
+
+
+    :param query: Query string.
+    :param rankprofile: Rank profile name as it stands on the .sd file
+    :param grammar_operator: The grammar used for the query term. Either 'AND', 'OR', 'weakAND' or None
+    :param ann_operator: What is the ann operator used. Either 'title', 'body', 'title_body' or None
+    :param embedding_type: What is the embedding type used, either 'word2vec', 'gse' or 'bert'.
+    :param doc_ids: List with document ids that we want retrieved.
+    :return: body to be send as POST request to Vespa
+    """
+
+    body = create_vespa_body_request(
+        query=query,
+        parsed_rank_profile=rankprofile,
+        grammar_operator=grammar_operator,
+        ann_operator=ann_operator,
+        embedding_type=embedding_type,
+        hits=len(doc_ids),
+        offset=0,
+        summary=None,
+        embedding_vector=embedding_vector,
+        tracelevel=None,
+    )
+
+    body.update(
+        {
+            "recall": "+(" + " ".join(["id:" + str(doc) for doc in doc_ids]) + ")",
+            "timeout": "15s",
+        }
+    )
     return body
 
 
 def create_request_top_hits(
-    query, rankprofile, hits, word2vec_embedding, gse_embedding
+    query,
+    rankprofile,
+    grammar_operator,
+    ann_operator,
+    embedding_type,
+    hits,
+    embedding_vector,
 ):
+    """
+    Create request to retrieve top hits according to a rank-pprofile and match phase.
 
-    body = {
-        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
-        "userQuery": query,
-        "hits": hits,
-        "timeout": "15s",
-        "presentation.format": "json",
-        "ranking.features.query(tensor)": str(word2vec_embedding),
-        "ranking.features.query(tensor_gse)": str(gse_embedding),
-        "ranking": {"profile": rankprofile, "listFeatures": "true"},
-    }
+    :param query: Query string.
+    :param rankprofile: Rank profile name as it stands on the .sd file
+    :param grammar_operator: The grammar used for the query term. Either 'AND', 'OR', 'weakAND' or None
+    :param ann_operator: What is the ann operator used. Either 'title', 'body', 'title_body' or None
+    :param embedding_type: What is the embedding type used, either 'word2vec', 'gse' or 'bert'.
+    :param doc_ids: List with document ids that we want retrieved.
+    :return: body to be send as POST request to Vespa
+    """
+
+    body = create_vespa_body_request(
+        query=query,
+        parsed_rank_profile=rankprofile,
+        grammar_operator=grammar_operator,
+        ann_operator=ann_operator,
+        embedding_type=embedding_type,
+        hits=hits,
+        offset=0,
+        summary=None,
+        embedding_vector=embedding_vector,
+        tracelevel=None,
+    )
+
+    body.update({"timeout": "15s"})
     return body
 
 
