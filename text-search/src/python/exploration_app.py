@@ -3,56 +3,68 @@ import os
 import streamlit as st
 import plotly as py
 import plotly.figure_factory as ff
-from requests import post
-from time import time
 from random import sample
 from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
 from embedding import create_document_embedding
 from pandas import DataFrame
 import tensorflow_hub as hub
 from sentence_transformers import SentenceTransformer
+from experiments import evaluate, create_vespa_body_request, vespa_search
+
+os.environ["TFHUB_CACHE_DIR"] = "data/models"
 
 QUERIES_FILE_PATH = "data/msmarco/train_test_set/msmarco-doctest-queries.tsv.gz"
 RELEVANCE_FILE_PATH = "data/msmarco/train_test_set/msmarco-doctest-qrels.tsv.gz"
 RANK_PROFILE_OPTIONS = (
     "BM25",
     "Native Rank",
-    "Title and body word2vec",
-    "BM25 + title and body word2vec",
-    "Title and body gse",
-    "BM25 + title and body gse",
-    "Title and body bert",
-    "BM25 + title and body bert",
-    "Scaled (AND) BM25 + title and body gse",
-    "Scaled (OR) BM25 + title and body gse",
+    "embedding(title) + embedding(body)",
+    "BM25 + embedding(title) + embedding(body)",
 )
+# todo: think how I am going to encode and present Scaled ranking functions
+# "Scaled (AND) BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_and",
+# "Scaled (OR) BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_or",
+
+
 RANK_PROFILE_MAP = {
     "BM25": "bm25",
     "Native Rank": "default",
-    "Title and body word2vec": "word2vec_title_body_all",
-    "BM25 + title and body word2vec": "bm25_word2vec_title_body_all",
-    "Title and body gse": "gse_title_body_all",
-    "BM25 + title and body gse": "bm25_gse_title_body_all",
-    "Scaled (AND) BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_and",
-    "Scaled (OR) BM25 + title and body gse": "listwise_linear_bm25_gse_title_body_or",
-    "Title and body bert": "bert_title_body_all",
-    "BM25 + title and body bert": "bm25_bert_title_body_all",
+    "embedding(title) + embedding(body)": {
+        "word2vec": "word2vec_title_body_all",
+        "gse": "gse_title_body_all",
+        "bert": "bert_title_body_all",
+    },
+    "BM25 + embedding(title) + embedding(body)": {
+        "word2vec": "bm25_word2vec_title_body_all",
+        "gse": "bm25_gse_title_body_all",
+        "bert": "bm25_bert_title_body_all",
+    },
 }
-RANK_PROFILE_EMBEDDING = {
-    "bm25": None,
-    "default": None,
-    "word2vec_title_body_all": "word2vec",
-    "bm25_word2vec_title_body_all": "word2vec",
-    "gse_title_body_all": "gse",
-    "bm25_gse_title_body_all": "gse",
-    "listwise_linear_bm25_gse_title_body_and": "gse",
-    "listwise_linear_bm25_gse_title_body_or": "gse",
-    "bert_title_body_all": "bert",
-    "bm25_bert_title_body_all": "bert",
-}
-AVAILABLE_EMBEDDINGS = ["word2vec", "gse", "bert"]
+# todo: I think I dont need RANK_PROFILE_EMBEDDING
+# RANK_PROFILE_EMBEDDING = {
+#     "bm25": None,
+#     "default": None,
+#     "word2vec_title_body_all": "word2vec",
+#     "bm25_word2vec_title_body_all": "word2vec",
+#     "gse_title_body_all": "gse",
+#     "bm25_gse_title_body_all": "gse",
+#     "listwise_linear_bm25_gse_title_body_and": "gse",
+#     "listwise_linear_bm25_gse_title_body_or": "gse",
+#     "bert_title_body_all": "bert",
+#     "bm25_bert_title_body_all": "bert",
+# }
+GRAMMAR_OPTIONS = ["None", "AND", "OR", "weakAND"]
 GRAMMAR_OPERATOR_MAP = {"AND": False, "OR": True}
+EMBEDDING_OPTIONS = ["word2vec", "gse", "bert"]
+ANN_OPTIONS = ["None", "title", "body", "title_body"]
 LIMIT_HITS_GRAPH = 10
+
+
+def get_rank_profile(rank_profile, embedding):
+    if "embedding" in rank_profile:
+        return RANK_PROFILE_MAP[rank_profile][embedding]
+    else:
+        return RANK_PROFILE_MAP[rank_profile]
 
 
 @st.cache(ignore_hash=True)
@@ -76,6 +88,96 @@ def retrieve_model(model_type):
         }
 
 
+def create_experiment_file_name(rank_profile, grammar_operator, ann, embedding, hits):
+    file_name = "grammar_{}_ann_{}_rank_{}_embedding_{}_hits_{}".format(
+        grammar_operator,
+        ann,
+        get_rank_profile(rank_profile, embedding),
+        embedding,
+        hits,
+    )
+    return file_name
+
+
+def compute_all_options(
+    vespa_url,
+    vespa_port,
+    output_dir,
+    rank_profiles,
+    grammar_operators,
+    ann_operators,
+    embeddings,
+    hits,
+):
+    query_relevance = sample_query_relevance_data(number_queries=None)
+    for rank_profile in rank_profiles:
+        for grammar_operator in grammar_operators:
+            grammar_operator = None if grammar_operator is "None" else grammar_operator
+            for ann in ann_operators:
+                ann = None if ann is "None" else ann
+                for embedding in embeddings:
+                    file_name = create_experiment_file_name(
+                        rank_profile, grammar_operator, ann, embedding, hits
+                    )
+                    file_path = os.path.join(output_dir, file_name)
+                    if not os.path.exists(file_path):
+                        model1 = retrieve_model(embedding)
+                        try:
+                            records, aggregate_metrics, position_freq = evaluate(
+                                query_relevance=query_relevance,
+                                parsed_rank_profile=get_rank_profile(
+                                    rank_profile, embedding
+                                ),
+                                grammar_operator=grammar_operator,
+                                ann_operator=ann,
+                                embedding_type=embedding,
+                                vespa_url=vespa_url,
+                                vespa_port=vespa_port,
+                                hits=int(hits),
+                                model=model1,
+                            )
+                        except ValueError as e:
+                            print(str(e))
+                            continue
+                        with open(file_path, "w") as f:
+                            f.write(
+                                json.dumps(
+                                    {
+                                        "aggregate_metrics": aggregate_metrics,
+                                        "position_freq": position_freq,
+                                    }
+                                )
+                            )
+
+
+def load_all_options(
+    output_dir, rank_profiles, grammar_operators, ann_operators, embeddings, hits
+):
+    results = []
+    for rank_profile in rank_profiles:
+        for grammar_operator in grammar_operators:
+            for ann in ann_operators:
+                for embedding in embeddings:
+                    file_name = create_experiment_file_name(
+                        rank_profile, grammar_operator, ann, embedding, hits
+                    )
+                    file_path = os.path.join(output_dir, file_name)
+                    try:
+                        result = json.load(open(file_path, "r"))
+                    except FileNotFoundError:
+                        continue
+                    result.update(
+                        {
+                            "rank_profile": rank_profile,
+                            "grammar_operator": grammar_operator,
+                            "ann_operator": ann,
+                            "embedding_type": embedding,
+                        }
+                    )
+                    results.append(result)
+    return results
+
+
 def main():
     vespa_url = st.sidebar.text_input("Vespa url", "http://localhost")
     vespa_port = st.sidebar.text_input("Vespa port", 8080)
@@ -87,84 +189,18 @@ def main():
 
     if page == "Simple query":
         page_simple_query_page(vespa_url=vespa_url, vespa_port=vespa_port)
-    elif page == "Ranking function comparison":
-        page_ranking_function_comparison(vespa_url=vespa_url, vespa_port=vespa_port)
+    # elif page == "Ranking function comparison":
+    #     page_ranking_function_comparison(vespa_url=vespa_url, vespa_port=vespa_port)
     elif page == "Results summary":
         page_results_summary(vespa_url=vespa_url, vespa_port=vespa_port)
 
 
-def compute_all_options(
-    vespa_url,
-    vespa_port,
-    output_dir,
-    rank_profiles,
-    grammar_operators,
-    ann_operators,
-    hits,
-):
-    query_relevance = sample_query_relevance_data(number_queries=None)
-    for rank_profile in rank_profiles:
-        for grammar_operator in grammar_operators:
-            for ann in ann_operators:
-                # if (
-                #     RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
-                #     and ann
-                # ):
-                #     continue
-                file_name = "full_evaluation_{}_{}_ANN_{}_hits_{}".format(
-                    RANK_PROFILE_MAP[rank_profile], grammar_operator, ann, hits
-                )
-                file_path = os.path.join(output_dir, file_name)
-                if not os.path.exists(file_path):
-                    model1 = retrieve_model(
-                        RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]]
-                    )
-                    records, aggregate_metrics, position_freq = evaluate(
-                        query_relevance=query_relevance,
-                        rank_profile=RANK_PROFILE_MAP[rank_profile],
-                        grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator],
-                        vespa_url=vespa_url,
-                        vespa_port=vespa_port,
-                        hits=int(hits),
-                        model=model1,
-                        ann=ann,
-                    )
-                    with open(file_path, "w") as f:
-                        f.write(
-                            json.dumps(
-                                {
-                                    "aggregate_metrics": aggregate_metrics,
-                                    "position_freq": position_freq,
-                                }
-                            )
-                        )
-
-
-def load_all_options(output_dir, rank_profiles, grammar_operators, ann_operators, hits):
-    results = []
-    for rank_profile in rank_profiles:
-        for grammar_operator in grammar_operators:
-            for ann in ann_operators:
-                # if (
-                #     RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile]] is None
-                #     and ann
-                # ):
-                #     continue
-                file_name = "full_evaluation_{}_{}_ANN_{}_hits_{}".format(
-                    RANK_PROFILE_MAP[rank_profile], grammar_operator, ann, hits
-                )
-                file_path = os.path.join(output_dir, file_name)
-                results.append(json.load(open(file_path, "r")))
-    return results
-
-
 def page_results_summary(vespa_url, vespa_port):
 
+    grammar_operators = st.multiselect("Choose grammar operators", GRAMMAR_OPTIONS)
+    ann_operators = st.multiselect("ANN operator", ANN_OPTIONS)
     rank_profiles = st.multiselect("Choose rank profiles", RANK_PROFILE_OPTIONS)
-    grammar_operators = st.multiselect("Choose grammar operators", ["AND", "OR"])
-    ann_operators = st.multiselect(
-        "ANN operator", [None, "title", "body", "title_body"]
-    )
+    embeddings = st.multiselect("Embedding type", EMBEDDING_OPTIONS)
     output_dir = "data/msmarco/experiments"
 
     if st.button("Evaluate"):
@@ -178,11 +214,17 @@ def page_results_summary(vespa_url, vespa_port):
             rank_profiles,
             grammar_operators,
             ann_operators,
+            embeddings,
             hits,
         )
 
         results = load_all_options(
-            output_dir, rank_profiles, grammar_operators, ann_operators, hits
+            output_dir,
+            rank_profiles,
+            grammar_operators,
+            ann_operators,
+            embeddings,
+            hits,
         )
 
         position_freqs = []
@@ -194,6 +236,10 @@ def page_results_summary(vespa_url, vespa_port):
             results_summary.append(
                 {
                     "rank_name": result["aggregate_metrics"]["rank_name"],
+                    "rank_profile": result["rank_profile"],
+                    "grammar_operator": result["grammar_operator"],
+                    "ann_operator": result["ann_operator"],
+                    "embedding_type": result["embedding_type"],
                     "number_queries": result["aggregate_metrics"]["number_queries"],
                     "qps": result["aggregate_metrics"]["qps"],
                     "mrr": result["aggregate_metrics"]["mrr"],
@@ -230,67 +276,67 @@ def display_results(
     )
 
 
-def page_ranking_function_comparison(vespa_url, vespa_port):
-    rank_profile_1 = st.sidebar.selectbox(
-        "Ranking 1: rank profile", RANK_PROFILE_OPTIONS
-    )
-    grammar_operator_1 = st.sidebar.selectbox("Ranking 1: Grammar", ("AND", "OR"))
-    ann_operator_1 = None
-    if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]] in AVAILABLE_EMBEDDINGS:
-        ann_operator_1 = st.sidebar.selectbox(
-            "Ranking 1: ANN operator", (None, "title", "body", "title_body")
-        )
-    rank_profile_2 = st.sidebar.selectbox(
-        "Ranking 2: rank profile", RANK_PROFILE_OPTIONS
-    )
-    grammar_operator_2 = st.sidebar.selectbox("Ranking 2: Grammar", ("AND", "OR"))
-    ann_operator_2 = None
-    if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]] in AVAILABLE_EMBEDDINGS:
-        ann_operator_2 = st.sidebar.selectbox(
-            "Ranking 2: ANN operator", (None, "title", "body", "title_body")
-        )
-    number_queries = int(st.text_input("Number of queries to send", "20"))
-
-    hits = int(st.text_input("Number of hits to evaluate per query", "10"))
-
-    if st.button("Evaluate"):
-        query_relevance = sample_query_relevance_data(number_queries=number_queries)
-
-        model1 = retrieve_model(
-            RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]]
-        )
-        records_1, aggregate_metrics_1, position_freq_1 = evaluate(
-            query_relevance=query_relevance,
-            rank_profile=RANK_PROFILE_MAP[rank_profile_1],
-            grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator_1],
-            vespa_url=vespa_url,
-            vespa_port=vespa_port,
-            hits=int(hits),
-            model=model1,
-            ann=ann_operator_1,
-        )
-
-        model2 = retrieve_model(
-            RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]]
-        )
-        records_2, aggregate_metrics_2, position_freq_2 = evaluate(
-            query_relevance=query_relevance,
-            rank_profile=RANK_PROFILE_MAP[rank_profile_2],
-            grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator_2],
-            vespa_url=vespa_url,
-            vespa_port=vespa_port,
-            hits=int(hits),
-            model=model2,
-            ann=ann_operator_2,
-        )
-        position_freqs = [position_freq_1, position_freq_2]
-        ranking_names = [
-            aggregate_metrics_1["rank_name"],
-            aggregate_metrics_2["rank_name"],
-        ]
-        results_summary = [aggregate_metrics_1, aggregate_metrics_2]
-
-        display_results(position_freqs, ranking_names, results_summary, hits)
+# def page_ranking_function_comparison(vespa_url, vespa_port):
+#     rank_profile_1 = st.sidebar.selectbox(
+#         "Ranking 1: rank profile", RANK_PROFILE_OPTIONS
+#     )
+#     grammar_operator_1 = st.sidebar.selectbox("Ranking 1: Grammar", ("AND", "OR"))
+#     ann_operator_1 = None
+#     if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]] in EMBEDDING_OPTIONS:
+#         ann_operator_1 = st.sidebar.selectbox(
+#             "Ranking 1: ANN operator", (None, "title", "body", "title_body")
+#         )
+#     rank_profile_2 = st.sidebar.selectbox(
+#         "Ranking 2: rank profile", RANK_PROFILE_OPTIONS
+#     )
+#     grammar_operator_2 = st.sidebar.selectbox("Ranking 2: Grammar", ("AND", "OR"))
+#     ann_operator_2 = None
+#     if RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]] in EMBEDDING_OPTIONS:
+#         ann_operator_2 = st.sidebar.selectbox(
+#             "Ranking 2: ANN operator", (None, "title", "body", "title_body")
+#         )
+#     number_queries = int(st.text_input("Number of queries to send", "20"))
+#
+#     hits = int(st.text_input("Number of hits to evaluate per query", "10"))
+#
+#     if st.button("Evaluate"):
+#         query_relevance = sample_query_relevance_data(number_queries=number_queries)
+#
+#         model1 = retrieve_model(
+#             RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_1]]
+#         )
+#         records_1, aggregate_metrics_1, position_freq_1 = evaluate(
+#             query_relevance=query_relevance,
+#             parsed_rank_profile=RANK_PROFILE_MAP[rank_profile_1],
+#             grammar_operator=GRAMMAR_OPERATOR_MAP[grammar_operator_1],
+#             vespa_url=vespa_url,
+#             vespa_port=vespa_port,
+#             hits=int(hits),
+#             model=model1,
+#             ann=ann_operator_1,
+#         )
+#
+#         model2 = retrieve_model(
+#             RANK_PROFILE_EMBEDDING[RANK_PROFILE_MAP[rank_profile_2]]
+#         )
+#         records_2, aggregate_metrics_2, position_freq_2 = evaluate(
+#             query_relevance=query_relevance,
+#             parsed_rank_profile=RANK_PROFILE_MAP[rank_profile_2],
+#             grammar_operator=GRAMMAR_OPERATOR_MAP[grammar_operator_2],
+#             vespa_url=vespa_url,
+#             vespa_port=vespa_port,
+#             hits=int(hits),
+#             model=model2,
+#             ann=ann_operator_2,
+#         )
+#         position_freqs = [position_freq_1, position_freq_2]
+#         ranking_names = [
+#             aggregate_metrics_1["rank_name"],
+#             aggregate_metrics_2["rank_name"],
+#         ]
+#         results_summary = [aggregate_metrics_1, aggregate_metrics_2]
+#
+#         display_results(position_freqs, ranking_names, results_summary, hits)
 
 
 def page_simple_query_page(vespa_url, vespa_port):
@@ -307,21 +353,24 @@ def page_simple_query_page(vespa_url, vespa_port):
 
     st.markdown("---")
 
-    rank_profile = st.selectbox("Select desired rank profile", RANK_PROFILE_OPTIONS)
-    rank_profile = RANK_PROFILE_MAP[rank_profile]
+    grammar_operator = st.selectbox("Choose grammar operators", GRAMMAR_OPTIONS)
+    grammar_operator = None if grammar_operator is "None" else grammar_operator
+    if grammar_operator is None:
+        available_ann_options = [x for x in ANN_OPTIONS if x is not "None"]
+    else:
+        available_ann_options = ANN_OPTIONS
+    ann_operator = st.selectbox("ANN operator", available_ann_options)
+    ann_operator = None if ann_operator is "None" else ann_operator
+    rank_profile = st.selectbox("Choose rank profiles", RANK_PROFILE_OPTIONS)
+    if "embedding" in rank_profile or ann_operator is not None:
+        embedding = st.selectbox("Embedding type", EMBEDDING_OPTIONS)
+    else:
+        embedding = None
 
-    grammar_operator = st.selectbox(
-        "Which grammar operator to apply fo query tokens", ("AND", "OR")
-    )
-
-    embedding = None
-    ann_operator = None
-    if RANK_PROFILE_EMBEDDING[rank_profile] in AVAILABLE_EMBEDDINGS:
-        ann_operator = st.selectbox(
-            "ANN operator", (None, "title", "body", "title_body")
-        )
-        model = retrieve_model(RANK_PROFILE_EMBEDDING[rank_profile])
-        embedding = create_document_embedding(
+    embedding_vector = None
+    if embedding in EMBEDDING_OPTIONS:
+        model = retrieve_model(embedding)
+        embedding_vector = create_document_embedding(
             text=query,
             model=model["model"],
             model_source=model["model_source"],
@@ -346,11 +395,15 @@ def page_simple_query_page(vespa_url, vespa_port):
 
         request_body = create_vespa_body_request(
             query=query,
-            rank_profile=rank_profile,
-            grammar_any=GRAMMAR_OPERATOR_MAP[grammar_operator],
-            embedding=embedding,
+            parsed_rank_profile=get_rank_profile(
+                rank_profile=rank_profile, embedding=embedding
+            ),
+            grammar_operator=grammar_operator,
+            ann_operator=ann_operator,
+            embedding_type=embedding,
+            hits=10,
+            embedding_vector=embedding_vector,
             tracelevel=tracelevel,
-            ann=ann_operator,
         )
         search_results = vespa_search(
             vespa_url=vespa_url, vespa_port=vespa_port, body=request_body
@@ -428,210 +481,6 @@ def sample_query_relevance_data(number_queries):
         qrels = {k: qrels[k] for k in sample(list(qrels), number_queries)}
     query_relevance = extract_querie_relevance(qrels, queries)
     return query_relevance
-
-
-def parse_vespa_json(data):
-    ranking = []
-    if "children" in data["root"]:
-        ranking = [
-            (hit["fields"]["id"], hit["relevance"])
-            for hit in data["root"]["children"]
-            if "fields" in hit
-        ]
-    return (
-        ranking,
-        data["root"]["fields"]["totalCount"] / data["root"]["coverage"]["documents"],
-    )
-
-
-# @st.cache(persist=True)
-def evaluate(
-    query_relevance,
-    rank_profile,
-    grammar_any,
-    vespa_url,
-    vespa_port,
-    hits,
-    model=None,
-    ann=None,
-):
-    if grammar_any:
-        grammar_name = "OR"
-    else:
-        grammar_name = "AND"
-
-    rank_name = rank_profile + ", " + grammar_name
-    if ann:
-        rank_name += ", ANN {}".format(ann)
-
-    number_queries = 0
-    total_rr = 0
-    total_count = 0
-    start_time = time()
-    records = []
-    position_count = [0] * min(hits, LIMIT_HITS_GRAPH)
-    matched_ratio_sum = 0
-    for qid, (query, relevant_id) in query_relevance.items():
-        rr = 0
-        embedding = None
-        if model is not None:
-            embedding = create_document_embedding(
-                text=query,
-                model=model["model"],
-                model_source=model["model_source"],
-                normalize=True,
-            )
-        request_body = create_vespa_body_request(
-            query=query,
-            rank_profile=rank_profile,
-            grammar_any=grammar_any,
-            hits=hits,
-            offset=0,
-            summary="minimal",
-            embedding=embedding,
-            ann=ann,
-        )
-        vespa_result = vespa_search(
-            vespa_url=vespa_url, vespa_port=vespa_port, body=request_body
-        )
-        ranking, matched_ratio = parse_vespa_json(data=vespa_result)
-        matched_ratio_sum += matched_ratio
-        count = 0
-        for rank, hit in enumerate(ranking):
-            if hit[0] == relevant_id:
-                rr = 1 / (rank + 1)
-                if rank < LIMIT_HITS_GRAPH:
-                    position_count[rank] += 1
-                count += 1
-        records.append({"qid": qid, "rr": rr})
-        total_count += count
-        total_rr += rr
-        number_queries += 1
-    execution_time = time() - start_time
-    aggregate_metrics = {
-        "rank_name": rank_name,
-        "number_queries": number_queries,
-        "qps": number_queries / execution_time,
-        "mrr": total_rr / number_queries,
-        "recall": total_count / number_queries,
-        "average_matched": matched_ratio_sum / number_queries,
-    }
-    position_freq = [count / number_queries for count in position_count]
-    return records, aggregate_metrics, position_freq
-
-
-def create_vespa_body_request(
-    query,
-    rank_profile,
-    grammar_any=False,
-    hits=10,
-    offset=0,
-    summary=None,
-    embedding=None,
-    tracelevel=None,
-    ann=None,
-):
-    yql = "select * from sources * where "
-
-    if grammar_any:
-        yql = yql + '([{"grammar": "any"}]userInput(@userQuery))'
-    else:
-        yql = yql + "(userInput(@userQuery))"
-
-    body = {
-        "userQuery": query,
-        "hits": hits,
-        "offset": offset,
-        "ranking": {"profile": rank_profile, "listFeatures": "true"},
-        "timeout": 1,
-        "presentation.format": "json",
-    }
-    if tracelevel:
-        body.update({"tracelevel": tracelevel})
-    if summary == "minimal":
-        body.update({"summary": "minimal"})
-    if embedding:
-        if RANK_PROFILE_EMBEDDING[rank_profile] == "word2vec":
-            body.update({"ranking.features.query(tensor)": str(embedding)})
-            if ann == "title":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "title_word2vec", "tensor"
-                    )
-                )
-            elif ann == "body":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "body_word2vec", "tensor"
-                    )
-                )
-            elif ann == "title_body":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{})) or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "title_word2vec", "tensor", "body_word2vec", "tensor"
-                    )
-                )
-        elif RANK_PROFILE_EMBEDDING[rank_profile] == "gse":
-            body.update({"ranking.features.query(tensor_gse)": str(embedding)})
-            if ann == "title":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "title_gse", "tensor_gse"
-                    )
-                )
-            elif ann == "body":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "body_gse", "tensor_gse"
-                    )
-                )
-            elif ann == "title_body":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{})) or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "title_gse", "tensor_gse", "body_gse", "tensor_gse"
-                    )
-                )
-        elif RANK_PROFILE_EMBEDDING[rank_profile] == "bert":
-            body.update({"ranking.features.query(tensor_bert)": str(embedding)})
-            if ann == "title":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "title_bert", "tensor_bert"
-                    )
-                )
-            elif ann == "body":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "body_bert", "tensor_bert"
-                    )
-                )
-            elif ann == "title_body":
-                yql = (
-                    yql
-                    + ' or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{})) or ([{{"targetNumHits": 1000, "label": "nns"}}]nearestNeighbor({},{}))'.format(
-                        "title_bert", "tensor_bert", "body_bert", "tensor_bert"
-                    )
-                )
-        else:
-            raise NotImplementedError
-
-    yql = yql + ";"
-    body.update({"yql": yql})
-    return body
-
-
-def vespa_search(vespa_url, vespa_port, body):
-
-    r = post(vespa_url + ":" + vespa_port + "/search/", json=body)
-    return r.json()
 
 
 if __name__ == "__main__":
