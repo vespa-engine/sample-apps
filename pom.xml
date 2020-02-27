@@ -21,5 +21,6 @@
         <module>tensor-playground</module>
         <module>text-search</module>
         <module>use-case-shopping</module>
+        <module>vespa-cloud/album-recommendation-java</module>
     </modules>
 </project>
