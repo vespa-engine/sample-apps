@@ -6,6 +6,9 @@ Once deployed, try the Tensor Playground:
 
     http://localhost:8080/playground/index.html
 
+Find tensor math examples in the [Tensor User Guide](http://localhost:4000/documentation/tensor-user-guide.html#tensor-examples).
+
+<hr/>
 
 **Check-out, compile and run:**
 <pre data-test="exec">
@@ -24,7 +27,7 @@ $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationSt
 $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/tensor-playground/target/application.zip && \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
-**Wait for the application to start:**
+**Wait for the application to start - then try the examples in the guide:**
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
