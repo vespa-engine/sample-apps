@@ -10,7 +10,6 @@
     <description>Parent artifact for all Java Vespa sample apps.</description>
 
     <modules>
-        <module>album-recommendation-java</module>
         <module>blog-recommendation</module>
         <module>boolean-search</module>
         <module>generic-request-processing</module>
