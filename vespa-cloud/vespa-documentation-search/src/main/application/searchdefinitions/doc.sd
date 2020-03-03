@@ -24,6 +24,11 @@ search doc {
             indexing: summary | attribute
         }
 
+        # e.g. open, cloud
+        field namespace type string {
+            indexing: summary | attribute
+        }
+        
     }
 
     fieldset default {
