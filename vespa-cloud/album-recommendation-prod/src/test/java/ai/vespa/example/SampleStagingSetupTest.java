@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @StagingSetup
 class SampleStagingSetupTest {
 
-    private final Endpoint endpoint = TestRuntime.get().deploymentToTest().endpoint("default");
+    private final Endpoint endpoint = TestRuntime.get().deploymentToTest().endpoint("container");
 
     @Test
     void test_instance_running() {
