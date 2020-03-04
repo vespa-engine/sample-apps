@@ -49,3 +49,4 @@ jobs:
            -DauthorEmail="$(git log -1 --format=%aE)" \
            -DapiKey="${VESPA_TEAM_API_KEY}"
 
+
