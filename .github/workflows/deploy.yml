@@ -38,7 +38,7 @@ jobs:
     # Deploy to Vespa Cloud!
     - name: Deploy with Maven
       env:
-        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
       working-directory: ./vespa-cloud/vespa-documentation-search
       run: |
         mvn -B vespa:submit \
@@ -48,5 +48,3 @@ jobs:
            -Dcommit="$(git rev-parse HEAD)" \
            -DauthorEmail="$(git log -1 --format=%aE)" \
            -DapiKey="${VESPA_TEAM_API_KEY}"
-
-
