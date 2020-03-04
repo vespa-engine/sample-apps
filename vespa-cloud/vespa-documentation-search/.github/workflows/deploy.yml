@@ -1,0 +1,48 @@
+name: Deploy to Vespa Cloud
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    # Check out the source code from the repository
+    - uses: actions/checkout@v1
+
+    # Make sure we use the correct version of Java (11)
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11.x
+    
+    # Cache the Maven repository to speed up builds
+    - name: Cache Maven repository
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.OS }}-maven
+        restore-keys: |
+          ${{ runner.OS }}-maven
+    
+    # Prepare build by finding the Vespa version to build against
+    - name: Prepare building
+      env:
+        VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
+      run: mvn -B clean vespa:compileVersion -DapiKey="${VESPA_TEAM_API_KEY}"
+    
+    # Build the application package and the tester bundle
+    - name: Build with Maven
+      run: mvn -B -P fat-test-application package 
+    
+    # Deploy to Vespa Cloud!
+    - name: Deploy with Maven
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      run: |
+        mvn -B vespa:submit \
+           -Dvespaversion="$(cat target/vespa.compile.version)" \
+           -Drepository="$(git config --get remote.origin.url)" \
+           -Dbranch="$(git rev-parse --abbrev-ref HEAD)" \
+           -Dcommit="$(git rev-parse HEAD)" \
+           -DauthorEmail="$(git log -1 --format=%aE)" \
+           -DapiKey="${VESPA_TEAM_API_KEY}"
+
