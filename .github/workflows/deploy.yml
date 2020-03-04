@@ -1,5 +1,7 @@
 name: Deploy to Vespa Cloud
-on: [push]
+on:
+  push:
+    branches: [ master ]
 
 jobs:
   deploy:
