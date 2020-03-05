@@ -1,10 +1,7 @@
-import json
-import os
+import re
 from requests import post
 from time import time
 from embedding import create_document_embedding
-
-
 
 
 def parse_vespa_json(data):
@@ -33,7 +30,7 @@ def evaluate(
     vespa_port,
     hits,
     model=None,
-    limit_position_count = 10
+    limit_position_count=10,
 ):
     rank_name = (
         str(parsed_rank_profile)
@@ -101,6 +98,7 @@ def evaluate(
 
 def create_weakAND_operator(query, target_hits=1000):
 
+    query = re.sub(" +", " ", query)  # remove multiple spaces
     query_tokens = query.strip().split(" ")
     terms = ", ".join(['default contains "' + token + '"' for token in query_tokens])
     return '([{"targetNumHits": ' + str(target_hits) + "}]weakAnd(" + terms + "))"
