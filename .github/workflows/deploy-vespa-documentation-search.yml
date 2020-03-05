@@ -1,32 +1,28 @@
-name: Deploy to Vespa Cloud
+name: Deploy vespa-documentation-search to Vespa Cloud
 on:
   push:
     branches: [ master ]
+
+# See https://cloud.vespa.ai/automated-deployments for details
+# The ${VESPA_TEAM_API_KEY} is a secret in this repository -
+# this is used to deploy applications to Vespa Cloud
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+
     # Check out the source code from the repository
     - uses: actions/checkout@v1
 
-    # Make sure we use the correct version of Java (11)
+    # Vespa uses Java 11
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11.x
     
-    # Cache the Maven repository to speed up builds
-    - name: Cache Maven repository
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.OS }}-maven
-        restore-keys: |
-          ${{ runner.OS }}-maven
-    
-    # Prepare build by finding the Vespa version to build against
-    - name: Prepare building
+    # Find Vespa version of current production deployment
+    - name: Find compile version
       env:
         VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
       working-directory: ./vespa-cloud/vespa-documentation-search
@@ -37,7 +33,7 @@ jobs:
       working-directory: ./vespa-cloud/vespa-documentation-search
       run: mvn -B -P fat-test-application package 
     
-    # Deploy to Vespa Cloud!
+    # Deploy to Vespa Cloud
     - name: Deploy with Maven
       env:
         VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
