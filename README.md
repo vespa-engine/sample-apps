@@ -76,3 +76,5 @@ to the Vespa sample applications.
 ----
 
 Travis-CI build status: [![Build Status](https://travis-ci.org/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.org/vespa-engine/sample-apps)
+
+![Deploy vespa-documentation-search to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20vespa-documentation-search%20to%20Vespa%20Cloud/badge.svg?branch=master)
