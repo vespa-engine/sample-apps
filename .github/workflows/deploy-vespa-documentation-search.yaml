@@ -13,7 +13,7 @@ jobs:
     steps:
 
     # Check out the source code from the repository
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     # Vespa uses Java 11
     - name: Set up JDK 11
