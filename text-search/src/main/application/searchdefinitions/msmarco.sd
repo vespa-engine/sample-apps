@@ -241,6 +241,12 @@ search msmarco {
         function dot_product_body_gse() {
             expression: sum(query(tensor_gse)*attribute(body_gse))
         }
+        function dot_product_title_bert() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
+        }
+        function dot_product_body_bert() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
+        }
         first-phase {
             expression: random
         }
@@ -254,6 +260,8 @@ search msmarco {
             rankingExpression(dot_product_body_word2vec)
             rankingExpression(dot_product_title_gse)
             rankingExpression(dot_product_body_gse)
+            rankingExpression(dot_product_title_bert)
+            rankingExpression(dot_product_body_bert)
         }
     }
 
