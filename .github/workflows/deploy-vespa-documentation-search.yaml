@@ -1,13 +1,16 @@
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
+# See https://cloud.vespa.ai/automated-deployments for details
+# The ${VESPA_TEAM_API_KEY} is a secret in this repository -
+# this is used to deploy applications to Vespa Cloud
+
 name: Deploy vespa-documentation-search to Vespa Cloud
 on:
   push:
     branches: [ master ]
 
-# See https://cloud.vespa.ai/automated-deployments for details
-# The ${VESPA_TEAM_API_KEY} is a secret in this repository -
-# this is used to deploy applications to Vespa Cloud
+env:
+  VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
 
 jobs:
   deploy:
@@ -25,8 +28,6 @@ jobs:
     
     # Find Vespa version of current production deployment
     - name: Find compile version
-      env:
-        VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
       working-directory: ./vespa-cloud/vespa-documentation-search
       run: mvn -B clean vespa:compileVersion -DapiKey="${VESPA_TEAM_API_KEY}"
     
@@ -37,8 +38,6 @@ jobs:
     
     # Deploy to Vespa Cloud
     - name: Deploy with Maven
-      env:
-        VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
       working-directory: ./vespa-cloud/vespa-documentation-search
       run: |
         mvn -B vespa:submit \
