@@ -1,3 +1,2 @@
 <validation-overrides>
-  <allow until="2020-03-07">deployment-removal</allow>
 </validation-overrides>
