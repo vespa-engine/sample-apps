@@ -6,7 +6,7 @@
     <client-authorize />
     <document-api />
     <search />
-    <nodes count="1" />
+    <nodes count="2" />
   </container>
 
   <content id="music" version="1.0">
@@ -14,7 +14,7 @@
     <documents>
       <document type="music" mode="index" />
     </documents>
-    <nodes count="1" />
+    <nodes count="2" />
   </content>
 
 </services>
