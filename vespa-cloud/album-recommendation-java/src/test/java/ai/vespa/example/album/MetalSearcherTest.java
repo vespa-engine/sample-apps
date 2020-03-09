@@ -19,7 +19,6 @@ import com.yahoo.search.searchchain.testutil.DocumentSourceSearcher;
 import com.yahoo.search.yql.MinimalQueryInserter;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -78,7 +77,6 @@ class MetalSearcherTest {
 
 
     @Test
-    @Disabled
     void testAddedOrTerm2() {
 
         try (Application app = Application.fromApplicationPackage(
