@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @StagingTest
-class SampleStagingTeset {
+class SampleStagingTest {
 
     private final Endpoint endpoint = TestRuntime.get().deploymentToTest().endpoint("container");
 
