@@ -59,6 +59,26 @@
         <nodes count="2" />
     </container>
 
+
+    <container id="combined" version="1.0">
+        <search>
+            <chain id="metalchain" inherits="vespa">
+                <searcher id="ai.vespa.example.album.MetalSearcher" bundle="albums" after="MinimalQueryInserter">
+                    <config name="ai.vespa.example.album.metal-names">
+                        <metalWords>
+                            <item>hetfield</item>
+                            <item>metallica</item>
+                            <item>pantera</item>
+                        </metalWords>
+                    </config>
+                </searcher>
+            </chain>
+        </search>
+        <document-api />
+        <nodes of="music"/>
+    </container>
+
+
     <!--
         <content /> describes the stateful contant nodes in Vespa.  Here all your documents are stored
         and distributed across the nodes in the cluster.
