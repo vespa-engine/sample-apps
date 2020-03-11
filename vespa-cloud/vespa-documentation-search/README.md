@@ -82,7 +82,7 @@ exports.handler = async (event, context) => {
         cert: publicCert
     }
 
-    var body = "";
+    var body = '';
     const response = await new Promise((resolve, reject) => {
         const req = https.get(
             options,
