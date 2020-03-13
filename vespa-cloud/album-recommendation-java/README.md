@@ -25,13 +25,13 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 
 1.  Download sample apps:
     ```sh
-    $ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/album-recommendation-java
+    $ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/vespa-cloud/album-recommendation-java
     ```
 
 1.  Get a X.509 certificate and private key. Create a self-signed certificate / private key:
     ```sh
     $ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
-    -subj "/C=NO/ST=Trondheim/L=Trondheim/O=My Company/OU=My Department/CN=example.com" \
+    -subj "/CN=example.com" \
     -keyout data-plane-private-key.pem -out data-plane-public-cert.pem
     ```
 
@@ -42,9 +42,10 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 
 1.  Go to http://console.vespa.ai/, choose tenant and click _Keys_ to generate and save the _personal API key_.
     The key is saved to `$HOME/Downloads/TENANTNAME.pem`.
-    Then click "Create application"
+    Then click "Create application" - use any name for the application.
 
-1.  Edit the properties `tenant` and `application` in `pom.xml` — use the values entered in the console in 4.
+1.  Edit the properties `tenant` and `application` in `pom.xml` —
+    use the values entered in the console in 4.
  
 1.  Build the app and deploy it to the `dev` environment and wait for it to start -
     update the `apiKeyFile` to be the file you downloaded above:
@@ -56,14 +57,9 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
     as first time deployments takes a few minutes.
     Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
     The endpoint URL is printed in the _Install application_ section when the deployment is successful -
-    copy this for the next step.
-
-1.  Store the endpoint of the application:
+    store this for later steps and test it (the massive JSON output is expected):
     ```sh
     $ ENDPOINT=https://end.point.name
-    ```
-    Try the endpoint:
-    ```sh
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem $ENDPOINT
     ```
 
@@ -80,7 +76,7 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
       $ENDPOINT/document/v1/mynamespace/music/docid/3
     ```
 
-1.  [Visit](https://docs.vespa.ai/documentation/content/visiting.html) documents:
+1.  [Visit](https://docs.vespa.ai/documentation/content/visiting.html) documents (i.e. dump all):
     ```sh
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
       "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
