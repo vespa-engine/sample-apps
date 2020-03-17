@@ -1,7 +1,8 @@
 # Vespa Documentation Search
+Vespa Cloud instance for searching Vespa.ai and Vespa Cloud documentation.
 
-Vespa Cloud instance for searching Vespa documentation.
-Serves both Vespa open source and (coming soon: Vespa Cloud documentation).
+This sample app is auto-deployed to Vespa Cloud,
+see [deploy-vespa-documentation-search.yaml](https://github.com/vespa-engine/sample-apps/blob/master/.github/workflows/deploy-vespa-documentation-search.yaml)
 
 
 ## Components
