@@ -24,7 +24,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>MYTENANT</tenant>                                 <!-- Name from the web console -->
-        <application>MYAPP</application>                          <!-- Name from the web console -->
+        <tenant>vespa-team</tenant>                                 <!-- Name from the web console -->
+        <application>album-rec-java</application>                   <!-- Name from the web console -->
     </properties>
 </project>
