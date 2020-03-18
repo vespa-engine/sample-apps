@@ -56,7 +56,8 @@ $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 
 1.  Alternatively, put the key in an environment variable:
 <pre data-test="exec">
-$ mvn clean package vespa:deploy -DapiKey="$VESPA_TEAM_API_KEY"
+$ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
+$ mvn clean package vespa:deploy -DapiKey="$API_KEY"
 </pre>
 
 1.  Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
