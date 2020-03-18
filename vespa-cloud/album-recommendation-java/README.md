@@ -24,7 +24,6 @@ Security notes:
 Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 
 1.  Download sample apps:
-
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git && \
   cd sample-apps/vespa-cloud/album-recommendation-java && git checkout kkraune/auto-testing
@@ -54,8 +53,10 @@ $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/ma
 <pre>
 $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 </pre>
+
+1.  Alternatively, put the key in an environment variable:
 <pre data-test="exec">
-$ mvn clean package vespa:deploy -DapiKey=$VESPA_TEAM_API_KEY
+$ mvn clean package vespa:deploy -DapiKey="$VESPA_TEAM_API_KEY"
 </pre>
 
 1.  Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
@@ -64,7 +65,9 @@ $ mvn clean package vespa:deploy -DapiKey=$VESPA_TEAM_API_KEY
     The endpoint URL is printed in the _Install application_ section when the deployment is successful -
     store this for later steps and test it (the massive JSON output is expected):
 <pre data-test="exec">
-$ ENDPOINT=https://end.point.name
+$ ENDPOINT=https://default.album-rec-java.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
+</pre>
+<pre>
 $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem $ENDPOINT
 </pre>
 
