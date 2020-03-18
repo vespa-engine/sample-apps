@@ -26,7 +26,7 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 1.  Download sample apps:
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git && \
-  cd sample-apps/vespa-cloud/album-recommendation-java && git checkout kkraune/auto-testing
+  cd sample-apps/vespa-cloud/album-recommendation-java
 </pre>
 
 1.  Get a X.509 certificate and private key. Create a self-signed certificate / private key:
@@ -50,6 +50,9 @@ $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/ma
  
 1.  Build the app and deploy it to the `dev` environment and wait for it to start -
     update the `apiKeyFile` to be the file you downloaded above:
+<pre>
+$ yum install -y openssl
+</pre>
 <pre>
 $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 </pre>
