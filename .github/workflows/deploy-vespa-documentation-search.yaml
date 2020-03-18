@@ -11,7 +11,6 @@ on:
 
 env:
   VESPA_TEAM_API_KEY: ${{ secrets.VESPA_TEAM_API_KEY }}
-  working-directory: ./vespa-cloud/vespa-documentation-search
 
 jobs:
   deploy:
@@ -29,14 +28,17 @@ jobs:
     
     # Find Vespa version of current production deployment
     - name: Find compile version
+      working-directory: ./vespa-cloud/vespa-documentation-search
       run: mvn -B clean vespa:compileVersion -DapiKey="${VESPA_TEAM_API_KEY}"
     
     # Build the application package and the tester bundle
     - name: Build with Maven
+      working-directory: ./vespa-cloud/vespa-documentation-search
       run: mvn -B -P fat-test-application package 
     
     # Deploy to Vespa Cloud
     - name: Deploy with Maven
+      working-directory: ./vespa-cloud/vespa-documentation-search
       run: |
         mvn -B vespa:submit \
            -Dvespaversion="$(cat target/vespa.compile.version)" \
