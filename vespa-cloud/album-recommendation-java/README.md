@@ -24,21 +24,22 @@ Security notes:
 Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
 
 1.  Download sample apps:
-    ```sh
-    $ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps/vespa-cloud/album-recommendation-java
-    ```
+<pre data-test="exec">
+$ git clone https://github.com/vespa-engine/sample-apps.git && \
+  cd sample-apps/vespa-cloud/album-recommendation-java && git checkout kkraune/auto-testing
+</pre>
 
 1.  Get a X.509 certificate and private key. Create a self-signed certificate / private key:
-    ```sh
-    $ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
-    -subj "/CN=example.com" \
-    -keyout data-plane-private-key.pem -out data-plane-public-cert.pem
-    ```
+<pre data-test="exec">
+$ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
+  -subj "/CN=example.com" \
+  -keyout data-plane-private-key.pem -out data-plane-public-cert.pem
+</pre>
 
 1.  Add certificate to application package (it must be copied as _clients.pem_):
-    ```sh
-    $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/main/application/security/clients.pem
-    ```
+<pre data-test="exec">
+$ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/main/application/security/clients.pem
+</pre>
 
 1.  Go to http://console.vespa.ai/, choose tenant and click _Keys_ to generate and save the _personal API key_.
     The key is saved to `$HOME/Downloads/TENANTNAME.pem`.
@@ -49,49 +50,56 @@ Prerequisites: git, Java 11, mvn 3.6.1 and openssl.
  
 1.  Build the app and deploy it to the `dev` environment and wait for it to start -
     update the `apiKeyFile` to be the file you downloaded above:
-    ```sh
-    $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
-    ```
+<pre>
+$ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
+</pre>
+
+1.  Alternatively, put the key in an environment variable:
+<pre data-test="exec">
+$ mvn clean package vespa:deploy -DapiKey="$VESPA_TEAM_API_KEY"
+</pre>
 
 1.  Now is a good time to read [http://cloud.vespa.ai/automated-deployments](automated-deployments),
     as first time deployments takes a few minutes.
     Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
     The endpoint URL is printed in the _Install application_ section when the deployment is successful -
     store this for later steps and test it (the massive JSON output is expected):
-    ```sh
-    $ ENDPOINT=https://end.point.name
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem $ENDPOINT
-    ```
+<pre data-test="exec">
+$ ENDPOINT=https://default.album-rec-java.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
+</pre>
+<pre>
+$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem $ENDPOINT
+</pre>
 
 1.  Feed documents:
-    ```sh
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
-      -H "Content-Type:application/json" --data-binary @src/test/resources/A-Head-Full-of-Dreams.json \
-      $ENDPOINT/document/v1/mynamespace/music/docid/1
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
-      -H "Content-Type:application/json" --data-binary @src/test/resources/Love-Is-Here-To-Stay.json \
-      $ENDPOINT/document/v1/mynamespace/music/docid/2
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
-      -H "Content-Type:application/json" --data-binary @src/test/resources/Hardwired...To-Self-Destruct.json \
-      $ENDPOINT/document/v1/mynamespace/music/docid/3
-    ```
+<pre data-test="exec">
+$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+  -H "Content-Type:application/json" --data-binary @src/test/resources/A-Head-Full-of-Dreams.json \
+  $ENDPOINT/document/v1/mynamespace/music/docid/1
+$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+  -H "Content-Type:application/json" --data-binary @src/test/resources/Love-Is-Here-To-Stay.json \
+  $ENDPOINT/document/v1/mynamespace/music/docid/2
+$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+  -H "Content-Type:application/json" --data-binary @src/test/resources/Hardwired...To-Self-Destruct.json \
+  $ENDPOINT/document/v1/mynamespace/music/docid/3
+</pre>
 
 1.  [Visit](https://docs.vespa.ai/documentation/content/visiting.html) documents (i.e. dump all):
-    ```sh
+<pre data-test="exec">
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
       "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
-    ```
+</pre>
     
 1.  Recommend albums, send user profile in query:
-    ```sh
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
-      "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
-    ```
+<pre data-test="exec">
+$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+  "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
+</pre>
     Limit to albums with the term "to" in title:
-    ```sh
+<pre data-test="exec">
     $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
       "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20album%20contains%20%22to%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
-    ```
+</pre>
 
 1.  At this point, the application is built, unit tested, deployed to a _dev_ instance, fed to and a few test queries have been run.
     Safe deployments depends on automated testing.
