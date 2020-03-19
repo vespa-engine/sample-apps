@@ -59,6 +59,9 @@ $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 $ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
 </pre>
 <pre data-test="exec">
+$ echo "$API_KEY"
+</pre>
+<pre data-test="exec">
 $ mvn clean package vespa:deploy -DapiKey="$API_KEY"
 </pre>
 
@@ -68,7 +71,7 @@ $ mvn clean package vespa:deploy -DapiKey="$API_KEY"
     The endpoint URL is printed in the _Install application_ section when the deployment is successful -
     store this for later steps and test it (the massive JSON output is expected):
 <pre data-test="exec">
-$ ENDPOINT=https://default.album-rec-java.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
+$ ENDPOINT=https://root.album-rec-java.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
 </pre>
 <pre>
 $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem $ENDPOINT
