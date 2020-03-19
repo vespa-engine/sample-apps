@@ -56,13 +56,7 @@ $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 
 1.  Alternatively, put the key in an environment variable:
 <pre data-test="exec">
-$ export API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
-</pre>
-<pre data-test="exec">
-$ echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d
-</pre>
-<pre data-test="exec">
-$ echo "$API_KEY"
+$ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
 </pre>
 <pre data-test="exec">
 $ mvn clean package vespa:deploy -DapiKey="$API_KEY"
@@ -72,7 +66,7 @@ $ mvn clean package vespa:deploy -DapiKey="$API_KEY"
     as first time deployments takes a few minutes.
     Seeing CERTIFICATE_NOT_READY / PARENT_HOST_NOT_READY / LOAD_BALANCER_NOT_READY is normal.
     The endpoint URL is printed in the _Install application_ section when the deployment is successful -
-    store this for later steps and test it (the massive JSON output is expected):
+    store this (change _root_ to actual name) for later steps and test it (the massive JSON output is expected):
 <pre data-test="exec">
 $ ENDPOINT=https://root.album-rec-java.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
 </pre>
