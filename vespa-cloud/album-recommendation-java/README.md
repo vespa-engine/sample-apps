@@ -55,11 +55,10 @@ $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 </pre>
 
 1.  Alternatively, put the key in an environment variable:
-<pre data-test="exec"> <!-- temp workaround -->
-$ yum install -y openssl
-</pre>
 <pre data-test="exec">
 $ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
+</pre>
+<pre data-test="exec">
 $ mvn clean package vespa:deploy -DapiKey="$API_KEY"
 </pre>
 
