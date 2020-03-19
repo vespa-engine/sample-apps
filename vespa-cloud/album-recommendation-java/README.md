@@ -51,13 +51,13 @@ $ mkdir -p src/main/application/security && cp data-plane-public-cert.pem src/ma
 1.  Build the app and deploy it to the `dev` environment and wait for it to start -
     update the `apiKeyFile` to be the file you downloaded above:
 <pre>
-$ yum install -y openssl
-</pre>
-<pre>
 $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 </pre>
 
 1.  Alternatively, put the key in an environment variable:
+<pre data-test="exec"> <!-- temp workaround -->
+$ yum install -y openssl
+</pre>
 <pre data-test="exec">
 $ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
 $ mvn clean package vespa:deploy -DapiKey="$API_KEY"
