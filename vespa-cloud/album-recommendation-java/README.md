@@ -56,7 +56,10 @@ $ mvn clean package vespa:deploy -DapiKeyFile=$HOME/Downloads/TENANTNAME.pem
 
 1.  Alternatively, put the key in an environment variable:
 <pre data-test="exec">
-$ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
+$ export API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
+</pre>
+<pre data-test="exec">
+$ echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d
 </pre>
 <pre data-test="exec">
 $ echo "$API_KEY"
