@@ -75,32 +75,32 @@ $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem $ENDPO
 </pre>
 
 1.  Feed documents:
-<pre data-test="exec">
-$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::">
+$ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
   -H "Content-Type:application/json" --data-binary @src/test/resources/A-Head-Full-of-Dreams.json \
   $ENDPOINT/document/v1/mynamespace/music/docid/1
-$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+  $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
   -H "Content-Type:application/json" --data-binary @src/test/resources/Love-Is-Here-To-Stay.json \
   $ENDPOINT/document/v1/mynamespace/music/docid/2
-$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+  $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
   -H "Content-Type:application/json" --data-binary @src/test/resources/Hardwired...To-Self-Destruct.json \
   $ENDPOINT/document/v1/mynamespace/music/docid/3
 </pre>
 
 1.  [Visit](https://docs.vespa.ai/documentation/content/visiting.html) documents (i.e. dump all):
-<pre data-test="exec">
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::">
+$ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
       "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
 </pre>
     
 1.  Recommend albums, send user profile in query:
-<pre data-test="exec">
-$ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::">
+$ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
   "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
 </pre>
     Limit to albums with the term "to" in title:
-<pre data-test="exec">
-    $ curl --cert data-plane-public-cert.pem --key data-plane-private-key.pem \
+<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::">
+$ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
       "$ENDPOINT/search/?ranking=rank_albums&yql=select%20%2A%20from%20sources%20%2A%20where%20album%20contains%20%22to%22%3B&ranking.features.query(user_profile)=%7B%7Bcat%3Apop%7D%3A0.8%2C%7Bcat%3Arock%7D%3A0.2%2C%7Bcat%3Ajazz%7D%3A0.1%7D"
 </pre>
 
