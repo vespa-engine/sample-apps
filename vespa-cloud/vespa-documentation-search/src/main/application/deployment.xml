@@ -8,7 +8,6 @@
         <endpoints>
             <endpoint container-id="default">
                 <region>aws-us-east-1c</region>
-                <region>aws-ap-northeast-1a</region>
             </endpoint>
         </endpoints>
 
