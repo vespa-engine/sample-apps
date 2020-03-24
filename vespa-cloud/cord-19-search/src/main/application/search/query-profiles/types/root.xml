@@ -1,0 +1,3 @@
+<query-profile-type id="root" inherits="native">
+  <field name="ranking.features.query(vector)" type="tensor&lt;float&gt;(x[768])" />
+</query-profile-type>

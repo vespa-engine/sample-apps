@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <container id="default" version="1.0">
+        <document-api />
+        <search/>
+        <nodes count="2">
+          <resources memory="32Gb" vcpu="16" disk="100Gb" disk-speed="fast" /> 
+        </nodes>
+    </container>
+
+    <content id="content" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="doc" mode="index" />
+        </documents>
+        <nodes count="2">
+          <resources memory="32Gb" vcpu="16" disk="100Gb" disk-speed="fast" />
+        </nodes>
+    </content>
+</services>

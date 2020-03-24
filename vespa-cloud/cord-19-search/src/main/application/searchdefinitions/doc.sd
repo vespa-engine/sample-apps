@@ -1,0 +1,174 @@
+search doc {
+  document doc { 
+
+    struct author {
+      field first type string {}
+      field last type string {}
+      field middle type string {}
+      field suffix type string {}
+      field email type string {}
+    }
+
+    struct bibentry {
+      field ref_id type string {}
+      field title type string {}
+      field year type int{}
+      field issn type string{}
+    }
+
+    field datestring type string {
+      indexing: summary 
+    }
+
+    field timestamp type long {
+      indexing: summary|attribute
+    }
+
+    field license type string {
+      indexing: summary|attribute
+    }
+
+    field source type string {
+      indexing: summary|attribute
+    }
+
+    field journal type string {
+      indexing: summary|attribute
+    }
+
+    field pmcid type string {
+      indexing: summary
+    }
+
+    field pubmed_id type long {
+      indexing: summary | attribute
+    }
+
+    field who_covidence type string {
+      indexing: summary
+    }
+
+    field has_full_text type bool {
+      indexing: summary|attribute
+    }
+
+    field doi type string {
+      indexing: summary 
+    }
+
+    field id type int {
+      indexing: summary|index 
+      match:word
+    }
+
+    field title type string {
+      indexing: summary|index 
+    }
+
+    field abstract type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field introduction type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field background type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field discussion type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field conclusions type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field methods type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field results type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field body_text type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field authors type array<author> {
+      indexing: summary
+      struct-field first { indexing: attribute }
+      struct-field last { indexing: attribute }
+    }
+
+    field bib_entries type array<bibentry> {
+      indexing: summary
+      struct-field ref_id { indexing: attribute }
+      struct-field title { indexing: attribute }
+      struct-field year { indexing: attribute }
+    }
+
+    field abstract_embedding type tensor<float>(x[768]) {
+      indexing: attribute
+    }
+
+    field title_embedding type tensor<float>(x[768]) {
+      indexing: attribute
+    }
+
+  }
+
+  fieldset default {
+    fields: title, abstract 
+  }
+
+  fieldset all {
+    fields: title, abstract, body_text 
+  }
+
+  document-summary full  {
+    summary title type string {
+      source:title
+      full
+    }  
+    summary id type int {
+      source:id  
+      full
+    }  
+    summary abstract type string {
+      source: abstract
+      full
+    }  
+    summary body_text type string {
+      source: body_text 
+      full
+    }  
+  }
+   rank-profile bm25 inherits default {
+    first-phase {
+      expression: 0.60*bm25(title) + 0.30*bm25(abstract) + 0.10*bm25(body_text)
+    }
+  }
+
+  rank-profile semantic-search-abstract {
+    first-phase {
+      expression:rawScore(abstract_embedding)
+    }
+  }
+
+  rank-profile semantic-search-title {
+    first-phase {
+      expression:rawScore(title_embedding)
+    }
+  }
+}
