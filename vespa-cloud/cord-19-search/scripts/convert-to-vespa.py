@@ -139,7 +139,8 @@ def produce_vespa_json(idx, row):
       'who_covidence': who_covidence,
       'has_full_text': has_full_text,
       'abstract_embedding': { 'values':None},
-      'title_embedding': { 'values':None}
+      'title_embedding': { 'values':None},
+      'cited_by': []
     } 
   }
   if abstract:
@@ -154,7 +155,7 @@ def produce_vespa_json(idx, row):
   else:
     vespa_doc['fields'].pop('title_embedding', None)
 
-  print(json.dumps(vespa_doc))
+  return vespa_doc
 
 META_FILE = sys.argv[1]
 SCIBERT_MODEL = sys.argv[2]
@@ -164,8 +165,19 @@ model = SentenceTransformer(SCIBERT_MODEL)
 
 df = pandas.read_csv(META_FILE)
 df = df.fillna("notvalid")
+docs = {}
 for idx, row in df.iterrows():
-  produce_vespa_json(idx,row)
+  doc = produce_vespa_json(idx,row)
+  docs[doc['fields']['title']] = doc
+
+for title in docs.keys():
+  doc = docs[title]
+  for ref in doc['fields']['bib_entries']:
+    if ref['title'] in docs.keys():
+      docs[ref['title']]['fields']['cited_by'].append(doc['fields']['id'])
+
+for doc in docs.values():
+  print(json.dumps(doc))
 
 
 
