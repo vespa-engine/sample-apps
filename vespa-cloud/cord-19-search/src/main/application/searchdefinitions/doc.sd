@@ -85,7 +85,7 @@ search doc {
       summary: dynamic
     }
 
-    field conclusions type string {
+    field conclusion type string {
       indexing: summary|index 
       summary: dynamic
     }
@@ -138,19 +138,23 @@ search doc {
 
   document-summary full  {
     from-disk
-    summary title type string {
+
+    summary title-full type string {
       source:title
       full
     }  
+
     summary id type int {
       source:id  
       full
     }  
-    summary abstract type string {
+
+    summary abstract-full type string {
       source: abstract
       full
     }  
-    summary body_text type string {
+
+    summary body_text-full type string {
       source: body_text 
       full
     }  
