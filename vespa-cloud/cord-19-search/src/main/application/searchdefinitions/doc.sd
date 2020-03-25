@@ -57,8 +57,8 @@ search doc {
     }
 
     field id type int {
-      indexing: summary|index 
-      match:word
+      indexing: summary|attribute
+      attribute:fast-search
     }
 
     field title type string {
@@ -137,6 +137,7 @@ search doc {
   }
 
   document-summary full  {
+    from-disk
     summary title type string {
       source:title
       full
@@ -154,6 +155,7 @@ search doc {
       full
     }  
   }
+
    rank-profile bm25 inherits default {
     first-phase {
       expression: 0.60*bm25(title) + 0.30*bm25(abstract) + 0.10*bm25(body_text)
