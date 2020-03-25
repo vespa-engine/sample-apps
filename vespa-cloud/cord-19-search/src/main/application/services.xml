@@ -11,6 +11,11 @@
     </container>
 
     <content id="content" version="1.0">
+      <config name="vespa.config.search.summary.juniperrc">
+        <length>512</length>
+        <max_matches>4</max_matches>
+      </config>
+
         <redundancy>1</redundancy>
         <documents>
             <document type="doc" mode="index" />
