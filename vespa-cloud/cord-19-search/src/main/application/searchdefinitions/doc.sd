@@ -62,6 +62,7 @@ search doc {
     }
 
     field title type string {
+      bolding: true
       indexing: summary|index 
     }
 
