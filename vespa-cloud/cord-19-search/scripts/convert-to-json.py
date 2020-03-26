@@ -44,7 +44,7 @@ def parse_file(dir,sha):
       authors.append(author)
     abstract, abstract_paragraphs = long_text_parse('abstract',data) 
     body, body_paragraphs = long_text_parse('body_text',data) 
-    bib_entries = []
+    bib_entries = {}
     if data.get('bib_entries') != None: 
       bib_entries = data.get('bib_entries')
       bib_entries_array = []
@@ -120,6 +120,7 @@ def produce_vespa_json(idx, row):
     'license': license,
     'datestring': publish_time,
     'doi': 'https://doi.org/%s' % doi, 
+    'raw_doi': doi,
     'authors': authors,
     'bib_entries': bib_entries,
     'abstract': abstract,
