@@ -148,7 +148,7 @@ search doc {
     summary timestamp type long {source:timestamp} 
     summary license type string {source:license}
     summary doi type string {source:doi}
-    summary authors type string {source:authors}
+    summary authors type array<author>{source:authors}
   }
 
   document-summary full  {
