@@ -120,7 +120,6 @@ def produce_vespa_json(idx, row):
     'license': license,
     'datestring': publish_time,
     'doi': 'https://doi.org/%s' % doi, 
-    'raw_doi': doi,
     'authors': authors,
     'bib_entries': bib_entries,
     'abstract': abstract,

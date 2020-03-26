@@ -16,6 +16,18 @@ search doc {
       field issn type string{}
     }
 
+    struct citation {
+      field source_doi type string {}
+      field target_doi type string {}
+      field source_id type int {}
+      field target_id type int {}
+      field context type string {}
+      field pos type float {}
+      field neg type float {}
+      field neu type float {}
+      field type type string {}
+    }
+
     field datestring type string {
       indexing: summary 
     }
@@ -53,7 +65,7 @@ search doc {
     }
 
     field doi type string {
-      indexing: summary 
+      indexing: summary
     }
 
     field id type int {
@@ -117,6 +129,46 @@ search doc {
       struct-field ref_id { indexing: attribute }
       struct-field title { indexing: attribute }
       struct-field year { indexing: attribute }
+    }
+
+    field citations_inbound type array<citation> {
+      indexing: summary
+    }
+
+    field citations_outbound type array<citation> {
+      indexing: summary
+    }
+
+    field citations_supporting type array<string> {
+      indexing: summary | index
+    }
+
+    field citations_contradicting type array<string> {
+      indexing: summary | index
+    }
+
+    field citations_count_total type int {
+      indexing: summary | attribute
+    }
+
+    field citations_count_supporting type int {
+      indexing: summary | attribute
+    }
+
+    field citations_count_contradicting type int {
+      indexing: summary | attribute
+    }
+
+    field citations_sum_positive type float {
+      indexing: summary | attribute
+    }
+
+    field citations_sum_negative type float {
+      indexing: summary | attribute
+    }
+
+    field citations_sum_neutral type float {
+      indexing: summary | attribute
     }
 
     field cited_by type array<int> {
