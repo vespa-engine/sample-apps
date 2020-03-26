@@ -95,7 +95,7 @@ for _, row in citations.iterrows():
     doc = docs[citation['source_doi']]
     doc['citations_outbound'].append(citation)
     citation['source_id'] = doc['id']
-    citation_sources_not_assigned = citation_sources_not_assigned + 1
+    citation_sources_assigned = citation_sources_assigned + 1
   else:
     #print("No document found for citation source doi %s" % citation['source_doi'], file=sys.stderr)
     citation_sources_not_assigned = citation_sources_not_assigned + 1
