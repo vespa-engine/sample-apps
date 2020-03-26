@@ -33,12 +33,14 @@ These are the most important fields in the dataset
 
 
 ## Ranking
-See Vespa's [Ranking documentation](https://docs.vespa.ai/documentation/ranking.html). There are 3 ranking profiles available (&ranking.profile=x)
-There 
+See Vespa's [Ranking documentation](https://docs.vespa.ai/documentation/ranking.html). There are 3 ranking profiles available (&ranking.profile=x).:
+
 |Ranking|Description|
 |---|---|
-|---|---|
+|default|The default Vespa ranking function (nativeRank) which also uses term proximity for multi-term queries|
+|bm25|A weighted combination of bm25(title), bm25(abstract) and bm25(body_text)|
 
+The ranking profiles are defined in the [document definition (doc.sd)](src/main/application/searchdefinition/doc.sd).
 
 ## Example API queries
 
