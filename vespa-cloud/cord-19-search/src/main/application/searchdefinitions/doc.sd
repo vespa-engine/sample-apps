@@ -119,6 +119,10 @@ search doc {
       struct-field year { indexing: attribute }
     }
 
+    field cited_by type array<int> {
+      indexing: summary |attribute
+    }
+
     field abstract_embedding type tensor<float>(x[768]) {
       indexing: attribute
     }
@@ -135,6 +139,16 @@ search doc {
 
   fieldset all {
     fields: title, abstract, body_text 
+  }
+
+  document-summary short {
+    summary title type string {source: title}
+    summary abstract type string {source: abstract}
+    summary id type int {source: id}
+    summary timestamp type long {source:timestamp} 
+    summary license type string {source:license}
+    summary doi type string {source:doi}
+    summary authors type string {source:authors}
   }
 
   document-summary full  {
