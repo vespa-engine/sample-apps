@@ -1,0 +1,249 @@
+#Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. 
+search doc {
+  document doc { 
+
+    struct author {
+      field first type string {}
+      field last type string {}
+      field middle type string {}
+      field suffix type string {}
+      field email type string {}
+    }
+
+    struct bibentry {
+      field ref_id type string {}
+      field title type string {}
+      field year type int{}
+      field issn type string{}
+    }
+
+    struct citation {
+      field source_doi type string {}
+      field target_doi type string {}
+      field source_id type int {}
+      field target_id type int {}
+      field context type string {}
+      field pos type float {}
+      field neg type float {}
+      field neu type float {}
+      field type type string {}
+    }
+
+    field datestring type string {
+      indexing: summary 
+    }
+
+    field timestamp type long {
+      indexing: summary|attribute
+    }
+
+    field license type string {
+      indexing: summary|attribute
+    }
+
+    field source type string {
+      indexing: summary|attribute
+    }
+
+    field journal type string {
+      indexing: summary|attribute
+    }
+
+    field pmcid type string {
+      indexing: summary
+    }
+
+    field pubmed_id type long {
+      indexing: summary | attribute
+    }
+
+    field who_covidence type string {
+      indexing: summary
+    }
+
+    field has_full_text type bool {
+      indexing: summary|attribute
+    }
+
+    field doi type string {
+      indexing: summary
+    }
+
+    field id type int {
+      indexing: summary|attribute
+      attribute:fast-search
+    }
+
+    field title type string {
+      bolding: true
+      indexing: summary|index 
+    }
+
+    field abstract type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field introduction type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field background type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field discussion type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field conclusion type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field methods type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field results type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field body_text type string {
+      indexing: summary|index 
+      summary: dynamic
+    }
+
+    field authors type array<author> {
+      indexing: summary
+      struct-field first { indexing: attribute }
+      struct-field last { indexing: attribute }
+    }
+
+    field bib_entries type array<bibentry> {
+      indexing: summary
+      struct-field ref_id { indexing: attribute }
+      struct-field title { indexing: attribute }
+      struct-field year { indexing: attribute }
+    }
+
+    field citations_inbound type array<citation> {
+      indexing: summary
+    }
+
+    field citations_outbound type array<citation> {
+      indexing: summary
+    }
+
+    field citations_supporting type array<string> {
+      indexing: summary | index
+    }
+
+    field citations_contradicting type array<string> {
+      indexing: summary | index
+    }
+
+    field citations_count_total type int {
+      indexing: summary | attribute
+    }
+
+    field citations_count_supporting type int {
+      indexing: summary | attribute
+    }
+
+    field citations_count_contradicting type int {
+      indexing: summary | attribute
+    }
+
+    field citations_sum_positive type float {
+      indexing: summary | attribute
+    }
+
+    field citations_sum_negative type float {
+      indexing: summary | attribute
+    }
+
+    field citations_sum_neutral type float {
+      indexing: summary | attribute
+    }
+
+    field cited_by type array<int> {
+      indexing: summary |attribute
+    }
+
+    field abstract_embedding type tensor<float>(x[768]) {
+      indexing: attribute
+    }
+
+    field title_embedding type tensor<float>(x[768]) {
+      indexing: attribute
+    }
+
+  }
+
+  fieldset default {
+    fields: title, abstract 
+  }
+
+  fieldset all {
+    fields: title, abstract, body_text 
+  }
+
+  document-summary short {
+    summary title type string {source: title}
+    summary abstract type string {source: abstract}
+    summary journal type string {source: journal}
+    summary id type int {source: id}
+    summary timestamp type long {source:timestamp} 
+    summary license type string {source:license}
+    summary doi type string {source:doi}
+    summary authors type array<author>{source:authors}
+  }
+
+  document-summary full  {
+    from-disk
+
+    summary title-full type string {
+      source:title
+      full
+    }  
+
+    summary id type int {
+      source:id  
+      full
+    }  
+
+    summary abstract-full type string {
+      source: abstract
+      full
+    }  
+
+    summary body_text-full type string {
+      source: body_text 
+      full
+    }  
+  }
+
+   rank-profile bm25 inherits default {
+    first-phase {
+      expression: 0.60*bm25(title) + 0.30*bm25(abstract) + 0.10*bm25(body_text)
+    }
+  }
+
+  rank-profile semantic-search-abstract {
+    first-phase {
+      expression:rawScore(abstract_embedding)
+    }
+  }
+
+  rank-profile semantic-search-title {
+    first-phase {
+      expression:rawScore(title_embedding)
+    }
+  }
+}
