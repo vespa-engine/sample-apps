@@ -42,6 +42,6 @@ jobs:
       working-directory: ./vespa-cloud/cord-19-search
       run: |
         mvn -B vespa:submit \
-           -DsourceUrl="https://github.com/vespa-engine/sample-apps/tree/master/vespa-cloud/cord-19-search/"
+           -DsourceUrl="https://github.com/vespa-engine/sample-apps/tree/master/vespa-cloud/cord-19-search/" \
            -DauthorEmail="$(git log -1 --format=%aE)" \
            -DapiKey="${API_KEY}"
