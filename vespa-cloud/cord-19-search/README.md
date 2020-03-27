@@ -43,8 +43,12 @@ See Vespa's [Ranking documentation](https://docs.vespa.ai/documentation/ranking.
 The ranking profiles are defined in the [document definition (doc.sd)](src/main/application/searchdefinition/doc.sd).
 
 ## Example API queries
+For using the Search Api of Vespa please see  [API documentation](https://docs.vespa.ai/documentation/search-api.html), [YQL Query Language](https://docs.vespa.ai/documentation/query-language.html).
+In the below examples we use python with the requests api, using the POST search api.
+```python
+import requests 
 
-```
+#Search for documents matching all query terms (either in title or abstract)
 search_request_all = {
   'yql': 'select id,title, abstract, doi from sources * where userQuery();',
   'hits': 5,
@@ -55,6 +59,7 @@ search_request_all = {
   'ranking': 'default'
 }
 
+#Search for documents matching any of query terms (either in title or abstract)
 search_request_any = {
   'yql': 'select id,title, abstract, doi from sources * where userQuery();',
   'hits': 5,
@@ -65,6 +70,7 @@ search_request_any = {
   'ranking': 'default'
 }
 
+#Restrict matching to abstract field 
 search_request_all_abstract = {
   'yql': 'select id,title, abstract, doi from sources * where userQuery() and has_full_text=true and timestamp > 1577836800;',
   'default-index': 'abstract',
@@ -76,10 +82,15 @@ search_request_all_abstract = {
   'ranking': 'default'
 }
 
+#Search authors which is an array of struct using sameElement operator
 search_request_authors= {
   'yql': 'select id,authors from sources * where authors contains sameElement(first contains "Keith", last contains "Mansfield");',
   'hits': 5,
   'summary': 'short',
   'timeout': '1.0s',
 }
+
+#Sample request 
+endpoint='https://api.cord19.vespa.ai/default/search/'
+response = requests.post(endpoint, json=search_request_all)
 ```
