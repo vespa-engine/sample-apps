@@ -5,9 +5,6 @@
     <container id="default" version="1.0">
         <document-api />
         <search>
-          <chain id="default" inherits="vespa">
-            <searcher bundle="container-search-and-docproc" id="com.yahoo.search.searchers.RateLimitingSearcher"/>
-          </chain>
         </search>
         <nodes count="2">
           <resources memory="32Gb" vcpu="16" disk="100Gb" disk-speed="fast" /> 
