@@ -4,7 +4,7 @@
 # The ${VESPA_TEAM_VESPACLOUD_CORD_19_API_KEY} is a secret in this repository —
 # this is used to deploy applications to Vespa Cloud
 
-name: Deploy the Vespa CORD-19 search applicationn to Vespa Cloud
+name: Deploy the Vespa CORD-19 search application to Vespa Cloud
 on:
   push:
     branches: [ master ]

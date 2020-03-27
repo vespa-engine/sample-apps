@@ -6,6 +6,8 @@ Vespa application which index the [CORD-19](https://pages.semanticscholar.org/co
 * Frontend:  
 * Full API access: 
 
+[![Deploy the Vespa CORD-19 search application to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20the%20Vespa%20CORD-19%20search%20application%20to%20Vespa%20Cloud/badge.svg)](https://github.com/vespa-engine/sample-apps/actions?query=workflow%3A%22Deploy+the+Vespa+CORD-19+search+application+to+Vespa+Cloud%22)
+
 
 ## API Access  
 For using the Search Api of Vespa please see  [API documentation](https://docs.vespa.ai/documentation/search-api.html), [YQL Query Language](https://docs.vespa.ai/documentation/query-language.html).
