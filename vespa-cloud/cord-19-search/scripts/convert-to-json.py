@@ -68,7 +68,25 @@ def get(df_row, key, defaultValue):
     return defaultValue
   else:
     return value
-  
+
+def fall_back_authors(authors):
+  if not authors:
+    return []
+  json_authors = []
+  for a in authors.split(';'):
+    parts = a.split(',')
+    firstname = None
+    lastname = None
+    if len(parts) < 2:  
+      lastname = parts[0]
+    else:
+      lastname,firstname = parts[0],parts[1]
+    author = {
+      'first': firstname,
+      'last': lastname 
+    }
+    json_authors.append(author)
+  return json_authors 
 
 def produce_vespa_json(idx, row):
   title = get(row,'title',None)
@@ -97,7 +115,11 @@ def produce_vespa_json(idx, row):
   if has_full_text:
     authors, abstract_paragraphs, body_paragraphs, bib_entries, abstract, body = parse_file(full_text_dir,sha)
   else:
-    authors, abstract_paragraphs, body_paragraphs, bib_entries,body = ([], {}, {}, [],'')
+    authors, abstract_paragraphs, body_paragraphs, bib_entries,body = ([], {}, {}, [],None)
+  
+ 
+  if len(authors) == 0: 
+    authors = fall_back_authors(get(row, 'authors',None))
 
   conclusion = ' '.join(body_paragraphs.get('conclusions',[]))
   results = ' '.join(body_paragraphs.get('results',[]))
