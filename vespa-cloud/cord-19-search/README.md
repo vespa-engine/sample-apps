@@ -9,7 +9,7 @@ Vespa application which index the [CORD-19](https://pages.semanticscholar.org/co
 
 ## API Access  
 For using the Search Api of Vespa please see  [API documentation](https://docs.vespa.ai/documentation/search-api.html), [YQL Query Language](https://docs.vespa.ai/documentation/query-language.html).
-For the full document definition see [doc.sd](src/main/application/searchdefinition/doc.sd).
+For the full document definition see [doc.sd](src/main/application/searchdefinitions/doc.sd).
 
 ### High level field description 
 These are the most important fields in the dataset
@@ -40,7 +40,7 @@ See Vespa's [Ranking documentation](https://docs.vespa.ai/documentation/ranking.
 |default|The default Vespa ranking function (nativeRank) which also uses term proximity for multi-term queries|
 |bm25|A weighted combination of bm25(title), bm25(abstract) and bm25(body_text)|
 
-The ranking profiles are defined in the [document definition (doc.sd)](src/main/application/searchdefinition/doc.sd).
+The ranking profiles are defined in the [document definition (doc.sd)](src/main/application/searchdefinitions/doc.sd).
 
 ## Example API queries
 For using the Search Api of Vespa please see  [API documentation](https://docs.vespa.ai/documentation/search-api.html), [YQL Query Language](https://docs.vespa.ai/documentation/query-language.html).
