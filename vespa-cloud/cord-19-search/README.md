@@ -1,4 +1,4 @@
-<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - CORD-19 
 
 Vespa application which index the [CORD-19](https://pages.semanticscholar.org/coronavirus-research) dataset.
@@ -44,3 +44,42 @@ The ranking profiles are defined in the [document definition (doc.sd)](src/main/
 
 ## Example API queries
 
+```
+search_request_all = {
+  'yql': 'select id,title, abstract, doi from sources * where userQuery();',
+  'hits': 5,
+  'summary': 'short',
+  'timeout': '1.0s',
+  'query': 'coronavirus temperature sensitivity',
+  'type': 'all',
+  'ranking': 'default'
+}
+
+search_request_any = {
+  'yql': 'select id,title, abstract, doi from sources * where userQuery();',
+  'hits': 5,
+  'summary': 'short',
+  'timeout': '1.0s',
+  'query': 'coronavirus temperature sensitivity',
+  'type': 'any',
+  'ranking': 'default'
+}
+
+search_request_all_abstract = {
+  'yql': 'select id,title, abstract, doi from sources * where userQuery() and has_full_text=true and timestamp > 1577836800;',
+  'default-index': 'abstract',
+  'hits': 5,
+  'summary': 'short',
+  'timeout': '1.0s',
+  'query': '"sars-cov-2" temperature',
+  'type': 'all',
+  'ranking': 'default'
+}
+
+search_request_authors= {
+  'yql': 'select id,authors from sources * where authors contains sameElement(first contains "Keith", last contains "Mansfield");',
+  'hits': 5,
+  'summary': 'short',
+  'timeout': '1.0s',
+}
+```
