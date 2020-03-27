@@ -3,7 +3,6 @@ import sys
 import json
 import datetime
 from os import path
-from sentence_transformers import SentenceTransformer
 import numpy as np
 
 def long_text_parse(name,md):
@@ -145,8 +144,7 @@ def produce_vespa_json(idx, row):
   return vespa_doc
 
 META_FILE = sys.argv[1]
-SCIBERT_MODEL = sys.argv[2]
-DATA_DIR = sys.argv[3]
+DATA_DIR = sys.argv[2]
 
 df = pandas.read_csv(META_FILE)
 df = df.fillna("notvalid")
