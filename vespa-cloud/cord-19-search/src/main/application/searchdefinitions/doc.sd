@@ -196,6 +196,7 @@ search doc {
   document-summary short {
     summary title type string {source: title}
     summary abstract type string {source: abstract}
+    summary journal type string {source: journal}
     summary id type int {source: id}
     summary timestamp type long {source:timestamp} 
     summary license type string {source:license}
