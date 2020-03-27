@@ -195,6 +195,8 @@ search doc {
   }
 
   document-summary short {
+    from-disk
+
     summary title type string {source: title}
     summary abstract type string {source: abstract}
     summary journal type string {source: journal}
