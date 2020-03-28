@@ -119,4 +119,6 @@ print("Supporting citations assigned: %d" % citation_targets_supporting, file=sy
 print("Contradicting citations assigned: %d" % citation_targets_contradicting, file=sys.stderr)
 print("Citations already found: %d, of intra citations total: %d" % (citations_already_found, intra_citations), file=sys.stderr)
 
-print(json.dumps(list(docs.values()).extend(others)))
+to_print = list(docs.values())
+to_print.extend(others)
+print(json.dumps(to_print))
