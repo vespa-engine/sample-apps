@@ -45,6 +45,10 @@ search doc {
       indexing: summary|attribute
     }
 
+    field dataset_version type string {
+      indexing: summary|attribute
+    }
+
     field journal type string {
       indexing: summary|attribute
     }
@@ -58,7 +62,7 @@ search doc {
     }
 
     field who_covidence type string {
-      indexing: summary
+      indexing: summary | attribute 
     }
 
     field has_full_text type bool {
@@ -70,6 +74,16 @@ search doc {
     }
 
     field id type int {
+      indexing: summary|attribute
+      attribute:fast-search
+    }
+
+    field cord_uid type string {
+      indexing: summary|attribute
+      attribute:fast-search
+    }
+
+    field url type string {
       indexing: summary|attribute
       attribute:fast-search
     }
@@ -196,7 +210,6 @@ search doc {
 
   document-summary short {
     from-disk
-
     summary title type string {source: title}
     summary abstract type string {source: abstract}
     summary journal type string {source: journal}
@@ -209,7 +222,6 @@ search doc {
 
   document-summary full  {
     from-disk
-
     summary title-full type string {
       source:title
       full

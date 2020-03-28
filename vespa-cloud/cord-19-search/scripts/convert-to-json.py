@@ -99,6 +99,8 @@ def produce_vespa_json(idx, row):
   full_text_dir = row['full_text_file']
   license = get(row, 'license', None)
   journal = get(row, 'journal', None)
+  url = get(row, 'url', None)
+  cord_uid = get(row, 'cord_uid', None)
   pmcid = get(row, 'pmcid',None)
   pubmed_id  = get(row, 'pubmed_id',None)
   if pubmed_id != None:
@@ -137,13 +139,19 @@ def produce_vespa_json(idx, row):
   methods = methods if methods else None
   background = background if background else None
   introduction = introduction if introduction else None
+  
+  if doi:
+    doi = 'https://doi.org/%s' % doi 
+
   vespa_doc = {
     'title': title,
     'id': idx, 
     'source': source,
     'license': license,
     'datestring': publish_time,
-    'doi': 'https://doi.org/%s' % doi, 
+    'doi': doi,  
+    'url': url, 
+    'cord_uid': cord_uid, 
     'authors': authors,
     'bib_entries': bib_entries,
     'abstract': abstract,
@@ -160,21 +168,20 @@ def produce_vespa_json(idx, row):
     'pubmed_id': pubmed_id,
     'who_covidence': who_covidence,
     'has_full_text': has_full_text,
-    'abstract_embedding': { 'values':None},
-    'title_embedding': { 'values':None},
+    'dataset_version': DATA_SET_VERSION 
   } 
-  vespa_doc.pop('abstract_embedding', None)
-  vespa_doc.pop('title_embedding', None)
-
   return vespa_doc
 
 META_FILE = sys.argv[1]
 DATA_DIR = sys.argv[2]
+DATA_SET_VERSION = sys.argv[3]
 
 df = pandas.read_csv(META_FILE)
 df = df.fillna("notvalid")
+
 docs = []
 for idx, row in df.iterrows():
   docs.append(produce_vespa_json(idx,row))
 
-print(json.dumps(docs))
+print(json.dumps(docs, indent=2))
+
