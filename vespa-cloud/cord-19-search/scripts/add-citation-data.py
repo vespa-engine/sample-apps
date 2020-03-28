@@ -11,6 +11,7 @@ def get(df_row, key, defaultValue):
     return defaultValue
   else:
     return value
+  
 
 def to_tally(row):
   return {
