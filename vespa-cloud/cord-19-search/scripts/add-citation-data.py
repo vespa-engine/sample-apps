@@ -39,6 +39,7 @@ TALLIES_FILE = sys.argv[2]
 CITATIONS_FILE = sys.argv[3]
 
 docs = {}
+others = []
 with open(DATA_FILE, 'r') as f:
   for doc in json.load(f):
     doc['citations_supporting'] = []
@@ -51,7 +52,10 @@ with open(DATA_FILE, 'r') as f:
     doc['citations_sum_positive'] = 0
     doc['citations_sum_negative'] = 0
     doc['citations_sum_neutral'] = 0
-    docs[doc['doi']] = doc
+    if doc['doi'] in docs.keys():
+      others.append(doc)
+    else:
+      docs[doc['doi']] = doc
 
 tallies = pandas.read_csv(TALLIES_FILE)
 tallies = tallies.fillna("notvalid")
@@ -68,28 +72,38 @@ for _, row in tallies.iterrows():
   else:
     #print("No document found for tally with doi %s" % tally['doi'], file=sys.stderr)
     tallies_not_assigned = tallies_not_assigned + 1
-print("Tallies assigned: %d, not assigned :%d" % (tallies_assigned, tallies_not_assigned), file=sys.stderr)
+print("Tallies assigned: %d, not assigned: %d" % (tallies_assigned, tallies_not_assigned), file=sys.stderr)
 
 citations = pandas.read_csv(CITATIONS_FILE)
 citations = citations.fillna("notvalid")
+citation_targets_supporting = 0
+citation_targets_contradicting = 0
 citation_targets_assigned = 0
 citation_targets_not_assigned = 0
 citation_sources_assigned = 0
 citation_sources_not_assigned = 0
+citations_already_found = 0
+intra_citations = 0
 for _, row in citations.iterrows():
   citation = to_citation(row)
   #print("Processing citation %s --> %s" % (citation['source_doi'], citation['target_doi']), file=sys.stderr)
   if citation['target_doi'] in docs.keys():
     doc = docs[citation['target_doi']]
     citation['target_id'] = doc['id']
+    if citation['source_doi'] in docs.keys():
+      intra_citations = intra_citations + 1
+      if docs[citation['source_doi']]['id'] in doc['cited_by']:
+        citations_already_found = citations_already_found + 1
     doc['citations_inbound'].append(citation)
     doc['citations_sum_positive'] = doc['citations_sum_positive'] + citation['pos']
     doc['citations_sum_negative'] = doc['citations_sum_negative'] + citation['neg']
     doc['citations_sum_neutral'] = doc['citations_sum_neutral'] + citation['neu']
     if citation['type'] == 'supporting':
       doc['citations_supporting'].append(citation['context'])
+      citation_targets_supporting = citation_targets_supporting + 1
     if citation['type'] == 'contradicting':
       doc['citations_contradicting'].append(citation['context'])
+      citation_targets_contradicting = citation_targets_contradicting + 1
     citation_targets_assigned = citation_targets_assigned + 1
   else:
     #print("No document found for citation target doi %s" % citation['target_doi'], file=sys.stderr)
@@ -102,7 +116,12 @@ for _, row in citations.iterrows():
   else:
     #print("No document found for citation source doi %s" % citation['source_doi'], file=sys.stderr)
     citation_sources_not_assigned = citation_sources_not_assigned + 1
-print("Source citations assigned: %d, not assigned :%d" % (citation_sources_assigned, citation_sources_not_assigned), file=sys.stderr)
-print("Target citations assigned: %d, not assigned :%d" % (citation_targets_assigned, citation_targets_not_assigned), file=sys.stderr)
+print("Source citations assigned: %d, not assigned: %d" % (citation_sources_assigned, citation_sources_not_assigned), file=sys.stderr)
+print("Target citations assigned: %d, not assigned: %d" % (citation_targets_assigned, citation_targets_not_assigned), file=sys.stderr)
+print("Supporting citations assigned: %d" % citation_targets_supporting, file=sys.stderr)
+print("Contradicting citations assigned: %d" % citation_targets_contradicting, file=sys.stderr)
+print("Citations already found: %d, of intra citations total: %d" % (citations_already_found, intra_citations), file=sys.stderr)
 
-print(json.dumps(list(docs.values())))
+to_print = list(docs.values())
+to_print.extend(others)
+print(json.dumps(to_print))
