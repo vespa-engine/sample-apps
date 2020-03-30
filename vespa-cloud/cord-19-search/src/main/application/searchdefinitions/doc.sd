@@ -218,6 +218,8 @@ search doc {
     summary license type string {source:license}
     summary doi type string {source:doi}
     summary authors type array<author>{source:authors}
+    summary source type string {source:source}
+    summary citations_count_total type int { source: citations_count_total }
   }
 
   document-summary full  {
