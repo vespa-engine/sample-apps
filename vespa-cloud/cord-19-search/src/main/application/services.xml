@@ -5,6 +5,9 @@
     <container id="default" version="1.0">
         <document-api />
         <search>
+          <chain id="related" inherits="vespa">
+            <searcher id="ai.vespa.example.cord19.searcher.RelatedPaperSearcher" bundle="cord-19"/>
+          </chain>
         </search>
         <nodes count="2">
           <resources memory="32Gb" vcpu="16" disk="100Gb" disk-speed="fast" /> 
