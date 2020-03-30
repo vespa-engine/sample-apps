@@ -3,6 +3,7 @@ search doc {
   document doc { 
 
     struct author {
+      field name type string {}
       field first type string {}
       field last type string {}
       field middle type string {}
@@ -91,11 +92,13 @@ search doc {
     field title type string {
       bolding: true
       indexing: summary|index 
+      index: enable-bm25
     }
 
     field abstract type string {
       indexing: summary|index 
       summary: dynamic
+      index: enable-bm25
     }
 
     field introduction type string {
@@ -130,11 +133,13 @@ search doc {
 
     field body_text type string {
       indexing: summary|index 
+      index: enable-bm25
       summary: dynamic
     }
 
     field authors type array<author> {
       indexing: summary
+      struct-field name { indexing: attribute }
       struct-field first { indexing: attribute }
       struct-field last { indexing: attribute }
     }
@@ -245,9 +250,27 @@ search doc {
     }  
   }
 
-   rank-profile bm25 inherits default {
+  rank-profile default inherits default {
     first-phase {
-      expression: 0.60*bm25(title) + 0.30*bm25(abstract) + 0.10*bm25(body_text)
+      expression: nativeRank
+    }
+  }
+
+  rank-profile bm25f inherits default {
+    first-phase {
+      expression: 0.6*bm25(title) + 0.1*bm25(abstract) + 0.1*bm25(body_text)
+    }
+  }
+
+  rank-profile related-1 inherits default {
+    first-phase {
+      expression: nativeFieldMatch(title,abstract) 
+    }
+  }
+
+  rank-profile related-2 inherits default {
+    first-phase {
+      expression: 0.7*textSimilarity(title) + 0.3*textSimilarity(abstract) 
     }
   }
 
