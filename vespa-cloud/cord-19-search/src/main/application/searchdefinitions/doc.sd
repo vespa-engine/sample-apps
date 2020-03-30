@@ -274,6 +274,12 @@ search doc {
     }
   }
 
+  rank-profile related-ann inherits default {
+      first-phase {
+        expression: 0.7*rawScore(title_embedding) + 0.3*rawScore(abstract_embedding)
+      }
+  }
+
   rank-profile semantic-search-abstract {
     first-phase {
       expression:rawScore(abstract_embedding)
