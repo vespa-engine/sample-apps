@@ -85,6 +85,7 @@ def fall_back_authors(authors):
   if not authors:
     return []
   json_authors = []
+  #Taslim Ali, Sheikh; Kadi, A. S.; Ferguson, Neil M.
   for a in authors.split(';'):
     parts = a.split(',')
     firstname = None
@@ -99,7 +100,7 @@ def fall_back_authors(authors):
     author = {
       'first': firstname,
       'last': lastname,
-      'name': lastname 
+      'name': name 
     }
     json_authors.append(author)
   return json_authors 
