@@ -93,7 +93,7 @@ def fall_back_authors(authors):
       lastname = parts[0]
     else:
       lastname,firstname = parts[0],parts[1]
-    name = None
+    name = lastname
     if lastname and firstname:
       name = '%s %s' % (firstname, lastname)
     author = {
@@ -197,4 +197,3 @@ for idx, row in df.iterrows():
   docs.append(produce_vespa_json(idx,row))
 
 print(json.dumps(docs, indent=2))
-
