@@ -21,7 +21,7 @@ Prerequisites:
 * [Git](https://git-scm.com/downloads) installed
 * Operating system: macOS or Linux
 * Architecture: x86_64
-* *Minimum 10GB* memory dedicated to Docker (the default is 2GB on Macs)
+* *Minimum 6GB* memory dedicated to Docker (the default is 2GB on Macs)
 
 This guide is tested with Docker for Mac, Community Edition-18.06.1-ce-mac73 (26764) and
 <em>vespaengine/vespa</em> Docker image built 2020-03-26.
@@ -36,47 +36,46 @@ $ docker info | grep "Total Memory"
 </li>
 
 <li>
-    <p><strong>Clone the Vespa sample apps from
-    <a href="https://github.com/vespa-engine/sample-apps">github</a>:</strong></p>
-<pre data-test="exec">
+    <p><strong>Clone the Vespa sample apps from <a href="/">github</a>:</strong></p>
+<pre>
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
 </pre>
 </li>
 
 <li>
-    <p>Change &lt;nodes&gt;-element two places in
-    sample-apps/vespa-cloud/cord-19-search/src/main/application/services.xml
-    - use <a href="https://github.com/vespa-engine/sample-apps/blob/master/album-recommendation-selfhosted/src/main/application/services.xml">services.xml</a>
+    <p>Change the &lt;nodes&gt;-element in two places in
+    <a href="src/main/application/services.xml">src/main/application/services.xml</a>
+    - use <a href="/sample-apps/album-recommendation-selfhosted/src/main/application/services.xml">services.xml</a>
     as reference.
-    Copy <a href="https://github.com/vespa-engine/sample-apps/blob/master/album-recommendation-selfhosted/src/main/application/hosts.xml">hosts.xml</a>
+    Copy <a href="/sample-apps/album-recommendation-selfhosted/src/main/application/hosts.xml">hosts.xml</a>
     into same location.
     Then build the application:
     </p>
-<pre data-test="exec">
+<pre>
 $ mvn clean install
 </pre>
 </li>
 
 <li>
     <p><strong>Start a Vespa Docker container:</strong></p>
-<pre data-test="exec">
-$ docker run --detach --name vespa --hostname vespa-container --privileged \
+<pre>
+$ docker run --detach --name cord19 --hostname vespa-container --privileged \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
 </li>
 
 <li>
     <p><strong>Wait for the configuration server to start - signified by a 200 OK response:</strong></p>
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+<pre>
+$ docker exec cord19 bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
 </pre>
 </li>
 
 <li>
     <p><strong>Deploy and activate a sample application:</strong></p>
-<pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare \
+<pre>
+$ docker exec cord19 bash -c '/opt/vespa/bin/vespa-deploy prepare \
   /vespa-sample-apps/vespa-cloud/cord-19-search/target/application.zip &amp;&amp; \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
@@ -84,28 +83,28 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare \
 
 <li>
     <p><strong>Ensure the application is active - wait for a 200 OK response:</strong></p>
-<pre data-test="exec" data-test-wait-for="200 OK">
+<pre>
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 </li>
 
 <li>
     <p><strong>Feed documents:</strong></p>
-<pre data-test="exec">
+<pre>
 $ TBD
 </pre>
 </li>
 
 <li>
     <p><strong>Make a query:</strong></p>
-<pre data-test="exec" data-test-assert-contains="Metallica">
+<pre>
 $ TBD
 </pre>
 </li>
 
 <li>
     <p><strong>Clean up:</strong></p>
-<pre data-test="after">
+<pre>
 $ docker rm -f vespa
 </pre>
 </li>
