@@ -105,7 +105,7 @@ $ TBD
 <li>
     <p><strong>Clean up:</strong></p>
 <pre>
-$ docker rm -f vespa
+$ docker rm -f cord19
 </pre>
 </li>
 
