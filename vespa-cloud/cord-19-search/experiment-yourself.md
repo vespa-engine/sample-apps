@@ -21,7 +21,7 @@ Prerequisites:
 * [Git](https://git-scm.com/downloads) installed
 * Operating system: macOS or Linux
 * Architecture: x86_64
-* *Minimum 6GB* memory dedicated to Docker (the default is 2GB on Macs)
+* *Minimum 10GB* memory dedicated to Docker (the default is 2GB on Macs)
 
 This guide is tested with Docker for Mac, Community Edition-18.06.1-ce-mac73 (26764) and
 <em>vespaengine/vespa</em> Docker image built 2020-03-26.
