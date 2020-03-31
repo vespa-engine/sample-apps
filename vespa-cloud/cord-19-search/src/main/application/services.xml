@@ -26,7 +26,7 @@
           <max_matches>6</max_matches> <!-- default 3 -->
           <winsize>500</winsize> <!-- default 200 -->
         </config>
-        <redundancy>1</redundancy>
+        <redundancy>2</redundancy>
         <documents>
             <document type="doc" mode="index" />
         </documents>
