@@ -27,6 +27,7 @@ This guide is tested with Docker for Mac, Community Edition-18.06.1-ce-mac73 (26
 <em>vespaengine/vespa</em> Docker image built 2020-03-26.
 
 <ol>
+
 <li>
     <p><strong>Validate environment:</strong></p>
 <pre>
@@ -40,11 +41,17 @@ $ docker info | grep "Total Memory"
     <a href="https://github.com/vespa-engine/sample-apps">github</a>:</strong></p>
 <pre>
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
+$ cd sample-apps/vespa-cloud/cord-19-search
 </pre>
 </li>
 
 <li>
+    <p><strong>Generate feed-file.json in current directory:</strong></p>
+    <p>Follow procedure in <a href="feeding.md">feeding.md</a></p>
+</li>
+
+<li>
+    <p><strong>Build the application:</strong></p>
     <p>Change the &lt;nodes&gt;-element in two places in
     <a href="src/main/application/services.xml">src/main/application/services.xml</a>
     - use <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation-selfhosted/src/main/application/services.xml">services.xml</a>
@@ -62,7 +69,7 @@ $ mvn clean install
     <p><strong>Start a Vespa Docker container:</strong></p>
 <pre>
 $ docker run --detach --name cord19 --hostname vespa-container --privileged \
-  --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
+  --volume $(pwd):/cord-19-search --publish 8080:8080 vespaengine/vespa
 </pre>
 </li>
 
@@ -77,7 +84,7 @@ $ docker exec cord19 bash -c 'curl -s --head http://localhost:19071/ApplicationS
     <p><strong>Deploy and activate a sample application:</strong></p>
 <pre>
 $ docker exec cord19 bash -c '/opt/vespa/bin/vespa-deploy prepare \
-  /vespa-sample-apps/vespa-cloud/cord-19-search/target/application.zip &amp;&amp; \
+  /cord-19-search/target/application.zip &amp;&amp; \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
 </li>
@@ -92,14 +99,15 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 <li>
     <p><strong>Feed documents:</strong></p>
 <pre>
-$ TBD
+$ docker exec cord19 bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+  --file /cord-19-search/feed-file.json --endpoint http://localhost:8080 --verbose --useCompression'
 </pre>
 </li>
 
 <li>
     <p><strong>Make a query:</strong></p>
 <pre>
-$ TBD
+$ curl -s http://localhost:8080/search/?query=virus
 </pre>
 </li>
 
