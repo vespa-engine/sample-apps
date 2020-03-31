@@ -267,6 +267,12 @@ search doc {
       expression: bm25(title) + bm25(abstract) + bm25(body_text)
     }
   }
+  
+  rank-profile freshness inherits default {
+    first-phase {
+      expression: attribute(timestamp)
+    }
+  }
 
   #Related article ranking profiles (experimental)
   rank-profile related-1 inherits default {
