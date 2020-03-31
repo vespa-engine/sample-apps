@@ -36,7 +36,8 @@ $ docker info | grep "Total Memory"
 </li>
 
 <li>
-    <p><strong>Clone the Vespa sample apps from <a href="/">github</a>:</strong></p>
+    <p><strong>Clone the Vespa sample apps from
+    <a href="https://github.com/vespa-engine/sample-apps">github</a>:</strong></p>
 <pre>
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
@@ -46,9 +47,9 @@ $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
 <li>
     <p>Change the &lt;nodes&gt;-element in two places in
     <a href="src/main/application/services.xml">src/main/application/services.xml</a>
-    - use <a href="/sample-apps/album-recommendation-selfhosted/src/main/application/services.xml">services.xml</a>
+    - use <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation-selfhosted/src/main/application/services.xml">services.xml</a>
     as reference.
-    Copy <a href="/sample-apps/album-recommendation-selfhosted/src/main/application/hosts.xml">hosts.xml</a>
+    Copy <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation-selfhosted/src/main/application/hosts.xml">hosts.xml</a>
     into same location.
     Then build the application:
     </p>
