@@ -2,12 +2,18 @@
 
 package ai.vespa.example.cord19.searcher;
 
-
-
+/**
+ * This searcher fetches an article by looking up the id as passed by &id parameter
+ * and extracts the scibert-nli sentence embeddings for title and abstract.
+ *
+ * It performs a searching using OR (nearestNeighbor(title_embeding) nearestNeighbor(abstrac_embedding))
+ * AND filters with the regular query (subject to &type and &query or &yql)
+ *
+ * The ranking profile used to rank is <i>related-ann</i>
+ */
 
 import com.google.inject.Inject;
-import com.yahoo.prelude.query.NearestNeighborItem;
-import com.yahoo.prelude.query.WordItem;
+import com.yahoo.prelude.query.*;
 import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
@@ -32,8 +38,8 @@ public class RelatedPaperSearcherANN extends Searcher {
     }
 
     class Article {
-        Tensor title;
-        Tensor article_abstract;
+        Tensor title; //scibert-nli embedding representation
+        Tensor article_abstract; //scibert-nli embedding representation
 
         Article(Tensor title, Tensor article_abstract) {
             this.title = title;
@@ -50,6 +56,10 @@ public class RelatedPaperSearcherANN extends Searcher {
             empty.hits().addError(ErrorMessage.createBadRequest("No id parameter"));
             return empty;
         }
+
+        Item queryTreeRoot = query.getModel().getQueryTree().getRoot();
+        String summary = query.getPresentation().getSummary();
+
         query.getPresentation().setSummary(SUMMARY);
         WordItem idFilter = new WordItem(id.toString(), "id", true);
         query.getModel().getQueryTree().setRoot(idFilter);
@@ -60,8 +70,9 @@ public class RelatedPaperSearcherANN extends Searcher {
         if (article == null) {
             return new Result(query);
         }
-        Query relatedQuery = generateRelatedQuery(article,includeAbstract);
-        relatedQuery.getPresentation().setSummary("full");
+
+        Query relatedQuery = generateRelatedQuery(article,includeAbstract,queryTreeRoot);
+        relatedQuery.getPresentation().setSummary(summary);
         relatedQuery.getPresentation().setBolding(false);
         relatedQuery.setHits(query.getHits());
         query.attachContext(relatedQuery);
@@ -77,15 +88,39 @@ public class RelatedPaperSearcherANN extends Searcher {
         return new Article(title,article_tensor);
     }
 
-    private Query generateRelatedQuery(Article a, boolean includeAbstract) {
+    /**
+     *
+     * @param a the article to fetch related articles for
+     * @param includeAbstract if true also the abstract embedding is used
+     * @param originalQueryRoot the original query tree root, to preserve filtering
+     * @return The related query
+     */
+
+    private Query generateRelatedQuery(Article a, boolean includeAbstract, Item originalQueryRoot) {
         Query relatedQuery = new Query();
-        NearestNeighborItem nn = new NearestNeighborItem("title_embedding",
+        Item nnRoot;
+        NearestNeighborItem nnTitle = new NearestNeighborItem("title_embedding",
                 "vector");
-        nn.setAllowApproximate(false);
-        nn.setTargetNumHits(10);
+        nnTitle.setAllowApproximate(false);
+        nnTitle.setTargetNumHits(10);
+        if(includeAbstract && a.article_abstract != null) {
+            NearestNeighborItem nnAbstract = new NearestNeighborItem("abstract_embedding",
+                    "vector");
+            nnAbstract.setAllowApproximate(false);
+            nnAbstract.setTargetNumHits(10);
+            nnRoot = new OrItem();
+            ((OrItem) nnRoot).addItem(nnAbstract);
+            ((OrItem) nnRoot).addItem(nnTitle);
+        } else  {
+            nnRoot = nnTitle;
+        }
+        AndItem finalQueryTree = new AndItem();
+        finalQueryTree.addItem(nnRoot);
+        finalQueryTree.addItem(originalQueryRoot);
+
         relatedQuery.getRanking().getFeatures().put("query(vector)", a.title);
-        relatedQuery.getRanking().setProfile(("semantic-search-title"));
-        relatedQuery.getModel().getQueryTree().setRoot(nn);
+        relatedQuery.getRanking().setProfile(("related-ann"));
+        relatedQuery.getModel().getQueryTree().setRoot(finalQueryTree);
         return relatedQuery;
     }
 
