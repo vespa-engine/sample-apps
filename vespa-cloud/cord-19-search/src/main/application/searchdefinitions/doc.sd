@@ -270,7 +270,7 @@ search doc {
   
   rank-profile freshness inherits default {
     first-phase {
-      expression: attribute(timestamp)
+      expression: freshness(timestamp)
     }
   }
 
