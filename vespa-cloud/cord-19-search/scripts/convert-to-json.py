@@ -35,13 +35,22 @@ def parse_file(dir,sha):
     md = data['metadata'] 
     authors = []
     for a in md.get('authors'):
-      
+      first = a['first'] if a['first'] else None
+      last = a['last'] if a['last'] else None
+      name = None
+      middle = ' '.join(a['middle']) if ' '.join(a['middle']) else None
+      if first and last: 
+        if middle:
+          name = '%s %s %s' % (first, middle, last)
+        else:
+          name = '%s %s' % (first, last)
       author = {
-        'first' : a['first'] if a['first'] else None,
-        'last': a['last'] if a['last'] else None,
-        'middle': ' '.join(a['middle']) if ' '.join(a['middle']) else None,
+        'first' : first, 
+        'last': last, 
+        'middle': middle, 
         'suffix': a['suffix'] if a['suffix'] else None,
-        'email': a['email'] if a['email'] else None
+        'email': a['email'] if a['email'] else None,
+        'name': name
       }
       authors.append(author)
     abstract, abstract_paragraphs = long_text_parse('abstract',data) 
@@ -84,9 +93,13 @@ def fall_back_authors(authors):
       lastname = parts[0]
     else:
       lastname,firstname = parts[0],parts[1]
+    name = None
+    if lastname and firstname:
+      name = '%s %s' % (firstname, lastname)
     author = {
       'first': firstname,
-      'last': lastname 
+      'last': lastname,
+      'name': lastname 
     }
     json_authors.append(author)
   return json_authors 
