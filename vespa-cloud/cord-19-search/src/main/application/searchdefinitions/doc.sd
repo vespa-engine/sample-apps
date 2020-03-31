@@ -256,12 +256,19 @@ search doc {
     }
   }
 
-  rank-profile bm25f inherits default {
+  rank-profile bm25fw inherits default {
     first-phase {
-      expression: 0.6*bm25(title) + 0.1*bm25(abstract) + 0.1*bm25(body_text)
+      expression: 0.6*bm25(title) + 0.3*bm25(abstract) + 0.1*bm25(body_text)
     }
   }
 
+  rank-profile bm25 inherits default {
+    first-phase {
+      expression: bm25(title) + bm25(abstract) + bm25(body_text)
+    }
+  }
+
+  #Related article ranking profiles (experimental)
   rank-profile related-1 inherits default {
     first-phase {
       expression: nativeFieldMatch(title,abstract) 
