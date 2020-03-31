@@ -1,4 +1,10 @@
 
+## Prerequisites
+```
+pip3 install -r scripts/python_requirements.txt
+```
+
+
 ## Download the CORD-19 dataset 
 Download the dataset from [https://pages.semanticscholar.org/coronavirus-research](https://pages.semanticscholar.org/coronavirus-research):
 
@@ -10,7 +16,7 @@ wget https://ai2-semanticscholar-cord-19.s3-us-west-2.amazonaws.com/2020-03-27/n
 wget https://ai2-semanticscholar-cord-19.s3-us-west-2.amazonaws.com/2020-03-27/custom_license.tar.gz
 wget https://ai2-semanticscholar-cord-19.s3-us-west-2.amazonaws.com/2020-03-27/biorxiv_medrxiv.tar.gz
 wget https://ai2-semanticscholar-cord-19.s3-us-west-2.amazonaws.com/2020-03-27/metadata.csv
-for file in $(ls *tar.gz); tar xzvf $file; done
+for file in $(ls *tar.gz); do tar xzvf $file; done
 ```
 
 ## Download citation data from [scite_](https://scite.ai/)
