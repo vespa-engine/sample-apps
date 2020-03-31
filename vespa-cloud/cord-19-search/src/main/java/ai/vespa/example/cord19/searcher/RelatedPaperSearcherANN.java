@@ -29,6 +29,8 @@ public class RelatedPaperSearcherANN extends Searcher {
 
     public static CompoundName INPUT_ID = new CompoundName("id");
     public static CompoundName USE_ABSTRACT = new CompoundName("use-abstract");
+    public static CompoundName REMOVE_ARTICLE_FROM_VIEW =  new CompoundName("remove-id");
+
     private Linguistics linguistics;
     public static String SUMMARY = "attributeprefetch";
 
@@ -51,6 +53,8 @@ public class RelatedPaperSearcherANN extends Searcher {
     public Result search(Query query, Execution execution) {
         Integer id = query.properties().getInteger(INPUT_ID, null);
         boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT,false);
+        boolean removeArticle = query.properties().getBoolean(REMOVE_ARTICLE_FROM_VIEW,true);
+
         if (id == null) {
             Result empty = new Result(query);
             empty.hits().addError(ErrorMessage.createBadRequest("No id parameter"));
@@ -76,6 +80,12 @@ public class RelatedPaperSearcherANN extends Searcher {
         relatedQuery.getPresentation().setBolding(false);
         relatedQuery.setHits(query.getHits());
         query.attachContext(relatedQuery);
+        if(removeArticle) {
+            NotItem notItem = new NotItem();
+            notItem.addPositiveItem(relatedQuery.getModel().getQueryTree().getRoot());
+            notItem.addNegativeItem(idFilter);
+            relatedQuery.getModel().getQueryTree().setRoot(notItem);
+        }
         return execution.search(relatedQuery);
     }
 
