@@ -26,7 +26,7 @@ import com.yahoo.tensor.Tensor;
 
 public class RelatedPaperSearcherANN extends Searcher {
 
-    public static String RELATED_RANKING_PROFILE = "related-ann-with-matching";
+
     public static String RELATED_TO_FIELD = "related_to";
 
     public static CompoundName INPUT_ID = new CompoundName("id");
@@ -75,7 +75,6 @@ public class RelatedPaperSearcherANN extends Searcher {
             notItem.addNegativeItem(new WordItem(id.toString(), "id", true));
             relatedQuery.getModel().getQueryTree().setRoot(notItem);
         }
-        relatedQuery.getRanking().setProfile(RELATED_RANKING_PROFILE);
         return execution.search(relatedQuery);
     }
 
