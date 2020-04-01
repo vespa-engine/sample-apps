@@ -13,14 +13,22 @@ package ai.vespa.example.cord19.searcher;
  */
 
 import com.google.inject.Inject;
-import com.yahoo.prelude.query.*;
+import com.yahoo.language.Linguistics;
+import com.yahoo.prelude.query.AndItem;
+import com.yahoo.prelude.query.CompositeItem;
+import com.yahoo.prelude.query.IntItem;
+import com.yahoo.prelude.query.Item;
+import com.yahoo.prelude.query.NearestNeighborItem;
+import com.yahoo.prelude.query.NotItem;
+import com.yahoo.prelude.query.NullItem;
+import com.yahoo.prelude.query.OrItem;
+import com.yahoo.prelude.query.WordItem;
 import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
-import com.yahoo.search.result.Hit;
 import com.yahoo.search.Searcher;
+import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
-import com.yahoo.language.Linguistics;
 import com.yahoo.tensor.Tensor;
 
 
@@ -135,6 +143,7 @@ public class RelatedPaperSearcherANN extends Searcher {
 
     private Query generateRelatedQuery(Article a, Query originalQuery, boolean includeAbstract) {
         Query relatedQuery = originalQuery.clone();
+        relatedQuery.getSelect().setGroupingExpressionString(originalQuery.getSelect().getGroupingExpressionString());
 
         Item root = relatedQuery.getModel().getQueryTree().getRoot();
         if(root instanceof IntItem) {
