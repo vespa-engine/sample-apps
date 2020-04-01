@@ -17,7 +17,6 @@ import com.yahoo.prelude.query.*;
 import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
-import com.yahoo.search.result.ErrorMessage;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.searchchain.Execution;
@@ -27,12 +26,15 @@ import com.yahoo.tensor.Tensor;
 
 public class RelatedPaperSearcherANN extends Searcher {
 
+    public static String RELATED_RANKING_PROFILE = "related-ann-with-matching";
+    public static String RELATED_TO_FIELD = "related_to";
+
     public static CompoundName INPUT_ID = new CompoundName("id");
-    public static CompoundName USE_ABSTRACT = new CompoundName("use-abstract");
-    public static CompoundName REMOVE_ARTICLE_FROM_VIEW =  new CompoundName("remove-id");
+    public static CompoundName USE_ABSTRACT_EMBEDDING = new CompoundName("use-abstract");
+    public static CompoundName REMOVE_ARTICLE_FROM_RESULT =  new CompoundName("remove-id");
 
     private Linguistics linguistics;
-    public static String SUMMARY = "attributeprefetch";
+    public static String TENSOR_SUMMARY = "attributeprefetch";
 
     @Inject
     public RelatedPaperSearcherANN(Linguistics linguistics) {
@@ -49,44 +51,71 @@ public class RelatedPaperSearcherANN extends Searcher {
         }
     }
 
+
     @Override
     public Result search(Query query, Execution execution) {
+        boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT_EMBEDDING,false);
+        boolean removeArticle = query.properties().getBoolean(REMOVE_ARTICLE_FROM_RESULT,true);
         Integer id = query.properties().getInteger(INPUT_ID, null);
-        boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT,false);
-        boolean removeArticle = query.properties().getBoolean(REMOVE_ARTICLE_FROM_VIEW,true);
-
-        if (id == null) {
-            Result empty = new Result(query);
-            empty.hits().addError(ErrorMessage.createBadRequest("No id parameter"));
-            return empty;
+        Integer traverseId = traverseQueryTree(query.getModel().getQueryTree().getRoot());
+        if (id == null && traverseId == null) { //Just return whatever this query was about
+            query.trace("Did not find any related_id in the query",3);
+           return execution.search(query);
         }
-
-        Item queryTreeRoot = query.getModel().getQueryTree().getRoot();
-        String summary = query.getPresentation().getSummary();
-
-        query.getPresentation().setSummary(SUMMARY);
-        WordItem idFilter = new WordItem(id.toString(), "id", true);
-        query.getModel().getQueryTree().setRoot(idFilter);
-
-        Result result = execution.search(query);
-        execution.fill(result,SUMMARY);
-        Article article = extractFromResult(result);
-        if (article == null) {
-            return new Result(query);
+        if(traverseId != null)  {
+            id = traverseId;
         }
-
-        Query relatedQuery = generateRelatedQuery(article,includeAbstract,queryTreeRoot);
-        relatedQuery.getPresentation().setSummary(summary);
+        Article article = getArticle(id,execution,query);
+        Query relatedQuery = generateRelatedQuery(article,query,includeAbstract);
         relatedQuery.getPresentation().setBolding(false);
-        relatedQuery.setHits(query.getHits());
-        query.attachContext(relatedQuery);
+
         if(removeArticle) {
             NotItem notItem = new NotItem();
             notItem.addPositiveItem(relatedQuery.getModel().getQueryTree().getRoot());
-            notItem.addNegativeItem(idFilter);
+            notItem.addNegativeItem(new WordItem(id.toString(), "id", true));
             relatedQuery.getModel().getQueryTree().setRoot(notItem);
         }
+        relatedQuery.getRanking().setProfile(RELATED_RANKING_PROFILE);
         return execution.search(relatedQuery);
+    }
+
+    private Article getArticle(Integer id, Execution execution,Query query) {
+        Query articleQuery = new Query();
+        query.attachContext(articleQuery);
+        articleQuery.getPresentation().setSummary(TENSOR_SUMMARY);
+        WordItem idFilter = new WordItem(id.toString(), "id", true);
+        articleQuery.getModel().getQueryTree().setRoot(idFilter);
+        articleQuery.getModel().setRestrict("doc");
+        articleQuery.setHits(1);
+        articleQuery.getRanking().setProfile("unranked");
+        Result articleResult = execution.search(articleQuery);
+        execution.fill(articleResult,TENSOR_SUMMARY);
+        return extractFromResult(articleResult);
+    }
+
+    /**
+     * Look for the related_to:x in the query tree
+     *
+     * @return
+     */
+    private Integer traverseQueryTree(Item item) {
+        if (item instanceof IntItem) {
+            IntItem word = (IntItem)item;
+            if(word.getIndexName().equals(RELATED_TO_FIELD)) {
+                return Integer.parseInt(word.getRawWord());
+            }
+        }
+        else if (item instanceof CompositeItem) {
+            CompositeItem compositeItem =(CompositeItem)item;
+            for(Item subItem: compositeItem.items()) {
+                Integer id = traverseQueryTree(subItem);
+                if(id != null) {
+                    compositeItem.removeItem(subItem);
+                    return id;
+                }
+            }
+        }
+        return null;
     }
 
     private Article extractFromResult(Result r) {
@@ -102,35 +131,47 @@ public class RelatedPaperSearcherANN extends Searcher {
      *
      * @param a the article to fetch related articles for
      * @param includeAbstract if true also the abstract embedding is used
-     * @param originalQueryRoot the original query tree root, to preserve filtering
      * @return The related query
      */
 
-    private Query generateRelatedQuery(Article a, boolean includeAbstract, Item originalQueryRoot) {
-        Query relatedQuery = new Query();
+    private Query generateRelatedQuery(Article a, Query originalQuery, boolean includeAbstract) {
+        Query relatedQuery = originalQuery.clone();
+
+        Item root = relatedQuery.getModel().getQueryTree().getRoot();
+        if(root instanceof IntItem) {
+            IntItem r = (IntItem)root;
+            if(r.getIndexName().equals(RELATED_TO_FIELD)) {
+                root = new NullItem();
+            }
+        }
         Item nnRoot;
         NearestNeighborItem nnTitle = new NearestNeighborItem("title_embedding",
-                "vector");
+                "title_vector");
         nnTitle.setAllowApproximate(false);
-        nnTitle.setTargetNumHits(10);
+        nnTitle.setTargetNumHits(100);
+        relatedQuery.getRanking().getFeatures().put("query(title_vector)", a.title);
+
         if(includeAbstract && a.article_abstract != null) {
             NearestNeighborItem nnAbstract = new NearestNeighborItem("abstract_embedding",
-                    "vector");
+                    "abstract_vector");
             nnAbstract.setAllowApproximate(false);
-            nnAbstract.setTargetNumHits(10);
+            nnAbstract.setTargetNumHits(100);
+            relatedQuery.getRanking().getFeatures().put("query(abstract_vector)", a.article_abstract);
             nnRoot = new OrItem();
             ((OrItem) nnRoot).addItem(nnAbstract);
             ((OrItem) nnRoot).addItem(nnTitle);
         } else  {
             nnRoot = nnTitle;
         }
-        AndItem finalQueryTree = new AndItem();
-        finalQueryTree.addItem(nnRoot);
-        finalQueryTree.addItem(originalQueryRoot);
-
-        relatedQuery.getRanking().getFeatures().put("query(vector)", a.title);
-        relatedQuery.getRanking().setProfile(("related-ann"));
-        relatedQuery.getModel().getQueryTree().setRoot(finalQueryTree);
+        //Combine
+        if(root instanceof NullItem) {
+            relatedQuery.getModel().getQueryTree().setRoot(nnRoot);
+        } else {
+            AndItem andItem = new AndItem();
+            andItem.addItem(root);
+            andItem.addItem(nnRoot);
+            relatedQuery.getModel().getQueryTree().setRoot(andItem);
+        }
         return relatedQuery;
     }
 
