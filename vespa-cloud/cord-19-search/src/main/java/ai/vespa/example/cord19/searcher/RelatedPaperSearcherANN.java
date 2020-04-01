@@ -17,6 +17,7 @@ import com.yahoo.prelude.query.*;
 import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
+import com.yahoo.search.grouping.GroupingRequest;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.searchchain.Execution;
@@ -67,7 +68,7 @@ public class RelatedPaperSearcherANN extends Searcher {
         }
         Article article = getArticle(id,execution,query);
         Query relatedQuery = generateRelatedQuery(article,query,includeAbstract);
-        relatedQuery.getPresentation().setBolding(false);
+
 
         if(removeArticle) {
             NotItem notItem = new NotItem();
@@ -135,7 +136,7 @@ public class RelatedPaperSearcherANN extends Searcher {
 
     private Query generateRelatedQuery(Article a, Query originalQuery, boolean includeAbstract) {
         Query relatedQuery = originalQuery.clone();
-
+        relatedQuery.getSelect().setGroupingExpressionString(originalQuery.getSelect().getGroupingExpressionString());
         Item root = relatedQuery.getModel().getQueryTree().getRoot();
         if(root instanceof IntItem) {
             IntItem r = (IntItem)root;
@@ -165,6 +166,8 @@ public class RelatedPaperSearcherANN extends Searcher {
         //Combine
         if(root instanceof NullItem) {
             relatedQuery.getModel().getQueryTree().setRoot(nnRoot);
+            //query is empty must rank by vectors
+            relatedQuery.getRanking().setProfile("related-ann");
         } else {
             AndItem andItem = new AndItem();
             andItem.addItem(root);
