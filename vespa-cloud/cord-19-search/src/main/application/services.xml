@@ -8,7 +8,11 @@
           <chain id="related" inherits="vespa">
             <searcher id="ai.vespa.example.cord19.searcher.RelatedPaperSearcher" bundle="cord-19"/>
           </chain>
+          <!--Keep existing chain until frontend switches -->
           <chain id="related-ann" inherits="vespa">
+            <searcher id="ai.vespa.example.cord19.searcher.RelatedPaperSearcherANN" bundle="cord-19"/>
+          </chain>
+          <chain id="default" inherits="vespa">
             <searcher id="ai.vespa.example.cord19.searcher.RelatedPaperSearcherANN" bundle="cord-19"/>
           </chain>
 

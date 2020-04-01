@@ -1,5 +1,6 @@
 #Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. 
 search doc {
+
   document doc { 
 
     struct author {
@@ -202,7 +203,7 @@ search doc {
     field title_embedding type tensor<float>(x[768]) {
       indexing: attribute
     }
-
+    field related_to type int {}
   }
 
   fieldset default {
@@ -292,6 +293,23 @@ search doc {
         expression: 0.7*rawScore(title_embedding) + 0.3*rawScore(abstract_embedding)
       }
   }
+
+  rank-profile related-ann-with-matching inherits default {
+        function match_score() {
+          expression: nativeRank(title) + nativeRank(abstract)
+        }
+        function vector_score(){
+          expression: rawScore(title_embedding) + rawScore(abstract_embedding)
+        }
+        first-phase {
+          expression: 0.8*vector_score() + 0.2*match_score()
+        }
+        summary-features {
+          vector_score()
+          match_score()
+        }
+
+    }
 
   rank-profile semantic-search-abstract {
     first-phase {
