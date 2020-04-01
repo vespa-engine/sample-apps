@@ -22,5 +22,6 @@
         <module>text-search</module>
         <module>use-case-shopping</module>
         <module>vespa-cloud/album-recommendation-java</module>
+        <module>vespa-cloud/cord-19-search</module>
     </modules>
 </project>

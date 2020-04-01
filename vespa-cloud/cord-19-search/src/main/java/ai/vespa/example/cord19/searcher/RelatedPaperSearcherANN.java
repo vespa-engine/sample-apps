@@ -164,7 +164,7 @@ public class RelatedPaperSearcherANN extends Searcher {
             nnRoot = nnTitle;
         }
         //Combine
-        if(root instanceof NullItem) {
+        if ( ! hasTextTerms(root)) {
             relatedQuery.getModel().getQueryTree().setRoot(nnRoot);
             //query is empty must rank by vectors
             relatedQuery.getRanking().setProfile("related-ann");
@@ -175,6 +175,18 @@ public class RelatedPaperSearcherANN extends Searcher {
             relatedQuery.getModel().getQueryTree().setRoot(andItem);
         }
         return relatedQuery;
+    }
+
+    private boolean hasTextTerms(Item item) {
+        if (item instanceof CompositeItem) {
+            for (Item child : ((CompositeItem)item).items())
+                if (hasTextTerms(child))
+                    return true;
+
+        }
+        if ((item instanceof TermItem) && ! item.isFilter())
+            return true;
+        return false;
     }
 
 }
