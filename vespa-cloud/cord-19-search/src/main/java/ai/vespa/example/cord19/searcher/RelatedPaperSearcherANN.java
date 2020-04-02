@@ -1,6 +1,23 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.example.cord19.searcher;
+
+import com.yahoo.prelude.query.AndItem;
+import com.yahoo.prelude.query.CompositeItem;
+import com.yahoo.prelude.query.IntItem;
+import com.yahoo.prelude.query.Item;
+import com.yahoo.prelude.query.NearestNeighborItem;
+import com.yahoo.prelude.query.NotItem;
+import com.yahoo.prelude.query.NullItem;
+import com.yahoo.prelude.query.OrItem;
+import com.yahoo.prelude.query.TermItem;
+import com.yahoo.prelude.query.WordItem;
+import com.yahoo.processing.request.CompoundName;
+import com.yahoo.search.Query;
+import com.yahoo.search.Result;
+import com.yahoo.search.result.Hit;
+import com.yahoo.search.Searcher;
+import com.yahoo.search.searchchain.Execution;
+import com.yahoo.tensor.Tensor;
 
 /**
  * This searcher fetches an article by looking up the id as passed by &id parameter
@@ -10,23 +27,10 @@ package ai.vespa.example.cord19.searcher;
  * AND filters with the regular query (subject to &type and &query or &yql)
  *
  * The ranking profile used to rank is <i>related-ann</i>
+ *
+ * @author jobergum
  */
-
-import com.google.inject.Inject;
-import com.yahoo.prelude.query.*;
-import com.yahoo.processing.request.CompoundName;
-import com.yahoo.search.Query;
-import com.yahoo.search.Result;
-import com.yahoo.search.grouping.GroupingRequest;
-import com.yahoo.search.result.Hit;
-import com.yahoo.search.Searcher;
-import com.yahoo.search.searchchain.Execution;
-import com.yahoo.language.Linguistics;
-import com.yahoo.tensor.Tensor;
-
-
 public class RelatedPaperSearcherANN extends Searcher {
-
 
     public static String RELATED_TO_FIELD = "related_to";
 
@@ -137,7 +141,7 @@ public class RelatedPaperSearcherANN extends Searcher {
         }
         Item nnRoot;
         NearestNeighborItem nnTitle = new NearestNeighborItem("title_embedding",
-                "title_vector");
+                                                              "title_vector");
         nnTitle.setAllowApproximate(false);
         nnTitle.setTargetNumHits(100);
         relatedQuery.getRanking().getFeatures().put("query(title_vector)", a.title);
