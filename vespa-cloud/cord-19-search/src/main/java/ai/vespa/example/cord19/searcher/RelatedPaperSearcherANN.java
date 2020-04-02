@@ -34,13 +34,7 @@ public class RelatedPaperSearcherANN extends Searcher {
     public static CompoundName USE_ABSTRACT_EMBEDDING = new CompoundName("use-abstract");
     public static CompoundName REMOVE_ARTICLE_FROM_RESULT =  new CompoundName("remove-id");
 
-    private Linguistics linguistics;
     public static String TENSOR_SUMMARY = "attributeprefetch";
-
-    @Inject
-    public RelatedPaperSearcherANN(Linguistics linguistics) {
-        this.linguistics = linguistics;
-    }
 
     class Article {
         Tensor title; //scibert-nli embedding representation
@@ -58,7 +52,7 @@ public class RelatedPaperSearcherANN extends Searcher {
         boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT_EMBEDDING,false);
         boolean removeArticle = query.properties().getBoolean(REMOVE_ARTICLE_FROM_RESULT,true);
         Integer id = query.properties().getInteger(INPUT_ID, null);
-        Integer traverseId = traverseQueryTree(query.getModel().getQueryTree().getRoot());
+        Integer traverseId = extractRelatedToItem(query.getModel().getQueryTree());
         if (id == null && traverseId == null) { //Just return whatever this query was about
             query.trace("Did not find any related_id in the query",3);
            return execution.search(query);
@@ -94,25 +88,22 @@ public class RelatedPaperSearcherANN extends Searcher {
     }
 
     /**
-     * Look for the related_to:x in the query tree
+     * Finds a related_to item in the query and removes it
      *
-     * @return
+     * @return the id specified by the related_to item, or null if none
      */
-    private Integer traverseQueryTree(Item item) {
-        if (item instanceof IntItem) {
-            IntItem word = (IntItem)item;
-            if(word.getIndexName().equals(RELATED_TO_FIELD)) {
-                return Integer.parseInt(word.getRawWord());
-            }
-        }
-        else if (item instanceof CompositeItem) {
-            CompositeItem compositeItem =(CompositeItem)item;
-            for(Item subItem: compositeItem.items()) {
-                Integer id = traverseQueryTree(subItem);
-                if(id != null) {
-                    compositeItem.removeItem(subItem);
-                    return id;
+    private Integer extractRelatedToItem(CompositeItem parent) {
+        for (Item child : parent.items()) {
+            if (child instanceof IntItem) {
+                IntItem intItem = (IntItem) child;
+                if (intItem.getIndexName().equals(RELATED_TO_FIELD)) {
+                    parent.removeItem(child);
+                    return Integer.parseInt(intItem.getRawWord());
                 }
+            } else if (child instanceof CompositeItem) {
+                Integer relatedId = extractRelatedToItem((CompositeItem) child);
+                if (relatedId != null)
+                    return relatedId;
             }
         }
         return null;
