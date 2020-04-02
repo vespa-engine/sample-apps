@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author bratseth
  */
 public class RelatedPaperSearcherANNTest {
-
-    private final String expectedNNTerm =
-            "NEAREST_NEIGHBOR {field=title_embedding,queryTensorName=title_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
-
+    
+    private final String expectedNNOR =
+            "(OR NEAREST_NEIGHBOR {field=abstract_embedding,queryTensorName=abstract_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100} " +
+                    "NEAREST_NEIGHBOR {field=title_embedding,queryTensorName=title_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100})";
     @Test
     public void testNoopIfNoRelated_to() {
         Query original = new Query("?query=foo%20bar").clone();
@@ -33,7 +33,7 @@ public class RelatedPaperSearcherANNTest {
     public void testRelated_toTermAddsNearestNeighborTermAndArticleFilter() {
         Query query = new Query("?query=foo%20bar%20related_to:123");
         Result result = execute(query, new RelatedPaperSearcherANN(), new MockBackend());
-        assertEquals("+(AND (AND foo bar) " + expectedNNTerm + ") -id:123",
+        assertEquals("+(AND (AND foo bar) " + expectedNNOR + ") -id:123",
                      result.getQuery().getModel().getQueryTree().toString());
     }
 
@@ -41,7 +41,7 @@ public class RelatedPaperSearcherANNTest {
     public void testRelated_toTermAddsNearestNeighborTermAndArticleFilterWithRankItem() {
         Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any");
         Result result = execute(query, new RelatedPaperSearcherANN(), new MockBackend());
-        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + expectedNNTerm + ") -id:123",
+        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + expectedNNOR + ") -id:123",
                      result.getQuery().getModel().getQueryTree().toString());
     }
 
