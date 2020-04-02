@@ -42,7 +42,7 @@ public class RelatedPaperSearcherANN extends Searcher {
 
     @Override
     public Result search(Query query, Execution execution) {
-        boolean includeAbstract = query.properties().getBoolean(useAbstractEmbedding, false);
+        boolean includeAbstract = query.properties().getBoolean(useAbstractEmbedding, true);
         boolean filterRelatedArticle = query.properties().getBoolean(removeArticleFromResult, true);
 
         Optional<Integer> relatedArticleId = relatedArticleIdFrom(query);
