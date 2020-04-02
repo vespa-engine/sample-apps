@@ -2,17 +2,15 @@
 package ai.vespa.example.cord19;
 
 import ai.vespa.hosted.cd.StagingTest;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 @StagingTest
 class StagingVerificationTest {
 
     @Test
     @DisplayName("Verify documents can be searched after upgrade")
-    void verify() throws IOException {
+    void verify() {
 
     }
 

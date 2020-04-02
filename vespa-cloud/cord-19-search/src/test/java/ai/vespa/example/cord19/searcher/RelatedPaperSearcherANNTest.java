@@ -2,9 +2,6 @@
 package ai.vespa.example.cord19.searcher;
 
 import com.yahoo.component.chain.Chain;
-import com.yahoo.prelude.query.CompositeItem;
-import com.yahoo.prelude.query.IntItem;
-import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.WordItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
@@ -13,9 +10,9 @@ import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author bratseth

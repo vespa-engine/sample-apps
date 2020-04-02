@@ -3,17 +3,15 @@ package ai.vespa.example.cord19;
 
 import com.yahoo.application.Application;
 import com.yahoo.application.Networking;
-
 import java.nio.file.FileSystems;
 import java.util.Objects;
-
 
 /**
  * This uses the Application class to set up a container instance of this application
  * in this JVM. All other aspects of the application package than a single container
  * cluster is ignored. This is useful for e.g starting a container instance in your IDE
  * and serving real HTTP requests for interactive debugging.
- * <p>
+ *
  * After running main you can e.g open
  * http://localhost:8080/search/?query=title:foo&tracelevel=2
  * in a browser.

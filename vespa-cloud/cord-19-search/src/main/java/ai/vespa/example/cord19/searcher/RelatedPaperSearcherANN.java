@@ -1,6 +1,24 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.example.cord19.searcher;
+
+import com.yahoo.prelude.query.AndItem;
+import com.yahoo.prelude.query.CompositeItem;
+import com.yahoo.prelude.query.IntItem;
+import com.yahoo.prelude.query.Item;
+import com.yahoo.prelude.query.NearestNeighborItem;
+import com.yahoo.prelude.query.NotItem;
+import com.yahoo.prelude.query.OrItem;
+import com.yahoo.prelude.query.TermItem;
+import com.yahoo.prelude.query.WordItem;
+import com.yahoo.processing.request.CompoundName;
+import com.yahoo.search.Query;
+import com.yahoo.search.Result;
+import com.yahoo.search.result.Hit;
+import com.yahoo.search.Searcher;
+import com.yahoo.search.searchchain.Execution;
+import com.yahoo.tensor.Tensor;
+
+import java.util.Optional;
 
 /**
  * This searcher fetches an article by looking up the id as passed by &id parameter
@@ -10,162 +28,127 @@ package ai.vespa.example.cord19.searcher;
  * AND filters with the regular query (subject to &type and &query or &yql)
  *
  * The ranking profile used to rank is <i>related-ann</i>
+ *
+ * @author jobergum
  */
-
-import com.google.inject.Inject;
-import com.yahoo.prelude.query.*;
-import com.yahoo.processing.request.CompoundName;
-import com.yahoo.search.Query;
-import com.yahoo.search.Result;
-import com.yahoo.search.grouping.GroupingRequest;
-import com.yahoo.search.result.Hit;
-import com.yahoo.search.Searcher;
-import com.yahoo.search.searchchain.Execution;
-import com.yahoo.language.Linguistics;
-import com.yahoo.tensor.Tensor;
-
-
 public class RelatedPaperSearcherANN extends Searcher {
 
+    private static String relatedToField = "related_to";
+    private static String tensorSummary = "attributeprefetch";
 
-    public static String RELATED_TO_FIELD = "related_to";
-
-    public static CompoundName INPUT_ID = new CompoundName("id");
-    public static CompoundName USE_ABSTRACT_EMBEDDING = new CompoundName("use-abstract");
-    public static CompoundName REMOVE_ARTICLE_FROM_RESULT =  new CompoundName("remove-id");
-
-    public static String TENSOR_SUMMARY = "attributeprefetch";
-
-    class Article {
-        Tensor title; //scibert-nli embedding representation
-        Tensor article_abstract; //scibert-nli embedding representation
-
-        Article(Tensor title, Tensor article_abstract) {
-            this.title = title;
-            this.article_abstract = article_abstract;
-        }
-    }
-
+    private static CompoundName inputId = new CompoundName("id");
+    private static CompoundName useAbstractEmbedding = new CompoundName("use-abstract");
+    private static CompoundName removeArticleFromResult =  new CompoundName("remove-id");
 
     @Override
     public Result search(Query query, Execution execution) {
-        boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT_EMBEDDING,true);
-        boolean removeArticle = query.properties().getBoolean(REMOVE_ARTICLE_FROM_RESULT,true);
-        Integer id = query.properties().getInteger(INPUT_ID, null);
-        Integer traverseId = extractRelatedToItem(query.getModel().getQueryTree());
-        if (id == null && traverseId == null) { //Just return whatever this query was about
-            query.trace("Did not find any related_id in the query",3);
-           return execution.search(query);
-        }
-        if(traverseId != null)  {
-            id = traverseId;
-        }
-        Article article = getArticle(id,execution,query);
-        Query relatedQuery = generateRelatedQuery(article,query,includeAbstract);
+        boolean includeAbstract = query.properties().getBoolean(useAbstractEmbedding, true);
+        boolean filterRelatedArticle = query.properties().getBoolean(removeArticleFromResult, true);
 
+        Optional<Integer> relatedArticleId = relatedArticleIdFrom(query);
+        if (relatedArticleId.isEmpty()) return execution.search(query);
 
-        if(removeArticle) {
-            NotItem notItem = new NotItem();
-            notItem.addPositiveItem(relatedQuery.getModel().getQueryTree().getRoot());
-            notItem.addNegativeItem(new WordItem(id.toString(), "id", true));
-            relatedQuery.getModel().getQueryTree().setRoot(notItem);
-        }
-        return execution.search(relatedQuery);
+        Article article = fetchArticle(relatedArticleId.get(), execution, query);
+        addANNTerm(article, includeAbstract, query);
+
+        if (filterRelatedArticle)
+            addArticleFilterTerm(relatedArticleId.get(), query);
+        return execution.search(query);
     }
 
-    private Article getArticle(Integer id, Execution execution,Query query) {
+    private Optional<Integer> relatedArticleIdFrom(Query query) {
+        Optional<Integer> idTerm = extractRelatedToItem(query.getModel().getQueryTree());
+        Optional<Integer> idParameter = Optional.ofNullable(query.properties().getInteger(inputId));
+        if (idTerm.isPresent() && idParameter.isPresent() && ! idTerm.equals(idParameter))
+            throw new IllegalArgumentException("Cannot specify both a related article id parameter and id term");
+        return idTerm.isPresent() ? idTerm : idParameter;
+    }
+
+    private Article fetchArticle(Integer id, Execution execution, Query query) {
         Query articleQuery = new Query();
         query.attachContext(articleQuery);
-        articleQuery.getPresentation().setSummary(TENSOR_SUMMARY);
+        articleQuery.getPresentation().setSummary(tensorSummary);
         WordItem idFilter = new WordItem(id.toString(), "id", true);
         articleQuery.getModel().getQueryTree().setRoot(idFilter);
         articleQuery.getModel().setRestrict("doc");
         articleQuery.setHits(1);
         articleQuery.getRanking().setProfile("unranked");
         Result articleResult = execution.search(articleQuery);
-        execution.fill(articleResult,TENSOR_SUMMARY);
-        return extractFromResult(articleResult);
+        execution.fill(articleResult, tensorSummary);
+        return articleFromResult(articleResult);
     }
 
     /**
      * Finds a related_to item in the query and removes it
      *
-     * @return the id specified by the related_to item, or null if none
+     * @return the id specified by the related_to item, or empty if none
      */
-    private Integer extractRelatedToItem(CompositeItem parent) {
+    private Optional<Integer> extractRelatedToItem(CompositeItem parent) {
         for (Item child : parent.items()) {
             if (child instanceof IntItem) {
                 IntItem intItem = (IntItem) child;
-                if (intItem.getIndexName().equals(RELATED_TO_FIELD)) {
+                if (intItem.getIndexName().equals(relatedToField)) {
                     parent.removeItem(child);
-                    return Integer.parseInt(intItem.getRawWord());
+                    return Optional.of(Integer.parseInt(intItem.getRawWord()));
                 }
             } else if (child instanceof CompositeItem) {
-                Integer relatedId = extractRelatedToItem((CompositeItem) child);
-                if (relatedId != null)
+                Optional<Integer> relatedId = extractRelatedToItem((CompositeItem) child);
+                if (relatedId.isPresent())
                     return relatedId;
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    private Article extractFromResult(Result r) {
-        if (r.getTotalHitCount() == 0 || r.hits().get(0) == null)
-            return null;
-        Hit hit = r.hits().get(0);
-        Tensor title = (Tensor)hit.getField("title_embedding");
-        Tensor article_tensor = (Tensor)hit.getField(("abstract_embedding"));
-        return new Article(title,article_tensor);
+    private Article articleFromResult(Result result) {
+        if (result.hits().size() < 1)
+            throw new IllegalArgumentException("Requested article not found");
+
+        Hit articleHit = result.hits().get(0);
+        return new Article((Tensor)articleHit.getField("title_embedding"),
+                           (Tensor)articleHit.getField(("abstract_embedding")));
     }
 
     /**
+     * Adds aterm to the given query to find related articles
      *
-     * @param a the article to fetch related articles for
-     * @param includeAbstract if true also the abstract embedding is used
-     * @return The related query
+     * @param article the article to fetch related articles for
+     * @param includeAbstract whether the vector embedding from the abstract should be used
      */
+    private void addANNTerm(Article article, boolean includeAbstract, Query query) {
+        Item nnTitle = createNNItem("title_embedding", "title_vector");
+        query.getRanking().getFeatures().put("query(title_vector)", article.titleEmbedding);
 
-    private Query generateRelatedQuery(Article a, Query originalQuery, boolean includeAbstract) {
-        Query relatedQuery = originalQuery.clone();
-        relatedQuery.getSelect().setGroupingExpressionString(originalQuery.getSelect().getGroupingExpressionString());
-        Item root = relatedQuery.getModel().getQueryTree().getRoot();
-        if(root instanceof IntItem) {
-            IntItem r = (IntItem)root;
-            if(r.getIndexName().equals(RELATED_TO_FIELD)) {
-                root = new NullItem();
-            }
-        }
         Item nnRoot;
-        NearestNeighborItem nnTitle = new NearestNeighborItem("title_embedding",
-                "title_vector");
-        nnTitle.setAllowApproximate(false);
-        nnTitle.setTargetNumHits(100);
-        relatedQuery.getRanking().getFeatures().put("query(title_vector)", a.title);
-
-        if(includeAbstract && a.article_abstract != null) {
-            NearestNeighborItem nnAbstract = new NearestNeighborItem("abstract_embedding",
-                    "abstract_vector");
-            nnAbstract.setAllowApproximate(false);
-            nnAbstract.setTargetNumHits(100);
-            relatedQuery.getRanking().getFeatures().put("query(abstract_vector)", a.article_abstract);
+        if (includeAbstract && article.abstractEmbedding != null) {
+            NearestNeighborItem nnAbstract = createNNItem("abstract_embedding", "abstract_vector");
+            query.getRanking().getFeatures().put("query(abstract_vector)", article.abstractEmbedding);
             nnRoot = new OrItem();
             ((OrItem) nnRoot).addItem(nnAbstract);
             ((OrItem) nnRoot).addItem(nnTitle);
         } else  {
             nnRoot = nnTitle;
         }
-        //Combine
+
+        // Combine
+        Item root = query.getModel().getQueryTree().getRoot();
         if ( ! hasTextTerms(root)) {
-            relatedQuery.getModel().getQueryTree().setRoot(nnRoot);
-            //query is empty must rank by vectors
-            relatedQuery.getRanking().setProfile("related-ann");
+            query.getModel().getQueryTree().setRoot(nnRoot);
+            // query is empty -> Must rank by vectors
+            query.getRanking().setProfile("related-ann");
         } else {
             AndItem andItem = new AndItem();
             andItem.addItem(root);
             andItem.addItem(nnRoot);
-            relatedQuery.getModel().getQueryTree().setRoot(andItem);
+            query.getModel().getQueryTree().setRoot(andItem);
         }
-        return relatedQuery;
+    }
+
+    private NearestNeighborItem createNNItem(String field, String query) {
+        NearestNeighborItem nnTitle = new NearestNeighborItem(field, query);
+        nnTitle.setAllowApproximate(false);
+        nnTitle.setTargetNumHits(100);
+        return nnTitle;
     }
 
     private boolean hasTextTerms(Item item) {
@@ -178,6 +161,25 @@ public class RelatedPaperSearcherANN extends Searcher {
         if ((item instanceof TermItem) && ! item.isFilter())
             return true;
         return false;
+    }
+
+    private void addArticleFilterTerm(Integer relatedArticleId, Query query) {
+        NotItem notItem = new NotItem();
+        notItem.addPositiveItem(query.getModel().getQueryTree().getRoot());
+        notItem.addNegativeItem(new WordItem(relatedArticleId.toString(), "id", true));
+        query.getModel().getQueryTree().setRoot(notItem);
+    }
+
+    private static class Article {
+
+        final Tensor titleEmbedding; // scibert-nli embedding
+        final Tensor abstractEmbedding; // scibert-nli embedding
+
+        Article(Tensor titleEmbedding, Tensor abstractEmbedding) {
+            this.titleEmbedding = titleEmbedding;
+            this.abstractEmbedding = abstractEmbedding;
+        }
+
     }
 
 }

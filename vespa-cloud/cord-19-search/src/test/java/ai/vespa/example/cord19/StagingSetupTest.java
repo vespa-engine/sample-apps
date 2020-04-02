@@ -5,16 +5,13 @@ import ai.vespa.hosted.cd.StagingSetup;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @StagingSetup
 class StagingSetupTest {
 
     @Test
     @DisplayName("Feed documents to the staging cluster, before upgrade")
-    void feedAndSearch() throws IOException {
-        assertEquals(200,200);
+    void feedAndSearch() {
+        // TODO
     }
 
 }
