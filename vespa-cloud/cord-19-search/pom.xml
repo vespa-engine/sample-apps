@@ -20,7 +20,18 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>vespa-team</tenant>                                 <!-- Name from the web console -->
+        <tenant>vespa-team</tenant>                          <!-- Name from the web console -->
         <application>cord-19</application>                   <!-- Name from the web console -->
+        <junit_version>4.11</junit_version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit_version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
 </project>
