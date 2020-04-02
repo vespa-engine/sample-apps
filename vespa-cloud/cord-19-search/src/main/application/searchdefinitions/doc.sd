@@ -218,6 +218,7 @@ search doc {
     from-disk
     summary title type string {source: title}
     summary abstract type string {source: abstract}
+    summary body_text type string {source: body_text}
     summary journal type string {source: journal}
     summary id type int {source: id}
     summary timestamp type long {source:timestamp} 
