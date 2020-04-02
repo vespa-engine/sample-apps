@@ -17,7 +17,7 @@
           </chain>
 
         </search>
-        <nodes count="2">
+        <nodes count="[2,4]">
           <resources memory="32Gb" vcpu="16" disk="100Gb" disk-speed="fast" /> 
         </nodes>
     </container>
@@ -34,7 +34,7 @@
         <documents>
             <document type="doc" mode="index" />
         </documents>
-        <nodes count="2">
+        <nodes count="[2,4]">
           <resources memory="32Gb" vcpu="16" disk="100Gb" disk-speed="fast" />
         </nodes>
     </content>
