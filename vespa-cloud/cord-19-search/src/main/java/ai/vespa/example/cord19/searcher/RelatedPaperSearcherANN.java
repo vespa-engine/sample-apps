@@ -32,24 +32,12 @@ import com.yahoo.tensor.Tensor;
  */
 public class RelatedPaperSearcherANN extends Searcher {
 
-    public static String RELATED_TO_FIELD = "related_to";
+    private static String RELATED_TO_FIELD = "related_to";
+    private static String TENSOR_SUMMARY = "attributeprefetch";
 
-    public static CompoundName INPUT_ID = new CompoundName("id");
-    public static CompoundName USE_ABSTRACT_EMBEDDING = new CompoundName("use-abstract");
-    public static CompoundName REMOVE_ARTICLE_FROM_RESULT =  new CompoundName("remove-id");
-
-    public static String TENSOR_SUMMARY = "attributeprefetch";
-
-    class Article {
-        Tensor title; //scibert-nli embedding representation
-        Tensor article_abstract; //scibert-nli embedding representation
-
-        Article(Tensor title, Tensor article_abstract) {
-            this.title = title;
-            this.article_abstract = article_abstract;
-        }
-    }
-
+    private static CompoundName INPUT_ID = new CompoundName("id");
+    private static CompoundName USE_ABSTRACT_EMBEDDING = new CompoundName("use-abstract");
+    private static CompoundName REMOVE_ARTICLE_FROM_RESULT =  new CompoundName("remove-id");
 
     @Override
     public Result search(Query query, Execution execution) {
@@ -182,6 +170,18 @@ public class RelatedPaperSearcherANN extends Searcher {
         if ((item instanceof TermItem) && ! item.isFilter())
             return true;
         return false;
+    }
+
+    private static class Article {
+
+        final Tensor title; // scibert-nli embedding representation
+        final Tensor article_abstract; // scibert-nli embedding representation
+
+        Article(Tensor title, Tensor article_abstract) {
+            this.title = title;
+            this.article_abstract = article_abstract;
+        }
+
     }
 
 }
