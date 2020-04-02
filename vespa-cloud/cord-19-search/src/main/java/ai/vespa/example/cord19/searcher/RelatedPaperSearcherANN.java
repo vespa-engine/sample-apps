@@ -49,7 +49,7 @@ public class RelatedPaperSearcherANN extends Searcher {
 
     @Override
     public Result search(Query query, Execution execution) {
-        boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT_EMBEDDING,false);
+        boolean includeAbstract = query.properties().getBoolean(USE_ABSTRACT_EMBEDDING,true);
         boolean removeArticle = query.properties().getBoolean(REMOVE_ARTICLE_FROM_RESULT,true);
         Integer id = query.properties().getInteger(INPUT_ID, null);
         Integer traverseId = extractRelatedToItem(query.getModel().getQueryTree());
