@@ -19,8 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class RelatedPaperSearcherANNTest {
 
-    private final String expectedNNTerm =
+    private final String titleNNTerm =
             "NEAREST_NEIGHBOR {field=title_embedding,queryTensorName=title_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
+
+    private final String abstractNNTerm =
+            "NEAREST_NEIGHBOR {field=abstract_embedding,queryTensorName=abstract_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
 
     @Test
     public void testNoopIfNoRelated_to() {
@@ -30,18 +33,18 @@ public class RelatedPaperSearcherANNTest {
     }
 
     @Test
-    public void testRelated_toTermAddsNearestNeighborTermAndArticleFilter() {
-        Query query = new Query("?query=foo%20bar%20related_to:123");
+    public void testRelatedToTitleOnly() {
+        Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-abstract=false");
         Result result = execute(query, new RelatedPaperSearcherANN(), new MockBackend());
-        assertEquals("+(AND (AND foo bar) " + expectedNNTerm + ") -id:123",
+        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + titleNNTerm + ") -id:123",
                      result.getQuery().getModel().getQueryTree().toString());
     }
 
     @Test
-    public void testRelated_toTermAddsNearestNeighborTermAndArticleFilterWithRankItem() {
-        Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any");
+    public void testRelatedToTitleAndAbstract() {
+        Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-abstract=true");
         Result result = execute(query, new RelatedPaperSearcherANN(), new MockBackend());
-        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + expectedNNTerm + ") -id:123",
+        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) (OR " + abstractNNTerm + " " + titleNNTerm + ")) -id:123",
                      result.getQuery().getModel().getQueryTree().toString());
     }
 
