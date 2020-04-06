@@ -294,7 +294,7 @@ search doc {
     }
   }
 
-  #Related article ranking profiles (experimental)
+  #Related articleEmbeddings ranking profiles (experimental)
   rank-profile related-1 inherits default {
     first-phase {
       expression: nativeFieldMatch(title,abstract) 
