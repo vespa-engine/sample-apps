@@ -17,34 +17,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author bratseth
  */
-public class RelatedPaperSearcherANNTest {
+public class RelatedArticlesByNNSearcherTest {
 
-    private final String titleNNTerm =
+    private final String titleNNItem =
             "NEAREST_NEIGHBOR {field=title_embedding,queryTensorName=title_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
 
-    private final String abstractNNTerm =
+    private final String abstractNNItem =
             "NEAREST_NEIGHBOR {field=abstract_embedding,queryTensorName=abstract_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
 
     @Test
     public void testNoopIfNoRelated_to() {
         Query original = new Query("?query=foo%20bar").clone();
-        Result result = execute(original, new RelatedPaperSearcherANN(), new MockBackend());
+        Result result = execute(original, new RelatedArticlesByNNSearcher(), new MockBackend());
         assertEquals(original, result.getQuery());
     }
 
     @Test
     public void testRelatedToTitleOnly() {
         Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-abstract=false");
-        Result result = execute(query, new RelatedPaperSearcherANN(), new MockBackend());
-        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + titleNNTerm + ") -id:123",
+        Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
+        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + titleNNItem + ") -id:123",
                      result.getQuery().getModel().getQueryTree().toString());
     }
 
     @Test
     public void testRelatedToTitleAndAbstract() {
         Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-abstract=true");
-        Result result = execute(query, new RelatedPaperSearcherANN(), new MockBackend());
-        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) (OR " + abstractNNTerm + " " + titleNNTerm + ")) -id:123",
+        Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
+        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) (OR " + abstractNNItem + " " + titleNNItem + ")) -id:123",
                      result.getQuery().getModel().getQueryTree().toString());
     }
 

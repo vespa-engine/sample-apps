@@ -249,7 +249,7 @@ keyword index volume
 index des motsclés
 table des motsclés
 table des auteurs
-commentary on the feature article
+commentary on the feature articleEmbeddings
 index of keywords
 index of articles published
 ecc abstracts

@@ -3,65 +3,30 @@ package ai.vespa.example.cord19.searcher;
 
 import com.yahoo.prelude.query.AndItem;
 import com.yahoo.prelude.query.CompositeItem;
-import com.yahoo.prelude.query.IntItem;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.NearestNeighborItem;
-import com.yahoo.prelude.query.NotItem;
 import com.yahoo.prelude.query.OrItem;
 import com.yahoo.prelude.query.TermItem;
 import com.yahoo.prelude.query.WordItem;
-import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.result.Hit;
-import com.yahoo.search.Searcher;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 
-import java.util.Optional;
-
 /**
- * This searcher fetches an article by looking up the id as passed by &id parameter
- * and extracts the scibert-nli sentence embeddings for title and abstract.
- *
- * It performs a searching using OR (nearestNeighbor(title_embeding) nearestNeighbor(abstrac_embedding))
- * AND filters with the regular query (subject to &type and &query or &yql)
- *
- * The ranking profile used to rank is <i>related-ann</i>
+ * Fetches related articles by searching for articles with many of the same words using a WeakAnd item.
  *
  * @author jobergum
  */
-public class RelatedPaperSearcherANN extends Searcher {
+public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
 
-    private static String relatedToField = "related_to";
     private static String tensorSummary = "attributeprefetch";
 
-    private static CompoundName inputId = new CompoundName("id");
-    private static CompoundName useAbstractEmbedding = new CompoundName("use-abstract");
-    private static CompoundName removeArticleFromResult =  new CompoundName("remove-id");
-
     @Override
-    public Result search(Query query, Execution execution) {
-        boolean includeAbstract = query.properties().getBoolean(useAbstractEmbedding, true);
-        boolean filterRelatedArticle = query.properties().getBoolean(removeArticleFromResult, true);
-
-        Optional<Integer> relatedArticleId = relatedArticleIdFrom(query);
-        if (relatedArticleId.isEmpty()) return execution.search(query);
-
-        Article article = fetchArticle(relatedArticleId.get(), execution, query);
-        addANNTerm(article, includeAbstract, query);
-
-        if (filterRelatedArticle)
-            addArticleFilterTerm(relatedArticleId.get(), query);
-        return execution.search(query);
-    }
-
-    private Optional<Integer> relatedArticleIdFrom(Query query) {
-        Optional<Integer> idTerm = extractRelatedToItem(query.getModel().getQueryTree());
-        Optional<Integer> idParameter = Optional.ofNullable(query.properties().getInteger(inputId));
-        if (idTerm.isPresent() && idParameter.isPresent() && ! idTerm.equals(idParameter))
-            throw new IllegalArgumentException("Cannot specify both a related article id parameter and id term");
-        return idTerm.isPresent() ? idTerm : idParameter;
+    protected void addRelatedItem(Integer relatedArticleId, boolean includeAbstract, Execution execution, Query query) {
+        Article article = fetchArticle(relatedArticleId, execution, query);
+        addANNItem(article, includeAbstract, query);
     }
 
     private Article fetchArticle(Integer id, Execution execution, Query query) {
@@ -75,32 +40,10 @@ public class RelatedPaperSearcherANN extends Searcher {
         articleQuery.getRanking().setProfile("unranked");
         Result articleResult = execution.search(articleQuery);
         execution.fill(articleResult, tensorSummary);
-        return articleFromResult(articleResult);
+        return articleFrom(articleResult);
     }
 
-    /**
-     * Finds a related_to item in the query and removes it
-     *
-     * @return the id specified by the related_to item, or empty if none
-     */
-    private Optional<Integer> extractRelatedToItem(CompositeItem parent) {
-        for (Item child : parent.items()) {
-            if (child instanceof IntItem) {
-                IntItem intItem = (IntItem) child;
-                if (intItem.getIndexName().equals(relatedToField)) {
-                    parent.removeItem(child);
-                    return Optional.of(Integer.parseInt(intItem.getRawWord()));
-                }
-            } else if (child instanceof CompositeItem) {
-                Optional<Integer> relatedId = extractRelatedToItem((CompositeItem) child);
-                if (relatedId.isPresent())
-                    return relatedId;
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Article articleFromResult(Result result) {
+    private Article articleFrom(Result result) {
         if (result.hits().size() < 1)
             throw new IllegalArgumentException("Requested article not found");
 
@@ -115,7 +58,7 @@ public class RelatedPaperSearcherANN extends Searcher {
      * @param article the article to fetch related articles for
      * @param includeAbstract whether the vector embedding from the abstract should be used
      */
-    private void addANNTerm(Article article, boolean includeAbstract, Query query) {
+    private void addANNItem(Article article, boolean includeAbstract, Query query) {
         Item nnTitle = createNNItem("title_embedding", "title_vector");
         query.getRanking().getFeatures().put("query(title_vector)", article.titleEmbedding);
 
@@ -161,13 +104,6 @@ public class RelatedPaperSearcherANN extends Searcher {
         if ((item instanceof TermItem) && ! item.isFilter())
             return true;
         return false;
-    }
-
-    private void addArticleFilterTerm(Integer relatedArticleId, Query query) {
-        NotItem notItem = new NotItem();
-        notItem.addPositiveItem(query.getModel().getQueryTree().getRoot());
-        notItem.addNegativeItem(new WordItem(relatedArticleId.toString(), "id", true));
-        query.getModel().getQueryTree().setRoot(notItem);
     }
 
     private static class Article {
