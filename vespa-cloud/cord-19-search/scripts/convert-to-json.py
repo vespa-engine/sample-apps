@@ -27,7 +27,10 @@ def long_text_parse(name,md):
      
 
 def parse_file(dir,sha):
-  file = path.join(DATA_DIR, dir, str(sha) + '.json')
+  parts = sha.split(';')
+  if len(parts) > 1:
+    sha = parts[0]  
+  file = path.join(DATA_DIR, dir, 'pdf_json',  str(sha) + '.json')
   if not path.exists(file):
     return ([], {}, {}, [],'','')
   with open(file, 'r') as f:
@@ -130,7 +133,7 @@ def produce_vespa_json(idx, row):
   except:
     pass
   doi = get(row, 'doi', None)
-  has_full_text = row['has_full_text']
+  has_full_text = row['has_pdf_parse']
   if has_full_text:
     authors, abstract_paragraphs, body_paragraphs, bib_entries, abstract, body = parse_file(full_text_dir,sha)
   else:
