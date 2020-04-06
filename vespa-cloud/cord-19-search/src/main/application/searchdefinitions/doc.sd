@@ -102,6 +102,16 @@ search doc {
       index: enable-bm25
     }
 
+    field abstract_t5 type string {
+      indexing: summary|index 
+      bolding:on
+      index: enable-bm25
+    }
+
+    field entities type array<string> {
+      indexing: summary|attribute
+    }
+
     field introduction type string {
       indexing: summary|index 
       summary: dynamic
@@ -133,6 +143,12 @@ search doc {
     }
 
     field body_text type string {
+      indexing: summary|index 
+      index: enable-bm25
+      summary: dynamic
+    }
+
+    field body_text_t5 type string {
       indexing: summary|index 
       index: enable-bm25
       summary: dynamic
@@ -218,7 +234,9 @@ search doc {
     from-disk
     summary title type string {source: title}
     summary abstract type string {source: abstract}
+    summary abstract_t5 type string {source: abstract_t5}
     summary body_text type string {source: body_text}
+    summary body_text_t5 type string {source: body_text_t5}
     summary journal type string {source: journal}
     summary id type int {source: id}
     summary timestamp type long {source:timestamp} 
