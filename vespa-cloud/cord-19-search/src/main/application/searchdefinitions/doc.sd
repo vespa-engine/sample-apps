@@ -219,6 +219,11 @@ search doc {
     field title_embedding type tensor<float>(x[768]) {
       indexing: attribute
     }
+
+    field specter_embedding type tensor<float>(x[768]) {
+      indexing: attribute
+    }
+
     field related_to type int {}
   }
 
