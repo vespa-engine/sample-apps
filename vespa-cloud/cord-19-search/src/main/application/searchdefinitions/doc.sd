@@ -232,7 +232,7 @@ search doc {
   }
 
   fieldset all {
-    fields: title, abstract, body_text, citations_supporting 
+    fields: title, abstract, body_text
   }
 
   document-summary short {
