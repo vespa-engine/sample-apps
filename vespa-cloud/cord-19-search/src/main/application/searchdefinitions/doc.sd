@@ -232,7 +232,7 @@ search doc {
   }
 
   fieldset all {
-    fields: title, abstract, body_text 
+    fields: title, abstract, body_text, citations_supporting 
   }
 
   document-summary short {
@@ -299,41 +299,17 @@ search doc {
     }
   }
 
-  #Related articleEmbeddings ranking profiles (experimental)
-  rank-profile related-1 inherits default {
-    first-phase {
-      expression: nativeFieldMatch(title,abstract) 
-    }
-  }
-
-  rank-profile related-2 inherits default {
-    first-phase {
-      expression: 0.7*textSimilarity(title) + 0.3*textSimilarity(abstract) 
-    }
-  }
-
   rank-profile related-ann inherits default {
       first-phase {
         expression: 0.7*rawScore(title_embedding) + 0.3*rawScore(abstract_embedding)
       }
   }
 
-  rank-profile related-ann-with-matching inherits default {
-        function match_score() {
-          expression: nativeRank(title) + nativeRank(abstract)
-        }
-        function vector_score(){
-          expression: rawScore(title_embedding) + rawScore(abstract_embedding)
-        }
-        first-phase {
-          expression: 0.8*vector_score() + 0.2*match_score()
-        }
-        summary-features {
-          vector_score()
-          match_score()
-        }
-
+  rank-profile related-specter {
+    first-phase {
+      expression:rawScore(specter_embedding)
     }
+  }
 
   rank-profile semantic-search-abstract {
     first-phase {
