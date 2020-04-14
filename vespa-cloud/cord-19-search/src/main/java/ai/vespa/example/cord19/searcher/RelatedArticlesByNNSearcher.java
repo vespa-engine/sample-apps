@@ -48,41 +48,50 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
             throw new IllegalArgumentException("Requested article not found");
 
         Hit articleHit = result.hits().get(0);
-        return new Article((Tensor)articleHit.getField("title_embedding"),
-                           (Tensor)articleHit.getField(("abstract_embedding")));
+        return new Article((Tensor) articleHit.getField("title_embedding"),
+                (Tensor) articleHit.getField("abstract_embedding"),
+                (Tensor) articleHit.getField("specter_embedding"));
     }
 
     /**
      * Adds aterm to the given query to find related articles
      *
-     * @param article the article to fetch related articles for
+     * @param article         the article to fetch related articles for
      * @param includeAbstract whether the vector embedding from the abstract should be used
      */
     private void addANNItem(Article article, boolean includeAbstract, Query query) {
-        Item nnTitle = createNNItem("title_embedding", "title_vector");
-        query.getRanking().getFeatures().put("query(title_vector)", article.titleEmbedding);
-
         Item nnRoot;
-        if (includeAbstract && article.abstractEmbedding != null) {
-            NearestNeighborItem nnAbstract = createNNItem("abstract_embedding", "abstract_vector");
-            query.getRanking().getFeatures().put("query(abstract_vector)", article.abstractEmbedding);
-            nnRoot = new OrItem();
-            ((OrItem) nnRoot).addItem(nnAbstract);
-            ((OrItem) nnRoot).addItem(nnTitle);
-        } else  {
-            nnRoot = nnTitle;
+        String rankProfile = "related-ann";
+        if(query.properties().getBoolean("use-specter")) {
+            nnRoot = createNNItem("specter_embedding", "specter_vector");
+            query.getRanking().getFeatures().put("query(specter_vector)", article.specterEmbedding);
+            rankProfile = "related-specter";
+        } else {
+            Item nnTitle = createNNItem("title_embedding", "title_vector");
+            query.getRanking().getFeatures().put("query(title_vector)", article.titleEmbedding);
+            if (includeAbstract && article.abstractEmbedding != null) {
+                NearestNeighborItem nnAbstract = createNNItem("abstract_embedding", "abstract_vector");
+                query.getRanking().getFeatures().put("query(abstract_vector)", article.abstractEmbedding);
+                nnRoot = new OrItem();
+                ((OrItem) nnRoot).addItem(nnAbstract);
+                ((OrItem) nnRoot).addItem(nnTitle);
+            } else {
+                nnRoot = nnTitle;
+            }
         }
+        filter(rankProfile, query,nnRoot);
+    }
 
-        // Combine
+    private void filter(String rankprofile, Query query, Item nn) {
         Item root = query.getModel().getQueryTree().getRoot();
-        if ( ! hasTextTerms(root)) {
-            query.getModel().getQueryTree().setRoot(nnRoot);
+        if (!hasTextTerms(root)) {
+            query.getModel().getQueryTree().setRoot(nn);
             // query is empty -> Must rank by vectors
-            query.getRanking().setProfile("related-ann");
+            query.getRanking().setProfile(rankprofile);
         } else {
             AndItem andItem = new AndItem();
             andItem.addItem(root);
-            andItem.addItem(nnRoot);
+            andItem.addItem(nn);
             query.getModel().getQueryTree().setRoot(andItem);
         }
     }
@@ -96,12 +105,12 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
 
     private boolean hasTextTerms(Item item) {
         if (item instanceof CompositeItem) {
-            for (Item child : ((CompositeItem)item).items())
+            for (Item child : ((CompositeItem) item).items())
                 if (hasTextTerms(child))
                     return true;
 
         }
-        if ((item instanceof TermItem) && ! item.isFilter())
+        if ((item instanceof TermItem) && !item.isFilter())
             return true;
         return false;
     }
@@ -110,10 +119,12 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
 
         final Tensor titleEmbedding; // scibert-nli embedding
         final Tensor abstractEmbedding; // scibert-nli embedding
+        final Tensor specterEmbedding; //SPECTER EMBEDDING
 
-        Article(Tensor titleEmbedding, Tensor abstractEmbedding) {
+        Article(Tensor titleEmbedding, Tensor abstractEmbedding, Tensor specterEmbedding) {
             this.titleEmbedding = titleEmbedding;
             this.abstractEmbedding = abstractEmbedding;
+            this.specterEmbedding = specterEmbedding;
         }
 
     }

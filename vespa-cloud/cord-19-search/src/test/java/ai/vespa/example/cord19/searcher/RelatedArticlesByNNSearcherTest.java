@@ -25,6 +25,9 @@ public class RelatedArticlesByNNSearcherTest {
     private final String abstractNNItem =
             "NEAREST_NEIGHBOR {field=abstract_embedding,queryTensorName=abstract_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
 
+    private final String specterNNItem =
+            "NEAREST_NEIGHBOR {field=specter_embedding,queryTensorName=specter_vector,hnsw.exploreAdditionalHits=0,approximate=false,targetNumHits=100}";
+
     @Test
     public void testNoopIfNoRelated_to() {
         Query original = new Query("?query=foo%20bar").clone();
@@ -48,6 +51,25 @@ public class RelatedArticlesByNNSearcherTest {
                      result.getQuery().getModel().getQueryTree().toString());
     }
 
+    @Test
+    public void testRelatedUsingSpecter() {
+        Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-specter&ranking=bm25");
+        Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
+        assertEquals("+(AND (RANK (AND \"south korea\") (AND covid 19)) " + specterNNItem + ") -id:123",
+                result.getQuery().getModel().getQueryTree().toString());
+        assertEquals(query.getRanking().getProfile(), "bm25");
+    }
+
+    @Test
+    public void testRelatedUsingSpecterRankProfile() {
+        Query query = new Query("?query=%2Brelated_to:123&type=any&use-specter&ranking=bm25");
+        Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
+        assertEquals("+" + specterNNItem + " -id:123",
+                result.getQuery().getModel().getQueryTree().toString());
+        assertEquals(query.getRanking().getProfile(), "related-specter");
+    }
+
+
     private Result execute(Query query, Searcher... searcher) {
         Execution execution = new Execution(new Chain<>(searcher), Execution.Context.createContextStub());
         return execution.search(query);
@@ -64,6 +86,7 @@ public class RelatedArticlesByNNSearcherTest {
                 Hit articleHit = new Hit("ignored", 1.0);
                 articleHit.setField("title_embedding", mockEmbedding());
                 articleHit.setField("abstract_embedding", mockEmbedding());
+                articleHit.setField("specter_embedding", mockEmbedding());
                 result.hits().add(articleHit);
                 return result;
             }
