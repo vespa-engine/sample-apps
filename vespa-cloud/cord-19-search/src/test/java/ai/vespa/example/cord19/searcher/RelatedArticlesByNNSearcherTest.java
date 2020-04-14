@@ -52,6 +52,22 @@ public class RelatedArticlesByNNSearcherTest {
     }
 
     @Test
+    public void testRelatedToTitleAndAbstractAndFilter() {
+        Query query = new Query("?query=%2Brelated_to:123&type=any&use-abstract=true&filter=%2Bsource:medrxiv");
+        Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
+        assertEquals("+(AND (AND |source:medrxiv) (OR " + abstractNNItem + " " + titleNNItem + ")) -id:123",
+                result.getQuery().getModel().getQueryTree().toString());
+    }
+
+    @Test
+    public void testRelatedToTitleAndAbstractAndFilterWithQueryTerm() {
+        Query query = new Query("?query=%2BCovid-19+%2Brelated_to:123&type=any&use-abstract=true&filter=%2Bsource:medrxiv");
+        Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
+        assertEquals("+(AND (AND Covid 19 |source:medrxiv) (OR " + abstractNNItem + " " + titleNNItem + ")) -id:123",
+                result.getQuery().getModel().getQueryTree().toString());
+    }
+
+    @Test
     public void testRelatedUsingSpecter() {
         Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-specter&ranking=bm25");
         Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
@@ -62,7 +78,7 @@ public class RelatedArticlesByNNSearcherTest {
 
     @Test
     public void testRelatedUsingSpecterRankProfile() {
-        Query query = new Query("?query=%2Brelated_to:123&type=any&use-specter&ranking=bm25");
+        Query query = new Query("?query=related_to:123&type=any&use-specter&ranking=bm25");
         Result result = execute(query, new RelatedArticlesByNNSearcher(), new MockBackend());
         assertEquals("+" + specterNNItem + " -id:123",
                 result.getQuery().getModel().getQueryTree().toString());

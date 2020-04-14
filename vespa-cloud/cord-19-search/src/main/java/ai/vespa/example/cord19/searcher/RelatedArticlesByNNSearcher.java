@@ -8,6 +8,7 @@ import com.yahoo.prelude.query.NearestNeighborItem;
 import com.yahoo.prelude.query.OrItem;
 import com.yahoo.prelude.query.TermItem;
 import com.yahoo.prelude.query.WordItem;
+import com.yahoo.prelude.query.NullItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.result.Hit;
@@ -85,14 +86,15 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
     private void filter(String rankprofile, Query query, Item nn) {
         Item root = query.getModel().getQueryTree().getRoot();
         if (!hasTextTerms(root)) {
-            query.getModel().getQueryTree().setRoot(nn);
-            // query is empty -> Must rank by vectors
             query.getRanking().setProfile(rankprofile);
-        } else {
+        }
+        if (!(root instanceof NullItem || root == null)) {
             AndItem andItem = new AndItem();
             andItem.addItem(root);
             andItem.addItem(nn);
             query.getModel().getQueryTree().setRoot(andItem);
+        } else {
+            query.getModel().getQueryTree().setRoot(nn);
         }
     }
 
