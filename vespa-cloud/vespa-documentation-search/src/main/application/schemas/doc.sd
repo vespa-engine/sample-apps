@@ -20,11 +20,6 @@ schema doc {
         }
 
         # e.g. open, cloud
-        field doctype type string {
-            indexing: summary | attribute
-        }
-
-        # e.g. open, cloud
         field namespace type string {
             indexing: summary | attribute
         }
@@ -44,7 +39,7 @@ schema doc {
             expression: query(titleWeight) * bm25(title) + query(contentsWeight) * bm25(content)
         }
         summary-features {
-            attribute(doctype)
+            attribute(namespace)
             query(titleWeight)
             query(contentsWeight)
             fieldMatch(title)
