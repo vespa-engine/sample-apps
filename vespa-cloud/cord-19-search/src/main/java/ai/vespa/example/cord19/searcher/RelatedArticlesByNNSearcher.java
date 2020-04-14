@@ -1,7 +1,14 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.cord19.searcher;
 
-import com.yahoo.prelude.query.*;
+import com.yahoo.prelude.query.AndItem;
+import com.yahoo.prelude.query.CompositeItem;
+import com.yahoo.prelude.query.Item;
+import com.yahoo.prelude.query.NearestNeighborItem;
+import com.yahoo.prelude.query.OrItem;
+import com.yahoo.prelude.query.TermItem;
+import com.yahoo.prelude.query.WordItem;
+import com.yahoo.prelude.query.NullItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.result.Hit;
