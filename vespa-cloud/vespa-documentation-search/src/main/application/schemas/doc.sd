@@ -1,4 +1,4 @@
-search doc {
+schema doc {
 
     document doc {
 
