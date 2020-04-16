@@ -10,7 +10,6 @@
     <description>Parent artifact for all Java Vespa sample apps.</description>
 
     <modules>
-        <module>basic-search-tensor</module>
         <module>blog-recommendation</module>
         <module>boolean-search</module>
         <module>generic-request-processing</module>
@@ -19,8 +18,10 @@
         <module>model-evaluation</module>
         <module>multiple-bundles-lib</module>
         <module>multiple-bundles</module>
+        <module>tensor-playground</module>
         <module>text-search</module>
         <module>use-case-shopping</module>
-        <module>album-recommendation-java</module>
+        <module>vespa-cloud/album-recommendation-java</module>
+        <module>vespa-cloud/cord-19-search</module>
     </modules>
 </project>

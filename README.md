@@ -3,25 +3,34 @@
 
 ## Featured sample applications
 ### album-recommendation
-This is the intro application to Vespa. Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation). [album-recommendation-java](album-recommendation-java) is an introduction for how to integrate Java code to process data and queries.
+This is the intro application to Vespa.
+Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](vespa-cloud/album-recommendation). [album-recommendation-java](vespa-cloud/album-recommendation-java) is an introduction for how to integrate Java code to process data and queries.
 
 ### blog-recommendation
-This set of sample apps goes deeper. Starting with [blog-search](blog-search), a more complex search app is build. Then transform this into an app for making recommendations in [blog-recommendation](blog-recommendation). Finally, use machine learning to train and use a model for use in recommendations.
+This set of sample apps goes deeper. Starting with [blog-search](blog-search), a more complex search app is build.
+Then transform this into an app for making recommendations in [blog-recommendation](blog-recommendation).
+Finally, use machine learning to train and use a model for use in recommendations.
 
 ### use-case-shopping
-Create an end-to-end E-Commerce shopping engine using [use-case-shopping](use-case-shopping) and an [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links.html).
+Create an end-to-end E-Commerce shopping engine using [use-case-shopping](use-case-shopping)
+and an [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links.html).
 
 ### text-search
-[text-search](text-search) dives deep into text ranking, using Vespa's _nativerank_ and BM25 implementations. It uses the [MS Marco](http://www.msmarco.org/) dataset.
+[text-search](text-search) dives deep into text ranking, using Vespa's _nativerank_ and BM25 implementations.
+It uses the [MS Marco](http://www.msmarco.org/) dataset.
 
 ### semantic-qa-retrieval
-[semantic-qa-retrieval](semantic-qa-retrieval) takes text search to the next level using the [Stanford Question Answering Dataset (SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/), text embeeddings and [tensor ranking](https://docs.vespa.ai/documentation/reference/tensor.html). This sample app demonstrates how to return answers to questions.
+[semantic-qa-retrieval](semantic-qa-retrieval) takes text search to the next level using the
+[Stanford Question Answering Dataset (SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/),
+text embeeddings and [tensor ranking](https://docs.vespa.ai/documentation/reference/tensor.html).
+This sample app demonstrates how to return answers to questions.
 
 
 ## Detailed sample applications
 [model-evaluation](model-evaluation): A sample Vespa application which demonstrates Stateless ML Model Evaluation.
 
-[boolean-search](boolean-search): Learn how to use prediate fields to implement boolean indexing. I.e. how to express in a document a range of values to match, like _"this fits readers in age range 20 to 30"_.
+[boolean-search](boolean-search): Learn how to use prediate fields to implement boolean indexing.
+I.e. how to express in a document a range of values to match, like _"this fits readers in age range 20 to 30"_.
 
 [multiple-bundles](multiple-bundles): Build a Java application using components and dependencies in other bundles (jars). 
 
@@ -37,7 +46,7 @@ http-api-using-*
 ----
 
 This repository has a set of Vespa sample applications.
-Most of the applications are written for [Vespa Cloud](http://cloud.vespa.ai).
+Some of the applications are written for [Vespa Cloud](http://cloud.vespa.ai).
 To deploy to a self-hosted, follow steps below -
 refer to [album-recommendation-selfhosted](album-recommendation-selfhosted) for a working example
 
@@ -67,3 +76,5 @@ to the Vespa sample applications.
 ----
 
 Travis-CI build status: [![Build Status](https://travis-ci.org/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.org/vespa-engine/sample-apps)
+
+[![Deploy vespa-documentation-search to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20vespa-documentation-search%20to%20Vespa%20Cloud/badge.svg?branch=master)](vespa-cloud/vespa-documentation-search)

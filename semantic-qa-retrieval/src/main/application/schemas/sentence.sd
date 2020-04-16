@@ -1,0 +1,35 @@
+# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema sentence {
+
+  document sentence inherits context {
+    field sentence_embedding type tensor<float>(x[512]) {
+      indexing: attribute
+    }
+  }
+
+  fieldset default {
+    fields:text
+  }
+
+  rank-profile sentence-semantic-similarity inherits default {
+    first-phase {
+      expression: sum(query(tensor)*attribute(sentence_embedding))
+    }
+  }
+
+  rank-profile bm25 inherits default {
+    first-phase {
+      expression: bm25(text) 
+    }
+  }
+
+  rank-profile bm25-sentence-semantic-similarity inherits default {
+    first-phase {
+      expression: bm25(text) 
+    }
+    second-phase {
+      expression: sum(query(tensor)*attribute(sentence_embedding))
+    }
+  }
+}

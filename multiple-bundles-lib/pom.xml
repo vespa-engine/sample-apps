@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
-        <vespa_version>7.179.11</vespa_version>
+        <vespa_version>7.204.28</vespa_version>
         <junit.version>4.11</junit.version>
         <jdk.version>11</jdk.version>
     </properties>
@@ -47,6 +47,8 @@
                 <version>${vespa_version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <!-- Make the version of exported java packages follow the artifact version -->
+                    <useArtifactVersionForExportPackages>true</useArtifactVersionForExportPackages>
                     <!-- Attach the bundle jar to be used by the main project -->
                     <AttachBundle>true</AttachBundle>
                     <BundleClassifier>deploy</BundleClassifier>

@@ -1,0 +1,17 @@
+<deployment version="1.0">
+    <instance id="default">
+
+        <prod>
+            <region active="true">aws-us-east-1c</region>
+            <region active="true">aws-ap-northeast-1a</region>
+        </prod>
+
+        <endpoints>
+            <endpoint container-id="default">
+                <region>aws-us-east-1c</region>
+            </endpoint>
+        </endpoints>
+
+    </instance>
+</deployment>
+

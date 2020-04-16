@@ -1,0 +1,41 @@
+# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema context {
+
+  document context {
+        
+    field questions type array<int>{
+      indexing: summary |attribute
+    }
+
+    field dataset type string {
+      indexing: summary | attribute 
+      attribute:fast-search
+    }
+
+    field context_id type int {
+      indexing: summary | attribute 
+    }
+
+    field text type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+  }
+
+  fieldset default {
+    fields:text
+  }
+
+  rank-profile bm25 inherits default {
+    first-phase {
+      expression:bm25(text)
+    }
+  }
+
+  rank-profile nativeRank inherits default {
+    first-phase {
+      expression:nativeRank(text)
+    }
+  }
+}

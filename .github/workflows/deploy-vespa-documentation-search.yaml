@@ -1,0 +1,49 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://cloud.vespa.ai/automated-deployments for details
+# The ${VESPA_TEAM_API_KEY} is a secret in this repository -
+# this is used to deploy applications to Vespa Cloud
+
+name: Deploy vespa-documentation-search to Vespa Cloud
+on:
+  push:
+    branches: [ master ]
+    paths: ['vespa-cloud/vespa-documentation-search/**']
+
+env:
+  VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY: ${{ secrets.VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+
+    # Check out the source code from the repository
+    - uses: actions/checkout@v2
+
+    # Vespa uses Java 11
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11.x
+    
+    # Find Vespa version of current production deployment
+    - name: Find compile version
+      working-directory: ./vespa-cloud/vespa-documentation-search
+      run: mvn -B clean vespa:compileVersion -DapiKey="${VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY}"
+    
+    # Build the application package and the tester bundle
+    - name: Build with Maven
+      working-directory: ./vespa-cloud/vespa-documentation-search
+      run: mvn -B -P fat-test-application package -Dvespa.compile.version="$(cat target/vespa.compile.version)"
+    
+    # Deploy to Vespa Cloud
+    - name: Deploy with Maven
+      working-directory: ./vespa-cloud/vespa-documentation-search
+      run: |
+        mvn -B vespa:submit \
+           -Drepository="$(git config --get remote.origin.url)" \
+           -Dbranch="$(git rev-parse --abbrev-ref HEAD)" \
+           -Dcommit="$(git rev-parse HEAD)" \
+           -DauthorEmail="$(git log -1 --format=%aE)" \
+           -DapiKey="${VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY}"
