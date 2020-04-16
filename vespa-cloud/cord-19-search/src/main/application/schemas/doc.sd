@@ -235,6 +235,10 @@ schema doc {
     fields: title, abstract, body_text
   }
 
+  fieldset allt5 {
+    fields: title, abstract, body_text, abstract_t5, citations_supporting
+  }
+
   document-summary short {
     from-disk
     summary title type string {source: title}
@@ -293,6 +297,18 @@ schema doc {
     }
   }
   
+  rank-profile bm25t5 inherits default {
+    first-phase {
+      expression: bm25(title) + bm25(abstract) + bm25(body_text) + bm25(abstract_t5)
+    }
+  }
+
+  rank-profile native-all inherits default {
+    first-phase {
+      expression: nativeRank(title) + nativeRank(abstract) + nativeRank(body_text) + nativeRank(abstract_t5)
+    }
+  }
+
   rank-profile freshness inherits default {
     first-phase {
       expression: attribute(timestamp)
