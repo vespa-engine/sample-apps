@@ -14,7 +14,6 @@
         <module>boolean-search</module>
         <module>generic-request-processing</module>
         <module>http-api-using-request-handlers-and-processors</module>
-        <module>http-api-using-searcher</module>
         <module>model-evaluation</module>
         <module>multiple-bundles-lib</module>
         <module>multiple-bundles</module>
