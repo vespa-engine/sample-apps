@@ -178,6 +178,25 @@ schema msmarco {
         }
     }
 
+    rank-profile listwise_bm25_bert_title_body_all inherits default {
+        function dot_product_title() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
+        }
+        function dot_product_body() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
+        }
+        first-phase {
+            expression: 0.9005951 * bm25(title) + 2.2043643 * bm25(body) + 0.13506432 * dot_product_title() + 0.5840874 * dot_product_body()
+        }
+        ignore-default-rank-features
+        rank-features {
+            bm25(title)
+            bm25(body)
+            rankingExpression(dot_product_title)
+            rankingExpression(dot_product_body)
+        }
+    }
+
     rank-profile listwise_linear_bm25_gse_title_body_and inherits default {
         function dot_product_title() {
             expression: sum(query(tensor_gse)*attribute(title_gse))
@@ -241,6 +260,12 @@ schema msmarco {
         function dot_product_body_gse() {
             expression: sum(query(tensor_gse)*attribute(body_gse))
         }
+        function dot_product_title_bert() {
+            expression: sum(query(tensor_bert)*attribute(title_bert))
+        }
+        function dot_product_body_bert() {
+            expression: sum(query(tensor_bert)*attribute(body_bert))
+        }
         first-phase {
             expression: random
         }
@@ -254,6 +279,8 @@ schema msmarco {
             rankingExpression(dot_product_body_word2vec)
             rankingExpression(dot_product_title_gse)
             rankingExpression(dot_product_body_gse)
+            rankingExpression(dot_product_title_bert)
+            rankingExpression(dot_product_body_bert)
         }
     }
 

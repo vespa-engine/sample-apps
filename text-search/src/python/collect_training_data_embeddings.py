@@ -5,41 +5,91 @@ import sys
 import requests
 from pandas import DataFrame
 import tensorflow_hub as hub
+from sentence_transformers import SentenceTransformer
 from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_relevance
 from embedding import create_document_embedding
+from experiments import create_vespa_body_request
 
 
 def create_request_specific_ids(
-    query, rankprofile, doc_ids, word2vec_embedding, gse_embedding
+    query,
+    rankprofile,
+    grammar_operator,
+    ann_operator,
+    embedding_type,
+    doc_ids,
+    embedding_vector,
 ):
-    body = {
-        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
-        "userQuery": query,
-        "hits": len(doc_ids),
-        "recall": "+(" + " ".join(["id:" + str(doc) for doc in doc_ids]) + ")",
-        "timeout": "15s",
-        "presentation.format": "json",
-        "ranking.features.query(tensor)": str(word2vec_embedding),
-        "ranking.features.query(tensor_gse)": str(gse_embedding),
-        "ranking": {"profile": rankprofile, "listFeatures": "true"},
-    }
+    """
+    Create request to retrieve document with specific id.
+
+
+    :param query: Query string.
+    :param rankprofile: Rank profile name as it stands on the .sd file
+    :param grammar_operator: The grammar used for the query term. Either 'AND', 'OR', 'weakAND' or None
+    :param ann_operator: What is the ann operator used. Either 'title', 'body', 'title_body' or None
+    :param embedding_type: What is the embedding type used, either 'word2vec', 'gse' or 'bert'.
+    :param doc_ids: List with document ids that we want retrieved.
+    :return: body to be send as POST request to Vespa
+    """
+
+    body = create_vespa_body_request(
+        query=query,
+        parsed_rank_profile=rankprofile,
+        grammar_operator=grammar_operator,
+        ann_operator=ann_operator,
+        embedding_type=embedding_type,
+        hits=len(doc_ids),
+        offset=0,
+        summary=None,
+        embedding_vector=embedding_vector,
+        tracelevel=None,
+    )
+
+    body.update(
+        {
+            "recall": "+(" + " ".join(["id:" + str(doc) for doc in doc_ids]) + ")",
+            "timeout": "15s",
+        }
+    )
     return body
 
 
 def create_request_top_hits(
-    query, rankprofile, hits, word2vec_embedding, gse_embedding
+    query,
+    rankprofile,
+    grammar_operator,
+    ann_operator,
+    embedding_type,
+    hits,
+    embedding_vector,
 ):
+    """
+    Create request to retrieve top hits according to a rank-pprofile and match phase.
 
-    body = {
-        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
-        "userQuery": query,
-        "hits": hits,
-        "timeout": "15s",
-        "presentation.format": "json",
-        "ranking.features.query(tensor)": str(word2vec_embedding),
-        "ranking.features.query(tensor_gse)": str(gse_embedding),
-        "ranking": {"profile": rankprofile, "listFeatures": "true"},
-    }
+    :param query: Query string.
+    :param rankprofile: Rank profile name as it stands on the .sd file
+    :param grammar_operator: The grammar used for the query term. Either 'AND', 'OR', 'weakAND' or None
+    :param ann_operator: What is the ann operator used. Either 'title', 'body', 'title_body' or None
+    :param embedding_type: What is the embedding type used, either 'word2vec', 'gse' or 'bert'.
+    :param doc_ids: List with document ids that we want retrieved.
+    :return: body to be send as POST request to Vespa
+    """
+
+    body = create_vespa_body_request(
+        query=query,
+        parsed_rank_profile=rankprofile,
+        grammar_operator=grammar_operator,
+        ann_operator=ann_operator,
+        embedding_type=embedding_type,
+        hits=hits,
+        offset=0,
+        summary=None,
+        embedding_vector=embedding_vector,
+        tracelevel=None,
+    )
+
+    body.update({"timeout": "15s"})
     return body
 
 
@@ -77,11 +127,36 @@ def load_processed_queries(file_path):
     return processed_queries
 
 
-def build_dataset(url, query_relevance, rank_profile, number_random_sample):
-    word2vec_model = hub.load(
-        "https://tfhub.dev/google/Wiki-words-500-with-normalization/2"
-    )
-    gse_model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+def retrieve_model(model_type):
+    if model_type == "word2vec":
+        return {
+            "model": hub.load(
+                "https://tfhub.dev/google/Wiki-words-500-with-normalization/2"
+            ),
+            "model_source": "tf_hub",
+        }
+    elif model_type == "gse":
+        return {
+            "model": hub.load("https://tfhub.dev/google/universal-sentence-encoder/4"),
+            "model_source": "tf_hub",
+        }
+    elif model_type == "bert":
+        return {
+            "model": SentenceTransformer("distilbert-base-nli-stsb-mean-tokens"),
+            "model_source": "bert",
+        }
+
+
+def build_dataset(
+    url,
+    query_relevance,
+    number_random_sample,
+    grammar_operator,
+    ann_operator,
+    embedding_type,
+    rank_profile,
+):
+    model_info = retrieve_model(model_type=embedding_type)
     processed_queries = load_processed_queries(file_path=PROCESSED_QUERIES_FILE)
     number_queries = len(query_relevance) - len(processed_queries)
     line = 0
@@ -89,27 +164,31 @@ def build_dataset(url, query_relevance, rank_profile, number_random_sample):
         if int(qid) not in processed_queries:
             line += 1
             print("{0}/{1}".format(line, number_queries))
-            word2vec_embedding = create_document_embedding(
-                text=query, model=word2vec_model, normalize=True
-            )
-            gse_embedding = create_document_embedding(
-                text=query, model=gse_model, normalize=True
+            embedding_vector = create_document_embedding(
+                text=query,
+                model=model_info["model"],
+                model_source=model_info["model_source"],
+                normalize=True,
             )
             relevant_id_request = create_request_specific_ids(
                 query=query,
                 rankprofile=rank_profile,
+                grammar_operator=grammar_operator,
+                ann_operator=ann_operator,
+                embedding_type=embedding_type,
                 doc_ids=[relevant_id],
-                word2vec_embedding=word2vec_embedding,
-                gse_embedding=gse_embedding,
+                embedding_vector=embedding_vector,
             )
             hits = get_features(url=url, body=relevant_id_request)
             if len(hits) == 1 and hits[0]["fields"]["id"] == relevant_id:
                 random_hits_request = create_request_top_hits(
                     query=query,
                     rankprofile=rank_profile,
+                    grammar_operator=grammar_operator,
+                    ann_operator=ann_operator,
+                    embedding_type=embedding_type,
                     hits=number_random_sample,
-                    word2vec_embedding=word2vec_embedding,
-                    gse_embedding=gse_embedding,
+                    embedding_vector=embedding_vector,
                 )
                 hits.extend(get_features(url=url, body=random_hits_request))
 
@@ -135,15 +214,21 @@ def main():
     build_dataset(
         url="http://localhost:8080/search/",
         query_relevance=query_relevance,
-        rank_profile=RANK_PROFILE,
         number_random_sample=NUMBER_RANDOM_SAMPLE,
+        grammar_operator=GRAMMAR_OPERATOR,
+        ann_operator=ANN_OPERATOR,
+        embedding_type=EMBEDDING_TYPE,
+        rank_profile=RANK_PROFILE,
     )
 
 
 if __name__ == "__main__":
     DATA_FOLDER = sys.argv[1]
-    RANK_PROFILE = sys.argv[2]
-    NUMBER_RANDOM_SAMPLE = sys.argv[3]
+    NUMBER_RANDOM_SAMPLE = sys.argv[2]
+    GRAMMAR_OPERATOR = sys.argv[3]
+    ANN_OPERATOR = sys.argv[4]
+    EMBEDDING_TYPE = sys.argv[5]
+    RANK_PROFILE = sys.argv[6]
 
     QUERIES_FILE_PATH = os.path.join(DATA_FOLDER, "msmarco-doctrain-queries.tsv.gz")
     RELEVANCE_FILE_PATH = os.path.join(DATA_FOLDER, "msmarco-doctrain-qrels.tsv.gz")
@@ -151,6 +236,12 @@ if __name__ == "__main__":
     OUTPUT_FILE = os.path.join(
         DATA_FOLDER,
         "training_data_"
+        + GRAMMAR_OPERATOR
+        + "_"
+        + ANN_OPERATOR
+        + "_"
+        + EMBEDDING_TYPE
+        + "_"
         + RANK_PROFILE
         + "_"
         + NUMBER_RANDOM_SAMPLE
@@ -159,6 +250,12 @@ if __name__ == "__main__":
     PROCESSED_QUERIES_FILE = os.path.join(
         DATA_FOLDER,
         "training_data_"
+        + GRAMMAR_OPERATOR
+        + "_"
+        + ANN_OPERATOR
+        + "_"
+        + EMBEDDING_TYPE
+        + "_"
         + RANK_PROFILE
         + "_"
         + NUMBER_RANDOM_SAMPLE
