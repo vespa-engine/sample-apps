@@ -32,6 +32,17 @@
           <winsize>500</winsize> <!-- default 200 -->
         </config>
         <redundancy>2</redundancy>
+        <engine>
+          <proton>
+            <tuning>
+            <searchnode>
+              <requestthreads>
+                <persearch>4</persearch>
+              </requestthreads>
+            </searchnode>
+            </tuning>
+          </proton>
+        </engine>
         <documents>
             <document type="doc" mode="index" />
         </documents>
