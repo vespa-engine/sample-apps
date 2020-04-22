@@ -236,7 +236,7 @@ schema doc {
   }
 
   fieldset allt5 {
-    fields: title, abstract, body_text, abstract_t5, citations_supporting
+    fields: title, abstract, body_text, abstract_t5 
   }
 
   document-summary short {
@@ -281,13 +281,10 @@ schema doc {
 
   rank-profile default inherits default {
     first-phase {
-      expression: nativeRank
+      expression: nativeRank(title) + nativeRank(abstract) + nativeRank(body_text) + nativeRank(abstract_t5)
     }
-  }
-
-  rank-profile bm25fw inherits default {
-    first-phase {
-      expression: 0.6*bm25(title) + 0.3*bm25(abstract) + 0.1*bm25(body_text)
+    summary-features  {
+      nativeRank(title)  nativeRank(abstract)  nativeRank(body_text) nativeRank(abstract_t5)
     }
   }
 
@@ -295,17 +292,14 @@ schema doc {
     first-phase {
       expression: bm25(title) + bm25(abstract) + bm25(body_text)
     }
-  }
-  
-  rank-profile bm25t5 inherits default {
-    first-phase {
-      expression: bm25(title) + bm25(abstract) + bm25(body_text) + bm25(abstract_t5)
+    summary-features  {
+      bm25(title) bm25(abstract) bm25(body_text) bm25(abstract_t5)
     }
   }
-
-  rank-profile native-all inherits default {
+  
+  rank-profile bm25t5 inherits bm25 {
     first-phase {
-      expression: nativeRank(title) + nativeRank(abstract) + nativeRank(body_text) + nativeRank(abstract_t5)
+      expression: bm25(title) + bm25(abstract) + bm25(body_text) + bm25(abstract_t5)
     }
   }
 
@@ -338,4 +332,5 @@ schema doc {
       expression:rawScore(title_embedding)
     }
   }
+
 }
