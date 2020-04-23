@@ -1,5 +1,9 @@
 schema doc {
 
+    field language type string {
+        indexing: "en" | set_language
+    }
+
     document doc {
 
         field path type string {
