@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
 
     <!--
         The container cluster answers HTTP requests on behalf of the content cluster (see below).
