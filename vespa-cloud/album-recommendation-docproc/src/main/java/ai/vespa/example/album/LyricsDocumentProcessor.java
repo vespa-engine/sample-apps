@@ -8,7 +8,6 @@ import com.yahoo.document.DocumentId;
 import com.yahoo.document.DocumentOperation;
 import com.yahoo.document.DocumentPut;
 import com.yahoo.document.datatypes.FieldValue;
-import com.yahoo.document.idstring.IdString;
 import com.yahoo.documentapi.AsyncParameters;
 import com.yahoo.documentapi.AsyncSession;
 import com.yahoo.documentapi.DocumentAccess;
@@ -19,8 +18,10 @@ import com.yahoo.documentapi.Result;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class LyricsDocumentProcessor extends DocumentProcessor {
+    private static final Logger logger = Logger.getLogger(LyricsDocumentProcessor.class.getName());
 
     private final static String MUSIC_DOCUMENT_TYPE = "music";
     private final static String LYRICS_DOCUMENT_TYPE = "lyrics";
@@ -28,23 +29,24 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
     private static final String VAR_REQ_ID = "reqId";
     private final Map<Long, Processing> processings = new HashMap<>();
 
+
     private final DocumentAccess access = DocumentAccess.createDefault();
     private final AsyncSession  session = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
 
     class RespHandler implements ResponseHandler {
         @Override
         public void handleResponse(Response response) {
-            System.out.println("In handleResponse");
+            logger.info("In handleResponse");
             if (response.isSuccess()){
                 long reqId = response.getRequestId();
-                System.out.println("  requestID: " + reqId);
+                logger.info("  requestID: " + reqId);
                 if (response instanceof DocumentResponse) {
                     Processing processing = processings.remove(reqId);
                     processing.removeVariable(VAR_REQ_ID);
                     DocumentResponse resp = (DocumentResponse)response;
                     Document doc = resp.getDocument();
                     if (doc != null) {
-                        System.out.println("  Found lyrics for : " + doc.toString());
+                        logger.info("  Found lyrics for : " + doc.toString());
                         processing.setVariable(VAR_LYRICS, resp.getDocument().getFieldValue("song_lyrics"));
                     }
                 }
@@ -54,7 +56,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
 
     @Override
     public Progress process(Processing processing) {
-        System.out.println("In process");
+        logger.info("In process");
         for (DocumentOperation op : processing.getDocumentOperations()) {
             if (op instanceof DocumentPut) {
                 DocumentPut put = (DocumentPut) op;
@@ -65,7 +67,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                     FieldValue lyrics = (FieldValue)processing.getVariable(VAR_LYRICS);
                     if (lyrics != null) {
                         document.setFieldValue("lyrics", lyrics);
-                        System.out.println("  Set lyrics, Progress.DONE");
+                        logger.info("  Set lyrics, Progress.DONE");
                         return DocumentProcessor.Progress.DONE;
                     }
 
@@ -76,10 +78,10 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                         if (res.isSuccess()) {
                             processing.setVariable(VAR_REQ_ID, res.getRequestId());
                             processings.put(res.getRequestId(), processing);
-                            System.out.println("  Added to requests pending: " + res.getRequestId());
+                            logger.info("  Added to requests pending: " + res.getRequestId());
                         }
                     }
-                    System.out.println("  Request pending ID: " + (long)processing.getVariable(VAR_REQ_ID) + ", Progress.LATER");
+                    logger.info("  Request pending ID: " + (long)processing.getVariable(VAR_REQ_ID) + ", Progress.LATER");
                     return DocumentProcessor.Progress.LATER;
                 }
             }
