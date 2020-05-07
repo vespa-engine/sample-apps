@@ -16,22 +16,23 @@ import com.yahoo.documentapi.Response;
 import com.yahoo.documentapi.ResponseHandler;
 import com.yahoo.documentapi.Result;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class LyricsDocumentProcessor extends DocumentProcessor {
     private static final Logger logger = Logger.getLogger(LyricsDocumentProcessor.class.getName());
 
-    private final static String MUSIC_DOCUMENT_TYPE = "music";
-    private final static String LYRICS_DOCUMENT_TYPE = "lyrics";
+    private static final String MUSIC_DOCUMENT_TYPE  = "music";
+    private static final String LYRICS_DOCUMENT_TYPE = "lyrics";
     private static final String VAR_LYRICS = "lyrics";
     private static final String VAR_REQ_ID = "reqId";
-    private final Map<Long, Processing> processings = new HashMap<>();
 
+    // Maps request IDs to Processing instances
+    private final Map<Long, Processing> processings = new ConcurrentHashMap<>();
 
-    private final DocumentAccess access = DocumentAccess.createDefault();
-    private final AsyncSession  session = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+    private final DocumentAccess access     = DocumentAccess.createDefault();
+    private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
 
     class RespHandler implements ResponseHandler {
         @Override
@@ -74,7 +75,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                     // Make a lyric request if not already pending
                     if (processing.getVariable(VAR_REQ_ID) == null) {
                         String[] parts = document.getId().toString().split(":");
-                        Result res = session.get(new DocumentId("id:mynamespace:" + LYRICS_DOCUMENT_TYPE + "::" + parts[parts.length-1]));
+                        Result res = asyncSession.get(new DocumentId("id:mynamespace:" + LYRICS_DOCUMENT_TYPE + "::" + parts[parts.length-1]));
                         if (res.isSuccess()) {
                             processing.setVariable(VAR_REQ_ID, res.getRequestId());
                             processings.put(res.getRequestId(), processing);
@@ -92,7 +93,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
     @Override
     public void deconstruct() {
         super.deconstruct();
-        session.destroy();
+        asyncSession.destroy();
         access.shutdown();
     }
 }

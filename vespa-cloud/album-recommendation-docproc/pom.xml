@@ -20,7 +20,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>kkraunetenant1</tenant>
+        <tenant>mytenant</tenant>
         <application>album-rec-docproc</application>
     </properties>
 </project>
