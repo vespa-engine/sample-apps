@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+    <container id="default" version="1.0">
+        <document-api />
+        <document-processing>
+            <chain id="default" inherits="indexing">
+                <documentprocessor id="ai.vespa.example.album.LyricsDocumentProcessor" bundle="albums-docproc"/>
+            </chain>
+        </document-processing>
+        <search/>
+        <nodes count="1" />
+    </container>
+
+    <content id="musiccluster" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="music"  mode="index" />
+            <document type="lyrics" mode="index" />
+            <document-processing cluster="default" />
+        </documents>
+        <nodes count="1" />
+    </content>
+
+</services>
