@@ -11,10 +11,13 @@ import com.yahoo.document.datatypes.FieldValue;
 import com.yahoo.documentapi.AsyncParameters;
 import com.yahoo.documentapi.AsyncSession;
 import com.yahoo.documentapi.DocumentAccess;
+import com.yahoo.documentapi.DocumentIdResponse;
 import com.yahoo.documentapi.DocumentResponse;
+import com.yahoo.documentapi.DocumentUpdateResponse;
 import com.yahoo.documentapi.Response;
 import com.yahoo.documentapi.ResponseHandler;
 import com.yahoo.documentapi.Result;
+import com.yahoo.documentapi.UpdateResponse;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +43,8 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
             logger.info("In handleResponse");
             if (response.isSuccess()){
                 long reqId = response.getRequestId();
-                logger.info("  requestID: " + reqId);
                 if (response instanceof DocumentResponse) {
+                    logger.info("  Async response to put or get, requestID: " + reqId);
                     Processing processing = processings.remove(reqId);
                     processing.removeVariable(VAR_REQ_ID);
                     DocumentResponse resp = (DocumentResponse)response;
@@ -49,8 +52,18 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                     if (doc != null) {
                         logger.info("  Found lyrics for : " + doc.toString());
                         processing.setVariable(VAR_LYRICS, resp.getDocument().getFieldValue("song_lyrics"));
+                    } else {
+                        logger.info("  Get failed, lyrics not found");
                     }
+                } else if (response instanceof DocumentUpdateResponse) {
+                    logger.info("  Async response to update, requestID: " + reqId);
+                } else if (response instanceof DocumentIdResponse) {
+                    logger.info("  Async response to remove, requestID: " + reqId);
+                } else {
+                    logger.info("  Response, requestID: " + reqId);
                 }
+            } else {
+                logger.info("  Unsuccessful response");
             }
         }
     }
@@ -80,6 +93,8 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                             processing.setVariable(VAR_REQ_ID, res.getRequestId());
                             processings.put(res.getRequestId(), processing);
                             logger.info("  Added to requests pending: " + res.getRequestId());
+                        } else {
+                            logger.info("  Sending Get failed");
                         }
                     }
                     logger.info("  Request pending ID: " + (long)processing.getVariable(VAR_REQ_ID) + ", Progress.LATER");
