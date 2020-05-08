@@ -54,7 +54,6 @@ $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
 ```
 
-
 Use the https://console.vespa.oath.cloud to download logs, then inspect what happened:
 ```
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	In process
@@ -63,7 +62,7 @@ Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Request pending 
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	In process
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Request pending ID: 1, Progress.LATER
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	In handleResponse
-Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  requestID: 1
+Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Async response to put or get, requestID: 1
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Found lyrics for : document 'id:mynamespace:lyrics::1' of type 'lyrics'
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	In process
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Set lyrics, Progress.DONE
