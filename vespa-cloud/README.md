@@ -1,7 +1,6 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa Cloud sample applications
 
-
 ### album-recommendation
 This is the intro application to Vespa.
 * Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation).
@@ -9,9 +8,9 @@ This is the intro application to Vespa.
 * [album-recommendation-docproc](album-recommendation-docproc) is an introduction to document processing
 
 ### cord-19-search
-https://cord19.vespa.ai/ is a is a full-featured application - see
-* https://github.com/vespa-engine/cord-19 : frontend
-* [cord-19-search](cord-19-search) : search backend
+[cord19.vespa.ai](https://cord19.vespa.ai/) is a is a full-featured application - see
+* [cord-19](https://github.com/vespa-engine/cord-19): frontend
+* [cord-19-search](cord-19-search): search backend
 
 ### vespa-documentation-search
 [vespa-documentation-search](vespa-documentation-search) is a simple search application - refer to this for pointers on AWS integration / GitHub Actions automation 
