@@ -30,7 +30,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
     private static final String VAR_REQ_ID = "reqId";
 
     // Maps request ID to Document - the lyrics Document looked up
-    private final Map<Long, Document> responses = new ConcurrentHashMap<>();
+    private final Map<Long, Response> responses = new ConcurrentHashMap<>();
 
     private final DocumentAccess access     = DocumentAccess.createDefault();
     private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
@@ -39,28 +39,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
         @Override
         public void handleResponse(Response response) {
             logger.info("In handleResponse");
-            if (response.isSuccess()){
-                long reqId = response.getRequestId();
-                if (response instanceof DocumentResponse) {
-                    logger.info("  Async response to put or get, requestID: " + reqId);
-                    DocumentResponse resp = (DocumentResponse)response;
-                    Document doc = resp.getDocument();
-                    if (doc != null) {
-                        logger.info("  Found lyrics for : " + doc.toString());
-                        responses.put(reqId, doc);
-                    } else {
-                        logger.info("  Get failed, lyrics not found");
-                    }
-                } else if (response instanceof DocumentUpdateResponse) {
-                    logger.info("  Async response to update, requestID: " + reqId);
-                } else if (response instanceof DocumentIdResponse) {
-                    logger.info("  Async response to remove, requestID: " + reqId);
-                } else {
-                    logger.info("  Response, requestID: " + reqId);
-                }
-            } else {
-                logger.info("  Unsuccessful response");
-            }
+            responses.put(response.getRequestId(), response);
         }
     }
 
@@ -74,12 +53,9 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                 if (document.getDataType().isA(MUSIC_DOCUMENT_TYPE)) {
                     if (processing.getVariable(VAR_REQ_ID) != null) { // A request has been made, check for response
                         long reqId = (long)processing.getVariable(VAR_REQ_ID);
-                        Document doc = responses.get(reqId);
-                        if (doc != null) {
-                            FieldValue lyrics = doc.getFieldValue("song_lyrics");
-                            if (lyrics != null) {
-                                document.setFieldValue("lyrics", lyrics);
-                            }
+                        Response response = responses.get(reqId);
+                        if (response != null) {
+                            handleResponse(document, reqId, response);
                             responses.remove(reqId);
                             logger.info("  Set lyrics, Progress.DONE");
                             return DocumentProcessor.Progress.DONE;
@@ -91,7 +67,8 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                             processing.setVariable(VAR_REQ_ID, res.getRequestId());
                             logger.info("  Added to requests pending: " + res.getRequestId());
                         } else {
-                            logger.info("  Sending Get failed");
+                            logger.info("  Sending Get failed, Progress.DONE");
+                            return DocumentProcessor.Progress.DONE;   // up to the app how to handle such failures, here OK without lyrics
                         }
                     }
                     logger.info("  Request pending ID: " + (long)processing.getVariable(VAR_REQ_ID) + ", Progress.LATER");
@@ -100,6 +77,36 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
             }
         }
         return DocumentProcessor.Progress.DONE;
+    }
+
+    private void handleResponse(Document document, long reqId, Response response) {
+        if (response.isSuccess()) {
+            if (response instanceof DocumentResponse) {
+                logger.info("  Async response to put or get, requestID: " + reqId);
+                DocumentResponse resp = (DocumentResponse) response;
+                setLyrics(document, resp.getDocument());
+            } else if (response instanceof DocumentUpdateResponse) {
+                logger.info("  Async response to update, requestID: " + reqId);
+            } else if (response instanceof DocumentIdResponse) {
+                logger.info("  Async response to remove, requestID: " + reqId);
+            } else {
+                logger.info("  Response, requestID: " + reqId);
+            }
+        } else {
+            logger.info("  Unsuccessful response");
+        }
+    }
+
+    private void setLyrics(Document document, Document lyricsDoc) {
+        if (lyricsDoc != null) {
+            FieldValue lyrics = lyricsDoc.getFieldValue("song_lyrics");
+            if (lyrics != null) {
+                logger.info("  Found lyrics for : " + lyricsDoc.toString());
+                document.setFieldValue("lyrics", lyrics);
+            }
+        } else {
+            logger.info("  Get failed, lyrics not found");
+        }
     }
 
     @Override
