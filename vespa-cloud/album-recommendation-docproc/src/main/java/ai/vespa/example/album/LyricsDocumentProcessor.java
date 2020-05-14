@@ -17,7 +17,6 @@ import com.yahoo.documentapi.DocumentUpdateResponse;
 import com.yahoo.documentapi.Response;
 import com.yahoo.documentapi.ResponseHandler;
 import com.yahoo.documentapi.Result;
-import com.yahoo.documentapi.UpdateResponse;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,11 +27,10 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
 
     private static final String MUSIC_DOCUMENT_TYPE  = "music";
     private static final String LYRICS_DOCUMENT_TYPE = "lyrics";
-    private static final String VAR_LYRICS = "lyrics";
     private static final String VAR_REQ_ID = "reqId";
 
-    // Maps request IDs to Processing instances
-    private final Map<Long, Processing> processings = new ConcurrentHashMap<>();
+    // Maps request ID to Document - the lyrics Document looked up
+    private final Map<Long, Document> responses = new ConcurrentHashMap<>();
 
     private final DocumentAccess access     = DocumentAccess.createDefault();
     private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
@@ -45,13 +43,11 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                 long reqId = response.getRequestId();
                 if (response instanceof DocumentResponse) {
                     logger.info("  Async response to put or get, requestID: " + reqId);
-                    Processing processing = processings.remove(reqId);
-                    processing.removeVariable(VAR_REQ_ID);
                     DocumentResponse resp = (DocumentResponse)response;
                     Document doc = resp.getDocument();
                     if (doc != null) {
                         logger.info("  Found lyrics for : " + doc.toString());
-                        processing.setVariable(VAR_LYRICS, resp.getDocument().getFieldValue("song_lyrics"));
+                        responses.put(reqId, doc);
                     } else {
                         logger.info("  Get failed, lyrics not found");
                     }
@@ -76,22 +72,23 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                 DocumentPut put = (DocumentPut) op;
                 Document document = put.getDocument();
                 if (document.getDataType().isA(MUSIC_DOCUMENT_TYPE)) {
-
-                    // Set lyrics if already looked up, and set DONE
-                    FieldValue lyrics = (FieldValue)processing.getVariable(VAR_LYRICS);
-                    if (lyrics != null) {
-                        document.setFieldValue("lyrics", lyrics);
-                        logger.info("  Set lyrics, Progress.DONE");
-                        return DocumentProcessor.Progress.DONE;
-                    }
-
-                    // Make a lyric request if not already pending
-                    if (processing.getVariable(VAR_REQ_ID) == null) {
+                    if (processing.getVariable(VAR_REQ_ID) != null) { // A request has been made, check for response
+                        long reqId = (long)processing.getVariable(VAR_REQ_ID);
+                        Document doc = responses.get(reqId);
+                        if (doc != null) {
+                            FieldValue lyrics = doc.getFieldValue("song_lyrics");
+                            if (lyrics != null) {
+                                document.setFieldValue("lyrics", lyrics);
+                            }
+                            responses.remove(reqId);
+                            logger.info("  Set lyrics, Progress.DONE");
+                            return DocumentProcessor.Progress.DONE;
+                        }
+                    } else { // Make a lyric request
                         String[] parts = document.getId().toString().split(":");
                         Result res = asyncSession.get(new DocumentId("id:mynamespace:" + LYRICS_DOCUMENT_TYPE + "::" + parts[parts.length-1]));
                         if (res.isSuccess()) {
                             processing.setVariable(VAR_REQ_ID, res.getRequestId());
-                            processings.put(res.getRequestId(), processing);
                             logger.info("  Added to requests pending: " + res.getRequestId());
                         } else {
                             logger.info("  Sending Get failed");
