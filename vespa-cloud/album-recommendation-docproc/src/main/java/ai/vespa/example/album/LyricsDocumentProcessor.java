@@ -51,8 +51,8 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                 DocumentPut put = (DocumentPut) op;
                 Document document = put.getDocument();
                 if (document.getDataType().isA(MUSIC_DOCUMENT_TYPE)) {
-                    if (processing.getVariable(VAR_REQ_ID) != null) { // A request has been made, check for response
-                        long reqId = (long)processing.getVariable(VAR_REQ_ID);
+                    Long reqId = (Long)processing.getVariable(VAR_REQ_ID);
+                    if (reqId != null) { // A request has been made, check for response
                         Response response = responses.get(reqId);
                         if (response != null) {
                             handleResponse(document, reqId, response);
