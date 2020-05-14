@@ -17,7 +17,6 @@ import com.yahoo.documentapi.DocumentUpdateResponse;
 import com.yahoo.documentapi.Response;
 import com.yahoo.documentapi.ResponseHandler;
 import com.yahoo.documentapi.Result;
-import com.yahoo.documentapi.UpdateResponse;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,11 +27,10 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
 
     private static final String MUSIC_DOCUMENT_TYPE  = "music";
     private static final String LYRICS_DOCUMENT_TYPE = "lyrics";
-    private static final String VAR_LYRICS = "lyrics";
     private static final String VAR_REQ_ID = "reqId";
 
-    // Maps request IDs to Processing instances
-    private final Map<Long, Processing> processings = new ConcurrentHashMap<>();
+    // Maps request ID to Document - the lyrics Document looked up
+    private final Map<Long, Response> responses = new ConcurrentHashMap<>();
 
     private final DocumentAccess access     = DocumentAccess.createDefault();
     private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
@@ -41,30 +39,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
         @Override
         public void handleResponse(Response response) {
             logger.info("In handleResponse");
-            if (response.isSuccess()){
-                long reqId = response.getRequestId();
-                if (response instanceof DocumentResponse) {
-                    logger.info("  Async response to put or get, requestID: " + reqId);
-                    Processing processing = processings.remove(reqId);
-                    processing.removeVariable(VAR_REQ_ID);
-                    DocumentResponse resp = (DocumentResponse)response;
-                    Document doc = resp.getDocument();
-                    if (doc != null) {
-                        logger.info("  Found lyrics for : " + doc.toString());
-                        processing.setVariable(VAR_LYRICS, resp.getDocument().getFieldValue("song_lyrics"));
-                    } else {
-                        logger.info("  Get failed, lyrics not found");
-                    }
-                } else if (response instanceof DocumentUpdateResponse) {
-                    logger.info("  Async response to update, requestID: " + reqId);
-                } else if (response instanceof DocumentIdResponse) {
-                    logger.info("  Async response to remove, requestID: " + reqId);
-                } else {
-                    logger.info("  Response, requestID: " + reqId);
-                }
-            } else {
-                logger.info("  Unsuccessful response");
-            }
+            responses.put(response.getRequestId(), response);
         }
     }
 
@@ -76,25 +51,24 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
                 DocumentPut put = (DocumentPut) op;
                 Document document = put.getDocument();
                 if (document.getDataType().isA(MUSIC_DOCUMENT_TYPE)) {
-
-                    // Set lyrics if already looked up, and set DONE
-                    FieldValue lyrics = (FieldValue)processing.getVariable(VAR_LYRICS);
-                    if (lyrics != null) {
-                        document.setFieldValue("lyrics", lyrics);
-                        logger.info("  Set lyrics, Progress.DONE");
-                        return DocumentProcessor.Progress.DONE;
-                    }
-
-                    // Make a lyric request if not already pending
-                    if (processing.getVariable(VAR_REQ_ID) == null) {
+                    Long reqId = (Long)processing.getVariable(VAR_REQ_ID);
+                    if (reqId != null) { // A request has been made, check for response
+                        Response response = responses.get(reqId);
+                        if (response != null) {
+                            handleResponse(document, reqId, response);
+                            responses.remove(reqId);
+                            logger.info("  Set lyrics, Progress.DONE");
+                            return DocumentProcessor.Progress.DONE;
+                        }
+                    } else { // Make a lyric request
                         String[] parts = document.getId().toString().split(":");
                         Result res = asyncSession.get(new DocumentId("id:mynamespace:" + LYRICS_DOCUMENT_TYPE + "::" + parts[parts.length-1]));
                         if (res.isSuccess()) {
                             processing.setVariable(VAR_REQ_ID, res.getRequestId());
-                            processings.put(res.getRequestId(), processing);
                             logger.info("  Added to requests pending: " + res.getRequestId());
                         } else {
-                            logger.info("  Sending Get failed");
+                            logger.info("  Sending Get failed, Progress.DONE");
+                            return DocumentProcessor.Progress.DONE;   // up to the app how to handle such failures, here OK without lyrics
                         }
                     }
                     logger.info("  Request pending ID: " + (long)processing.getVariable(VAR_REQ_ID) + ", Progress.LATER");
@@ -103,6 +77,36 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
             }
         }
         return DocumentProcessor.Progress.DONE;
+    }
+
+    private void handleResponse(Document document, long reqId, Response response) {
+        if (response.isSuccess()) {
+            if (response instanceof DocumentResponse) {
+                logger.info("  Async response to put or get, requestID: " + reqId);
+                DocumentResponse resp = (DocumentResponse) response;
+                setLyrics(document, resp.getDocument());
+            } else if (response instanceof DocumentUpdateResponse) {
+                logger.info("  Async response to update, requestID: " + reqId);
+            } else if (response instanceof DocumentIdResponse) {
+                logger.info("  Async response to remove, requestID: " + reqId);
+            } else {
+                logger.info("  Response, requestID: " + reqId);
+            }
+        } else {
+            logger.info("  Unsuccessful response");
+        }
+    }
+
+    private void setLyrics(Document document, Document lyricsDoc) {
+        if (lyricsDoc != null) {
+            FieldValue lyrics = lyricsDoc.getFieldValue("song_lyrics");
+            if (lyrics != null) {
+                logger.info("  Found lyrics for : " + lyricsDoc.toString());
+                document.setFieldValue("lyrics", lyrics);
+            }
+        } else {
+            logger.info("  Get failed, lyrics not found");
+        }
     }
 
     @Override
