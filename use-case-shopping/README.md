@@ -46,13 +46,13 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 First, create data feed for products:
 
 <pre data-test="exec">
-$ cat meta_sports_20k_sample.json | ./convert_meta.py > feed_items.json
+$ gunzip -c meta_sports_20k_sample.json.gz | ./convert_meta.py > feed_items.json
 </pre>
 
 Next, data feed for reviews:
 
 <pre data-test="exec">
-$ cat reviews_sports_24k_sample.json | ./convert_reviews.py > feed_reviews.json
+$ gunzip -c reviews_sports_24k_sample.json.gz | ./convert_reviews.py > feed_reviews.json
 </pre>
 
 **Feed data:**
