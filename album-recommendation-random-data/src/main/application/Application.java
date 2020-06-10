@@ -8,27 +8,30 @@ import java.util.TimerTask;
 public class Application implements Runnable {
     RandomAlbumGenerator albumGenerator = new RandomAlbumGenerator();
     DataPusher dataPusher = new DataPusher();
-    private final int maxRequests = 55;
-    private final int minRequests = 5;
+    private final int maxRequests = 1200;
+    private final int minRequests = 60;
     private final long timerDelay = 0;
-    private final long timerPeriod = 1000;
+    private final long timerPeriod = 10;
+    private final int timeStep = 1000*10;
+    private final int randomStepPerTimestep = (int) (100.0 * ((double) timeStep / (1000.0*60.0)));
     private boolean isGrowing = true;
-    private int currentRequests = 5;
+    private int currentRequests = minRequests;
     private int runCounter = 1;
     private int pushCounter = 0;
-    private Random random = new Random();
+    private final int runsPerTimestep = (int)(timeStep / timerPeriod);
+    private final Random random = new Random();
 
-    private void updateRequestsPerMinute() {
-        if (currentRequests >= 55) {
+    private void updateRequestsPerTimestep() {
+        if (currentRequests >= maxRequests - randomStepPerTimestep) {
             isGrowing = false;
-        } else if (currentRequests <= 5) {
+        } else if (currentRequests <= minRequests + randomStepPerTimestep) {
             isGrowing = true;
         }
-        currentRequests += isGrowing ? random.nextInt(5) : - random.nextInt(5);
+        currentRequests += isGrowing ? random.nextInt(randomStepPerTimestep) : - random.nextInt(randomStepPerTimestep);
     }
 
     private boolean shouldPush() {
-        return ((double) pushCounter / (double) runCounter) <= (double) currentRequests / 60;
+        return ((double) pushCounter / (double) runCounter) <= (double) currentRequests / runsPerTimestep;
     }
 
     public void run() {
@@ -36,8 +39,8 @@ public class Application implements Runnable {
             pushNewAlbum();
             pushCounter++;
         }
-        if(runCounter >= 60) {
-            updateRequestsPerMinute();
+        if(runCounter >= runsPerTimestep) {
+            updateRequestsPerTimestep();
             runCounter = 0;
             pushCounter = 0;
         }
