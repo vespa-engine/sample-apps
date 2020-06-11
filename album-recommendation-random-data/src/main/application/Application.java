@@ -1,54 +1,61 @@
 package application;
 
-import java.io.IOException;
+import json.object.Album;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Application implements Runnable {
-    RandomAlbumGenerator albumGenerator = new RandomAlbumGenerator();
-    DataPusher dataPusher = new DataPusher();
-    private final int maxRequests = 1200;
-    private final int minRequests = 60;
-    private final long timerDelay = 0;
-    private final long timerPeriod = 10;
-    private final int timeStep = 1000*10;
-    private final int randomStepPerTimestep = (int) (100.0 * ((double) timeStep / (1000.0*60.0)));
+    RandomAlbumGenerator albumGenerator;
+    BlockingQueue<Album> queue;
+    VespaDataFeeder dataFeeder;
+    VespaQueryFeeder queryFeeder;
+    private double pushProbability = 0.05;
+    private double queryProbability = 0.05;
+    private final int runsPerSecond = 100;
     private boolean isGrowing = true;
-    private int currentRequests = minRequests;
-    private int runCounter = 1;
-    private int pushCounter = 0;
-    private final int runsPerTimestep = (int)(timeStep / timerPeriod);
     private final Random random = new Random();
+    private final AtomicInteger pendingQueryRequests;
 
-    private void updateRequestsPerTimestep() {
-        if (currentRequests >= maxRequests - randomStepPerTimestep) {
+    Application() {
+        albumGenerator = new RandomAlbumGenerator();
+        queue = new LinkedBlockingQueue<>();
+        dataFeeder = new VespaDataFeeder(queue);
+        dataFeeder.start();
+        pendingQueryRequests = new AtomicInteger(0);
+        queryFeeder = new VespaQueryFeeder(true, pendingQueryRequests);
+        queryFeeder.start();
+    }
+
+    private void updatePushProbability() {
+        pushProbability += isGrowing ? random.nextDouble() * 0.3 : - random.nextDouble() * 0.3;
+        if(pushProbability >= 0.8) {
+            pushProbability = 1.0;
             isGrowing = false;
-        } else if (currentRequests <= minRequests + randomStepPerTimestep) {
+        } else if (pushProbability <= 0.3) {
+            pushProbability = 0.05;
             isGrowing = true;
         }
-        currentRequests += isGrowing ? random.nextInt(randomStepPerTimestep) : - random.nextInt(randomStepPerTimestep);
+    }
+
+    private void updateQueryProbability() {
+        queryProbability = (random.nextDouble() * 0.4) + 0.4;
     }
 
     private boolean shouldPush() {
-        return ((double) pushCounter / (double) runCounter) <= (double) currentRequests / runsPerTimestep;
+        return random.nextDouble() < pushProbability;
+    }
+
+    private boolean shouldQuery() {
+        return random.nextDouble() < queryProbability;
     }
 
     public void run() {
-        if (shouldPush()) {
-            pushNewAlbum();
-            pushCounter++;
-        }
-        if(runCounter >= runsPerTimestep) {
-            updateRequestsPerTimestep();
-            runCounter = 0;
-            pushCounter = 0;
-        }
-        runCounter++;
-    }
-
-    public void pushNewAlbum() {
-        dataPusher.pushThroughClass(albumGenerator.getRandomAlbum());
+        if (shouldPush()) queue.add(albumGenerator.getRandomAlbum());
+        if (shouldQuery()) pendingQueryRequests.incrementAndGet();
     }
 
     public static void main(String[] args) {
@@ -61,8 +68,18 @@ public class Application implements Runnable {
                 app.run();
             }
         },
-                app.timerDelay,
-                app.timerPeriod);
+                0,
+                (long) (1000.0 / (double) app.runsPerSecond));
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                app.updatePushProbability();
+                app.updateQueryProbability();
+            }
+        },
+                0,
+                10 * 1000);
     }
 }
 

@@ -3,23 +3,16 @@ package application;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapterFactory;
-import json.object.Album;
-import json.object.TopLevel;
-import org.apache.commons.io.IOUtils;
+import json.object.TopLevelPut;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.ServiceLoader;
 
 public class DataPusher {
-    String baseCommand = "curl -H \"Content-Type:application/json\" --data-binary @%s http://localhost:8080/document/v1/mynamespace/music/docid/%d";
     private int albumCount = 4;
     private final Gson gson;
-    Runtime rt = Runtime.getRuntime();
 
     DataPusher(){
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -29,7 +22,7 @@ public class DataPusher {
         gson = gsonBuilder.create();
     }
 
-    public void pushThroughClass(TopLevel album) {
+    public void pushThroughClass(TopLevelPut album) {
         try {
             String url = String.format("http://localhost:8080/document/v1/mynamespace/music/docid/%d", albumCount);
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();

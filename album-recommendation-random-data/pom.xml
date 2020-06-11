@@ -28,6 +28,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.yahoo.vespa</groupId>
+            <artifactId>vespa-http-client</artifactId>
+            <version>7.233.7</version>
+        </dependency>
     </dependencies>
 
     <build>

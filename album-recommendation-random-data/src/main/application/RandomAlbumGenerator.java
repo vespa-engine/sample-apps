@@ -31,7 +31,7 @@ public class RandomAlbumGenerator {
         }
     }
 
-    public TopLevel getRandomAlbum() {
+    public Album getRandomAlbum() {
         Cell score1 = json.object.ImmutableCell.builder()
                 .address(pop)
                 .value(random.nextDouble())
@@ -47,14 +47,11 @@ public class RandomAlbumGenerator {
         Category_Scores category_scores = ImmutableCategory_Scores.builder()
                 .cells(List.of(score1, score2, score3))
                 .build();
-        Album album = ImmutableAlbum.builder()
+        return ImmutableAlbum.builder()
                 .album(String.format("%s %s %s", words.get(random.nextInt(words.size())), words.get(random.nextInt(words.size())), words.get(random.nextInt(words.size()))))
                 .artist(String.format("%s %s", names.get(random.nextInt(names.size())), names.get(random.nextInt(names.size()))))
                 .year(((int) Math.floor(random.nextDouble() * 40)) + 1980)
                 .category_scores(category_scores)
-                .build();
-        return ImmutableTopLevel.builder()
-                .fields(album)
                 .build();
     }
 }
