@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vespa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vespa
+      name: vespa-internal
+  serviceName: vespa-internal
+  template:
+    metadata:
+      labels:
+        app: vespa
+        name: vespa-internal
+    spec:
+      containers:
+      - name: vespa
+        image: vespaengine/vespa
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        readinessProbe:
+          httpGet:
+            path: /ApplicationStatus
+            port: 19071
+            scheme: HTTP
+        volumeMounts:
+        - name: vespa-var
+          mountPath: /opt/vespa/var
+        - name: vespa-logs
+          mountPath: /opt/vespa/logs
+        - name: vespa-workspace
+          mountPath: /workspace
+        envFrom:
+        - configMapRef:
+            name: vespa-config
+        resources:
+          requests:
+            memory: "4G"
+          limits:
+            memory: "4G"
+  volumeClaimTemplates:
+  - metadata:
+      name: vespa-var
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: vespa-logs
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
+  - metadata:
+      name: vespa-workspace
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
