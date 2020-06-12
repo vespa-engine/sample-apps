@@ -6,7 +6,7 @@ set -x
 CLUSTER_NAME=${1:-"vespa"}
 ZONE=${2:-"europe-west1-b"}
 MACHINE_TYPE=${3:-"n1-standard-4"}
-NB_NODES=${6:-3}
+NB_NODES=${4:-3}
 
 
 
