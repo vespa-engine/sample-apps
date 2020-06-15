@@ -45,7 +45,11 @@ def load_msmarco_qrels():
     qrel = {}
     with gzip.open(os.path.join(download_dir, "msmarco-doctrain-qrels.tsv.gz"), "rt", encoding="utf8") as f:
         tsvreader = csv.reader(f, delimiter="\t")
-        for [queryid, _, docid, rel] in tsvreader:
+        for row in tsvreader:
+            if len(row) == 4:
+                [queryid, _, docid, rel] = row
+            elif len(row) == 1:
+                [queryid, _, docid, rel] = row[0].split(' ')
             assert rel == "1"
             if queryid in qrel:
                 qrel[queryid].add(docid)
