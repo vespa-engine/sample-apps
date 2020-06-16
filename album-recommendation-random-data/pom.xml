@@ -59,7 +59,8 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.kraune.VespaFeed</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>application.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -80,7 +81,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!-- addClasspath>true</addClasspath -->
+                            <addClasspath>true</addClasspath>
+                            <mainClass>application.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

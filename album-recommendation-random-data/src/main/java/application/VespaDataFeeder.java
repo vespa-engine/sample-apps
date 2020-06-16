@@ -5,10 +5,11 @@ import com.yahoo.vespa.http.client.FeedClient;
 import com.yahoo.vespa.http.client.FeedClientFactory;
 import com.yahoo.vespa.http.client.SimpleLoggerResultCallback;
 import com.yahoo.vespa.http.client.config.*;
-import json.object.Album;
-import json.object.ImmutableTopLevelPut;
-import json.object.TopLevelPut;
+import json.Album;
+import json.ImmutableTopLevelPut;
+import json.TopLevelPut;
 
+import java.net.ConnectException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,14 +24,16 @@ public class VespaDataFeeder extends Thread{
 
 
     VespaDataFeeder(BlockingQueue<Album> queue) {
+
         SessionParams sessionParams = new SessionParams.Builder()
-                .addCluster(new Cluster.Builder().addEndpoint(Endpoint.create("localhost", 8080, false)).build())
+                .addCluster(new Cluster.Builder().addEndpoint(Endpoint.create("vespa", 8080, false)).build())
                 .setConnectionParams(new ConnectionParams.Builder().build())
                 .setFeedParams(new FeedParams.Builder()
                     .setDataFormat(FeedParams.DataFormat.JSON_UTF8)
                     .build())
                 .build();
         this.feedClient = FeedClientFactory.create(sessionParams, new SimpleLoggerResultCallback(this.pending, 100));
+
         this.queue = queue;
     }
 

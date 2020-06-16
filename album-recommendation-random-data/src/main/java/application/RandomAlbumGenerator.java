@@ -1,12 +1,13 @@
 package application;
 
-import json.object.*;
-import json.object.ImmutableAlbum;
-import json.object.ImmutableCategory;
-import json.object.ImmutableCategory_Scores;
+import json.*;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
@@ -22,25 +23,20 @@ public class RandomAlbumGenerator {
     private final Random random = new Random();
 
     public RandomAlbumGenerator() {
-        try {
-            String base_path = Paths.get("").toAbsolutePath() + "/src/main/lists/";
-            words = Files.lines(Paths.get(base_path + "words_alpha.txt")).collect(Collectors.toList());
-            names = Files.lines(Paths.get(base_path + "names.txt")).collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        words = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("lists/words_alpha.txt"))).lines().collect(Collectors.toList());
+        names = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("lists/names.txt"))).lines().collect(Collectors.toList());
     }
 
     public Album getRandomAlbum() {
-        Cell score1 = json.object.ImmutableCell.builder()
+        Cell score1 = ImmutableCell.builder()
                 .address(pop)
                 .value(random.nextDouble())
                 .build();
-        Cell score2 = json.object.ImmutableCell.builder()
+        Cell score2 = ImmutableCell.builder()
                 .address(rock)
                 .value(random.nextDouble())
                 .build();
-        Cell score3 = json.object.ImmutableCell.builder()
+        Cell score3 = ImmutableCell.builder()
                 .address(jazz)
                 .value(random.nextDouble())
                 .build();
@@ -53,5 +49,10 @@ public class RandomAlbumGenerator {
                 .year(((int) Math.floor(random.nextDouble() * 40)) + 1980)
                 .category_scores(category_scores)
                 .build();
+    }
+
+    public static void main(String[] args) {
+        RandomAlbumGenerator rando = new RandomAlbumGenerator();
+        System.out.println("test");
     }
 }

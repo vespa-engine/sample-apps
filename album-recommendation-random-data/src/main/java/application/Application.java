@@ -1,6 +1,11 @@
 package application;
 
-import json.object.Album;
+import json.Album;
+import org.apache.http.client.methods.HttpGet;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,6 +64,27 @@ public class Application implements Runnable {
     }
 
     public static void main(String[] args) {
+        int attempts = 0;
+        boolean success = false;
+
+        while (!success) {
+            try {
+                success = ((HttpURLConnection) new URL("http://vespa:8080/ApplicationStatus").openConnection()).getResponseCode() == 200;
+            } catch (IOException ignored) {
+            }
+            System.out.println("Unable to connect to vespa, trying again in 5 seconds");
+            attempts++;
+            if (attempts >= 60) {
+                System.out.println("Failure. Cannot establish connection");
+                System.exit(1);
+            }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         Timer timer = new Timer();
         Application app = new Application();
 
