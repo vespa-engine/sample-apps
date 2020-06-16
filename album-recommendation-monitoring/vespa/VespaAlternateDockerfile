@@ -11,8 +11,8 @@ RUN yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/g/vesp
 RUN yum install -y vespa && \
 	yum clean all
 
-COPY vespa-alternate-start-container.sh ./usr/local/bin/
-COPY album-recommendation-random-data/wait-for-and-launch.py  ./usr/local/bin/
+ADD album-recommendation-monitoring/vespa/vespa-alternate-start-container.sh /usr/local/bin
+ADD album-recommendation-monitoring/vespa/wait-for-and-launch.py /usr/local/bin
 
 RUN chmod +x /usr/local/bin/*
 

@@ -13,4 +13,4 @@ scrape_configs:
     metrics_path: /prometheus/v1/values
 
     static_configs:
-    - targets: ['localhost:19092']
+    - targets: ['vespa:19092']

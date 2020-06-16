@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: "Vespa Dashboard"
+    orgId: 1
+    folder: ""
+    type: file
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

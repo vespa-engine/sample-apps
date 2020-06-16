@@ -36,11 +36,11 @@ public class Application implements Runnable {
     }
 
     private void updatePushProbability() {
-        pushProbability += isGrowing ? random.nextDouble() * 0.3 : - random.nextDouble() * 0.3;
-        if(pushProbability >= 0.8) {
-            pushProbability = 1.0;
+        pushProbability += isGrowing ? random.nextDouble() * 0.1 : - random.nextDouble() * 0.1;
+        if(pushProbability >= 0.95) {
+            pushProbability = 0.95;
             isGrowing = false;
-        } else if (pushProbability <= 0.3) {
+        } else if (pushProbability <= 0.05) {
             pushProbability = 0.05;
             isGrowing = true;
         }
@@ -72,14 +72,14 @@ public class Application implements Runnable {
                 success = ((HttpURLConnection) new URL("http://vespa:8080/ApplicationStatus").openConnection()).getResponseCode() == 200;
             } catch (IOException ignored) {
             }
-            System.out.println("Unable to connect to vespa, trying again in 5 seconds");
+            System.out.println("Unable to connect to vespa, trying again in 20 seconds");
             attempts++;
-            if (attempts >= 60) {
+            if (attempts >= 15) {
                 System.out.println("Failure. Cannot establish connection");
                 System.exit(1);
             }
             try {
-                Thread.sleep(5000);
+                Thread.sleep(20000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

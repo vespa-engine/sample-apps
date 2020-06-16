@@ -4,27 +4,29 @@ services:
     image: "prom/prometheus"
     ports:
       - "9090:9090"
+    volumes:
+      - ./album-recommendation-monitoring/prometheus:/etc/prometheus/
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
     depends_on:
       - vespa
     networks:
       - backend
   grafana:
-    image: "grafana/grafana:latest"
+    image: grafana/grafana
     volumes:
-      - ./album-recommendation-monitoring/grafana-data:/grafana-data/
+      - ./album-recommendation-monitoring/grafana/provisioning:/etc/grafana/provisioning
     ports:
       - "3000:3000"
-    env_file:
-      - album-recommendation-monitoring/grafana-data/grafana_environment.env
-    depends_on:
-      - promethus
     networks:
       - backend
+    depends_on:
+      - promethus
   vespa:
     image: "vespaengine/vespa"
     build:
       context: .
-      dockerfile: VespaAlternateDockerfile
+      dockerfile: album-recommendation-monitoring/vespa/VespaAlternateDockerfile
     privileged: true
     ports:
       - "8080:8080"
@@ -37,7 +39,7 @@ services:
       - backend
   random-data-feeder:
     build:
-      context: album-recommendation-random-data
+      context: album-recommendation-random-data/
       dockerfile: Dockerfile
     container_name: random-data-feeder
     networks:
