@@ -1,0 +1,23 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: vespa
+  annotations:
+    cloud.google.com/load-balancer-type: "External"
+  labels:
+    app: vespa
+spec:
+  type: LoadBalancer
+  selector:
+    app: vespa
+  ports:
+  - name: container
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: config
+    port: 19071
+    targetPort: 19071
+    protocol: TCP

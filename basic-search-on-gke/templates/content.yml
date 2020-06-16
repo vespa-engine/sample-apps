@@ -1,0 +1,45 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vespa-content
+spec:
+  replicas: NB_CONTENT
+  selector:
+    matchLabels:
+      app: vespa-content
+      name: vespa-internal
+  serviceName: vespa-internal
+  template:
+    metadata:
+      labels:
+        app: vespa-content
+        name: vespa-internal
+    spec:
+      containers:
+      - name: vespa-content
+        image: vespaengine/vespa
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: vespa-config
+        securityContext:
+          privileged: true
+        args: ["services"]
+        volumeMounts:
+        - name: vespa-var-content
+          mountPath: /opt/vespa/var
+        resources:
+          requests:
+            memory: "4G"
+          limits:
+            memory: "4G"
+  volumeClaimTemplates:
+  - metadata:
+      name: vespa-var-content
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 50Gi
