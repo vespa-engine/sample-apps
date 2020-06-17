@@ -7,6 +7,7 @@ import org.immutables.value.Value;
 @Value.Immutable
 public abstract class Cell {
     public abstract Category address();
+
     public abstract Double value();
 }
 

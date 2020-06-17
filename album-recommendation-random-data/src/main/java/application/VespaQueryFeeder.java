@@ -1,6 +1,17 @@
 package application;
 
 import com.google.gson.Gson;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import json.ImmutableQuery;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -11,26 +22,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.conn.HttpHostConnectException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.net.ConnectException;
+public class VespaQueryFeeder extends Thread {
 
-public class VespaQueryFeeder extends Thread{
-
+    private final AtomicInteger pendingQueryRequests;
+    Logger logger = LogManager.getLogger(VespaQueryFeeder.class);
     CloseableHttpClient client;
     HttpPost post;
-    private final Boolean debug;
-    private final AtomicInteger pendingQueryRequests;
-    private Boolean shouldRun = true;
+    private boolean shouldRun = true;
 
-    VespaQueryFeeder(Boolean debug, AtomicInteger pendingQueryRequests) {
-        this.debug = debug;
+    VespaQueryFeeder(AtomicInteger pendingQueryRequests) {
         this.pendingQueryRequests = pendingQueryRequests;
 
         client = HttpClients.createDefault();
@@ -46,31 +50,25 @@ public class VespaQueryFeeder extends Thread{
             post.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
             post.setEntity(new StringEntity(new Gson().toJson(query)));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 
-    public void queryVespa() {
+    public void queryVespa() throws InterruptedException {
         try {
             CloseableHttpResponse execute = client.execute(post);
             HttpEntity entity = execute.getEntity();
-
-            if(debug && entity != null) {
-                try (InputStream inputStream = entity.getContent()) {
-                    String result = (new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-                    .lines()
-                    .collect(Collectors.joining("\n")));
-                }
+            if (entity != null) {
+                InputStream inputStream = entity.getContent();
+                logger.log(Level.DEBUG, () -> new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                        .lines()
+                        .collect(Collectors.joining("\n")));
             }
         } catch (ConnectException | NoHttpResponseException e) {
-            System.out.println("Unable to connect to vespa. Is it running?");
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            }
+            logger.info("Unable to connect to vespa. Is it running?");
+            Thread.sleep(10000);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 
@@ -80,18 +78,16 @@ public class VespaQueryFeeder extends Thread{
 
     @Override
     public void run() {
-        while(shouldRun) {
-            if(pendingQueryRequests.get() > 0) {
-                queryVespa();
-                pendingQueryRequests.decrementAndGet();
+        try {
+            while (shouldRun) {
+                if (pendingQueryRequests.get() > 0) {
+                    queryVespa();
+                    pendingQueryRequests.decrementAndGet();
+                }
             }
+        } catch (InterruptedException e) {
+            logger.error(e);
+            Thread.currentThread().interrupt();
         }
-    }
-
-    public static void main(String[] args) {
-        AtomicInteger count = new AtomicInteger(100);
-        VespaQueryFeeder queryFeeder = new VespaQueryFeeder(true, count);
-        queryFeeder.start();
-
     }
 }

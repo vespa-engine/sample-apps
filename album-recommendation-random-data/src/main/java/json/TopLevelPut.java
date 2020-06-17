@@ -7,5 +7,6 @@ import org.immutables.value.Value;
 @Value.Immutable
 public abstract class TopLevelPut {
     public abstract String put();
+
     public abstract Album fields();
 }

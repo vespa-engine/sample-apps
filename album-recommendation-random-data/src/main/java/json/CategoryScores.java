@@ -7,6 +7,6 @@ import java.util.List;
 
 @Gson.TypeAdapters
 @Value.Immutable
-public abstract class Category_Scores {
+public abstract class CategoryScores {
     public abstract List<Cell> cells();
 }

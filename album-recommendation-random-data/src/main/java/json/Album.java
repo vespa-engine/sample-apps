@@ -7,8 +7,11 @@ import org.immutables.value.Value;
 @Value.Immutable
 public abstract class Album {
     public abstract String album();
+
     public abstract String artist();
+
     public abstract Integer year();
-    public abstract Category_Scores category_scores();
+
+    public abstract CategoryScores category_scores();
 }
 

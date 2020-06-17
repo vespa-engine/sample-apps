@@ -1,9 +1,9 @@
 package application;
 
-import json.Album;
-import org.apache.http.client.methods.HttpGet;
-
 import java.io.IOException;
+import java.net.MalformedURLException;
+import json.Album;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
@@ -12,32 +12,103 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class Application implements Runnable {
+public class Application {
+    private final Logger logger = LogManager.getLogger(Application.class);
+    private static final int RUNS_PER_SECOND = 100;
+    private final Random random = new Random();
+    private final AtomicInteger pendingQueryRequests;
     RandomAlbumGenerator albumGenerator;
     BlockingQueue<Album> queue;
     VespaDataFeeder dataFeeder;
     VespaQueryFeeder queryFeeder;
     private double pushProbability = 0.05;
     private double queryProbability = 0.05;
-    private final int runsPerSecond = 100;
     private boolean isGrowing = true;
-    private final Random random = new Random();
-    private final AtomicInteger pendingQueryRequests;
 
     Application() {
         albumGenerator = new RandomAlbumGenerator();
         queue = new LinkedBlockingQueue<>();
-        dataFeeder = new VespaDataFeeder(queue);
-        dataFeeder.start();
         pendingQueryRequests = new AtomicInteger(0);
-        queryFeeder = new VespaQueryFeeder(true, pendingQueryRequests);
-        queryFeeder.start();
     }
 
+    private void createFeeders() {
+        dataFeeder = new VespaDataFeeder(queue);
+        queryFeeder = new VespaQueryFeeder(pendingQueryRequests);
+    }
+
+    private boolean isConnection200(URL url) {
+        try {
+            return ((HttpURLConnection) url.openConnection()).getResponseCode() == 200;
+        } catch (IOException e) {
+            return false;
+        }
+
+    }
+
+    private void waitForVespa() {
+        int attempts = 0;
+        URL vespa = null;
+        try {
+            vespa = new URL("http://vespa:8080/ApplicationStatus");
+        } catch (MalformedURLException e) {
+            logger.error(e);
+            System.exit(1);
+        }
+        boolean success = isConnection200(vespa);
+        while (!success) {
+            logger.info("Unable to connect to Vespa, trying again in 20 seconds");
+            attempts++;
+            if (attempts >= 15) {
+                logger.error("Failure. Cannot establish connection to Vespa");
+                System.exit(1);
+            }
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                logger.error(e);
+                Thread.currentThread().interrupt();
+            }
+            success = isConnection200(vespa);
+        }
+    }
+
+    public void start() {
+
+        waitForVespa();
+
+        createFeeders();
+
+        dataFeeder.start();
+        queryFeeder.start();
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                execute();
+            }},
+                0,
+                (long) (1000.0 / (double) RUNS_PER_SECOND)
+        );
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                updatePushProbability();
+                updateQueryProbability();
+            }},
+                (long) 10*1000,
+                (long) 10*1000
+        );
+    }
+
+
+
     private void updatePushProbability() {
-        pushProbability += isGrowing ? random.nextDouble() * 0.1 : - random.nextDouble() * 0.1;
-        if(pushProbability >= 0.95) {
+        pushProbability += isGrowing ? random.nextDouble() * 0.1 : -random.nextDouble() * 0.1;
+        if (pushProbability >= 0.95) {
             pushProbability = 0.95;
             isGrowing = false;
         } else if (pushProbability <= 0.05) {
@@ -58,54 +129,14 @@ public class Application implements Runnable {
         return random.nextDouble() < queryProbability;
     }
 
-    public void run() {
+    public void execute() {
         if (shouldPush()) queue.add(albumGenerator.getRandomAlbum());
         if (shouldQuery()) pendingQueryRequests.incrementAndGet();
     }
 
+
     public static void main(String[] args) {
-        int attempts = 0;
-        boolean success = false;
-
-        while (!success) {
-            try {
-                success = ((HttpURLConnection) new URL("http://vespa:8080/ApplicationStatus").openConnection()).getResponseCode() == 200;
-            } catch (IOException ignored) {
-            }
-            System.out.println("Unable to connect to vespa, trying again in 20 seconds");
-            attempts++;
-            if (attempts >= 15) {
-                System.out.println("Failure. Cannot establish connection");
-                System.exit(1);
-            }
-            try {
-                Thread.sleep(20000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Timer timer = new Timer();
-        Application app = new Application();
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                app.run();
-            }
-        },
-                0,
-                (long) (1000.0 / (double) app.runsPerSecond));
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                app.updatePushProbability();
-                app.updateQueryProbability();
-            }
-        },
-                0,
-                10 * 1000);
+        new Application().start();
     }
 }
 
