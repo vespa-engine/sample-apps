@@ -1,4 +1,4 @@
 application.zip
 src/main/java/application/security/
-src/main/resources/logs/*
+src/main/resources/logs/
 .idea/

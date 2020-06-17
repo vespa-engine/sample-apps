@@ -87,9 +87,18 @@ public class Application {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                execute();
+                if (shouldPush()) queue.add(albumGenerator.getRandomAlbum());
             }},
-                0,
+                (long) 30 * 1000,
+                (long) (1000.0 / (double) RUNS_PER_SECOND)
+        );
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (shouldQuery()) pendingQueryRequests.incrementAndGet();
+                }},
+                (long) 60 * 1000,
                 (long) (1000.0 / (double) RUNS_PER_SECOND)
         );
 
@@ -103,8 +112,6 @@ public class Application {
                 (long) 10*1000
         );
     }
-
-
 
     private void updatePushProbability() {
         pushProbability += isGrowing ? random.nextDouble() * 0.1 : -random.nextDouble() * 0.1;
@@ -127,11 +134,6 @@ public class Application {
 
     private boolean shouldQuery() {
         return random.nextDouble() < queryProbability;
-    }
-
-    public void execute() {
-        if (shouldPush()) queue.add(albumGenerator.getRandomAlbum());
-        if (shouldQuery()) pendingQueryRequests.incrementAndGet();
     }
 
 

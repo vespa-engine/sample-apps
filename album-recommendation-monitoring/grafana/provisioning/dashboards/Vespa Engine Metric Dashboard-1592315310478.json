@@ -81,7 +81,7 @@
         {
           "expr": "feed_operations_rate",
           "interval": "",
-          "legendFormat": "Feed Operations / Minute",
+          "legendFormat": "Feed Operations / Second",
           "refId": "A"
         }
       ],
@@ -177,7 +177,7 @@
         {
           "expr": "queries_rate{endpoint=\"vespa:8080\"}",
           "interval": "",
-          "legendFormat": "Queries / Minute",
+          "legendFormat": "Queries / Second",
           "refId": "A"
         }
       ],
