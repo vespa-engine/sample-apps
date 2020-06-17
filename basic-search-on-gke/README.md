@@ -8,7 +8,7 @@ for more information on the basic single container example.
 This example assumes that a you already created a Google project, you have the gcloud command line and kubectl installed. If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/quickstart).
 
 
-The example below shows the steps to pop a GKE cluster anddeploy a multi nodes setup on GKE.
+The example below shows the steps to pop a GKE cluster and deploy a multi nodes setup on GKE.
 
 ### Executable example
 **Check-out the example repository:**
