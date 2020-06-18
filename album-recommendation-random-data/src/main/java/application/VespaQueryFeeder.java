@@ -40,9 +40,6 @@ public class VespaQueryFeeder extends Thread {
             String result = client.send(request, HttpResponse.BodyHandlers.ofString())
                     .body();
             logger.log(Level.FINE, result);
-        } catch (ConnectException | NoHttpResponseException e) {
-            logger.info("Unable to connect to vespa. Is it running?");
-            Thread.sleep(10000);
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
