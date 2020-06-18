@@ -1,6 +1,6 @@
 version: '3'
 services:
-  promethus:
+  prometheus:
     image: "prom/prometheus"
     container_name: sample-apps-prometheus
     volumes:
