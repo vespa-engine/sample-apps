@@ -1,3 +1,5 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 # my global config
 global:
   scrape_interval: 5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
