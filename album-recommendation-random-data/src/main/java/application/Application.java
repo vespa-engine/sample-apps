@@ -3,6 +3,8 @@ package application;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import json.Album;
 
 import java.net.HttpURLConnection;
@@ -13,11 +15,9 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class Application {
-    private final Logger logger = LogManager.getLogger(Application.class);
+    private final Logger logger = Logger.getLogger(Application.class.getName());
     private static final int RUNS_PER_SECOND = 100;
     private final Random random = new Random();
     private final AtomicInteger pendingQueryRequests;
@@ -55,7 +55,7 @@ public class Application {
         try {
             vespa = new URL("http://vespa:8080/ApplicationStatus");
         } catch (MalformedURLException e) {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage());
             System.exit(1);
         }
         boolean success = isConnection200(vespa);
@@ -63,13 +63,13 @@ public class Application {
             logger.info("Unable to connect to Vespa, trying again in 20 seconds");
             attempts++;
             if (attempts >= 15) {
-                logger.error("Failure. Cannot establish connection to Vespa");
+                logger.log(Level.SEVERE, "Failure. Cannot establish connection to Vespa");
                 System.exit(1);
             }
             try {
                 Thread.sleep(20000);
             } catch (InterruptedException e) {
-                logger.error(e);
+                logger.log(Level.SEVERE, e.getMessage());
                 Thread.currentThread().interrupt();
             }
             success = isConnection200(vespa);

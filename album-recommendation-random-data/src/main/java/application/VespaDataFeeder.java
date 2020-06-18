@@ -10,14 +10,14 @@ import com.yahoo.vespa.http.client.config.ConnectionParams;
 import com.yahoo.vespa.http.client.config.Endpoint;
 import com.yahoo.vespa.http.client.config.FeedParams;
 import com.yahoo.vespa.http.client.config.SessionParams;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import json.Album;
 import json.ImmutableTopLevelPut;
 import json.TopLevelPut;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class VespaDataFeeder extends Thread {
 
@@ -27,7 +27,7 @@ public class VespaDataFeeder extends Thread {
     private static final String ID_FORMAT = "id:mynamespace:music::%d";
     private final AtomicInteger pending = new AtomicInteger(0);
     private boolean shouldRun = true;
-    private final Logger logger = LogManager.getLogger(VespaDataFeeder.class);
+    private final Logger logger = Logger.getLogger(VespaDataFeeder.class.getName());
 
 
     VespaDataFeeder(BlockingQueue<Album> queue) {
@@ -55,8 +55,8 @@ public class VespaDataFeeder extends Thread {
             try {
                 album = queue.take();
             } catch (InterruptedException e) {
-                logger.error("Encountered exception while attempting to retrieve album");
-                logger.error(e);
+                logger.log(Level.SEVERE, "Encountered exception while attempting to retrieve album");
+                logger.log(Level.SEVERE, e.getMessage());
                 Thread.currentThread().interrupt();
             }
             String id = String.format(ID_FORMAT, pending.incrementAndGet());
