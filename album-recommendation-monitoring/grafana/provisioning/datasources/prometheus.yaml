@@ -11,4 +11,4 @@ datasources:
     orgId: 1
     default: true
     uid: 1037
-    url: http://localhost:9090
+    url: http://prometheus:9090

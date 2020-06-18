@@ -3,10 +3,10 @@ services:
   promethus:
     image: "prom/prometheus"
     container_name: sample-apps-prometheus
-    ports:
-      - "9090:9090"
     volumes:
       - ./album-recommendation-monitoring/prometheus:/etc/prometheus/
+    ports:
+    - "9090:9090"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:
@@ -28,11 +28,10 @@ services:
     container_name: vespa
     hostname: vespa-container
     privileged: true
-    ports:
-      - "8080:8080"
-      - "19092:19092"
     volumes:
       - .:/vespa-sample-apps
+    ports:
+    - "8080:8080"
     networks:
       - backend
   random-data-feeder:
