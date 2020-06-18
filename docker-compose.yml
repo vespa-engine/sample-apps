@@ -1,0 +1,48 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+version: '3'
+services:
+  prometheus:
+    image: "prom/prometheus"
+    container_name: sample-apps-prometheus
+    volumes:
+      - ./album-recommendation-monitoring/prometheus:/etc/prometheus/
+    ports:
+    - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    networks:
+      - backend
+  grafana:
+    image: grafana/grafana
+    container_name: sample-apps-grafana
+    volumes:
+      - ./album-recommendation-monitoring/grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+  vespa:
+    image: "vespaengine/vespa"
+    build:
+      context: .
+      dockerfile: album-recommendation-monitoring/vespa/VespaAlternateDockerfile
+    container_name: vespa
+    hostname: vespa-container
+    privileged: true
+    volumes:
+      - .:/vespa-sample-apps
+    ports:
+    - "8080:8080"
+    networks:
+      - backend
+  random-data-feeder:
+    build:
+      context: album-recommendation-random-data/
+      dockerfile: Dockerfile
+    container_name: random-data-feeder
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"
