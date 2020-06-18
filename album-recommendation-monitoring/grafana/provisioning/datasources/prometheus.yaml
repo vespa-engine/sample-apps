@@ -9,7 +9,7 @@ deleteDatasources:
 datasources:
   - name: Prometheus
     type: prometheus
-    access: direct
+    access: proxy
     orgId: 1
     default: true
     uid: 1037
