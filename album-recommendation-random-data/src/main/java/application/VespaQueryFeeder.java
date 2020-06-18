@@ -9,15 +9,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import json.ImmutableQuery;
 import org.apache.http.NoHttpResponseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class VespaQueryFeeder extends Thread {
 
     private final AtomicInteger pendingQueryRequests;
-    Logger logger = LogManager.getLogger(VespaQueryFeeder.class);
+    Logger logger = Logger.getLogger(VespaQueryFeeder.class.getName());
     HttpClient client;
     HttpRequest request;
     private boolean shouldRun = true;
@@ -39,12 +39,12 @@ public class VespaQueryFeeder extends Thread {
         try {
             String result = client.send(request, HttpResponse.BodyHandlers.ofString())
                     .body();
-            logger.debug(result);
+            logger.log(Level.FINE, result);
         } catch (ConnectException | NoHttpResponseException e) {
             logger.info("Unable to connect to vespa. Is it running?");
             Thread.sleep(10000);
         } catch (IOException e) {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class VespaQueryFeeder extends Thread {
                 }
             }
         } catch (InterruptedException e) {
-            logger.error(e);
+            logger.log(Level.SEVERE, e.getMessage());
             Thread.currentThread().interrupt();
         }
     }
