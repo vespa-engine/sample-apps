@@ -33,6 +33,7 @@ services:
       - .:/vespa-sample-apps
     ports:
     - "8080:8080"
+    - "19092:19092"
     networks:
       - backend
   random-data-feeder:
