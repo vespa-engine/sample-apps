@@ -1,0 +1,134 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema msmarco {
+    document msmarco {
+
+        field id type string {
+            indexing: summary | attribute
+        }
+
+        field title type string {
+            indexing: index | summary
+        }
+
+        field url type string {
+            indexing: index
+        }
+
+        field body type string {
+            indexing: index
+        }
+
+        field tokens type tensor<float>(d0[128]) {
+            indexing: attribute
+        }
+
+    }
+
+    constant sequence_classification_weights {
+        file: constants/seq_weights.json
+        type: tensor<float>(d1[2],d2[312])
+    }
+
+    constant sequence_classification_bias {
+        file: constants/seq_bias.json
+        type: tensor<float>(d1[2])
+    }
+
+    rank-profile bert {
+
+        constants {
+            TOKEN_NONE: 0
+            TOKEN_CLS: 101
+            TOKEN_SEP: 102
+        }
+
+        # Find length of input - with the assumption that the
+        # input sequence is padded with zeroes.
+        function input_length() {
+            expression: sum(map(query(input), f(a)(a > 0)))
+        }
+
+        # Likewise, find length of the document
+        function document_length() {
+            expression: sum(map(attribute(tokens), f(a)(a > 0)))
+        }
+
+        # Create input sequence: CLS + query + SEP + document + SEP + 0's
+        function input_ids() {
+            expression {
+                tensor<float>(d0[1],d1[128])(
+                    if (d1 == 0,
+                        101,  # TOKEN_CLS
+                    if (d1 < input_length + 1,
+                        query(input){d0:0, d1:(d1-1)},
+                    if (d1 == input_length + 1,
+                        102,  # TOKEN_SEP
+                    if (document_length + input_length > 126,
+                        if (d1 < 127,
+                            attribute(tokens){d0:(d1-input_length-2)},
+                            102   # TOKEN_SEP
+                        ),
+                        if (d1 < document_length + input_length + 2,
+                            attribute(tokens){d0:(d1-input_length-2)},
+                            if (d1 == document_length + input_length + 2,
+                                102,   # TOKEN_SEP
+                                0      # TOKEN_NONE
+                            )
+                        )
+                )))))
+            }
+        }
+
+        # The token type input has 0's for query and 1's for document
+        function token_type_ids() {
+            expression: tensor<float>(d0[1],d1[128])(if(d1 < input_length + 2, 0, 1))
+        }
+
+        # The attention mask has 1's for every token that is set
+        function attention_mask() {
+            expression: map(input_ids, f(a)(a > 0))
+        }
+
+        # The ranking model.
+        function rankmodel() {
+            expression: onnx("rankmodel.onnx", "default", "output_0")
+        }
+
+        # temporary hack - until version 7.245.8 is out. Then use "output_1" above.
+        function output_1() {
+            expression: map(tensor<float>(d0[1],d1[312])((rankmodel{d0:(d0), d1:(0.0), d2:(d1)})), f(a)(tanh(a)))
+        }
+
+        # We find the sequence classification by doing a softmax over
+        # the linear transformation of output_1
+        function sequence_classification_output() {
+            expression {
+                softmax(
+                    join(
+                        matmul(
+                            constant(sequence_classification_weights),
+                            rename(output_1, d1, d2),  # output has dimensions d0[1],d1[128].
+                            d2
+                        ),
+                        constant(sequence_classification_bias),
+                        f(a,b)(a + b)
+                    ),
+                    d1
+                )
+            }
+        }
+
+        # Extract the positive class (index [0,1]) from the resulting tensor
+        first-phase {
+            expression: sequence_classification_output{d0:0, d1:1}
+        }
+
+        # View the output of the model here.
+        summary-features {
+            sequence_classification_output
+        }
+
+    }
+
+}

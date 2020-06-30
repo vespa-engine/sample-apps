@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+<services version="1.0">
+
+  <container id="text_search" version="1.0">
+    <document-api/>
+    <search/>
+    <document-processing/>
+  </container>
+
+  <content id="msmarco" version="1.0">
+
+    <redundancy reply-after='1'>1</redundancy>
+    <documents>
+      <document type='msmarco' mode="index"/>
+    </documents>
+    <nodes>
+      <node distribution-key='0' hostalias='node1'/>
+    </nodes>
+  </content>
+
+</services>
