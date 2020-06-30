@@ -8,9 +8,7 @@ using a small sample from the MS MARCO data set.
 **Clone the sample:**
 
 <pre data-test="exec">
-$ # TEMPORARY TEST INSTEAD OF GIT CLONE
-$ mkdir -p sample-apps
-$ cp -r ~/github/sample-apps/transformers sample-apps/
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ APP_DIR=`pwd`/sample-apps/transformers
 $ cd $APP_DIR
 </pre>
