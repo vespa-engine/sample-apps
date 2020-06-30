@@ -38,7 +38,7 @@ schema msmarco {
     rank-profile bert {
 
         constants {
-            TOKEN_NONE: 0
+            TOKEN_NONE: 0   # Need to wait for version >= 7.245.8 to actually use these
             TOKEN_CLS: 101
             TOKEN_SEP: 102
         }
