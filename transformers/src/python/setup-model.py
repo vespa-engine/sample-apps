@@ -11,10 +11,10 @@ from transformers.pipelines import pipeline
 
 app_dir = sys.argv[1]
 model_name = sys.argv[2]
-sequence_length = int(sys.argv[3])
+sequence_length = 128
 
 tokenizer_name = model_name
-framework = "pt"
+framework = "pt"  # assumption for now
 onnx_opset_version = 11
 
 model_dir = os.path.join(app_dir, "models")
@@ -75,7 +75,7 @@ def export_model(nlp, inputs, outputs, tokens):
              f = model_output,
              input_names = inputs,
              output_names = outputs,
-             # dynamic_axes = dynamic_axes,  # we don't use dynamic axes
+             # dynamic_axes = dynamic_axes,  # Vespa does not currently support dynamic axes
              do_constant_folding = True,
              use_external_data_format = False,
              enable_onnx_checker = True,
@@ -98,7 +98,7 @@ def to_vespa_tensor_format_1d(tensor, dim_names = ["d0"]):
     return { "cells": cells }
 
 
-# The above does not export the tensors used for sequnce classification.
+# The above does not export the tensors used for sequence classification.
 # We export them manually here:
 def export_tensors_for_sequence_classification():
     model = AutoModelForSequenceClassification.from_pretrained(model_name)

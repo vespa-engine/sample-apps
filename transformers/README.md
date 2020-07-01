@@ -29,7 +29,8 @@ linear model on top of the transformer and add them as constants. For
 this sample we use a fairly small model:
 
 <pre data-test="exec">
-$ ./bin/setup-ranking-model.sh
+$ MODEL_NAME="nboost/pt-tinybert-msmarco"
+$ ./bin/setup-ranking-model.sh $MODEL_NAME
 </pre>
 
 **Create data feed:**
@@ -40,7 +41,7 @@ sample application, we feed in pre-tokenized documents, meaning that
 tokenization is done outside of Vespa.
 
 <pre data-test="exec">
-$ ./bin/convert-msmarco.sh
+$ ./bin/convert-msmarco.sh $MODEL_NAME
 </pre>
 
 **Start Vespa:**
@@ -83,7 +84,7 @@ queries based on the transformer model and uses the tokens to
 query Vespa:
 
 <pre data-test="exec" data-test-assert-contains="children">
-$ ./src/python/evaluate.py
+$ ./src/python/evaluate.py $MODEL_NAME
 </pre>
 
 **Shutdown and remove the container:**

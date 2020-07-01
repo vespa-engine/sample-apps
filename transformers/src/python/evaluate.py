@@ -10,23 +10,25 @@ import urllib
 from transformers import AutoTokenizer
 
 
-data_dir = sys.argv[1] if len(sys.argv) > 1 else "msmarco"
+data_dir = sys.argv[2] if len(sys.argv) > 2 else "msmarco"
 queries_file = os.path.join(data_dir, "test-queries.tsv")
 
-model_name = "nboost/pt-tinybert-msmarco"
+model_name = sys.argv[1]
 sequence_length = 128
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 
-def vespa_search(tokens, hits=10):
+def vespa_search(query, tokens, hits=10):
+    query_terms = [ "content CONTAINS \"{}\"".format(term) for term in query.split(" ") if len(term) > 0 ]
     tokens_str = "[" + ",".join( [ str(i) for i in tokens ]) + "]"
-    url = "http://localhost:8080/search/?hits={}&timeout=600&query={}&ranking={}&ranking.features.query(input)={}".format(
+    url = "http://localhost:8080/search/?hits={}&timeout=10&ranking={}&yql={}&ranking.features.query(input)={}".format(
               hits,
-              "sddocname:msmarco",
-              "bert",
+              "transformer",
+              urllib.parse.quote_plus("select * from sources * where " + " or ".join(query_terms) + ";"),
               urllib.parse.quote_plus(tokens_str)
           )
-
+    print("Querying: " + url)
+    print("select * from sources * where " + " or ".join(query_terms) + ";")
     return json.loads(urllib.request.urlopen(url).read())
 
 
@@ -39,7 +41,7 @@ def main():
             print("Query: " + query)
 
             tokens = tokenizer.encode_plus(query, add_special_tokens=False, max_length=sequence_length, pad_to_max_length=True)["input_ids"]
-            result = vespa_search(tokens)
+            result = vespa_search(query, tokens)
 
             print(json.dumps(result, indent=2))
 

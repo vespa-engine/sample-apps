@@ -13,7 +13,7 @@ data_dir = sys.argv[1]
 doc_type = sys.argv[2]
 fields = sys.argv[3].split(",")
 model_name = sys.argv[4]
-sequence_length = int(sys.argv[5])
+sequence_length = 128
 
 sample_offset_file = os.path.join(data_dir, "test-docs-offset.tsv")
 docs_file = os.path.join(data_dir, "docs.tsv")

@@ -9,20 +9,26 @@ schema msmarco {
 
         field title type string {
             indexing: index | summary
+            index: enable-bm25
         }
 
         field url type string {
-            indexing: index
+            indexing: index | summary
         }
 
         field body type string {
-            indexing: index
+            indexing: index | summary
+            index: enable-bm25
         }
 
         field tokens type tensor<float>(d0[128]) {
             indexing: attribute
         }
 
+    }
+
+    fieldset content {
+        fields: title, body
     }
 
     constant sequence_classification_weights {
@@ -35,7 +41,7 @@ schema msmarco {
         type: tensor<float>(d1[2])
     }
 
-    rank-profile bert {
+    rank-profile transformer {
 
         constants {
             TOKEN_NONE: 0   # Need to wait for version >= 7.245.8 to actually use these
@@ -119,14 +125,15 @@ schema msmarco {
             }
         }
 
-        # Extract the positive class (index [0,1]) from the resulting tensor
+        # Use BM25 as a first phase
         first-phase {
-            expression: sequence_classification_output{d0:0, d1:1}
+            expression: bm25(title) + bm25(body)
         }
 
-        # View the output of the model here.
-        summary-features {
-            sequence_classification_output
+        # Extract the positive class (index [0,1]) from the resulting tensor
+        second-phase {
+            rerank-count: 10
+            expression: sequence_classification_output{d0:0, d1:1}
         }
 
     }
