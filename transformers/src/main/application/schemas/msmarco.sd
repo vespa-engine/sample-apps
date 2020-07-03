@@ -65,21 +65,21 @@ schema msmarco {
             expression {
                 tensor<float>(d0[1],d1[128])(
                     if (d1 == 0,
-                        101,  # TOKEN_CLS
+                        TOKEN_CLS,  # 101
                     if (d1 < input_length + 1,
                         query(input){d0:0, d1:(d1-1)},
                     if (d1 == input_length + 1,
-                        102,  # TOKEN_SEP
+                        TOKEN_SEP,  # 102
                     if (document_length + input_length > 126,
                         if (d1 < 127,
                             attribute(tokens){d0:(d1-input_length-2)},
-                            102   # TOKEN_SEP
+                            TOKEN_SEP  # 102
                         ),
                         if (d1 < document_length + input_length + 2,
                             attribute(tokens){d0:(d1-input_length-2)},
                             if (d1 == document_length + input_length + 2,
-                                102,   # TOKEN_SEP
-                                0      # TOKEN_NONE
+                                TOKEN_SEP,  # 102
+                                TOKEN_NONE  # 0
                             )
                         )
                 )))))
@@ -98,31 +98,28 @@ schema msmarco {
 
         # The ranking model.
         function rankmodel() {
-            expression: onnx("rankmodel.onnx", "default", "output_0")
+            expression: onnx("rankmodel.onnx", "default", "output_1")
         }
 
-        # temporary hack - until version 7.245.8 is out. Then use "output_1" above.
-        function output_1() {
-            expression: map(tensor<float>(d0[1],d1[312])((rankmodel{d0:(d0), d1:(0.0), d2:(d1)})), f(a)(tanh(a)))
-        }
-
-        # We find the sequence classification by doing a softmax over
-        # the linear transformation of output_1
-        function sequence_classification_output() {
+        # Use the extra tensors exported from the
+        # AutoModelForSequenceClassification to linearly transform model output
+        function transform_for_sequence_classification() {
             expression {
-                softmax(
-                    join(
-                        matmul(
-                            constant(sequence_classification_weights),
-                            rename(output_1, d1, d2),  # output has dimensions d0[1],d1[128].
-                            d2
-                        ),
-                        constant(sequence_classification_bias),
-                        f(a,b)(a + b)
+                join(
+                    matmul(
+                        constant(sequence_classification_weights),
+                        rename(rankmodel, d1, d2),  # output has dimensions d0[1],d1[128].
+                        d2
                     ),
-                    d1
+                    constant(sequence_classification_bias),
+                    f(a,b)(a + b)
                 )
             }
+        }
+
+        # Classify sequence by doing a softmax over the linear transform
+        function classify_sequence() {
+            expression: softmax(transform_for_sequence_classification, d1)
         }
 
         # Use BM25 as a first phase
@@ -130,10 +127,10 @@ schema msmarco {
             expression: bm25(title) + bm25(body)
         }
 
-        # Extract the positive class (index [0,1]) from the resulting tensor
+        # Use the probability of the positive sequence classification class as rank score
         second-phase {
             rerank-count: 10
-            expression: sequence_classification_output{d0:0, d1:1}
+            expression: classify_sequence{d1:1}
         }
 
     }
