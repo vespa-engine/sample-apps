@@ -175,7 +175,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "queries_rate{endpoint=\"vespa:8080\"}",
+          "expr": "queries_rate",
           "interval": "",
           "legendFormat": "Queries / Second",
           "refId": "A"
@@ -367,7 +367,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "query_latency_average{endpoint=\"vespa:8080\"}",
+          "expr": "query_latency_average",
           "interval": "",
           "legendFormat": "Average Query Latency",
           "refId": "A"
@@ -464,7 +464,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "query_latency_95percentile{endpoint=\"vespa:8080\"}",
+          "expr": "query_latency_95percentile",
           "interval": "",
           "legendFormat": "95 Percentile Query Latency",
           "refId": "A"
@@ -561,7 +561,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "query_latency_99percentile{endpoint=\"vespa:8080\"}",
+          "expr": "query_latency_99percentile",
           "interval": "",
           "legendFormat": "99 Percentile Query Latency",
           "refId": "A"
