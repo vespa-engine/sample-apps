@@ -5,7 +5,7 @@ services:
     image: "prom/prometheus"
     container_name: sample-apps-prometheus
     volumes:
-      - ./album-recommendation-monitoring/prometheus:/etc/prometheus/
+      - ./prometheus:/etc/prometheus/
     ports:
     - "9090:9090"
     command:
@@ -16,7 +16,7 @@ services:
     image: grafana/grafana
     container_name: sample-apps-grafana
     volumes:
-      - ./album-recommendation-monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning:/etc/grafana/provisioning
     ports:
       - "3000:3000"
     networks:
@@ -25,12 +25,12 @@ services:
     image: "vespaengine/vespa"
     build:
       context: .
-      dockerfile: album-recommendation-monitoring/vespa/VespaAlternateDockerfile
+      dockerfile: vespa/VespaAlternateDockerfile
     container_name: vespa
     hostname: vespa-container
     privileged: true
     volumes:
-      - .:/vespa-sample-apps
+      - ..:/vespa-sample-apps
     ports:
     - "8080:8080"
     networks:
