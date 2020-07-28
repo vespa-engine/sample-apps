@@ -1,5 +1,5 @@
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-version: '3'
+version: '3.8'
 services:
   prometheus:
     image: "prom/prometheus"
@@ -11,7 +11,7 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:
-      - backend
+      - monitoring
   grafana:
     image: grafana/grafana
     container_name: sample-apps-grafana
@@ -20,7 +20,7 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - backend
+      - monitoring
   vespa:
     image: "vespaengine/vespa"
     build:
@@ -34,15 +34,16 @@ services:
     ports:
     - "8080:8080"
     networks:
-      - backend
+      - monitoring
   random-data-feeder:
     build:
       context: album-recommendation-random-data/
       dockerfile: Dockerfile
     container_name: random-data-feeder
     networks:
-      - backend
+      - monitoring
 
 networks:
-  backend:
+  monitoring:
+    name: "monitoring"
     driver: "bridge"
