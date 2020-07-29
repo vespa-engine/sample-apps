@@ -4,6 +4,6 @@
 A simple java.application that feeds data into the Album Recommendations application using the Vespa Http Client. 
 
 
-Please refer to the
-[vespa quick start guide](http://docs.vespa.ai/documentation/vespa-quick-start.html)
+Please refer to
+[Monitoring with Grafana quick start](https://docs.vespa.ai/documentation/monitoring-with-grafana-quick-start.html)
 for more information.
