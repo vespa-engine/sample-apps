@@ -4,6 +4,6 @@
 A simple Vespa java.application which can be deployed on one node, which supports
 feeding and running simple queries.
 
-Please refer to the
-[vespa quick start guide](http://docs.vespa.ai/documentation/vespa-quick-start.html)
+Please refer to
+[Monitoring with Grafana quick start](https://docs.vespa.ai/documentation/monitoring-with-grafana-quick-start.html)
 for more information.
