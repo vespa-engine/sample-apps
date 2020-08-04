@@ -17,6 +17,12 @@ import com.yahoo.yolean.chain.After;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+* Add to services.xml to enable:
+*  <searcher id="ai.vespa.example.album.EquivSearcher" bundle="albums" after="MinimalQueryInserter"/>
+*/
+
 @After("MinimalQueryInserter")
 public class EquivSearcher extends Searcher {
 
