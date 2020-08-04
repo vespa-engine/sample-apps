@@ -24,32 +24,29 @@ public class EquivSearcher extends Searcher {
             "metallica", List.of("metalica", "metallika"),
             "rammstein", List.of("ramstein", "raamstein"));
 
-    public EquivSearcher() { }
-
     @Override
     public Result search(Query query, Execution execution) {
+        query.trace("Before equivize:" + query.toDetailString(), false, 6);
         QueryTree tree = query.getModel().getQueryTree();
         Item rootItem = tree.getRoot();
         rootItem = equivize(rootItem);
         tree.setRoot(rootItem);
-
+        query.trace("After equivize:" + query.toDetailString(), false, 6);
         return execution.search(query);
     }
 
     private Item equivize(Item item) {
         if (item instanceof TermItem) {
-            String word = ((TermItem) item).stringValue();
-            String indexName = ((TermItem) item).getIndexName();
-            if(indexName.equals("artist")) {
-                List<String> synonyms = artistSpellings.get(word);
+            String term  = ((TermItem)item).stringValue();
+            String index = ((TermItem)item).getIndexName();
+            if("artist".equals(index)) {
+                List<String> synonyms = artistSpellings.get(term);
                 if (synonyms != null) {
-                    EquivItem eq = new EquivItem(item, synonyms);
-                    return eq;
+                    return new EquivItem(item, synonyms);
                 }
             }
         } else if (item instanceof PhraseItem) {
-            // cannot put EQUIV inside PHRASE
-            return item;
+            return item; // cannot put EQUIV inside PHRASE
         } else if (item instanceof CompositeItem) {
             CompositeItem cmp = (CompositeItem)item;
             for (int i = 0; i < cmp.getItemCount(); ++i) {
