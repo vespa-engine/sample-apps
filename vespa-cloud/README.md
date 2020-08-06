@@ -4,7 +4,7 @@
 ### album-recommendation
 This is the intro application to Vespa.
 * Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation).
-* [album-recommendation-java](album-recommendation-java) is an introduction for how to integrate Java code to process data and queries.
+* [album-recommendation-searcher](album-recommendation-searcher) is an introduction for how to integrate Java code to process queries.
 * [album-recommendation-docproc](album-recommendation-docproc) is an introduction to document processing
 
 ### cord-19-search

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -25,6 +25,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tenant>vespa-team</tenant>                                 <!-- Name from the web console -->
-        <application>album-rec-java</application>                   <!-- Name from the web console -->
+        <application>album-rec-searcher</application>                   <!-- Name from the web console -->
     </properties>
 </project>

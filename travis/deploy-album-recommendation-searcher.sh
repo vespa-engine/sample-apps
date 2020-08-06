@@ -13,7 +13,7 @@ source /etc/profile.d/jdk-env.sh
 
 yum install -y openssl
 
-cd vespa-cloud/album-recommendation-java/
+cd vespa-cloud/album-recommendation-searcher/
 
 # Generate self-signed x509 certificate for data plane security
 openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
