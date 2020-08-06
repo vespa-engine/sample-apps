@@ -1,4 +1,4 @@
-# Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 sudo: required
 
 services:
@@ -18,5 +18,5 @@ jobs:
       script: ./travis/compile-and-test-docker.sh
     - stage: deploy-album-recommendation
       if: branch = master AND type IN (push,cron)
-      script: ./travis/deploy-album-recommendation-java-docker.sh
+      script: ./travis/deploy-album-recommendation-searcher-docker.sh
 
