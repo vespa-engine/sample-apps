@@ -2,7 +2,7 @@
 # Vespa sample applications - Album Recommendations
 
 Please refer to the
-[vespa quick start guide](http://docs.vespa.ai/documentation/vespa-quick-start.html)
+[vespa quick start guide](https://docs.vespa.ai/documentation/monitoring-with-grafana-quick-start.html)
 for more information.
 
 This is a repo for Grafana / Prometheus configuration for the quick-start.
