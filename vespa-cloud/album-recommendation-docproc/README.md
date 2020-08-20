@@ -25,8 +25,8 @@ Flow:
 1. Look up in _lyrics_ schema if album with given ID has lyrics stored
 1. Store album with lyrics in _music_ schema 
 
-Follow steps 1-8 in [getting-started-custom-code](https://cloud.vespa.ai/album-recommendation-searcher),
- stop after setting $ENDPOINT
+Follow steps 1-8 in [album-recommendation-searcher](https://cloud.vespa.ai/album-recommendation-searcher),
+stop after setting $ENDPOINT
 
 Feed a _lyrics_ document:
 ```
