@@ -2,10 +2,10 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
 
-    <container id="default" version="1.0">
+    <container id="my-processing-cluster" version="1.0">
         <document-api />
         <document-processing>
-            <chain id="default" inherits="indexing">
+            <chain id="my-processing-chain" inherits="indexing">
                 <documentprocessor id="ai.vespa.example.album.LyricsDocumentProcessor" bundle="albums-docproc"/>
             </chain>
         </document-processing>
@@ -18,7 +18,7 @@
         <documents>
             <document type="music"  mode="index" />
             <document type="lyrics" mode="index" />
-            <document-processing cluster="default" />
+            <document-processing cluster="my-processing-cluster" chain="my-processing-chain" />
         </documents>
         <nodes count="1" />
     </content>
