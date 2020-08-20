@@ -75,7 +75,6 @@ Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Set lyrics, Prog
 - In the subsequent _process_ invocation, we see that the async operation has completed -
   set _Progress.DONE_
 
-
 Get / delete a document by ID:
 ```
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
