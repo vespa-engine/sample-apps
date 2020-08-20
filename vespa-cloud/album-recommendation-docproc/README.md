@@ -74,3 +74,13 @@ Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Set lyrics, Prog
 - Then, the handler for the async operation is invoked as the call has completed
 - In the subsequent _process_ invocation, we see that the async operation has completed -
   set _Progress.DONE_
+
+
+Get / delete a document by ID:
+```
+$ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
+    "$ENDPOINT/document/v1/mynamespace/music/docid/1"
+    
+$ curl -X DELETE --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
+    "$ENDPOINT/document/v1/mynamespace/music/docid/1"
+```
