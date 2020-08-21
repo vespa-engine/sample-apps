@@ -1,4 +1,5 @@
 #!/usr/bin/env python3 
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 import requests
 import json
@@ -17,15 +18,16 @@ def recall_at(result,n,number_relevant):
 
 def handle_query_grouped(query, question_id, rank_profile, embedding, document_type, dataset="squad", hits=100):
   json_request = {
-    "query": "(context_id:>-1 %s)" % query,
+    "query": query,
     "type": "any",
-    "yql": "select * from sources * where userQuery() | all(group(context_id) max(%i) each(each(output(summary())) as(sentences)) as(paragraphs));" % hits,
+    "yql": 'select * from sources * where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding))\
+ or userQuery() | all(group(context_id) max(%i) each(each(output(summary())) as(sentences)) as(paragraphs));' % hits,
     "hits": 0,
-    "filter": "+dataset:%s" %dataset,
+    "filter": "+dataset:%s" % dataset,
     "restrict": document_type,
     "timeout":20,
     "ranking.softtimeout.enable":"false",
-    "ranking.features.query(tensor)": embedding,
+    "ranking.features.query(query_embedding)": embedding,
     "ranking.profile": rank_profile
   }
   r = requests.post('http://localhost:8080/search/', json=json_request)
@@ -52,14 +54,15 @@ def handle_query_grouped(query, question_id, rank_profile, embedding, document_t
 
 def handle_query(query, question_id, rank_profile, embedding, document_type, dataset="squad", hits=100):
   json_request = {
-    "query": "(context_id:>-1 %s)" % query,
+    "query": query,
     "type": "any",
+    "yql": 'select * from sources * where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding)) or userQuery();',
     "filter": "+dataset:%s" %dataset,
     "hits": hits,
     "restrict": document_type,
     "timeout":20,
     "ranking.softtimeout.enable":"false",
-    "ranking.features.query(tensor)": embedding,
+    "ranking.features.query(query_embedding)": embedding,
     "ranking.profile": rank_profile 
   }
   r = requests.post('http://localhost:8080/search/', json=json_request)

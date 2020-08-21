@@ -1,10 +1,12 @@
 #!/usr/bin/env python3 
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 from retrievalqaeval.sb_sed import infer_sentence_breaks
 import json
 import sys
 import tensorflow as tf
 import tensorflow_hub as hub
-import tf_sentencepiece
+import tensorflow_text
 
 def get_questions_to_answers(qas,sentence_breaks,context):
   questions_to_answers = []
@@ -36,7 +38,6 @@ def make_vespa_feed_paragraph(questions,text,context_id):
   return vespa_doc
 
 def make_vespa_feed(sentence_id,questions,sentence,sentence_embedding,context_id):
-  answer_tensor = session.run(response_embeddings,feed_dict={answer:[sentence],answer_context:[context]})['outputs'][0]
   vespa_doc = {
     "put": "id:squad:sentence::%i" % sentence_id,
       "fields": {
@@ -45,7 +46,7 @@ def make_vespa_feed(sentence_id,questions,sentence,sentence_embedding,context_id
         "questions": questions,
         "context_id": context_id,
         "sentence_embedding": {
-          "values": sentence_embedding.tolist()
+          "values": sentence_embedding.numpy().tolist()
         }
       }
   }
@@ -53,28 +54,7 @@ def make_vespa_feed(sentence_id,questions,sentence,sentence_embedding,context_id
 
 
 print("Downloading QA universal sentence encoder - about 1GB which needs to be downloaded")
-g = tf.Graph()
-with g.as_default():
-  module = hub.Module("https://tfhub.dev/google/universal-sentence-encoder-multilingual-qa/1")
-  answer = tf.compat.v1.placeholder(tf.string) 
-  answer_context = tf.compat.v1.placeholder(tf.string)
-  response_embeddings = module(
-    dict(input=answer,
-         context=answer_context),
-    signature="response_encoder", as_dict=True)
-  
-  question_input = tf.compat.v1.placeholder(tf.string) 
-  question_embeddings = module(
-    dict(input=question_input),
-    signature="question_encoder", as_dict=True)
-
-  init_op = tf.group([tf.compat.v1.global_variables_initializer(), tf.compat.v1.tables_initializer()])
-g.finalize()
-
-# Initialize session.
-session = tf.compat.v1.Session(graph=g)
-session.run(init_op)
-print("Done creating TF session")
+module = hub.load('https://tfhub.dev/google/universal-sentence-encoder-multilingual-qa/3')
 
 query_file = open("squad_queries.txt","w")
 feed_file = open("squad_vespa_feed.json","w")
@@ -106,7 +86,7 @@ with open(sys.argv[1]) as fp:
 
       answer_context_array = [context for s in sentences]
       sentences = list(sentences)
-      sentence_embeddings = session.run(response_embeddings,feed_dict={answer:sentences,answer_context:answer_context_array})['outputs']
+      sentence_embeddings = module.signatures['response_encoder'](input=tf.constant(sentences), context=tf.constant(answer_context_array))['outputs']
       for i in range(0,len(sentences)):
         s = sentences[i]
         if s in answer_sentences:
@@ -129,11 +109,10 @@ def chunks(l, n):
 chunks = chunks(queries,200)
 for chunk in chunks: 
   chunk_queries = [str(q[1]) for q in chunk]
-  embeddings = session.run(question_embeddings,feed_dict={question_input:chunk_queries})['outputs']
+  embeddings = module.signatures['question_encoder'](tf.constant(chunk_queries)) ['outputs']
   for i in range(0,len(chunk)):
     question_id,question,number_answers = chunk[i]
-    query_file.write("%i\t%s\t%i\t%s\n" % (int(question_id),str(question),int(number_answers),str(embeddings[i].tolist())))
+    query_file.write("%i\t%s\t%i\t%s\n" % (int(question_id),str(question),int(number_answers),str(embeddings[i].numpy().tolist())))
 
 query_file.close()
 feed_file.close()
-

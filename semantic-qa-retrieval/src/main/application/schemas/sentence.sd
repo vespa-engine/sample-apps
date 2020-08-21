@@ -1,10 +1,21 @@
-# Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 schema sentence {
 
   document sentence inherits context {
+
     field sentence_embedding type tensor<float>(x[512]) {
-      indexing: attribute
+      indexing: attribute|index
+      attribute {
+        distance-metric:euclidean
+      }
+      index {
+        hnsw {
+          max-links-per-node: 16 
+          neighbors-to-explore-at-insert: 500
+        }
+      }
+
     }
   }
 
