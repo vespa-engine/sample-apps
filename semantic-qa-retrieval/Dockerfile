@@ -12,6 +12,7 @@ RUN yum -y update && \
 
 WORKDIR /opt/vespa/share/ 
 COPY . /opt/vespa/share/qa
+RUN pip3 install --upgrade pip
 RUN pip3 install -r /opt/vespa/share/qa/py-requirements.txt
 RUN python3 -m nltk.downloader punkt 
 
