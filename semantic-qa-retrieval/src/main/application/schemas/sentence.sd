@@ -25,7 +25,7 @@ schema sentence {
 
   rank-profile sentence-semantic-similarity inherits default {
     first-phase {
-      expression: sum(query(tensor)*attribute(sentence_embedding))
+      expression: closeness(sentence_embedding) 
     }
   }
 
@@ -37,10 +37,7 @@ schema sentence {
 
   rank-profile bm25-sentence-semantic-similarity inherits default {
     first-phase {
-      expression: bm25(text) 
-    }
-    second-phase {
-      expression: sum(query(tensor)*attribute(sentence_embedding))
+      expression: bm25(text) + closeness(sentence_embedding) 
     }
   }
 }
