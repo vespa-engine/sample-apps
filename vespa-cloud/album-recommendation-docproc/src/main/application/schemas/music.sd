@@ -23,5 +23,9 @@ schema music {
         field lyrics type string {
             indexing: summary | index
         }
+
+        field producttype type string {
+            indexing: summary
+        }
     }
 }
