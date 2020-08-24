@@ -20,13 +20,9 @@ def handle_query_grouped(query, question_id, rank_profile, embedding, document_t
   json_request = {
     "query": query,
     "type": "any",
-    "yql": 'select * from sources * where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding))\
+    "yql": 'select * from sources sentence where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding))\
  or userQuery() | all(group(context_id) max(%i) each(each(output(summary())) as(sentences)) as(paragraphs));' % hits,
     "hits": 0,
-    "filter": "+dataset:%s" % dataset,
-    "restrict": document_type,
-    "timeout":20,
-    "ranking.softtimeout.enable":"false",
     "ranking.features.query(query_embedding)": embedding,
     "ranking.profile": rank_profile
   }
@@ -56,12 +52,8 @@ def handle_query(query, question_id, rank_profile, embedding, document_type, dat
   json_request = {
     "query": query,
     "type": "any",
-    "yql": 'select * from sources * where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding)) or userQuery();',
-    "filter": "+dataset:%s" %dataset,
+    "yql": 'select * from sources sentence where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding)) or userQuery();',
     "hits": hits,
-    "restrict": document_type,
-    "timeout":20,
-    "ranking.softtimeout.enable":"false",
     "ranking.features.query(query_embedding)": embedding,
     "ranking.profile": rank_profile 
   }
