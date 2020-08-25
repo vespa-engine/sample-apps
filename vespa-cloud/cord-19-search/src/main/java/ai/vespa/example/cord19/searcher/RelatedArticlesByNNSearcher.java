@@ -100,7 +100,7 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
 
     private NearestNeighborItem createNNItem(String field, String query) {
         NearestNeighborItem nnTitle = new NearestNeighborItem(field, query);
-        nnTitle.setAllowApproximate(false);
+        nnTitle.setAllowApproximate(true);
         nnTitle.setTargetNumHits(100);
         return nnTitle;
     }
