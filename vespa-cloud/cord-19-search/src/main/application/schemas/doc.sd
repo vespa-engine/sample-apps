@@ -214,16 +214,33 @@ schema doc {
 
     field abstract_embedding type tensor<float>(x[768]) {
       indexing: attribute
+      index {
+        hnsw {
+          max-links-per-node: 32
+          neighbors-to-explore-at-insert: 500
+        }
+      }
     }
 
     field title_embedding type tensor<float>(x[768]) {
       indexing: attribute
+      index {
+        hnsw {
+          max-links-per-node: 32
+          neighbors-to-explore-at-insert: 500
+        }
+      }
     }
 
     field specter_embedding type tensor<float>(x[768]) {
       indexing: attribute
+      index {
+        hnsw {
+          max-links-per-node: 32
+          neighbors-to-explore-at-insert: 500
+        }
+      }
     }
-
     field related_to type int {}
   }
 
@@ -346,25 +363,25 @@ schema doc {
 
   rank-profile related-ann inherits default {
       first-phase {
-        expression: 0.7*rawScore(title_embedding) + 0.3*rawScore(abstract_embedding)
+        expression: 0.7*closeness(title_embedding) + 0.3*closeness(abstract_embedding)
       }
   }
 
   rank-profile related-specter {
     first-phase {
-      expression:rawScore(specter_embedding)
+      expression:closeness(specter_embedding)
     }
   }
 
   rank-profile semantic-search-abstract {
     first-phase {
-      expression:rawScore(abstract_embedding)
+      expression:closeness(abstract_embedding)
     }
   }
 
   rank-profile semantic-search-title {
     first-phase {
-      expression:rawScore(title_embedding)
+      expression:closeness(title_embedding)
     }
   }
 
