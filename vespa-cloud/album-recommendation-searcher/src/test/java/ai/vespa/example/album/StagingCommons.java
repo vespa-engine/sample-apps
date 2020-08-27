@@ -65,11 +65,7 @@ class StagingCommons {
 
     /** Verifies the static staging documents are searchable, ranked correctly, and render as expected. */
     static void verifyDocumentsAreSearchable() throws IOException {
-        // Verify that the cluster has the fed documents, and that they are searchable.
-        HttpResponse<String> warmUpResponse = container().send(container().request("/search/", warmupQueryForAllDocuments()));
-        assertEquals(200, warmUpResponse.statusCode());
-        assertEquals(3, mapper.readTree(warmUpResponse.body())
-                              .get("root").get("fields").get("totalCount").asLong());
+        warmup();
 
         // Verify that the cluster filters and ranks documents as expected, prior to upgrade.
         HttpResponse<String> queryResponse = container().send(container().request("/search/", queryForNewPop()));
@@ -86,6 +82,16 @@ class StagingCommons {
         assertEquals("Metallica", hardwired.get("artist").asText());
         assertEquals("Hardwired...To Self-Destruct", hardwired.get("album").asText());
         assertEquals(2016, hardwired.get("year").asLong());
+    }
+
+    private static void warmup() throws IOException {
+        // Verify that the cluster has the fed documents, and that they are searchable.
+        for (int i = 0; i <= 5; i++) {
+            HttpResponse<String> warmUpResponse = container().send(container().request("/search/", warmupQueryForAllDocuments()));
+            assertEquals(200, warmUpResponse.statusCode());
+            assertEquals(3, mapper.readTree(warmUpResponse.body())
+                    .get("root").get("fields").get("totalCount").asLong());
+        }
     }
 
 }
