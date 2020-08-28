@@ -35,9 +35,9 @@ $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /apps/text-sear
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
-**Create data feed:** 
+**Create data feed:**
 
-To use the entire MS MARCO data set, use the download script. Here we use the sample data. 
+To use the entire MS MARCO data set, use the download script. Here we use the sample data.
 
 <pre data-test="exec">
 $ ./bin/convert-msmarco.sh
@@ -53,7 +53,7 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 **Test the application:**
 
 <pre data-test="exec" data-test-assert-contains="D2977840">
-$ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod' 
+$ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod'
 </pre>
 
 **Browse the site:**
@@ -63,7 +63,7 @@ $ curl -s 'http://localhost:8080/search/?query=what+is+dad+bod'
 **Install python dependencies:**
 
 <pre data-test="exec">
-pip3 install -r src/python/requirements.txt
+pip3 install -qqq -r src/python/requirements.txt
 </pre>
 
 **Collect training data:**
