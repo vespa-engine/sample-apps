@@ -27,5 +27,10 @@ schema music {
         field producttype type string {
             indexing: summary
         }
+
+        field producttypetokens type array<string> {
+            indexing: summary | index
+            match   : exact
+        }
     }
 }
