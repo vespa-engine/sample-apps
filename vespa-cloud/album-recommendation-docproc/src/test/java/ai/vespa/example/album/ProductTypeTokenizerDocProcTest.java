@@ -59,7 +59,7 @@ class ProductTypeTokenizerDocProcTest {
         DocprocService service = setupDocprocService(new ProductTypeTokenizerDocProc());
         service.getExecutor().process(p);
 
-        Array<StringFieldValue> tokens = (Array<StringFieldValue>)doc.getFieldValue(PRODUCT_TYPE_TOKENS_FIELD_NAME);
+        Array<?> tokens = (Array<?>)doc.getFieldValue(PRODUCT_TYPE_TOKENS_FIELD_NAME);
         assertEquals(55, tokens.size());
         assertEquals("M", tokens.get(0).toString());
         assertEquals("Media > Music & Sound Recordings > Music Cassette Tapes", tokens.get(54).toString());
