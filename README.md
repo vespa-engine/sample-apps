@@ -46,10 +46,8 @@ http-api-using-*
 
 ----
 
-Note: Applications with pom.xml must be built before being deployed.
-Refer to
-[developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html#deploy)
-for more information.
+Note: Applications with _pom.xml_ must be built before being deployed.
+Refer to [vespa plugins](http://docs.vespa.ai/documentation/vespa-plugins.html) for more information.
 
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md)
 to the Vespa sample applications.

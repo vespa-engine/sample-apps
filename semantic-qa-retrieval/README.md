@@ -109,7 +109,7 @@ $ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --f
 The evaluation script runs all questions produced by the convertation script and for each question it executes different recall and ranking strategies and finally it computes the 
 [mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_ and the Recall@1,Recall@5 and Recall@10 metrics. 
 
- The evaluations script uses the [Vespa search api](https://docs.vespa.ai/documentation/search-api.html) 
+The evaluations script uses the [Vespa query api](https://docs.vespa.ai/documentation/query-api.html)
 
 Running the _evaluation.py_ script:
 
