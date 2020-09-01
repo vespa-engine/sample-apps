@@ -12,7 +12,7 @@ $ docker info | grep "Total Memory"
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APPS=`pwd`/sample-apps
-$ docker run -m 10G --detach --name vespa --hostname vespa-container --privileged \
+$ docker run -m 10G --detach --name vespa --hostname vespa-container \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
 **Wait for the configserver to start:**
