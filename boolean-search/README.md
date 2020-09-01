@@ -5,8 +5,6 @@ Predicate Search
 Predicate/Boolean Search and how to feed and query is described in
 [predicate search](http://docs.vespa.ai/documentation/predicate-fields.html).
 
-To deploy this sample application see [Developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html).
-
 Adding predicate search to an application is easy. Just add a field of
 type predicate to the .sd file. (Remember to set the arity parameter.)
 
