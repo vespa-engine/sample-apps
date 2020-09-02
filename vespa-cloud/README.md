@@ -37,9 +37,7 @@ refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) f
 ----
 
 Note: Applications with pom.xml must be built before being deployed.
-Refer to
-[developing applications](http://docs.vespa.ai/documentation/jdisc/developing-applications.html#deploy)
-for more information.
+Refer to [getting started](https://docs.vespa.ai/documentation/getting-started.html) for more information.
 
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md)
 to the Vespa sample applications.
