@@ -39,8 +39,7 @@ mvn \
   clean vespa:compileVersion
 
 # Package and submit application
-mvn -P fat-test-application \
-  -Dvespaversion=$(cat target/vespa.compile.version) \
+mvn -Dvespaversion=$(cat target/vespa.compile.version) \
   -Dtenant=vespa \
   -Dapplication=album-recommendation \
   -Dendpoint=${VESPA_CLOUD_ENDPOINT} \
