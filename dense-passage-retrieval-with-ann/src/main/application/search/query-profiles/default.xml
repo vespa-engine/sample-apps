@@ -1,0 +1,5 @@
+<query-profile id="default" type="root">
+ <field name="maxHits">1000</field>
+ <field name="maxOffset">1000</field> 
+ <field name="timeout">5s</field>
+</query-profile>

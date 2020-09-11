@@ -1,0 +1,54 @@
+schema wiki {
+
+  document wiki {
+  
+    field title type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+
+    field text type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+
+    field id type long {
+      indexing: summary |attribute
+    }
+
+    field text_embedding type tensor<float>(x[769]){
+      indexing: attribute|index
+      attribute {
+        distance-metric:euclidean
+      }
+      index {
+        hnsw {
+          max-links-per-node: 32 
+          neighbors-to-explore-at-insert: 500
+        }
+      }
+    }
+  }
+  
+  fieldset default {
+    fields: title, text 
+  }
+
+  rank-profile sparse {
+    first-phase {
+      expression: bm25(text) + bm25(title) 
+    }
+  }
+
+  rank-profile dense {
+    first-phase {
+      expression: closeness(field, text_embedding)
+    }
+  }
+
+  rank-profile hybrid inherits sparse {
+    first-phase {
+      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+    }
+  }
+}
