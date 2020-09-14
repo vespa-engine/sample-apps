@@ -35,7 +35,7 @@ jobs:
     # Build the application package and the tester bundle
     - name: Build with Maven
       working-directory: ./vespa-cloud/vespa-documentation-search
-      run: mvn -B -P fat-test-application package -Dvespa.compile.version="$(cat target/vespa.compile.version)"
+      run: mvn -B package -Dvespa.compile.version="$(cat target/vespa.compile.version)"
     
     # Deploy to Vespa Cloud
     - name: Deploy with Maven
