@@ -2,6 +2,13 @@ package ai.vespa.tokenizer;
 import com.google.inject.Inject;
 import com.yahoo.collections.Tuple2;
 import com.yahoo.component.AbstractComponent;
+import com.yahoo.language.Language;
+import com.yahoo.language.Linguistics;
+import com.yahoo.language.process.StemMode;
+import com.yahoo.language.process.Token;
+import com.yahoo.language.process.Tokenizer;
+import com.yahoo.language.simple.SimpleLinguistics;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -22,14 +29,19 @@ public class BertTokenizer extends AbstractComponent {
 
     private NavigableMap<String, Integer> vocabulary;
     private Map<Integer,String> tokenId2Token;
+    private Linguistics linguistics;
+    private Tokenizer tokenizer;
 
-    static final Pattern splitPattern = Pattern.compile("\\p{javaWhitespace}+|((?<=\\p{Punct})+|(?=\\p{Punct}+))");
+
 
     @Inject
-    public BertTokenizer(BertModelConfig config) throws IOException {
+    public BertTokenizer(BertModelConfig config, SimpleLinguistics linguistics) throws IOException {
         super();
         Path path = config.vocabulary();
         max_length = config.max_input();
+
+        this.tokenizer = linguistics.getTokenizer();
+        this.linguistics = linguistics;
 
         logger.info("Loading vocabulary from " + path.toString());
         this.vocabulary = new TreeMap<>(Collections.reverseOrder());
@@ -67,31 +79,28 @@ public class BertTokenizer extends AbstractComponent {
    public List<Integer> tokenize(String input,  boolean padToMax) {
         List<Integer> tensor = new ArrayList<>();
         input = input.toLowerCase();
-        String[] splitTokens = splitPattern.split(input);
-
-        int nTokens = 0;
-        for(String originalToken: splitTokens) {
+        this.tokenizer.tokenize(input, Language.ENGLISH, StemMode.NONE, true);
+        for(Token t: this.tokenizer.tokenize(input, Language.ENGLISH, StemMode.NONE, true)) {
+            String originalToken = t.getTokenString();
             String candidate = originalToken;
             int count = 0;
-            while(candidate.length() > 0 && !"##".equals(candidate)){
-                Tuple2<String,Integer> e = findLongestSubstring(candidate);
-                if (e == null)
+            while(candidate.length() > 0 && ! "##".equals(candidate)){
+                Tuple2<String,Integer> entry = findLongestSubstring(candidate);
+                if (entry == null)
                     break;
-                if(nTokens < max_length) {
-                    tensor.add(e.second);
-                    nTokens++;
+                if(tensor.size() < max_length) {
+                    tensor.add(entry.second);
                 }
-                candidate = "##" +candidate.substring(e.first.length());
+                candidate = "##" +candidate.substring(entry.first.length());
                 if (count++ > originalToken.length())
                     break;
             }
         }
 
         if (padToMax) {
-            for (int i = nTokens; i < max_length; i++)
+            for (int i = tensor.size(); i < max_length; i++)
                 tensor.add(0);
         }
-
         return tensor;
     }
 

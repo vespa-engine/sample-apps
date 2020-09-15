@@ -3,6 +3,7 @@ package ai.vespa.searcher;
 import ai.vespa.tokenizer.BertModelConfig;
 import ai.vespa.tokenizer.BertTokenizer;
 import com.yahoo.component.chain.Chain;
+import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.searchchain.Execution;
@@ -29,7 +30,7 @@ public class QASearcherTest {
     public void testSearcher() throws IOException  {
         Query query = new Query("/search/?query=Who+landed+on+the+moon");
         assertEquals("Does not match", "Who landed on the moon", query.getModel().getQueryString());
-        Result result = execute(query, new QASearcher(new BertTokenizer(bertModelConfig)));
+        Result result = execute(query, new QASearcher(new BertTokenizer(bertModelConfig, new SimpleLinguistics())));
         Optional<Tensor> question_token_ids = query.getRanking().getFeatures().getTensor("query(query_token_ids)");
         assertTrue("Tensor was empty", !question_token_ids.isEmpty());
         Tensor token_ids = question_token_ids.get();

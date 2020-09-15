@@ -36,7 +36,7 @@ public class QASearcher extends Searcher {
 
     private Tensor getTensorFromQueryText(String queryInput) {
         List<Integer> tokens_ids = tokenizer.tokenize(queryInput, true);
-        String tensorSpec = "tensor<float>(d0[1],d1[" + tokenizer.getMaxLength() + "]):[" +  tokens_ids + "]";
+        String tensorSpec = "tensor<float>(d0[" + tokenizer.getMaxLength() + "]):" +  tokens_ids;
         return Tensor.from(tensorSpec);
     }
 

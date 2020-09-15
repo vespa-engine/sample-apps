@@ -11,6 +11,7 @@ import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.jdisc.metric.NullMetric;
 import com.yahoo.document.*;
 import com.yahoo.document.datatypes.StringFieldValue;
+import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.statistics.StatisticsImpl;
 import com.yahoo.tensor.TensorType;
 import org.junit.Test;
@@ -58,7 +59,7 @@ public class QADocumentProcessorTest {
         doc.setFieldValue("title", new StringFieldValue("Britney_spears"));
         doc.setFieldValue("text", new StringFieldValue("Britney Jean Spears (born December 2, 1981) is an American singer, songwriter, dancer, and actress."));
         Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new QADocumentProcessor(new BertTokenizer(bertModelConfig)));
+        DocprocService service = setupDocprocService(new QADocumentProcessor(new BertTokenizer(bertModelConfig, new SimpleLinguistics())));
         service.getExecutor().process(p);
         System.out.println(doc);
 
