@@ -6,7 +6,26 @@
      <nodes>
       <node hostalias="node1" />
     </nodes>
-    <search/>
+
+    <component id="ai.vespa.tokenizer.BertTokenizer" bundle="question-answering">
+      <config name="ai.vespa.tokenizer.bert-model">
+        <max_input>128</max_input>
+        <vocabulary>models/bert-base-uncased-vocab.txt</vocabulary>
+      </config>
+    </component>
+
+    <document-processing>
+      <chain id="bert-tensorizer" inherits="indexing">
+        <documentprocessor id="ai.vespa.processor.QADocumentProcessor" bundle="question-answering"/>
+      </chain>
+    </document-processing>
+
+    <search>
+      <chain id="qa" inherits="vespa">
+        <searcher id="ai.vespa.searcher.QASearcher" bundle="question-answering">
+        </searcher>
+      </chain>
+    </search>
     <document-api/>
   </container>
 
@@ -17,6 +36,7 @@
     <redundancy>1</redundancy>
     <documents>
       <document mode='index' type='wiki'/>
+      <document-processing cluster="default" chain="bert-tensorizer" />
     </documents>
      <nodes>
       <node hostalias="node1" distribution-key="0" />
