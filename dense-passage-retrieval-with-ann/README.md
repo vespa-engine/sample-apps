@@ -277,7 +277,7 @@ rank-profile question-answering {
 ## Reproducing this work  - Requirements for running this sample application:
 
 * [Docker](https://www.docker.com/) installed and running  
-* git client to checkout the sample application repository and DPR 
+* git client to checkout the sample application repository and DPR and Maven installed 
 * Operating system: macOS or Linux, Architecture: x86_64
 * Minimum **128GB** system memory 
 * python3 and DPR dependencies, see [DPR repo](https://github.com/facebookresearch/DPR) 
@@ -287,22 +287,25 @@ See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-qui
 ## Checkout the sample-apps repository and install DPR requirements
 <pre>
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ export VESPA_SAMPLE_APPS=`pwd`/sample-apps 
+$ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
+$ TODO MUST build zip before mapping volume 
 $ docker run --detach --name vespa --hostname vespa-container \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
 
-Wait for configuration service to start
+Wait for configuration service to start (Wait for the command below return a 200 OK):
 
 <pre>
 $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
 </pre>
 
-Deploy application and start Vespa services 
+Build the application and deploy application:
 
 <pre>
+$ cd $VESPA_SAMPLE_APPS/dense-passage-retrieval-with-ann/
+$ mvn package -U
 $ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare \
-  /vespa-sample-apps/dense-passage-retrieval-with-ann/src/main/application/ && \
+  /vespa-sample-apps/dense-passage-retrieval-with-ann/target/applization.zip && \
   /opt/vespa/bin/vespa-deploy activate'
 </pre>
 
