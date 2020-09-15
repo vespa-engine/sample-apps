@@ -1,0 +1,4 @@
+package=ai.vespa.tokenizer
+
+max_input int
+vocabulary path
