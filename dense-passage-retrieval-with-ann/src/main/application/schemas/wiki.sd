@@ -109,7 +109,9 @@ schema wiki {
     first-phase {
       expression: bm25(title) + bm25(text)
     }
+
     second-phase {
+      rerank-count:10
       expression: sum(onnxModel("files/reader.onnx", "output_2"))
     }
     summary-features {
