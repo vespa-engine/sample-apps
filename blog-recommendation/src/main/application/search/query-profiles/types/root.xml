@@ -1,4 +1,4 @@
 <!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <query-profile-type id="root" inherits="native">
-    <field name="ranking.features.query(user_item_cf)" type="tensor(d0[1],d1[10])" />
+    <field name="ranking.features.query(user_item_cf)" type="tensor&lt;float&gt;(d0[1],d1[10])" />
 </query-profile-type>
