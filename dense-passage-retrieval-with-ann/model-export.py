@@ -10,4 +10,4 @@ tokenizer = DPRReaderTokenizer.from_pretrained('facebook/dpr-reader-single-nq-ba
 model = DPRReader.from_pretrained('facebook/dpr-reader-single-nq-base', return_dict=True)  
 pipeline = transformers.Pipeline(model=model, tokenizer=tokenizer)  
 onnx_convert.convert_pytorch(pipeline, opset=11, output=Path("reader.onnx"), use_external_format=False) 
-onnx_convert.quantize(Path("reader.onnx")) 
+#onnx_convert.quantize(Path("reader.onnx")) 
