@@ -10,7 +10,8 @@ import com.yahoo.document.DocumentPut;
 import com.yahoo.document.datatypes.FieldValue;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.datatypes.TensorFieldValue;
-import com.yahoo.tensor.Tensor;
+import com.yahoo.tensor.IndexedTensor;
+import com.yahoo.tensor.TensorType;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ import java.util.List;
 public class QADocumentProcessor extends DocumentProcessor {
 
     BertTokenizer tokenizer;
+    public static String dimensionName = "d0";
+    public static TensorType titleTensorType = new TensorType.Builder().indexed(dimensionName, 256).build();
+    public static TensorType textTensorType = new TensorType.Builder().indexed(dimensionName, 256).build();
 
     @Inject
     public QADocumentProcessor(BertTokenizer tokenizer) {
@@ -30,17 +34,25 @@ public class QADocumentProcessor extends DocumentProcessor {
             if (op instanceof DocumentPut) {
                 DocumentPut put = (DocumentPut) op;
                 Document doc = put.getDocument();
-                doc.setFieldValue("text_token_ids", createTensorField(doc.getFieldValue("text")));
-                doc.setFieldValue("title_token_ids", createTensorField(doc.getFieldValue("title")));
+                if(!doc.getDataType().getName().equals("wiki"))
+                    continue;
+                doc.setFieldValue("text_token_ids", createTensorField(doc.getFieldValue("text"), titleTensorType));
+                doc.setFieldValue("title_token_ids", createTensorField(doc.getFieldValue("title"), textTensorType));
             }
         }
         return Progress.DONE;
     }
 
-    private TensorFieldValue createTensorField(FieldValue field) {
+    private TensorFieldValue createTensorField(FieldValue field, TensorType type) {
+        if(!(field instanceof StringFieldValue))
+            throw new IllegalArgumentException("Can only create tensor from string field input");
         StringFieldValue data = (StringFieldValue)field;
-        List<Integer> token_ids = this.tokenizer.tokenize(data.getString(),true);
-        String tensorSpec = "tensor<float>(d0[" + tokenizer.getMaxLength() + "]):" + token_ids ;
-        return new TensorFieldValue(Tensor.from(tensorSpec));
+        int maxLength = type.sizeOfDimension(dimensionName).get().intValue();
+        List<Integer> token_ids = this.tokenizer.tokenize(data.getString(),maxLength,true);;
+        //Tensors in Vespa are currently float or double
+        float[] token_ids_float_rep = new float[token_ids.size()];
+        for(int i = 0; i < token_ids.size(); i++)
+            token_ids_float_rep[i] = token_ids.get(i).floatValue();
+        return new TensorFieldValue(IndexedTensor.Builder.of(type,token_ids_float_rep).build());
     }
 }

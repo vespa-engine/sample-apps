@@ -14,8 +14,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Adopted from
@@ -25,11 +23,9 @@ import java.util.regex.Pattern;
 public class BertTokenizer extends AbstractComponent {
 
     private final Logger logger = Logger.getLogger(BertTokenizer.class.getName());
-    private int max_length;
 
     private NavigableMap<String, Integer> vocabulary;
     private Map<Integer,String> tokenId2Token;
-    private Linguistics linguistics;
     private Tokenizer tokenizer;
 
 
@@ -38,11 +34,7 @@ public class BertTokenizer extends AbstractComponent {
     public BertTokenizer(BertModelConfig config, SimpleLinguistics linguistics) throws IOException {
         super();
         Path path = config.vocabulary();
-        max_length = config.max_input();
-
         this.tokenizer = linguistics.getTokenizer();
-        this.linguistics = linguistics;
-
         logger.info("Loading vocabulary from " + path.toString());
         this.vocabulary = new TreeMap<>(Collections.reverseOrder());
         this.tokenId2Token = new HashMap<>();
@@ -59,27 +51,23 @@ public class BertTokenizer extends AbstractComponent {
         }
     }
 
-    public int getMaxLength() {
-        return max_length;
-    }
 
-
-   public List<Integer>tokenize(String input)  {
-        return tokenize(input, false);
+   public List<Integer>tokenize(String input, int maxLength)  {
+        return tokenize(input, maxLength, false);
    }
 
    /**
     *
     * Tokenize the input string and return a list of token ids
     * @param input The string input to tokenize and map to bert token ids
-    * @param padToMax If true padd with 0s up to the max sequence lenght
+    * @param maxLength The max length
+    * @param padToMaxLength If true padd with 0s up to the max sequence lenght
     * @return List of token_ids
     */
 
-   public List<Integer> tokenize(String input,  boolean padToMax) {
+   public List<Integer> tokenize(String input,  int maxLength, boolean padToMaxLength) {
         List<Integer> tensor = new ArrayList<>();
         input = input.toLowerCase();
-        this.tokenizer.tokenize(input, Language.ENGLISH, StemMode.NONE, true);
         for(Token t: this.tokenizer.tokenize(input, Language.ENGLISH, StemMode.NONE, true)) {
             String originalToken = t.getTokenString();
             String candidate = originalToken;
@@ -88,7 +76,7 @@ public class BertTokenizer extends AbstractComponent {
                 Tuple2<String,Integer> entry = findLongestSubstring(candidate);
                 if (entry == null)
                     break;
-                if(tensor.size() < max_length) {
+                if(tensor.size() < maxLength) {
                     tensor.add(entry.second);
                 }
                 candidate = "##" +candidate.substring(entry.first.length());
@@ -97,8 +85,8 @@ public class BertTokenizer extends AbstractComponent {
             }
         }
 
-        if (padToMax) {
-            for (int i = tensor.size(); i < max_length; i++)
+        if (padToMaxLength) {
+            for (int i = tensor.size(); i < maxLength; i++)
                 tensor.add(0);
         }
         return tensor;
@@ -116,6 +104,29 @@ public class BertTokenizer extends AbstractComponent {
             tokens.add(this.tokenId2Token.get(token_id));
         return tokens;
     }
+
+    public String removeSubWords(List<String> words)  {
+        StringBuilder builder = new StringBuilder();
+        for(String w: words) {
+            if(isSubWord(w)) {
+                builder.append(w.replace("##",""));
+            }
+            else {
+                builder.append(' ');
+                builder.append(w);
+            }
+        }
+        return builder.toString().trim();
+    }
+
+    public String getTokenFromId(Integer id) {
+        return this.tokenId2Token.get(id);
+    }
+
+    public boolean isSubWord(String word)  {
+        return (word.startsWith("##") || word.startsWith(" ##"));
+    }
+
 
     protected Tuple2<String,Integer> findLongestSubstring(String candidate) {
         NavigableMap<String, Integer> tailMap = this.vocabulary.tailMap(candidate, true);

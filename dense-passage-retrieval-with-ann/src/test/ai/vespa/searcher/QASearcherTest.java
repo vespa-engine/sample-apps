@@ -7,34 +7,28 @@ import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.searchchain.Execution;
-import com.yahoo.tensor.Tensor;
-import org.junit.Test;
 import com.yahoo.search.Query;
+import com.yahoo.tensor.Tensor;
+import com.yahoo.tensor.TensorType;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class QASearcherTest {
+
     static BertModelConfig bertModelConfig;
+    static BertTokenizer tokenizer;
 
     static {
         BertModelConfig.Builder builder = new BertModelConfig.Builder();
         builder.vocabulary(new com.yahoo.config.FileReference("src/test/resources/bert-base-uncased-vocab.txt")).max_input(128);
         bertModelConfig = builder.build();
-    }
-
-    @Test
-    public void testSearcher() throws IOException  {
-        Query query = new Query("/search/?query=Who+landed+on+the+moon");
-        assertEquals("Does not match", "Who landed on the moon", query.getModel().getQueryString());
-        Result result = execute(query, new QASearcher(new BertTokenizer(bertModelConfig, new SimpleLinguistics())));
-        Optional<Tensor> question_token_ids = query.getRanking().getFeatures().getTensor("query(query_token_ids)");
-        assertTrue("Tensor was empty", !question_token_ids.isEmpty());
-        Tensor token_ids = question_token_ids.get();
-        assertEquals(bertModelConfig.max_input(),token_ids.size());
+        try {
+            tokenizer = new BertTokenizer(bertModelConfig, new SimpleLinguistics());
+        } catch (IOException e) {
+        }
     }
 
 
@@ -42,4 +36,25 @@ public class QASearcherTest {
         Execution execution = new Execution(new Chain<>(searcher), Execution.Context.createContextStub());
         return execution.search(query);
     }
+
+
+    private static class MockBackend extends Searcher {
+        @Override
+        public Result search(Query query, Execution execution) {
+            if(isEncoderQuery(query)) {
+                Result result = execution.search(query);
+                result.setTotalHitCount(1);
+                Tensor.Builder b = Tensor.Builder.of(TensorType.fromSpec("tensor<float>(x[768])"));
+                for (long i = 0; i < 768; i++)
+                    b.cell(Math.random(), i);
+            }
+            return execution.search(query);
+        }
+        private boolean isEncoderQuery(Query query) {
+            return query.getModel().getRestrict().equals("query");
+        }
+    }
+
 }
+
+

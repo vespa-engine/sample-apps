@@ -7,7 +7,7 @@ schema wiki {
       index: enable-bm25
     }
 
-    field title_token_ids type tensor<float>(d0[128]) {
+    field title_token_ids type tensor<float>(d0[256]) {
         indexing: summary | attribute
     }
 
@@ -16,7 +16,7 @@ schema wiki {
       index: enable-bm25
     }
 
-    field text_token_ids type tensor<float>(d0[128]) {
+    field text_token_ids type tensor<float>(d0[256]) {
       indexing: summary |attribute
     }
 
@@ -42,23 +42,7 @@ schema wiki {
     fields: title, text 
   }
 
-  rank-profile sparse {
-    first-phase {
-      expression: bm25(text) + bm25(title) 
-    }
-  }
 
-  rank-profile dense {
-    first-phase {
-      expression: closeness(field, text_embedding)
-    }
-  }
-
-  rank-profile hybrid inherits sparse {
-    first-phase {
-      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
-    }
-  }
   rank-profile openqa {
     constants {
       TOKEN_NONE: 0
@@ -66,7 +50,7 @@ schema wiki {
       TOKEN_SEP:  102
     }
 
-    # Find length of input
+    # Find length of question input
     function input_length() {
       expression: sum(map(query(query_token_ids), f(a)(a > 0)))
     }
@@ -80,10 +64,11 @@ schema wiki {
     function text_length() {
       expression: sum(map(attribute(text_token_ids), f(a)(a > 0)))
     }
+
     # Create input sequence: CLS + query + SEP + title + SEP + text + 0's
     function input_ids() {
       expression {
-        tensor<float>(d0[1],d1[128])(
+        tensor<float>(d0[1],d1[380])(
            if (d1 == 0,
              TOKEN_CLS,
            if (d1 < input_length + 1,
@@ -93,7 +78,7 @@ schema wiki {
            if (d1 < input_length + title_length + 2,
              attribute(title_token_ids){d0:(d1-input_length-2)},
            if (d1 == input_length + title_length + 2,
-             TOKEN_SEP,  # ASSUMPTION: input + title length < 126!
+             TOKEN_SEP,
            if (d1 < text_length + title_length + input_length + 3,
              attribute(text_token_ids){d0:(d1-input_length-title_length-3)},
               TOKEN_NONE
@@ -104,19 +89,40 @@ schema wiki {
     function attention_mask() {
       expression: map(input_ids, f(a)(a > 0))
     }
-    # Use "output_2" (relevance_logits) as ranking score
 
     first-phase {
-      expression: bm25(title) + bm25(text)
+      expression: closeness(field, text_embedding)
     }
-
+    # Use "output_2" (relevance_logits) as ranking score
     second-phase {
       rerank-count:10
       expression: sum(onnxModel("files/reader.onnx", "output_2"))
     }
+
     summary-features {
-      onnxModel(files_reader_onnx).output_0
-      onnxModel(files_reader_onnx).output_1
+      firstPhase
+      onnxModel(files_reader_onnx).output_0 #start logits
+      onnxModel(files_reader_onnx).output_1 #end logits
+      input_ids #The input sequence with special tokens (CLS/SEP)
     }
   }
+
+  rank-profile sparse inherits openqa {
+      first-phase {
+        expression: bm25(text) + bm25(title)
+      }
+    }
+
+    rank-profile dense inherits openqa {
+      first-phase {
+        expression: closeness(field, text_embedding)
+      }
+    }
+
+    rank-profile hybrid inherits openqa {
+      first-phase {
+        expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+      }
+    }
+
 }
