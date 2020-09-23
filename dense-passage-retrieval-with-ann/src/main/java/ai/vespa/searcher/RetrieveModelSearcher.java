@@ -1,5 +1,6 @@
 package ai.vespa.searcher;
 
+import ai.vespa.QuestionAnswering;
 import ai.vespa.tokenizer.BertTokenizer;
 import com.google.inject.Inject;
 import com.yahoo.component.chain.dependencies.Before;
@@ -16,14 +17,15 @@ import com.yahoo.tensor.functions.Reduce;
 
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Before("QuestionAnswering")
 public class RetrieveModelSearcher extends Searcher {
 
+
+
     private static String QUERY_TENSOR_NAME = "query(query_token_ids)";
     private static String QUERY_EMBEDDING_TENSOR_NAME = "query(query_embedding)";
-    private static CompoundName model = new CompoundName("retriever");
 
     BertTokenizer tokenizer;
 
@@ -41,38 +43,29 @@ public class RetrieveModelSearcher extends Searcher {
 
         Tensor questionTokenIds = getQueryTokenIds(queryInput, 256);
         query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, questionTokenIds);
-        String retrievalModel = query.properties().getString(model, "dense");
 
-        if(retrievalModel.equals("dense")) {
-            Optional<Tensor> inputTensor = query.getRanking().getFeatures().getTensor(QUERY_EMBEDDING_TENSOR_NAME);
-            Tensor questionEmbedding;
-            if(inputTensor.isEmpty()) {
-                questionEmbedding = getEmbeddingTensor(questionTokenIds, execution, query);
-                query.getModel().getQueryTree().setRoot(denseRetrieval(questionEmbedding, query));
-            }
-            else {
-                questionEmbedding = inputTensor.get(); //TODO clean up
-                NearestNeighborItem nn = new NearestNeighborItem("text_embedding", "query_embedding");
-                nn.setTargetNumHits(query.getHits());
-                nn.setAllowApproximate(true);
-                nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra",1000));
-                query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , questionEmbedding);
-                query.getModel().getQueryTree().setRoot(nn);
-            }
-            query.getRanking().setProfile("dense");
-        } else if (retrievalModel.equals("sparse")){
-            query.getModel().getQueryTree().setRoot(sparseRetrieval(queryInput, query));
-            query.getRanking().setProfile("sparse");
-        } else {
-            Tensor questionEmbedding = getEmbeddingTensor(questionTokenIds, execution, query);
-            Item ann = denseRetrieval(questionEmbedding,query);
-            Item wand = sparseRetrieval(queryInput,query);
-            OrItem disjunction = new OrItem();
-            disjunction.addItem(ann);
-            disjunction.addItem(wand);
-            query.getModel().getQueryTree().setRoot(disjunction);
-            query.getRanking().setProfile("hybrid");
+        switch (QuestionAnswering.getRetrivalMethod(query)) {
+            case DENSE:
+                query.getModel().getQueryTree().setRoot(denseRetrieval(getEmbeddingTensor(questionTokenIds, execution, query), query));
+                query.getRanking().setProfile("dense");
+                break;
+            case SPARSE:
+                query.getModel().getQueryTree().setRoot(sparseRetrieval(queryInput, query));
+                query.getRanking().setProfile("sparse");
+                break;
+            case HYBRID:
+                Item ann = denseRetrieval(getEmbeddingTensor(questionTokenIds, execution, query),query);
+                Item wand = sparseRetrieval(queryInput,query);
+                OrItem disjunction = new OrItem();
+                disjunction.addItem(ann);
+                disjunction.addItem(wand);
+                query.getModel().getQueryTree().setRoot(disjunction);
+                query.getRanking().setProfile("hybrid");
         }
+
+        if(QuestionAnswering.isRetrieveOnly(query))
+            query.getRanking().setProfile(query.getRanking().getProfile() + "-retriever");
+
         query.getModel().setRestrict("wiki");
         return execution.search(query);
     }
@@ -91,15 +84,11 @@ public class RetrieveModelSearcher extends Searcher {
         nn.setTargetNumHits(query.getHits());
         nn.setAllowApproximate(true);
         nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra",1000));
-        Tensor rewritten = rewriteQueryTensor(questionEmbedding);
-        query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , rewritten);
+        Tensor l2convertedTensor = rewriteQueryTensor(questionEmbedding);
+        query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , l2convertedTensor);
         return nn;
     }
 
-
-    private Tensor rewriteQueryTensor(Tensor embedding) {
-        return embedding.reduce(Reduce.Aggregator.min, "d0").concat(0, "d1").rename("d1", "x");
-    }
 
     private Tensor getEmbeddingTensor(Tensor questionTensor, Execution execution, Query query) {
         Query embeddingModelQuery = new Query();
@@ -120,5 +109,10 @@ public class RetrieveModelSearcher extends Searcher {
         String tensorSpec = "tensor<float>(d0[" + maxLength + "]):" +  tokens_ids;
         return Tensor.from(tensorSpec);
     }
+
+    private Tensor rewriteQueryTensor(Tensor embedding) {
+        return embedding.reduce(Reduce.Aggregator.min, "d0").concat(0, "d1").rename("d1", "x");
+    }
+
 
 }

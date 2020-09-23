@@ -21,7 +21,6 @@ import com.yahoo.search.result.FeatureData;
 public class QASearcher extends Searcher {
 
     BertTokenizer tokenizer;
-    private static CompoundName RETRIEVER_ONLY =  new CompoundName("retrieve-only");
     private static int MAX_SEQUENCE_LENGTH = 380;
 
     @Inject
@@ -32,10 +31,13 @@ public class QASearcher extends Searcher {
     @Override
     public Result search(Query query, Execution execution) {
         if(query.getModel().getRestrict().contains("query") ||
-                query.properties().getBoolean(RETRIEVER_ONLY,false))
+                QuestionAnswering.isRetrieveOnly(query))
             return execution.search(query); //Do nothing - pass it through
 
+        //Control how many of the retrieved top passages which gets evaluated using the Reader
+        query.getRanking().getProperties().put("vespa.hitcollector.heapsize",query.getHits());
         query.setHits(1); //We only extract text spans from the hit with the highest Reader relevancy score
+
         Result result = execution.search(query);
         execution.fill(result);
         Hit answerHit = getPredictedAnswer(result);
@@ -82,9 +84,7 @@ public class QASearcher extends Searcher {
         answer.setField("context", span.getContext());
         answer.setField("context_title", span.getTitle());
         answer.setField("prediction_score", span.getSpanScore());
-        answer.setField("reader_score", span);
+        answer.setField("reader_score", span.getReaderScore());
         return answer;
     }
-
-
 }

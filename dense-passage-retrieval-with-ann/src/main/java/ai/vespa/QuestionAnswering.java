@@ -1,6 +1,7 @@
 package ai.vespa;
 
 import ai.vespa.tokenizer.BertTokenizer;
+import com.yahoo.search.Query;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
 
@@ -14,6 +15,12 @@ import java.util.regex.Pattern;
 public class QuestionAnswering {
 
     private static int MAX_ANSWER_LENGTH = 10;
+
+    public enum RetrievalMethod {
+        SPARSE,
+        DENSE,
+        HYBRID;
+    }
 
     public static class Span implements Comparable<Span>{
         int start;
@@ -45,6 +52,10 @@ public class QuestionAnswering {
 
         public double getSpanScore() {
             return this.spanScore;
+        }
+
+        public double getReaderScore() {
+            return readerScore;
         }
 
         public void setPrediction(String prediction) {
@@ -125,5 +136,18 @@ public class QuestionAnswering {
                 return context.substring(start, end);
         }
         return formattedAnswer;
+    }
+
+    public static boolean isRetrieveOnly(Query query) {
+        return query.properties().getBoolean("retrieve-only",false);
+    }
+
+    public static RetrievalMethod getRetrivalMethod(Query query)  {
+       String model = query.properties().getString("retriever","dense");
+       if(model.equals("dense"))
+           return RetrievalMethod.DENSE;
+       else if(model.equals("sparse"))
+           return RetrievalMethod.SPARSE;
+       else return RetrievalMethod.HYBRID;
     }
 }
