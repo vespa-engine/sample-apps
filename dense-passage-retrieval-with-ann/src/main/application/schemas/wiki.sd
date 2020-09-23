@@ -111,18 +111,39 @@ schema wiki {
       first-phase {
         expression: bm25(text) + bm25(title)
       }
+  }
+
+   rank-profile sparse-retriever  {
+        first-phase {
+          expression: bm25(text) + bm25(title)
+        }
     }
 
-    rank-profile dense inherits openqa {
+  rank-profile dense inherits openqa {
       first-phase {
         expression: closeness(field, text_embedding)
       }
+  }
+
+  rank-profile dense-retriever {
+        num-threads-per-search: 1
+        first-phase {
+          expression: closeness(field, text_embedding)
+        }
     }
 
-    rank-profile hybrid inherits openqa {
+  rank-profile hybrid inherits openqa {
+      num-threads-per-search: 1
       first-phase {
         expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
       }
-    }
+   }
+
+   rank-profile hybrid-retriever {
+         num-threads-per-search: 1
+         first-phase {
+           expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+         }
+   }
 
 }
