@@ -2,8 +2,10 @@
 
 # Vespa sample application - Open-Domain Question Answering
 
-Ever wondered *Who came up with the name rock and roll?* or *who is the prime minister of Norway?* 
-In this sample application we demonstrate how to build a open domain question answering serving system with state-of-the-art accuracy using Vespa.ai.
+Ever wondered what the answer to the question *Who came up with the name rock and roll* is?  Or maybe for *who is the prime minister of Norway?* 
+
+In this Vespa.ai sample application we demonstrate how to build an 
+open domain question answering **serving** system with state-of-the-art accuracy using Vespa.ai.
 
 
 The system use Vespa.ai's support for [fast approximate nearest neighbor search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html) 
@@ -11,10 +13,13 @@ to perform dense embedding retrieval over Wikipedia for question answering using
 Facebook's [Dense Passage Retriever Model (DPR)](https://github.com/facebookresearch/DPR) described in the
 [Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/abs/2004.04906) paper. 
 
+We take the DPR implementation which is a set of python scripts and convert the DPR models to Vespa.ai for serving:
+
 We represent the entire DPR model in a single Vespa
 instance without any other run time dependencies than Vespa.ai and this sample application. 
 
-* We index text passages from the English version of the Wikipedia along with their embedding representation produced by the DPR encoder in a Vespa.ai instance. 
+* We index text passages from the English version of the Wikipedia along with their embedding representation produced by the DPR document 
+encoder in a Vespa.ai instance. 
 * We use the pre-trained DPR BERT based query embedding model from [Huggingface](https://huggingface.co/transformers/model_doc/dpr.html) 
 which we export to [ONNX](https://onnx.ai/) format using Huggingface's [Transformer model export support](https://huggingface.co/transformers/serialization.html)
 and we import this ONNX model to Vespa for serving so that given a textual query input we can convert it into the embedding representation at user time.
@@ -43,12 +48,34 @@ A typical architecture for Open Domain Question Answering consist of two main co
 <p align="center"><img width="90%" src="img/vespa_passage_retrieval.png" /></p>
 </figure> 
 
-## Vespa.ai implementation 
+### DPR Retrieval Component
+DPR uses a embedding based retrieval approach instead of term based (sparse, TF-IDF). To train the embedding representation they use 
+the popular Two Tower Architecture using two independently BERT models for representation learning. The parameters of the query encoder and the document encoders
+are trained given labeled data from Natural Questions Train set and the training process involves both showing relevant and non-relevant passages for
+questions and the weights (parameters) of the two towers are adjusted so that relevant passages for a question has a higher dot product score than 
+irrelevant passages (Which don't contain the answer to the question). Once the query and document representation models have been trained we can 
+export them for serving. Documents are feed through the Document encoder which for each Wikipedia title and text passage produces the 768 dimensional embedding
+representation. At serving time, the user question is encoded by the question encoder and the search for relevant passages is reduced to a nearest neighbor search problem. 
 
-We represent the passage text and Wikipedia title the passages was extracted from plus the passage embedding vector 
-in the same Vespa [document schema](src/main/application/schemas/wiki.sd). We also store the token ids from the BERT
+<figure>
+<p align="center"><img width="90%" src="img/two-towers-embedding.png" /></p>
+</figure>
+
+### DPR Reader Component
+The Reader component in DPR is BERT model which is fine-tuned for question answering. The reader BERT model takes both the question, the wiki title and 
+the wiki passage as input (With cross-attention between the question and the document). The Question Answering model outputs a tensor with the start position scores, the end position scores and an overall relevancy score. The best answer span is given by the span which has the highest start + end position score.  
+
+<figure>
+<p align="center"><img width="90%" src="img/reader.png" /></p>
+</figure> 
+
+## Implementation the DPR architecture with Vespa.ai
+
+We represent the Wikipedia passage text, title and the passage embedding vector 
+in the same Vespa [document schema](src/main/application/schemas/wiki.sd). 
+We also store the token ids from the BERT
 tokenization as Vespa tensor fields. These token_ids fields are not used by the retriever component but by the reader. The
-tensor field type in Vespa is stored in memory for fast access during retrieval and ranking. The schema is defined below:
+tensor field type in Vespa is always stored in memory for fast access during retrieval and ranking. The schema is defined below:
 
 <pre>
 schema wiki {
@@ -96,7 +123,7 @@ schema wiki {
 }
 </pre> 
 
-The above Vespa document schema allows retrieval using different strategies using the scalable serving engine:
+The above Vespa document schema allows retrieval using different strategies using the same scalable serving engine:
 
 * **Sparse retrieval** Using traditional term based (High dimensional, sparse)
 * **Dense retrieval** Using trained embedding representations of query and document (Low dimensional, dense) 
@@ -108,11 +135,11 @@ The *text_embedding* tensor is a dense 769 dimensional tensor which represents t
 we enable [HNSW index for fast approximate nearest neighbor search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html). 
 
 The dual query and document encoder of the DPR retrieval system uses the inner dot product between
-the query tensor and the document tensor to represent the rank score using 768 dimensions (BERT-base). 
+the query tensor and the document tensor to represent the score. 
 We transform the 768 dimensional inner product space
-to euclidean space using an [euclidean transformation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/XboxInnerProduct.pdf)  
+to euclidean space using an [euclidean transformation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/XboxInnerProduct.pdf) 
 which adds one dimension so our representation becomes 
-769 dimensional where we can use the euclidean distance metric when finding the nearest neighbors for a input query tensor.
+769 dimensional where we can use the euclidean distance metric when finding the nearest neighbors in embedding space.
 The DPR implementation uses the same space transformation when using [Faiss with HNSW index](https://github.com/facebookresearch/faiss). 
 
  
@@ -123,14 +150,105 @@ specified using the [Vespa YQL query language](https://docs.vespa.ai/documentati
 request programatically in a custom Searcher plugin written in Java. In this sample application we build the query retrieval trees using the latter approach. 
 * A [ranking](https://docs.vespa.ai/documentation/ranking.html) specification which controls how we score documents retrieved by the query.  
 
-In the following sub section we use **what is the weight of a honda fit?** as a sample question 
-to illustrate our Vespa query specifications.
-The sample question is from the [Natural Questions dev set](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.dev.jsonl). 
-
 Vespa assigns rank score using ranking expressions, configured in a ranking profile in the document schema. The rank profile
 can also specify [multi-phased ranking](https://docs.vespa.ai/documentation/phased-ranking.html). Choosing rank profile is a run time 
 request parameter (ranking.profile).
 
+The ranking profile is also configured in the schema and our question answering ranking profile looks like this
+
+<pre>
+rank-profile openqa {
+    constants {
+      TOKEN_NONE: 0
+      TOKEN_CLS:  101
+      TOKEN_SEP:  102
+    }
+
+    # Find length of question input
+    function question_length() {
+      expression: sum(map(query(query_token_ids), f(a)(a > 0)))
+    }
+
+    #Find length of the title
+    function title_length() {
+      expression: sum(map(attribute(title_token_ids), f(a)(a > 0)))
+    }
+
+    #Find length of the text
+    function text_length() {
+      expression: sum(map(attribute(text_token_ids), f(a)(a > 0)))
+    }
+
+    # The attention mask has 1's for every token that is set
+    function attention_mask() {
+      expression: map(input_ids, f(a)(a > 0))
+    }
+
+    function input_ids() {
+      expression {
+        tensor<float>(d0[1],d1[380])(...)
+      } 
+    first-phase {
+      expression: closeness(field, text_embedding)
+    }
+    second-phase {
+      rerank-count: 10
+      sum(onnxModel("files/reader.onnx", "output_2"))
+    }
+    summary-features {
+      onnxModel(files_reader_onnx).output_0 #start score tensor 
+      onnxModel(files_reader_onnx).output_1 #end score logits
+      input_ids #The input sequence with special tokens (CLS/SEP) 
+    }
+}
+</pre>
+The *input_ids* function builds the input tensor to the ONNX model. The batch size is 1 and the max sequence length is 380 token _ids, including
+special tokens like CLS and SEP. 
+
+
+### Import Transformer models to Vespa.ai via ONNX
+
+The DPR team has published the pre-trained checkpoints on [Huggingface](https://huggingface.co/models)' model repository :
+
+* BERT based question encoder https://huggingface.co/facebook/dpr-question_encoder-single-nq-base
+* BERT based document encoder https://huggingface.co/facebook/dpr-ctx_encoder-single-nq-base 
+* BERT based reader https://huggingface.co/facebook/dpr-reader-single-nq-base 
+
+We can export these Transformer models to 
+ [ONNX](https://onnx.ai/) format using Huggingface's [Transformer model export support](https://huggingface.co/transformers/serialization.html):
+
+* DPR Question encoder model [bin/query-model-export.py](bin/query-model-export.py)
+* DPR Reader model [bin/model-export.py](bin/model-export.py)
+
+In the following snippet we export the reader model to ONNX format and serialize it to *reader.onnx*.
+
+<pre>
+import onnx   
+import transformers
+import transformers.convert_graph_to_onnx as onnx_convert
+from pathlib import Path 
+from transformers import DPRReader, DPRReaderTokenizer
+tokenizer = DPRReaderTokenizer.from_pretrained('facebook/dpr-reader-single-nq-base')
+model = DPRReader.from_pretrained('facebook/dpr-reader-single-nq-base', return_dict=True)
+pipeline = transformers.Pipeline(model=model, tokenizer=tokenizer)
+onnx_convert.convert_pytorch(pipeline, opset=11, output=Path("reader.onnx"), use_external_format=False)
+</pre>
+
+We can store these ONNX model into the [src/main/application/files/](src/main/application/files/) and we
+can later then reference it by **onnxModel("files/reader.onnx", "output_2")** in the ranking expression as seen in the previous section. Vespa
+takes care of distributing the model to the content nodes in the cluster.
+
+
+### Vespa Container Middleware - putting it all together 
+The application has 4 custom plugins: 
+
+* A BERT Tokenizer component which does map text to BERT vocabulary token_ids
+* A custom Document Processor which does BERT tokenization during indexing.
+[QADocumentProcessor.java](src/main/java/ai/vespa/processor/QADocumentProcessor.java)
+* A custom Searcher which controls the Retrieval logic (Sparse, dense, hybrid).
+[RetrieveModelSearcher.java](src/main/java/ai/vespa/searcher/RetrieveModelSearcher.java)
+* A custom Searcher which reads the outputs of the reader model and maps the best matching answer span
+to an textual answer which is returned to the user. [QASearcher.java](src/main/java/ai/vespa/searcher/QASearcher.java)
 
 ## Experiments and Results
 In the following section we describe the experiments we have performed with this setup, all experiments are done running queries against the 
@@ -151,7 +269,7 @@ need to evaluate through the BERT reader the better the run time complexity and 
 | dense                       | 46.37     | 68.53    | 75.07    | 80.36     |
 | hybrid                      | 40.61     | 69.25    | 75.96    | 80.44     |
 
-The DPR paper reports Recall of 79.4 @20 so our results are inline with their  reported results for the dense retrieval method. 
+he DPR paper reports Recall of 79.4 @20 so our results are inline with their  reported results for the dense retrieval method. 
 
 The following table summarizes the retriever accuracy using the 1,800 dev questions used in the 
 [Efficient Open-Domain Question Answering challenge](https://efficientqa.github.io/) 
