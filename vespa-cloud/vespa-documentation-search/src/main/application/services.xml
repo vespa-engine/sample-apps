@@ -1,18 +1,23 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<services version='1.0' xmlns:deploy='vespa'>
+<?xml version="1.0" encoding="UTF-8"?>
+<services version="1.0" xmlns:deploy="vespa">
 
-    <container id='default' version='1.0'>
+    <container id="default" version="1.0">
+        <document-processing>
+            <chain id="default" inherits="indexing">
+                <documentprocessor id="ai.vespa.cloud.docsearch.OutLinksDocumentProcessor" bundle="vespacloud-docsearch"/>
+            </chain>
+        </document-processing>
         <search/>
         <document-api/>
-        <nodes count='2'/>
+        <nodes count="2"/>
     </container>
 
-    <content id='documentation' version='1.0'>
+    <content id="documentation" version="1.0">
         <redundancy>2</redundancy>
         <documents>
-            <document mode='index' type='doc'/>
+            <document mode="index" type="doc"/>
         </documents>
-        <nodes count='2'/>
+        <nodes count="2"/>
     </content>
 
 </services>

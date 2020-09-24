@@ -27,6 +27,14 @@ schema doc {
         field namespace type string {
             indexing: summary | attribute
         }
+
+        field outlinks type array<string> {
+            indexing: summary | index
+        }
+
+        field inlinks type weightedset<string> {
+            indexing: summary | attribute
+        }
         
     }
 
