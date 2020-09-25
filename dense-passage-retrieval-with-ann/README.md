@@ -12,9 +12,10 @@ to perform dense embedding retrieval over Wikipedia for question answering using
 Facebook's [Dense Passage Retriever Model (DPR)](https://github.com/facebookresearch/DPR) described in the
 [Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/abs/2004.04906) paper. Generally, representation learning 
 is used to train a document (item) embedding model and question (user query) embedding model where documents which are relevant has a 
-higher similarity in the embedding space than irrelevant documents. The DPR model uses BERT as the query and document embedding models, and
-fine-tune the weights of the dual towers using the [Natural Questions](https://ai.google.com/research/NaturalQuestions)
-train dataset which contains labeled data. The DPR paper achieves state of the art accuracy on Open Domain Question Answering 
+higher similarity in the embedding space than irrelevant documents. The DPR model uses [BERT](https://arxiv.org/abs/1810.04805)
+ as the query and document embedding models, and
+fine-tune the weights of the two embedding towers using the [Natural Questions](https://ai.google.com/research/NaturalQuestions)
+train dataset which contains labeled data. The DPR paper achieves state-of-the-art accuracy on Open Domain Question Answering 
 and the embedding based retriever outperforms traditional term based matching (BM25) significantly.
 
 <figure>
@@ -22,7 +23,8 @@ and the embedding based retriever outperforms traditional term based matching (B
 </figure> 
 
 
-We take the DPR implementation which is a set of python scripts and convert the DPR models to Vespa.ai for serving:
+We take the DPR implementation which is a set of python scripts and convert the DPR models to Vespa.ai for serving
+and achieving the same or better accuracy as reported in the DPR paper. 
 
 * We index text passages from the English version of the Wikipedia along with their embedding representation produced by the DPR document 
 encoder in a Vespa.ai instance. Representing DPR on Vespa.ai also allow researchers to experiment with different retrieval strategies. 
@@ -57,10 +59,12 @@ A typical architecture for Open Domain Question Answering consist of two main co
 
 ### DPR Retrieval Component
 DPR uses a embedding based retrieval approach instead of term based (sparse, TF-IDF). To train the embedding representation they use 
-the popular Two Tower Architecture using two independently BERT models for representation learning. The parameters of the query encoder and the document encoders
+the popular Two Tower Architecture using two BERT models for representation learning. The parameters of the query encoder and the document encoders
 are trained given labeled data from Natural Questions Train set and the training process involves both showing relevant and non-relevant passages for
-questions and the weights (parameters) of the two towers are adjusted so that relevant passages for a question has a higher dot product score than 
-irrelevant passages (Which don't contain the answer to the question). Once the query and document representation models have been trained we can 
+questions and the weights (parameters) of the two towers are adjusted so that relevant passages for a question has a higher similarity score than 
+irrelevant passages (Which don't contain the answer to the question). 
+
+Once the query and document representation models have been trained we can 
 export them for serving. Documents are feed through the Document encoder which for each Wikipedia title and text passage produces the 768 dimensional embedding
 representation. At serving time, the user question is encoded by the question encoder and the search for relevant passages is reduced to a nearest neighbor search problem. 
 
@@ -333,7 +337,10 @@ See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-qui
 <pre>
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
-$ TODO MUST build zip before mapping volume 
+$ cd $VESPA_SAMPLE_APPS/dense-passage-retrieval-with-ann; mkdir src/main/application/files
+$ bin/model-export.py 
+$ bin/query-model-export.py 
+$ mv reader.onnx src/main/application/files/reader.onnx; mv question_encoder.onnx src/main/application/files/encoder.onnx
 $ docker run --detach --name vespa --hostname vespa-container \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
 </pre>
