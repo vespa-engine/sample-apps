@@ -45,7 +45,12 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
     class RespHandler implements ResponseHandler {
         @Override
         public void handleResponse(Response response) {
-            //logger.info("In handleResponse");
+            /*
+            if (response.isSuccess()) {
+                logger.info("Success!");
+            }
+            logger.info("In handleResponse: " + response.getTextMessage());
+             */
         }
     }
 
@@ -83,6 +88,7 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
         wset.put(new StringFieldValue(myPath), 1);
         for (String targetDoc : targetDocs) {
             String targetID = "id:open:" + DOC_DOCUMENT_TYPE + "::open" + targetDoc;
+            //logger.info("Update target doc: " + targetID);
             DocumentUpdate upd = new DocumentUpdate(docType, targetID);
             upd.addFieldUpdate(FieldUpdate.createAddAll(docType.getField(INLINKS_FIELD_NAME), wset));
             Result res = asyncSession.update(upd);
