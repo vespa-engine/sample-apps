@@ -23,7 +23,7 @@ and the embedding based retriever outperforms traditional term based matching (B
 </figure> 
 
 
-We take the DPR implementation which is a set of python scripts and convert the DPR models to Vespa.ai for serving
+We take the DPR implementation, which is a set of python tools and models, and convert the models to Vespa.ai for online serving
 and achieving the same or better accuracy as reported in the DPR paper. 
 
 * We index text passages from the English version of the Wikipedia along with their embedding representation produced by the DPR document 
@@ -338,8 +338,8 @@ See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-qui
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ export VESPA_SAMPLE_APPS=`pwd`/sample-apps
 $ cd $VESPA_SAMPLE_APPS/dense-passage-retrieval-with-ann; mkdir src/main/application/files
-$ bin/model-export.py 
-$ bin/query-model-export.py 
+$ ./bin/model-export.py 
+$ ./bin/query-model-export.py 
 $ mv reader.onnx src/main/application/files/reader.onnx; mv question_encoder.onnx src/main/application/files/encoder.onnx
 $ docker run --detach --name vespa --hostname vespa-container \
   --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 vespaengine/vespa
@@ -375,9 +375,8 @@ Note that the data is large, the text passage representation (data.wikipedia_spl
 
 To download the pre-generated Wikipedia snippets and the pre-computed passage embeddings use the DPR download utility: 
 <pre>
-python3 data/download_data.py  --resource data.wikipedia_split 
-python3 data/download_data.py  --resource data.retriever_results.nq.single.wikipedia_passages
-cd ..
+$ python3 data/download_data.py  --resource data.wikipedia_split 
+$ python3 data/download_data.py  --resource data.retriever_results.nq.single.wikipedia_passages
 </pre>
 
 ## Join passage text and embedding to Vespa feed format
@@ -388,7 +387,7 @@ one embedding file at a time and emit a join of the textual passage meta data wi
  
 <pre>
 $ cd $VESPA_SAMPLE_APPS/dense-passage-retrieval-with-ann/ 
-$ python3 make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
+$ ./bin/make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
 </pre>
 
 Sample data emitted (newline formatted for readability):
@@ -424,11 +423,14 @@ and real time indexing). Note that indexing both build inverted indexes for effi
 ## Experiments 
 
 ### Retriever experiments 
-To run all questions from the Natural Questions (NQ) dev split do: 
+To run all questions from the Natural Questions (NQ) dev split using the three different retrieval strategies 
+do: 
 <pre>
 $ cd $VESPA_SAMPLE_APPS/dense-passage-retrieval-with-ann/
 $ wget https://raw.githubusercontent.com/google-research-datasets/natural-questions/master/nq_open/NQ-open.dev.jsonl
-$ python3 evaluate_em.py NQ-open.dev.jsonl dense http://your-vespa-instance-hostname:8080
+$ ./bin/evaluate_em.py NQ-open.dev.jsonl dense http://your-vespa-instance-hostname:8080
+$ ./bin/evaluate_em.py NQ-open.dev.jsonl sparse http://your-vespa-instance-hostname:8080
+$ ./bin/evaluate_em.py NQ-open.dev.jsonl hybrid http://your-vespa-instance-hostname:8080
 </pre>
 
 You can also run queries in your browser, 
