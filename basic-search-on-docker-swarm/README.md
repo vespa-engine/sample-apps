@@ -1,4 +1,4 @@
-<!-- Copyright 2018 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa basic search example on Docker Swarm
 
 Please refer to
@@ -7,7 +7,8 @@ for more information on the basic single container example.
 
 This example assumes that a [Docker Swarm](https://docs.docker.com/engine/swarm/) is up and running and that you have console access to one of the masters.
 
-[Play with Docker](https://labs.play-with-docker.com) is a free service that will provide a Docker Swarm cluster if you do not have access to one. To create
+<a href="https://labs.play-with-docker.com" data-proofer-ignore>Play with Docker</a>
+is a free service that will provide a Docker Swarm cluster if you do not have access to one. To create
 Swarm, hit the green start button, click on the wrench in the top left and choose one of the templates. This should give you 5 nodes.
 
 The example below needs to be executed on one of the master nodes.
