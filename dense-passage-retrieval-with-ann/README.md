@@ -7,24 +7,31 @@ Ever wondered what the answer to the question *Who came up with the name rock an
 In this Vespa.ai sample application we demonstrate how to build an 
 open domain question answering **serving** system with state-of-the-art accuracy using Vespa.ai.
 
-
 The system use Vespa.ai's support for [fast approximate nearest neighbor search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html) 
 to perform dense embedding retrieval over Wikipedia for question answering using 
 Facebook's [Dense Passage Retriever Model (DPR)](https://github.com/facebookresearch/DPR) described in the
-[Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/abs/2004.04906) paper. 
+[Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/abs/2004.04906) paper. Generally, representation learning 
+is used to train a document (item) embedding model and question (user query) embedding model where documents which are relevant has a 
+higher similarity in the embedding space than irrelevant documents. The DPR model uses BERT as the query and document embedding models, and
+fine-tune the weights of the dual towers using the [Natural Questions](https://ai.google.com/research/NaturalQuestions)
+train dataset which contains labeled data. The DPR paper achieves state of the art accuracy on Open Domain Question Answering 
+and the embedding based retriever outperforms traditional term based matching (BM25) significantly.
+
+<figure>
+<p align="center"><img width="90%" src="img/embedding_learning.png" /></p>
+</figure> 
+
 
 We take the DPR implementation which is a set of python scripts and convert the DPR models to Vespa.ai for serving:
 
-We represent the entire DPR model in a single Vespa
-instance without any other run time dependencies than Vespa.ai and this sample application. 
-
 * We index text passages from the English version of the Wikipedia along with their embedding representation produced by the DPR document 
-encoder in a Vespa.ai instance. 
+encoder in a Vespa.ai instance. Representing DPR on Vespa.ai also allow researchers to experiment with different retrieval strategies. 
 * We use the pre-trained DPR BERT based query embedding model from [Huggingface](https://huggingface.co/transformers/model_doc/dpr.html) 
 which we export to [ONNX](https://onnx.ai/) format using Huggingface's [Transformer model export support](https://huggingface.co/transformers/serialization.html)
 and we import this ONNX model to Vespa for serving so that given a textual query input we can convert it into the embedding representation at user time.
 * The DPR query embedding representation is used as input to Vespa.ai's 
-[fast approximate nearest neighbor search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html) 
+[fast approximate nearest neighbor search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html) which enables fast computing the 
+top-k matching passages in the embedding space. 
 * The top-k retrieved passages (Using multiple different retrieval strategies) 
 are re-ranked using Vespa's support for multi-tier retrieval and ranking with another 
 BERT based model which scores passages and computes the most likely answer span from the passages.
