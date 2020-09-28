@@ -17,7 +17,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>kkraunetenant1</tenant>
+        <tenant>vespa-team</tenant>
         <application>vespacloud-docsearch</application>
         <dataPlaneKeyFile>data-plane-private-key.pem</dataPlaneKeyFile>
         <dataPlaneCertificateFile>data-plane-public-cert.pem</dataPlaneCertificateFile>
