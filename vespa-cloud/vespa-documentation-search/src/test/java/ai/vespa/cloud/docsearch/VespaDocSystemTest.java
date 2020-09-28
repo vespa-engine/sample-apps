@@ -12,9 +12,11 @@ import java.net.http.HttpResponse;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SystemTest
 public class VespaDocSystemTest {
@@ -23,16 +25,32 @@ public class VespaDocSystemTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    public void testSearchAndFeeding() throws Exception {
+    public void testFeedSearchDelete() throws Exception {
         feedTestDocs("/test-documents.json");
 
         HashSet<String> ids = getTestDocIDs();
         ids.forEach(id -> {System.out.println(id);});
         assertEquals(5, ids.size(), "test-documents.json has 5 documents");
 
+        String allQuery = "select * from sources * where sddocname contains \"doc\";";
+        String result = search(allQuery, "5s"); // use high timeout for first query
+        assertEquals(5, getNumSearchResults(result));
+
+        String someQuery = "select * from sources * where content contains \"access\";";
+        result = search(someQuery, "500ms");
+        Set<String> expectedResults = Set.of(
+                "id:open:doc::open/documentation/access-logging.html",
+                "id:open:doc::open/documentation/content/api-state-rest-api.html",
+                "id:open:doc::open/documentation/operations/admin-procedures.html");
+        assertEquals(expectedResults.size(), getNumSearchResults(result));
+        Iterator<JsonNode> results = mapper.readTree(result).get("root").get("children").iterator();
+        while (results.hasNext()) {
+            assertTrue(expectedResults.contains(results.next().get("id").asText()));
+        }
+
         removeTestDocs(ids);
         ids = getTestDocIDs();
-        assertEquals(0, ids.size(), "visit all docs and remove then");
+        assertEquals(0, ids.size(), "visit all docs and remove");
     }
 
     @Test
@@ -111,8 +129,16 @@ public class VespaDocSystemTest {
 
     public String getTestDoc(String id) {
         HttpResponse<String> res = testEndpoint.send(testEndpoint
-                .request("/document/v1/open/doc/docid/" + id.split(":")[4]) // id:open:doc::open/documentation/annotations.html
+                .request("/document/v1/open/doc/docid/" + id.split(":")[4])
                 .GET());
+        return res.body();
+    }
+
+    public String search(String query, String timeout) {
+        HttpResponse<String> res = testEndpoint.send(testEndpoint
+                .request("/search/",
+                        Map.of("yql", query,
+                                "timeout", timeout)));
         return res.body();
     }
 
