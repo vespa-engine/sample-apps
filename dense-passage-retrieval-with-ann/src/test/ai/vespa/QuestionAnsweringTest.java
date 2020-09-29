@@ -52,7 +52,12 @@ public class QuestionAnsweringTest {
                 "         -11.0709, -11.7554, -10.3399,  -6.8261, -10.5824,  -9.6945,  -8.1308,\n" +
                 "          -7.1005,  -8.0756, -10.2902,  -7.1413]]");
 
-        QuestionAnswering.Span bestSpan = QuestionAnswering.getSpan(start_logits,end_logits,input_sequence,25,1.0,tokenizer);
 
+        QuestionAnswering.Span bestSpan = QuestionAnswering.getSpan(start_logits,end_logits,input_sequence,1.0,tokenizer);
+        assertEquals(16,bestSpan.start);
+        assertEquals(17,bestSpan.end);
+        assertEquals("a song", bestSpan.getPrediction());
     }
+
+
 }

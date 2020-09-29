@@ -10,7 +10,6 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.Query;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorType;
-
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
