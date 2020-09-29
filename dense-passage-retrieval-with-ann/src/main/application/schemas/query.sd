@@ -2,7 +2,7 @@ schema query {
     document query {
     }
     onnx-model encoder {
-      file: files/encoder.onnx
+      file: files/question_encoder.onnx
       input  input_ids: input_ids
       input  attention_mask: attention_mask
       output output_0: embedding

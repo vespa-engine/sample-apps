@@ -1,7 +1,7 @@
 schema wiki {
 
   document wiki {
-  
+
     field title type string {
       indexing: summary | index
       index: enable-bm25
@@ -31,18 +31,18 @@ schema wiki {
       }
       index {
         hnsw {
-          max-links-per-node: 32 
+          max-links-per-node: 32
           neighbors-to-explore-at-insert: 500
         }
       }
     }
   }
-  
+
   fieldset default {
-    fields: title, text 
+    fields: title, text
   }
 
-   onnx-model reader {
+  onnx-model reader {
     file: files/reader.onnx
     input  input_ids: input_ids
     input  attention_mask: attention_mask
@@ -102,6 +102,7 @@ schema wiki {
     first-phase {
       expression: closeness(field, text_embedding)
     }
+
     second-phase {
       rerank-count:10
       expression: onnxModel(reader).relevance_logits
