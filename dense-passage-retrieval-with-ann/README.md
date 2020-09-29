@@ -22,9 +22,8 @@ and the embedding based retriever outperforms traditional term based matching (B
 <p align="center"><img width="90%" src="img/embedding_learning.png" /></p>
 </figure> 
 
-
 We take the DPR implementation, which is a set of python tools and models, and convert the models to Vespa.ai for online serving
-and achieving the same or better accuracy as reported in the DPR paper. 
+while maintaining the same or better accuracy as reported in the DPR paper. 
 
 * We index text passages from the English version of the Wikipedia along with their embedding representation produced by the DPR document 
 encoder in a Vespa.ai instance. Representing DPR on Vespa.ai also allow researchers to experiment with different retrieval strategies. 
@@ -43,8 +42,8 @@ BERT based model which scores passages and computes the most likely answer span 
 Using Vespa.ai as serving engine for passage retrieval for question answering allows representing both sparse term based and dense embedding retrieval 
 in the same schema, which also enables hybrid retrieval using a combination of the two approaches. With Vespa's support for running Transformer based
 models like BERT via Vespa's ONNX run time support we are also able to deploy the DPR BERT query embedding encoder used for the dense embedding retrieval in 
-the same serving system and also the DPR BERT based Reader component which re-scores the retrieved passages and finds the 
-best answer spans.
+the same serving system and also the DPR BERT based Reader component which re-scores the retrieved passages and predicts the 
+best answer span.
 
 ## Question Answering System Architecture 
 
@@ -73,14 +72,14 @@ representation. At serving time, the user question is encoded by the question en
 </figure>
 
 ### DPR Reader Component
-The Reader component in DPR is BERT model which is fine-tuned for question answering. The reader BERT model takes both the question, the wiki title and 
-the wiki passage as input (With cross-attention between the question and the document). The Question Answering model outputs a tensor with the start position scores, the end position scores and an overall relevancy score. The best answer span is given by the span which has the highest start + end position score.  
+The Reader component in DPR is a BERT model which is fine-tuned for question answering. The reader BERT model takes both the question, the wiki title and 
+the wiki passage as input (With cross-attention between the question and the document). 
 
 <figure>
 <p align="center"><img width="90%" src="img/reader.png" /></p>
 </figure> 
 
-## Implementation the DPR architecture with Vespa.ai
+## Implementation the DPR architecture with Vespa.ai for Serving
 
 We represent the Wikipedia passage text, title and the passage embedding vector 
 in the same Vespa [document schema](src/main/application/schemas/wiki.sd). 
@@ -214,7 +213,9 @@ rank-profile openqa {
 }
 </pre>
 The *input_ids* function builds the input tensor to the ONNX model. The batch size is 1 and the max sequence length is 380 token _ids, including
-special tokens like CLS and SEP. 
+special tokens like CLS and SEP. The function builds a tensor: [[CLS, question token_ids, SEP, title_token_ids, SEP, text_token_ids]] which is 
+evaluated by the Reader ONNX model. The **summary-features** is a way to pass ranking features and tensors from the
+content nodes to the java serving container.  
 
 
 ### Import Transformer models to Vespa.ai via ONNX
@@ -253,44 +254,65 @@ takes care of distributing the model to the content nodes in the cluster.
 ### Vespa Container Middleware - putting it all together 
 The application has 4 custom plugins: 
 
-* A BERT Tokenizer component which does map text to BERT vocabulary token_ids
+* A BERT Tokenizer component which does map text to BERT vocabulary token_ids. This is a shared component which both the custom Searcher
+and Document processor uses. We store the token_ids of the text and the title in the document so we don't need to perform any run time tokenization.
 * A custom Document Processor which does BERT tokenization during indexing.
 [QADocumentProcessor.java](src/main/java/ai/vespa/processor/QADocumentProcessor.java)
-* A custom Searcher which controls the Retrieval logic (Sparse, dense, hybrid).
+* A custom Searcher which controls the Retrieval logic (Sparse, dense, hybrid) and uses the BERT Tokenizer to convert the question string to 
+a sequence of token_ids.
 [RetrieveModelSearcher.java](src/main/java/ai/vespa/searcher/RetrieveModelSearcher.java)
-* A custom Searcher which reads the outputs of the reader model and maps the best matching answer span
-to an textual answer which is returned to the user. [QASearcher.java](src/main/java/ai/vespa/searcher/QASearcher.java)
+* A custom Searcher which reads the outputs of the reader model for the best ranking hit from the reader phase (Vespa second phase ranking) 
+and maps the best matching answer span 
+to an textual answer which is returned as the predicted answer. [QASearcher.java](src/main/java/ai/vespa/searcher/QASearcher.java)
 
 ## Experiments and Results
-In the following section we describe the experiments we have performed with this setup, all experiments are done running queries against the 
-instance and checking the predicted answer against the golden reference answer. 
+In the following section we describe the experiments we have performed with this setup, all experiments are done running queries
+via the [Vespa query api](https://docs.vespa.ai/documentation/query-api) and
+and checking the predicted answer against the golden reference answer. 
+
+<pre>
+def get_vespa_result(question, retriever_model):
+  request_body = {
+    'type': 'any',
+    'query': question,
+    'retriever': retriever_model
+  }
+  url = endpoint + '/search/'
+  response = requests.post(url, json=request_body)
+  return response.json()
+</pre>
 
 ### Retriever Accuracy Summary 
 
 The following table summarizes the retriever accuracy using the original 3,610 dev questions in the Natural Questions for
 Open Domain Question Answering tasks ([NQ-open.dev.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.dev.jsonl)).
 
-We use Recall@position as the main evaluation metric for the retriever, the final top position passages are re-ranked using the BERT based reader. 
+We use Recall@K as the main evaluation metric for the retriever, the final top position passages are re-ranked using the full attention Reader.
+
 The obvious goal of the retriever is to have the highest recall possible at the lowest possible position. The fewer passages we 
-need to evaluate through the BERT reader the better the run time complexity and performance is.
+need to evaluate through the BERT reader the better the run time complexity and performance is. We evaluate three different retrieval strategies:
 
-| Retrieval Model             | Recall@1  | Recall@5 | Recall@10| Recall@20 |
-|-----------------------------|-----------|----------|----------|-----------|
-| sparse                      | 23.77     | 44.24    | 52.69    | 61.47     | 
-| dense                       | 46.37     | 68.53    | 75.07    | 80.36     |
-| hybrid                      | 40.61     | 69.25    | 75.96    | 80.44     |
+* **Dense** Using the DPR embeddings and Vespa's nearest neighbor search operator 
+* **Sparse** Using the Vespa's [weakAnd(WAND)](https://docs.vespa.ai/documentation/using-wand-with-vespa.html) query operator and using BM25(title) + BM25(text) 
+* **Hybrid** Using a linear combination of the above and using OR to combine the weakAnd and nearestNeighbor search operator.
 
-he DPR paper reports Recall of 79.4 @20 so our results are inline with their  reported results for the dense retrieval method. 
+| Retrieval Model                | Recall@1  | Recall@5 | Recall@10| Recall@20 |
+|-------------------------------- |-----------|----------|----------|-----------|
+| sparse (WAND bm25)              | 23.77     | 44.24    | 52.69    | 61.47     | 
+| dense  (nearest neighbor)       | 46.37     | 68.53    | 75.07    | 80.36     |
+| hybrid (WAND + nearest neighbor)| 40.61     | 69.25    | 75.96    | 80.44     |
+
+The DPR paper reports Recall@20 79.4 so our results are in accordance with the reported results for the dense retrieval method. 
 
 The following table summarizes the retriever accuracy using the 1,800 dev questions used in the 
 [Efficient Open-Domain Question Answering challenge](https://efficientqa.github.io/) 
 ([NQ-open.efficientqa.dev.1.1.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.efficientqa.dev.1.1.jsonl)).
 
-| Retrieval Model             | Recall@1  | Recall@5 | Recall@10| Recall@20 |
-|-----------------------------|-----------|----------|----------|-----------|
-| sparse                      | 23.94     | 44.67    | 52.67    | 60.78     | 
-| dense                       | 41.78     | 66.11    | 73.28    | 77.94     |
-| hybrid                      | 36.94     | 66.94    | 74.28    | 78.06     |
+| Retrieval Model                 | Recall@1  | Recall@5 | Recall@10| Recall@20 |
+|---------------------------------|-----------|----------|----------|-----------|
+| sparse (WAND bm25)              | 23.94     | 44.67    | 52.67    | 60.78     | 
+| dense  (nearest neighbor)       | 41.78     | 66.11    | 73.28    | 77.94     |
+| hybrid (WAND + nearest neighbor)| 36.94     | 66.94    | 74.28    | 78.06     |
 
 To our knowledge there are no Retrieval accuracy reported yet for the *NQ-open.efficientqa.dev.1.1.jsonl*. 
 
@@ -305,11 +327,11 @@ are *14 December 1972 UTC* or *December 1972*.
 **Original Natural Question dev set**
 ([NQ-open.dev.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.dev.jsonl))
 
-| Retrieval Model | EM(@5)   | EM (@10)| 
-|-----------------|-----------|--------|
-| sparse          | 23.80     | 26.23  | 
-| dense           | 39.34     | 40.58  | 
-| hybrid          | 39.36     | 40.61  | 
+| Retrieval Model                 | EM(@5)   | EM (@10)| 
+|---------------------------------|-----------|--------|
+| sparse (WAND bm25               | 23.80     | 26.23  | 
+| dense  (nearest neighbor)       | 39.34     | 40.58  | 
+| hybrid (WAND + nearest neighbor)| 39.36     | 40.61  | 
 
 **EfficientQA Natural Question dev set**
 ([NQ-open.efficientqa.dev.1.1.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.efficientqa.dev.1.1.jsonl))
@@ -320,8 +342,12 @@ are *14 December 1972 UTC* or *December 1972*.
 | dense           | 35.17     | 35.89  | 
 | hybrid          | 35.22     | 35.94  | 
 
-## Future work 
-We plan on in future versions of this sample application to see how we can improve the serving performance while maintaining 
+| Retrieval Model                 | EM(@5)   | EM (@10)| 
+|---------------------------------|-----------|--------|
+| sparse (WAND bm25               | 21.22     | 24.72  | 
+| dense  (nearest neighbor)       | 35.17     | 35.89  | 
+| hybrid (WAND + nearest neighbor)| 35.22     | 39.94  | 
+
 
 ## Reproducing this work  - Requirements for running this sample application:
 
