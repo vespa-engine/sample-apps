@@ -5,7 +5,6 @@ import ai.vespa.tokenizer.BertTokenizer;
 import ai.vespa.QuestionAnswering.Span;
 import com.google.inject.Inject;
 import com.yahoo.component.chain.dependencies.Provides;
-import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
@@ -21,7 +20,6 @@ import com.yahoo.search.result.FeatureData;
 public class QASearcher extends Searcher {
 
     BertTokenizer tokenizer;
-    private static int MAX_SEQUENCE_LENGTH = 380;
 
     @Inject
     public QASearcher(BertTokenizer tokenizer)  {
@@ -33,16 +31,19 @@ public class QASearcher extends Searcher {
         if(query.getModel().getRestrict().contains("query") ||
                 QuestionAnswering.isRetrieveOnly(query))
             return execution.search(query); //Do nothing - pass it through
-
-        //Control how many of the retrieved top passages which gets evaluated using the Reader
         query.getRanking().getProperties().put("vespa.hitcollector.heapsize",query.getHits());
+        int passageCount = query.getHits();
         query.setHits(1); //We only extract text spans from the hit with the highest Reader relevancy score
-
+        long startReader = System.currentTimeMillis();
         Result result = execution.search(query);
+        long readerDuration = System.currentTimeMillis() - startReader;
+        query.trace("Reader for " + passageCount + " took " + readerDuration + "ms",3);
         execution.fill(result);
         Hit answerHit = getPredictedAnswer(result);
-        result.hits().remove(0);
+        result.hits().remove(0); //remove original back end hit
         result.hits().add(answerHit);
+        long totalDuration = System.currentTimeMillis() - startReader;
+        query.trace("End to end answer took " + totalDuration + "ms",3);
         return result;
     }
 
@@ -55,16 +56,13 @@ public class QASearcher extends Searcher {
         if(result.getTotalHitCount() == 0 || result.hits().getErrorHit() != null) {
             return formatAnswerHit(null);
         }
-
         Hit bestReaderHit = result.hits().get(0);
-        double readerScore = bestReaderHit.getRelevance().getScore(); //Reader relevancy logit score
-        //Final sequence input including special tokens
+        double readerScore = bestReaderHit.getRelevance().getScore();
+
         Tensor input = getTensor(bestReaderHit, "rankingExpression(input_ids)");
-        //The start position logits, relative to the input including special tokens (e.g 101,102)
-        Tensor startLogits = getTensor(bestReaderHit, "onnxModel(files_reader_onnx).output_0");
-        //The end position logits, relative to the input including special tokens (e.g 101,102)
-        Tensor endLogits = getTensor(bestReaderHit, "onnxModel(files_reader_onnx).output_1");
-        Span bestSpan = QuestionAnswering.getSpan(startLogits,endLogits,input,MAX_SEQUENCE_LENGTH, readerScore, tokenizer);
+        Tensor startLogits = getTensor(bestReaderHit, "onnxModel(reader).start_logits");
+        Tensor endLogits = getTensor(bestReaderHit, "onnxModel(reader).end_logits");
+        Span bestSpan = QuestionAnswering.getSpan(startLogits,endLogits,input, readerScore, tokenizer);
         bestSpan.setContext((String)bestReaderHit.getField("text"));
         bestSpan.setContextTitle((String)bestReaderHit.getField("title"));
         return formatAnswerHit(bestSpan);

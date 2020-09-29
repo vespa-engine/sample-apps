@@ -47,7 +47,7 @@ public class QuestionAnswering {
 
         @Override
         public String toString()  {
-            return "start=" + start + ",end=" + end + ",span_score=" + spanScore;
+            return "start=" + start + ",end=" + end + ",span_score=" + spanScore + ", answer=" + getPrediction();
         }
 
         public double getSpanScore() {
@@ -79,11 +79,12 @@ public class QuestionAnswering {
         }
     }
 
-    static public Span getSpan(Tensor startLogits, Tensor endLogits, Tensor input, int inputLength, double readerScore, BertTokenizer tokenizer)  {
+    static public Span getSpan(Tensor startLogits, Tensor endLogits, Tensor input, double readerScore, BertTokenizer tokenizer)  {
+        long inputLength = startLogits.size();
         List<Span> spans = new ArrayList<>();
         for(int i = 0; i < inputLength; i++) {
             double startScore = startLogits.get(TensorAddress.of(0,i));
-            int maxLength = Math.min(i+MAX_ANSWER_LENGTH,inputLength);
+            long maxLength = Math.min(i+MAX_ANSWER_LENGTH,inputLength);
             for(int j = i; j < maxLength; j++)  {
                 double endScore = endLogits.get(TensorAddress.of(0,j));
                 spans.add(new Span(i,j,startScore + endScore, readerScore));
@@ -121,6 +122,9 @@ public class QuestionAnswering {
         prediction = prediction.replace(" ' ","'");
         prediction = prediction.replace(" , ",", ");
         prediction = prediction.replace(" . ",". ");
+
+        if(context == null)
+            return prediction;
 
         Pattern pattern = Pattern.compile(Pattern.quote(prediction),
                 Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
