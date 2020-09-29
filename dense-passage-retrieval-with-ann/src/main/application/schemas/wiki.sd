@@ -57,7 +57,6 @@ schema wiki {
       TOKEN_NONE: 0
       TOKEN_CLS:  101
       TOKEN_SEP:  102
-      MAX_SEQUENCE_LENGTH: 380 
     }
 
     # Find length of question input
@@ -78,7 +77,7 @@ schema wiki {
     # Create input sequence: CLS + query + SEP + title + SEP + text + 0's
     function input_ids() {
       expression {
-        tensor<float>(d0[1],d1[MAX_SEQUENCE_LENGTH])(
+        tensor<float>(d0[1],d1[380])(
            if (d1 == 0,
              TOKEN_CLS,
            if (d1 < question_length + 1,
