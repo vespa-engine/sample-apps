@@ -14,8 +14,6 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorType;
 import com.yahoo.tensor.functions.Reduce;
-
-
 import java.util.List;
 
 
@@ -61,7 +59,6 @@ public class RetrieveModelSearcher extends Searcher {
                 query.getModel().getQueryTree().setRoot(disjunction);
                 query.getRanking().setProfile("hybrid");
         }
-
         if(QuestionAnswering.isRetrieveOnly(query))
             query.getRanking().setProfile(query.getRanking().getProfile() + "-retriever");
 
@@ -88,6 +85,14 @@ public class RetrieveModelSearcher extends Searcher {
         return nn;
     }
 
+    /**
+     * Fetches the DPR query embedding vector
+     * @param questionTensor The input tensor with the question token_ids
+     * @param execution The execution to pass the new query
+     * @param query The original query
+     * @return The embedding tensor as produced by the DPR query encoder
+     */
+
     private Tensor getEmbeddingTensor(Tensor questionTensor, Execution execution, Query query) {
         long start = System.currentTimeMillis();
         Query embeddingModelQuery = new Query();
@@ -101,11 +106,20 @@ public class RetrieveModelSearcher extends Searcher {
         embeddingModelQuery.getRanking().getFeatures().put(QUERY_TENSOR_NAME, questionTensor);
         Result embeddingResult = execution.search(embeddingModelQuery);
         execution.fill(embeddingResult);
+        if(embeddingResult.getTotalHitCount() == 0)
+            throw new RuntimeException("No results for query document - Did you index the query document? ");
         long duration = System.currentTimeMillis() - start;
         embeddingModelQuery.trace("Encoder phase took " + duration + "ms" , 3);
         FeatureData featureData = (FeatureData)embeddingResult.hits().get(0).getField("summaryfeatures");
         return featureData.getTensor("onnxModel(encoder).embedding");
     }
+
+    /**
+     * Encode the input question
+     * @param queryInput The input question
+     * @param maxLength The maximum sequence length reserved for the question
+     * @return A tensor of type questionInputTensorType storing the token_ids
+     */
 
     private Tensor getQueryTokenIds(String queryInput, int maxLength) {
         List<Integer> tokensIds = tokenizer.tokenize(queryInput, maxLength,true);
@@ -118,12 +132,11 @@ public class RetrieveModelSearcher extends Searcher {
 
     /**
      * Rewrites the question embedding tensor and remove the batch dimension, grow from 768 to 769
+     *
      * @param embedding the question embedding returned from query encoder
      * @return a rewritten tensor.
      */
     private Tensor rewriteQueryTensor(Tensor embedding) {
         return embedding.reduce(Reduce.Aggregator.min, "d0").concat(0, "d1").rename("d1", "x");
     }
-
-
 }

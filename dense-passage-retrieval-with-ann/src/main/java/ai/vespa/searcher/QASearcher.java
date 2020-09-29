@@ -14,9 +14,7 @@ import com.yahoo.tensor.Tensor;
 import com.yahoo.search.result.FeatureData;
 
 
-
-
-@Provides("Answering")
+@Provides("QuestionAnswering")
 public class QASearcher extends Searcher {
 
     BertTokenizer tokenizer;
@@ -30,20 +28,16 @@ public class QASearcher extends Searcher {
     public Result search(Query query, Execution execution) {
         if(query.getModel().getRestrict().contains("query") ||
                 QuestionAnswering.isRetrieveOnly(query))
-            return execution.search(query); //Do nothing - pass it through
+            return execution.search(query);
+
         query.getRanking().getProperties().put("vespa.hitcollector.heapsize",query.getHits());
-        int passageCount = query.getHits();
         query.setHits(1); //We only extract text spans from the hit with the highest Reader relevancy score
-        long startReader = System.currentTimeMillis();
+
         Result result = execution.search(query);
-        long readerDuration = System.currentTimeMillis() - startReader;
-        query.trace("Reader for " + passageCount + " took " + readerDuration + "ms",3);
         execution.fill(result);
         Hit answerHit = getPredictedAnswer(result);
         result.hits().remove(0); //remove original back end hit
         result.hits().add(answerHit);
-        long totalDuration = System.currentTimeMillis() - startReader;
-        query.trace("End to end answer took " + totalDuration + "ms",3);
         return result;
     }
 
