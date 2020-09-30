@@ -45,7 +45,7 @@ First, we retrieve the sample app:
 
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ git checkout jobergum/dense-passage-retrieval  # REMOVE ME WHEN MASTER
+$ cd sample-apps && git checkout jobergum/dense-passage-retrieval && cd ..  # REMOVE ME WHEN MASTER
 $ SAMPLE_APP=`pwd`/sample-apps/dense-passage-retrieval-with-ann
 $ cd $SAMPLE_APP
 </pre>
