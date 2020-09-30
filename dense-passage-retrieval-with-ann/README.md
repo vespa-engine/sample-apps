@@ -10,9 +10,9 @@ The application implements the [Dense Passage Retriever](https://github.com/face
 * BERT-based models for text encoding and answer extraction.
 * Custom Java components for glue all the parts together.
 
-For more details, refer to LINK TO BLOG POST HERE.
+For more details, refer to [the companion blog post](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/).
 
-This README contains the following (ADD ANCHORS HERE)
+This README contains the following:
 
 - [A quick start](#quick-start) to test the sample application on a small data set
 - Instructions on [how to feed the entire Wikipedia dataset](#how-to-feed-the-entire-dataset)
