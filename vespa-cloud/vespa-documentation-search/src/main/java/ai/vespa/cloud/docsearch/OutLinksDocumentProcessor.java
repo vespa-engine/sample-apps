@@ -128,7 +128,7 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private void addInLinksToOtherDocs(Set<String> targetDocs, String myPath, DocumentType docType) {
+    private void addInLinkToOtherDocs(Set<String> targetDocs, String myPath, DocumentType docType) {
         WeightedSet<StringFieldValue> wset = new WeightedSet<>(DataType.getWeightedSet(DataType.STRING));
         wset.put(new StringFieldValue(myPath), 1);
         for (String targetDoc : targetDocs) {
