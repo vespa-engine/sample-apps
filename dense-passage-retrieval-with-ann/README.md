@@ -22,7 +22,7 @@ This README contains the following:
 - [Implementation details](#implementation-details)
 
 <figure>
-<p align="center"><img width="90%" src="img/vespa_passage_retrieval.png" /></p>
+<p align="center"><img width="90%" src="img/retriever-reader.png" /></p>
 </figure>
 
 ## Quick start
@@ -45,7 +45,6 @@ First, we retrieve the sample app:
 
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps && git checkout jobergum/dense-passage-retrieval && cd ..  # REMOVE ME WHEN MASTER
 $ SAMPLE_APP=`pwd`/sample-apps/dense-passage-retrieval-with-ann
 $ cd $SAMPLE_APP
 </pre>
