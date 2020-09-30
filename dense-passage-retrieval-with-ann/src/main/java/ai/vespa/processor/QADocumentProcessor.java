@@ -39,7 +39,6 @@ public class QADocumentProcessor extends DocumentProcessor {
             if (op instanceof DocumentPut) {
                 DocumentPut put = (DocumentPut) op;
                 Document doc = put.getDocument();
-                String name = doc.getDataType().getName();
                 if (!doc.getDataType().getName().equals("wiki")) {
                     continue;
                 }
