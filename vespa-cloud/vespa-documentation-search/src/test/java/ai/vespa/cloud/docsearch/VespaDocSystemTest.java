@@ -83,6 +83,8 @@ public class VespaDocSystemTest {
         assertEquals(5, ids.size());
 
         verifyInlinks();
+
+        removeTestDocs(ids);
     }
 
     private void verifyInlinks() throws IOException {
