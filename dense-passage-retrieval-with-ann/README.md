@@ -22,7 +22,7 @@ This README contains the following:
 - [Implementation details](#implementation-details)
 
 <figure>
-<p align="center"><img width="90%" src="img/retriever-reader.png" /></p>
+<p align="center"><img src="img/retriever-reader.png" /></p>
 </figure>
 
 ## Quick start
