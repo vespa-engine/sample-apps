@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 import json
@@ -56,17 +57,17 @@ for prediction,question,context, score, reader_score, answers in results:
   em.append(em_hit)
   prediction_entry = {
     "question": question,
-    "prediction": prediction, 
-    "context": context, 
-    "span_score": score, 
-    "reader_score": reader_score, 
+    "prediction": prediction,
+    "context": context,
+    "span_score": score,
+    "reader_score": reader_score,
     "answers": answers,
     "em": em_hit
   }
   predictions.append(prediction_entry)
 
 with open("predictions.json", "w") as fp:
-  json.dump(predictions, fp)  
+  json.dump(predictions, fp)
 
 em_score = np.mean(em)
 print("EM score = %.2f, n = %i" % (em_score*100, len(em)))

@@ -20,8 +20,8 @@ public class QADocumentProcessor extends DocumentProcessor {
 
     BertTokenizer tokenizer;
     public static String dimensionName = "d0";
-    public static TensorType titleTensorType = new TensorType.Builder().indexed(dimensionName, 256).build();
-    public static TensorType textTensorType = new TensorType.Builder().indexed(dimensionName, 256).build();
+    public static TensorType titleTensorType = new TensorType.Builder(TensorType.Value.FLOAT).indexed(dimensionName, 256).build();
+    public static TensorType textTensorType = new TensorType.Builder(TensorType.Value.FLOAT).indexed(dimensionName, 256).build();
 
     @Inject
     public QADocumentProcessor(BertTokenizer tokenizer) {
