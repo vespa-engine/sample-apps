@@ -1,6 +1,7 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.cloud.docsearch;
 
+import com.google.inject.Inject;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
 import com.yahoo.document.DataType;
@@ -13,15 +14,17 @@ import com.yahoo.document.datatypes.Array;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.datatypes.WeightedSet;
 import com.yahoo.document.update.FieldUpdate;
+import com.yahoo.document.update.ValueUpdate;
 import com.yahoo.documentapi.AsyncParameters;
 import com.yahoo.documentapi.AsyncSession;
+import com.yahoo.documentapi.DocumentAccess;
 import com.yahoo.documentapi.Response;
 import com.yahoo.documentapi.ResponseHandler;
 import com.yahoo.documentapi.Result;
-import com.yahoo.documentapi.messagebus.MessageBusDocumentAccess;
 
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -34,13 +37,16 @@ import java.util.stream.Collectors;
 public class OutLinksDocumentProcessor extends DocumentProcessor {
     private static final Logger logger = Logger.getLogger(OutLinksDocumentProcessor.class.getName());
 
-    static final String DOC_DOCUMENT_TYPE   = "doc";
-    static final String PATH_FIELD_NAME     = "path";
-    static final String OUTLINKS_FIELD_NAME = "outlinks";
-    static final String INLINKS_FIELD_NAME  = "inlinks";
+    static final String DOC_DOCUMENT_TYPE    = "doc";
+    static final String PATH_FIELD_NAME      = "path";
+    static final String NAMESPACE_FIELD_NAME = "namespace";
+    static final String TITLE_FIELD_NAME     = "title";
+    static final String CONTENT_FIELD_NAME   = "content";
+    static final String OUTLINKS_FIELD_NAME  = "outlinks";
+    static final String INLINKS_FIELD_NAME   = "inlinks";
 
-    private final MessageBusDocumentAccess access = new MessageBusDocumentAccess();
-    private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+    private final DocumentAccess access;
+    private final AsyncSession asyncSession;
 
     class RespHandler implements ResponseHandler {
         @Override
@@ -54,7 +60,14 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
         }
     }
 
+    @Inject
+    public OutLinksDocumentProcessor(DocumentAccess acc) {
+        this.access = acc;
+        this.asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public Progress process(Processing processing) {
         //logger.info("In process");
         for (DocumentOperation op : processing.getDocumentOperations()) {
@@ -64,18 +77,52 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
                 if (document.getDataType().isA(DOC_DOCUMENT_TYPE)) {
                     String myPath = document.getFieldValue(PATH_FIELD_NAME).toString();
 
-                    Set<String> docsLinkedFromThis = canonicalizeLinks(Path.of(myPath),
-                            onlyFileLinks(removeLinkFragment(document)));
+                    Set<String> docsLinkedFromMe = canonicalizeLinks(Path.of(myPath),
+                            onlyFileLinks(removeLinkFragment(getUniqueOutLinks(document))));
 
-                    Array<StringFieldValue> sfv = new Array<>(DataType.getArray(DataType.STRING));
-                    for (String link : docsLinkedFromThis) {
-                        sfv.add(new StringFieldValue(link));
+                    Array<StringFieldValue> sanitizedLinks = new Array<>(DataType.getArray(DataType.STRING));
+                    for (String link : docsLinkedFromMe) {
+                        sanitizedLinks.add(new StringFieldValue(link));
                     }
-                    document.setFieldValue(OUTLINKS_FIELD_NAME, sfv);
 
-                    if (docsLinkedFromThis.size() > 0) {
-                        addInLinks(docsLinkedFromThis, myPath, document.getDataType());
+                    document.setFieldValue(OUTLINKS_FIELD_NAME, sanitizedLinks);
+
+                    if (docsLinkedFromMe.size() > 0) {
+                        addInLinkToOtherDocs(docsLinkedFromMe, myPath, document.getDataType());
                     }
+                }
+            }
+            else if (op instanceof DocumentUpdate) {
+                DocumentUpdate update = (DocumentUpdate) op;
+
+                /*
+                  There are two kinds of updates:
+                  * a create-if-nonexistent update for a new document
+                  * updating inlinks to documents
+
+                  The first needs the processing below - the second does not need processing, just send the update as-is
+                 */
+
+                if (update.getFieldUpdate(INLINKS_FIELD_NAME) != null) { return Progress.DONE;}  // no extra processing of inlinks update
+
+                FieldUpdate fieldUpdate = update.getFieldUpdate(PATH_FIELD_NAME);
+                ValueUpdate<StringFieldValue> valueUpdate = fieldUpdate.getValueUpdate(0);
+                String myPath = valueUpdate.getValue().getString();
+
+                Set<String> docsLinkedFromMe = canonicalizeLinks(Path.of(myPath),
+                        onlyFileLinks(removeLinkFragment(getUniqueOutLinks(update))));
+
+                Array<StringFieldValue> sanitizedLinks = new Array<>(DataType.getArray(DataType.STRING));
+                for (String link : docsLinkedFromMe) {
+                    sanitizedLinks.add(new StringFieldValue(link));
+                }
+
+                update.removeFieldUpdate(OUTLINKS_FIELD_NAME); // remove the update with un-sanitized links
+                FieldUpdate sanitizedLinksUpdate = FieldUpdate.createAssign(update.getDocumentType().getField(OUTLINKS_FIELD_NAME), sanitizedLinks);
+                update.addFieldUpdate(sanitizedLinksUpdate);   // ... and add an update with the clean links instead
+
+                if (docsLinkedFromMe.size() > 0) {
+                    addInLinkToOtherDocs(docsLinkedFromMe, myPath, update.getDocumentType());
                 }
             }
         }
@@ -83,7 +130,7 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    private void addInLinks(Set<String> targetDocs, String myPath, DocumentType docType) {
+    private void addInLinkToOtherDocs(Set<String> targetDocs, String myPath, DocumentType docType) {
         WeightedSet<StringFieldValue> wset = new WeightedSet<>(DataType.getWeightedSet(DataType.STRING));
         wset.put(new StringFieldValue(myPath), 1);
         for (String targetDoc : targetDocs) {
@@ -116,12 +163,33 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    protected static Set<String> removeLinkFragment(Document doc) {
-        // Remove fragment after # like vespa-cmdline-tools.html#vespa-model-inspect
+    protected static Set<String> getUniqueOutLinks(Document doc) {
         Array<StringFieldValue> outLinks = (Array<StringFieldValue>) doc.getFieldValue(OUTLINKS_FIELD_NAME);
         if (outLinks == null) { return Collections.emptySet(); }
-        return outLinks.stream()
-                .map(l -> l.toString().replaceFirst("#.*$", ""))
+        Set<String> links = new HashSet<>();
+        for (StringFieldValue link : outLinks) {
+            links.add(link.toString());
+        }
+        return links;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static Set<String> getUniqueOutLinks(DocumentUpdate docUpdate) {
+        FieldUpdate fieldUpdate = docUpdate.getFieldUpdate(OUTLINKS_FIELD_NAME);
+        if (fieldUpdate == null) { return Collections.emptySet(); }
+        Set<String> links = new HashSet<>();
+        ValueUpdate<Array<StringFieldValue>> valueUpdate = fieldUpdate.getValueUpdate(0);
+        for (StringFieldValue value : valueUpdate.getValue()) {
+            links.add(value.getString());
+        }
+        return links;
+    }
+
+    protected static Set<String> removeLinkFragment(Set<String> links) {
+        // Remove fragment after # like vespa-cmdline-tools.html#vespa-model-inspect
+        if (links == null) { return Collections.emptySet(); }
+        return links.stream()
+                .map(l -> l.replaceFirst("#.*$", ""))
                 .filter(l -> !(l.isEmpty()))
                 .collect(Collectors.toSet());
     }
