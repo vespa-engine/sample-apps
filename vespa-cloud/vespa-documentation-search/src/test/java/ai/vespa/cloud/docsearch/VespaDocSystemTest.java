@@ -65,7 +65,7 @@ public class VespaDocSystemTest {
 
         removeTestDocs(ids);
         ids = getTestDocIDs();
-        assertEquals(0, ids.size(), "visit all docs and remove then");
+        assertEquals(0, ids.size(), "visit all docs and remove them");
     }
 
     @Test
