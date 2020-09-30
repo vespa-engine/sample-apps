@@ -30,7 +30,7 @@ See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-qui
 <pre data-test="exec">
 $ #git clone https://github.com/vespa-engine/sample-apps.git
 $ mkdir sample-apps
-$ cp -r ~/github/sample-apps/dense-passage-retrieval-with-ann sample-apps/
+$ cp -r ~/sample-apps/dense-passage-retrieval-with-ann sample-apps/
 $ SAMPLE_APP=`pwd`/sample-apps/dense-passage-retrieval-with-ann
 $ cd $SAMPLE_APP
 </pre>
