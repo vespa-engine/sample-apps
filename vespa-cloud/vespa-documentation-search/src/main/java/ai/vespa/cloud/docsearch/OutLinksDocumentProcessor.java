@@ -88,7 +88,7 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
                     document.setFieldValue(OUTLINKS_FIELD_NAME, sanitizedLinks);
 
                     if (docsLinkedFromMe.size() > 0) {
-                        addInLinksToOtherDocs(docsLinkedFromMe, myPath, document.getDataType());
+                        addInLinkToOtherDocs(docsLinkedFromMe, myPath, document.getDataType());
                     }
                 }
             }
