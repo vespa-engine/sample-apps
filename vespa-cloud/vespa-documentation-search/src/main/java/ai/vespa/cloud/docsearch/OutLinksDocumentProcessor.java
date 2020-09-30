@@ -120,7 +120,7 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
                 update.addFieldUpdate(sanitizedLinksUpdate);   // ... and add an update with the clean links instead
 
                 if (docsLinkedFromMe.size() > 0) {
-                    addInLinksToOtherDocs(docsLinkedFromMe, myPath, update.getDocumentType());
+                    addInLinkToOtherDocs(docsLinkedFromMe, myPath, update.getDocumentType());
                 }
             }
         }
