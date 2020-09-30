@@ -1,5 +1,6 @@
-package ai.vespa;
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
+package ai.vespa;
 
 import ai.vespa.tokenizer.BertModelConfig;
 import ai.vespa.tokenizer.BertTokenizer;
