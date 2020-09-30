@@ -1,3 +1,5 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 schema wiki {
 
   document wiki {
@@ -36,6 +38,7 @@ schema wiki {
         }
       }
     }
+
   }
 
   fieldset default {
@@ -50,7 +53,6 @@ schema wiki {
     output output_1: end_logits
     output output_2: relevance_logits
   }
-
 
   rank-profile openqa {
     constants {
@@ -92,8 +94,9 @@ schema wiki {
              attribute(text_token_ids){d0:(d1-question_length-title_length-3)},
               TOKEN_NONE
            )))))))
-       }
+      }
     }
+
     # The attention mask has 1's for every token that is set
     function attention_mask() {
       expression: map(input_ids, f(a)(a > 0))
@@ -104,55 +107,57 @@ schema wiki {
     }
 
     second-phase {
-      rerank-count:10
+      rerank-count: 5
       expression: onnxModel(reader).relevance_logits
     }
 
     summary-features {
-      firstPhase
       onnxModel(reader).start_logits
       onnxModel(reader).end_logits
       input_ids # The input sequence with special tokens (CLS/SEP)
     }
+
   }
 
   rank-profile sparse inherits openqa {
-      first-phase {
-        expression: bm25(text) + bm25(title)
-      }
+    first-phase {
+      expression: bm25(text) + bm25(title)
+    }
   }
 
-   rank-profile sparse-retriever  {
-        first-phase {
-          expression: bm25(text) + bm25(title)
-        }
-    }
-
   rank-profile dense inherits openqa {
-      first-phase {
-        expression: closeness(field, text_embedding)
-      }
+    first-phase {
+      expression: closeness(field, text_embedding)
+    }
+  }
+
+  rank-profile hybrid inherits openqa {
+    num-threads-per-search: 1
+    first-phase {
+      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+    }
+  }
+
+  # The following rank profiles are used for retrieval only, i.e. they don't invoke the reader
+
+  rank-profile sparse-retriever  {
+    first-phase {
+      expression: bm25(text) + bm25(title)
+    }
   }
 
   rank-profile dense-retriever {
-        num-threads-per-search: 1
-        first-phase {
-          expression: closeness(field, text_embedding)
-        }
+    num-threads-per-search: 1
+    first-phase {
+      expression: closeness(field, text_embedding)
     }
+  }
 
-  rank-profile hybrid inherits openqa {
-      num-threads-per-search: 1
-      first-phase {
-        expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
-      }
-   }
-
-   rank-profile hybrid-retriever {
-         num-threads-per-search: 1
-         first-phase {
-           expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
-         }
-   }
+  rank-profile hybrid-retriever {
+    num-threads-per-search: 1
+    first-phase {
+      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+    }
+  }
 
 }

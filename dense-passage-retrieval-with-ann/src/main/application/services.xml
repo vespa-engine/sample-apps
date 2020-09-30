@@ -3,7 +3,7 @@
 <services version="1.0">
 
   <container id='default' version='1.0'>
-     <nodes>
+    <nodes jvmargs="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8998">
       <node hostalias="node1" />
     </nodes>
 
