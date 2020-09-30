@@ -99,6 +99,8 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
                   There are two kinds of updates:
                   * a create-if-nonexistent update for a new document
                   * updating inlinks to documents
+
+                  The first needs the processing below - the second does not need processing, just send the update as-is
                  */
 
                 if (update.getFieldUpdate(INLINKS_FIELD_NAME) != null) { return Progress.DONE;}  // no extra processing of inlinks update
