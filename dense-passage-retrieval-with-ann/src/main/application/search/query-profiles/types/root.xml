@@ -1,0 +1,4 @@
+<query-profile-type id="root" inherits="native">
+  <field name="ranking.features.query(query_embedding)" type="tensor&lt;float&gt;(x[769])" />
+  <field name="ranking.features.query(query_token_ids)" type="tensor&lt;float&gt;(d0[32])" />
+</query-profile-type>

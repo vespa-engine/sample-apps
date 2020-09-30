@@ -1,0 +1,163 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema wiki {
+
+  document wiki {
+
+    field title type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+
+    field title_token_ids type tensor<float>(d0[256]) {
+        indexing: summary | attribute
+    }
+
+    field text type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+
+    field text_token_ids type tensor<float>(d0[256]) {
+      indexing: summary |attribute
+    }
+
+    field id type long {
+      indexing: summary |attribute
+    }
+
+    field text_embedding type tensor<float>(x[769]){
+      indexing: attribute|index
+      attribute {
+        distance-metric:euclidean
+      }
+      index {
+        hnsw {
+          max-links-per-node: 32
+          neighbors-to-explore-at-insert: 500
+        }
+      }
+    }
+
+  }
+
+  fieldset default {
+    fields: title, text
+  }
+
+  onnx-model reader {
+    file: files/reader.onnx
+    input  input_ids: input_ids
+    input  attention_mask: attention_mask
+    output output_0: start_logits
+    output output_1: end_logits
+    output output_2: relevance_logits
+  }
+
+  rank-profile openqa {
+    constants {
+      TOKEN_NONE: 0
+      TOKEN_CLS:  101
+      TOKEN_SEP:  102
+    }
+
+    # Find length of question input
+    function question_length() {
+      expression: sum(map(query(query_token_ids), f(a)(a > 0)))
+    }
+
+    # Find length of the title
+    function title_length() {
+      expression: sum(map(attribute(title_token_ids), f(a)(a > 0)))
+    }
+
+    # Find length of the text
+    function text_length() {
+      expression: sum(map(attribute(text_token_ids), f(a)(a > 0)))
+    }
+
+    # Create input sequence: CLS + query + SEP + title + SEP + text + 0's
+    function input_ids() {
+      expression {
+        tensor<float>(d0[1],d1[128])(
+           if (d1 == 0,
+             TOKEN_CLS,
+           if (d1 < question_length + 1,
+             query(query_token_ids){d0:(d1-1)},
+           if (d1 == question_length + 1,
+             TOKEN_SEP,
+           if (d1 < question_length + title_length + 2,
+             attribute(title_token_ids){d0:(d1-question_length-2)},
+           if (d1 == question_length + title_length + 2,
+             TOKEN_SEP,
+           if (d1 < text_length + title_length + question_length + 3,
+             attribute(text_token_ids){d0:(d1-question_length-title_length-3)},
+              TOKEN_NONE
+           )))))))
+      }
+    }
+
+    # The attention mask has 1's for every token that is set
+    function attention_mask() {
+      expression: map(input_ids, f(a)(a > 0))
+    }
+
+    first-phase {
+      expression: closeness(field, text_embedding)
+    }
+
+    second-phase {
+      rerank-count: 5
+      expression: onnxModel(reader).relevance_logits
+    }
+
+    summary-features {
+      onnxModel(reader).start_logits
+      onnxModel(reader).end_logits
+      input_ids # The input sequence with special tokens (CLS/SEP)
+    }
+
+  }
+
+  rank-profile sparse inherits openqa {
+    first-phase {
+      expression: bm25(text) + bm25(title)
+    }
+  }
+
+  rank-profile dense inherits openqa {
+    first-phase {
+      expression: closeness(field, text_embedding)
+    }
+  }
+
+  rank-profile hybrid inherits openqa {
+    num-threads-per-search: 1
+    first-phase {
+      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+    }
+  }
+
+  # The following rank profiles are used for retrieval only, i.e. they don't invoke the reader
+
+  rank-profile sparse-retriever  {
+    first-phase {
+      expression: bm25(text) + bm25(title)
+    }
+  }
+
+  rank-profile dense-retriever {
+    num-threads-per-search: 1
+    first-phase {
+      expression: closeness(field, text_embedding)
+    }
+  }
+
+  rank-profile hybrid-retriever {
+    num-threads-per-search: 1
+    first-phase {
+      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+    }
+  }
+
+}

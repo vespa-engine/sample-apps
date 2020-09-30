@@ -1,0 +1,7 @@
+<query-profile id="default" type="root">
+ <field name="maxHits">100</field>
+ <field name="maxOffset">1000</field> 
+ <field name="timeout">60s</field>
+ <field name="searchChain">qa</field>
+ <field name="ranking.queryCache">true</field>
+</query-profile>

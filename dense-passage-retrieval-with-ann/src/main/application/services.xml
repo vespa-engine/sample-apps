@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+  <container id='default' version='1.0'>
+    <nodes>
+      <node hostalias="node1" />
+    </nodes>
+
+    <component id="ai.vespa.tokenizer.BertTokenizer" bundle="question-answering">
+      <config name="ai.vespa.tokenizer.bert-model">
+        <max_input>256</max_input>
+        <vocabulary>models/bert-base-uncased-vocab.txt</vocabulary>
+      </config>
+    </component>
+
+    <document-processing>
+      <chain id="bert-tensorizer" inherits="indexing">
+        <documentprocessor id="ai.vespa.processor.QADocumentProcessor" bundle="question-answering"/>
+      </chain>
+    </document-processing>
+
+    <search>
+      <chain id="qa" inherits="vespa">
+        <searcher id="ai.vespa.searcher.RetrieveModelSearcher" bundle="question-answering"/>
+        <searcher id="ai.vespa.searcher.QASearcher" bundle="question-answering"/>
+      </chain>
+    </search>
+    <document-api/>
+  </container>
+
+  <content id='wikipedia' version='1.0'>
+    <search>
+      <visibility-delay>1</visibility-delay>
+    </search>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='wiki'/>
+      <document mode='index' type='query'/>
+      <document-processing cluster="default" chain="bert-tensorizer" />
+    </documents>
+     <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+           <requestthreads>
+            <persearch>10</persearch>
+           </requestthreads>
+           <feeding>
+            <concurrency>1.0</concurrency>
+          </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+</services>

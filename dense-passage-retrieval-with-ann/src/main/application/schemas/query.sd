@@ -1,0 +1,59 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema query {
+  document query {
+  }
+
+  onnx-model encoder {
+    file: files/question_encoder.onnx
+    input  input_ids: input_ids
+    input  attention_mask: attention_mask
+    output output_0: embedding
+  }
+
+  rank-profile question_encoder {
+    num-threads-per-search: 1
+
+    constants {
+      TOKEN_NONE: 0
+      TOKEN_CLS:  101
+      TOKEN_SEP:  102
+    }
+
+    # Find length of question
+    function question_length() {
+      expression: sum(map(query(query_token_ids), f(a)(a > 0)))
+    }
+
+    # Create input sequence: CLS + query + SEP + 0's
+    function input_ids() {
+      expression {
+        tensor<float>(d0[1],d1[32])(
+          if (d1 == 0,
+            TOKEN_CLS,
+          if (d1 < question_length + 1,
+            query(query_token_ids){d0:(d1-1)},
+          if (d1 == question_length + 1,
+            TOKEN_SEP,TOKEN_NONE))))
+      }
+    }
+
+    # The attention mask has 1's for every token that is set
+    function attention_mask() {
+      expression: map(input_ids, f(a)(a > 0))
+    }
+
+    function token_type_ids() {
+      expression: map(input_ids, f(a) (0))
+    }
+
+    first-phase {
+      expression: 1
+    }
+
+    summary-features {
+      onnxModel(encoder).embedding
+    }
+  }
+
+}
