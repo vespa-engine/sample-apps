@@ -46,6 +46,9 @@
       <proton>
         <tuning>
           <searchnode>
+           <requestthreads>
+            <persearch>10</persearch>
+           </requestthreads>
            <feeding>
             <concurrency>1.0</concurrency>
           </feeding>
