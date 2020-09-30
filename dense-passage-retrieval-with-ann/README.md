@@ -14,12 +14,12 @@ For more details, refer to LINK TO BLOG POST HERE.
 
 This README contains the following (ADD ANCHORS HERE)
 
-- A quick start to test the sample application on a small data set
-- Instructions to feed the entire Wikipedia dataset
-- Experiments and results
-- Implementation details
+- [A quick start](#quick-start) to test the sample application on a small data set
+- Instructions on [how to feed the entire Wikipedia dataset](#how-to-feed-the-entire-dataset)
+- [Experiments](#experiments) and [results](#results)
+- [Implementation details](#implementation-details)
 
-## Quick start - small data sample
+## Quick start
 
 The following is a recipe on how to get started with a small set of sample data.
 The sample data only contains the first 100 passages of the full dataset, but
@@ -148,7 +148,8 @@ the precomputed DPR embedding.
 
 <pre>
 $ cd ..
-$ python3 ./bin/make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
+$ python3 ./bin/make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv \
+    DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
 </pre>
 
 This will data like the following (newline formatted for readability):
@@ -169,7 +170,8 @@ We are now ready to index the data in our Vespa installation. The feed file is 2
 We feed the documents as we did above:
 
 <pre>
-$ java -jar vespa-http-client-jar-with-dependencies.jar --file feed.jsonl --endpoint http://your-vespa-instance-hostname:8080
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file feed.jsonl --endpoint http://your-vespa-instance-hostname:8080
 </pre>
 
 We can obtain the feeding client jar from the Docker image by:
