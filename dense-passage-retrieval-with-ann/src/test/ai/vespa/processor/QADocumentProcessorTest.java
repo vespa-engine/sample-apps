@@ -73,4 +73,12 @@ public class QADocumentProcessorTest {
         assertTrue(title_tensor.toString().startsWith("tensor(d0[256]):[29168.0, 1035.0, 13957.0"));
         assertTrue(text_tensor.toString().startsWith("tensor(d0[256]):[29168.0, 3744.0, 13957.0, 1006.0, 2141.0, 2285.0, 1016.0, 1010.0"));
     }
+
+    @Test
+    public void testEmptyProcessing() throws Exception  {
+        Document doc = new Document(new DocumentType("query"), "id:foo:query::0");
+        Processing p = getProcessing(new DocumentPut(doc));
+        DocprocService service = setupDocprocService(new QADocumentProcessor(new BertTokenizer(bertModelConfig, new SimpleLinguistics())));
+        service.getExecutor().process(p);
+    }
 }
