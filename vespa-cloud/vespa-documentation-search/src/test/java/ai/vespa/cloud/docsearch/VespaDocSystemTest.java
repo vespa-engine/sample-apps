@@ -16,7 +16,9 @@ import java.util.Set;
 
 import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 @SystemTest
 public class VespaDocSystemTest {
@@ -54,25 +56,54 @@ public class VespaDocSystemTest {
     }
 
     @Test
+    public void testUpdate() throws Exception {
+        updateTestDocs("/test-documents-updates.json");
+
+        HashSet<String> ids = getTestDocIDs();
+        ids.forEach(id -> {System.out.println(id);});
+        assertEquals(5, ids.size(), "test-documents-updates.json has 5 documents");
+
+        removeTestDocs(ids);
+        ids = getTestDocIDs();
+        assertEquals(0, ids.size(), "visit all docs and remove then");
+    }
+
+    @Test
     public void testInlinks() throws Exception {
         feedTestDocs("/test-documents.json");
         HashSet<String> ids = getTestDocIDs();
         assertEquals(5, ids.size());
 
+        verifyInlinks();
+
+        removeTestDocs(ids);
+
+        updateTestDocs("/test-documents-updates.json");
+        ids = getTestDocIDs();
+        assertEquals(5, ids.size());
+
+        verifyInlinks();
+    }
+
+    private void verifyInlinks() throws IOException {
         int numLinks = 0;
         String docWithOneInLink = getTestDoc("id:open:doc::open/documentation/access-logging.html");
-        Iterator<JsonNode> inLinks = mapper.readTree(docWithOneInLink).get("fields").get("inlinks").iterator();
-        while (inLinks.hasNext()) {
-            inLinks.next();
+        JsonNode inlinks = mapper.readTree(docWithOneInLink).get("fields").get("inlinks");
+        assertNotNull(inlinks, "Assert there is an inlink field in the document");
+        Iterator<JsonNode> inlinksIter = inlinks.iterator();
+        while (inlinksIter.hasNext()) {
+            inlinksIter.next();
             numLinks++;
         }
         assertEquals(1, numLinks);
 
         numLinks = 0;
         String docWithTwoInLinks = getTestDoc("id:open:doc::open/documentation/operations/admin-procedures.html");
-        inLinks = mapper.readTree(docWithTwoInLinks).get("fields").get("inlinks").iterator();
-        while (inLinks.hasNext()) {
-            inLinks.next();
+        inlinks = mapper.readTree(docWithTwoInLinks).get("fields").get("inlinks");
+        assertNotNull(inlinks, "Assert there is an inlink field in the document");
+        inlinksIter = inlinks.iterator();
+        while (inlinksIter.hasNext()) {
+            inlinksIter.next();
             numLinks++;
         }
         assertEquals(2, numLinks);
@@ -94,6 +125,19 @@ public class VespaDocSystemTest {
             i++;
         }
         System.out.println("** Did feed " + i + " documents");
+    }
+
+    public void updateTestDocs(String testDocs) throws IOException {
+        JsonNode updates = mapper.readTree(VespaDocSystemTest.class.getResourceAsStream(testDocs));
+        Iterator<JsonNode> nodes = updates.elements();
+        System.out.println("** Start updating test documents");
+        int i=0;
+        while (nodes.hasNext()) {
+            HttpResponse<String> res = updateTestDoc(nodes.next());
+            assert(200 == res.statusCode());
+            i++;
+        }
+        System.out.println("** Did update " + i + " documents");
     }
 
     private HashSet<String> getTestDocIDs() throws Exception {
@@ -119,6 +163,14 @@ public class VespaDocSystemTest {
         return testEndpoint.send(testEndpoint
                 .request("/document/v1/open/doc/docid/" + "open" + doc.get("fields").get("path").textValue())
                 .POST(ofString(doc.toString())));
+    }
+
+    public HttpResponse<String> updateTestDoc(JsonNode update) {
+        return testEndpoint.send(testEndpoint
+                .request("/document/v1/open/doc/docid/" +
+                                "open"+ update.get("fields").get("path").get("assign").textValue(),
+                        Map.of("create", "true"))
+                .PUT(ofString(update.toString())));
     }
 
     private void removeTestDoc(String id) {
