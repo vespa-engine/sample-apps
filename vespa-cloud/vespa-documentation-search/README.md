@@ -24,18 +24,42 @@ The _Build_ step in the workflow uses the Jekyll Generator plugin to build a JSO
 
 
 ### Security
-Vespa Cloud secures endpoints using mTLS. Secrets can be stored in GitHub Settings for a repository. Here, the private key secret is accessed in the GitHub Actions workflow that feeds to Vespa Cloud:
+Vespa Cloud secures endpoints using mTLS. Secrets can be stored in GitHub Settings for a repository.
+Here, the private key secret is accessed in the GitHub Actions workflow that feeds to Vespa Cloud:
 [feed.yml](https://github.com/vespa-engine/documentation/blob/master/.github/workflows/feed.yml)
 
 
 ## Query integration
-Query results are open to the internet. To access Vespa Documentation Search, an AWS Lambda function is used to get the private key secret from AWS Parameter Store, then add it to the https request to Vespa Cloud:
+Query results are open to the internet. To access Vespa Documentation Search,
+an AWS Lambda function is used to get the private key secret from AWS Parameter Store,
+then add it to the https request to Vespa Cloud:
 
 The lambda needs AmazonSSMReadOnlyAccess added to its Role to access the Parameter Store.
 
 Note JSON-P being used (_jsoncallback=_) - this simplifies the search result page: [search.html](https://github.com/vespa-engine/documentation/blob/master/search.html).
 
 <!-- ToDo: ref to Vespa JSON interface for this quirk -->
+
+
+## Vespa Cloud Development and Deployments
+This is a Vespa Cloud application and has hence implemented
+[automated deployments](https://cloud.vespa.ai/automated-deployments).
+
+The feed can contain an array of links from each document.
+The [OutLinksDocumentProcessor](src/main/java/ai/vespa/cloud/docsearch/OutLinksDocumentProcessor.java)
+is custom java code that add an in-link in each target document using the Vespa Document API.
+
+To test this functionality, the
+[VespaDocSystemTest](src/test/java/ai/vespa/cloud/docsearch/VespaDocSystemTest.java) runs for each deployment.
+
+Creating a System Test is also a great way to develop a Vespa application:
+* Use this application as a starting point
+* Create a Vespa Cloud tenant (i.e. account), and set _tenant_ in [pom.xml](pom.xml)
+* Deploy the application to Vespa Cloud
+* Run the System Test from maven or IDE using the
+  [Endpoint](https://github.com/vespa-engine/vespa/blob/master/tenant-cd-api/src/main/java/ai/vespa/hosted/cd/Endpoint.java)
+
+<!-- ToDo: link to a Vespa Cloud Developer Guide once completed -->
 
 
 ## Status
