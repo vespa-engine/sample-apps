@@ -288,18 +288,11 @@ match the golden answers which are *14 December 1972 UTC* or *December 1972*.
 **EfficientQA Natural Question dev set**
 ([NQ-open.efficientqa.dev.1.1.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.efficientqa.dev.1.1.jsonl))
 
-| Retrieval Model | EM(@5)    | EM (@10)|
-|-----------------|-----------|--------|
-| sparse          | 21.22     | 24.72  |
-| dense           | 35.17     | 35.89  |
-| hybrid          | 35.22     | 35.94  |
-
-
 | Retrieval Model                 | EM(@5)   | EM (@10)|
 |---------------------------------|-----------|--------|
 | sparse (WAND bm25               | 21.22     | 24.72  |
 | dense  (nearest neighbor)       | 35.17     | 35.89  |
-| hybrid (WAND + nearest neighbor)| 35.22     | 39.94  |
+| hybrid (WAND + nearest neighbor)| 35.22     | 35.94  |
 
 
 ## Implementation details
