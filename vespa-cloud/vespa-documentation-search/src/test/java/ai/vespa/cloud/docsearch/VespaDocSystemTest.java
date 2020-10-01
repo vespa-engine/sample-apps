@@ -16,7 +16,6 @@ import java.util.Set;
 
 import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -88,27 +87,20 @@ public class VespaDocSystemTest {
     }
 
     private void verifyInlinks() throws IOException {
+        assertEquals(1, countInlinks("id:open:doc::open/documentation/access-logging.html"));
+        assertEquals(2, countInlinks("id:open:doc::open/documentation/operations/admin-procedures.html"));
+    }
+
+    private int countInlinks(String docId) throws IOException {
         int numLinks = 0;
-        String docWithOneInLink = getTestDoc("id:open:doc::open/documentation/access-logging.html");
-        JsonNode inlinks = mapper.readTree(docWithOneInLink).get("fields").get("inlinks");
-        assertNotNull(inlinks, "Assert there is an inlink field in the document");
+        JsonNode inlinks = mapper.readTree(getTestDoc(docId)).get("fields").get("inlinks");
+        if (inlinks == null) {return 0;};
         Iterator<JsonNode> inlinksIter = inlinks.iterator();
         while (inlinksIter.hasNext()) {
             inlinksIter.next();
             numLinks++;
         }
-        assertEquals(1, numLinks);
-
-        numLinks = 0;
-        String docWithTwoInLinks = getTestDoc("id:open:doc::open/documentation/operations/admin-procedures.html");
-        inlinks = mapper.readTree(docWithTwoInLinks).get("fields").get("inlinks");
-        assertNotNull(inlinks, "Assert there is an inlink field in the document");
-        inlinksIter = inlinks.iterator();
-        while (inlinksIter.hasNext()) {
-            inlinksIter.next();
-            numLinks++;
-        }
-        assertEquals(2, numLinks);
+        return numLinks;
     }
 
     private void removeTestDocs(HashSet<String> ids) {
@@ -116,6 +108,10 @@ public class VespaDocSystemTest {
         ids.forEach(id -> {removeTestDoc(id);});
     }
 
+    /**
+     * Feed Test documents using Vespa Put
+     * @see <a href="https://docs.vespa.ai/documentation/reference/document-v1-api-reference.html">document-v1-api-reference</a>
+     */
     public void feedTestDocs(String testDocs) throws IOException {
         JsonNode docs = mapper.readTree(VespaDocSystemTest.class.getResourceAsStream(testDocs));
         Iterator<JsonNode> nodes = docs.elements();
@@ -129,6 +125,10 @@ public class VespaDocSystemTest {
         System.out.println("** Did feed " + i + " documents");
     }
 
+    /**
+     * Feed Test documents using Vespa Update and create-if-nonexistent
+     * (i.e. same as a Put, but retains values in other fields if the document already exists)
+     */
     public void updateTestDocs(String testDocs) throws IOException {
         JsonNode updates = mapper.readTree(VespaDocSystemTest.class.getResourceAsStream(testDocs));
         Iterator<JsonNode> nodes = updates.elements();
