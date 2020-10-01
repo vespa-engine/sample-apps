@@ -14,6 +14,12 @@ docs = load_passages(sys.argv[1])
 vector_files = sys.argv[2:]
 phi = 275.26935 #pre-computed phi for transformation from inner dot product space to euclidean space.
 
+# Write out an empty query document for the question encoder
+doc = { "put":"id:query:query::1", "fields": {} }
+json.dump(doc,sys.stdout)
+sys.stdout.write('\n')
+
+# Write all wikipedia articles
 for i, item in enumerate(iterate_encoded_files(vector_files)):
   db_id, doc_vector = item
   norm = (doc_vector ** 2).sum()
