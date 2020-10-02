@@ -9,8 +9,17 @@ if [ $# -eq 0 ]; then
 fi
 
 echo "Installing Vespa"
+
+cat << 'EOF' > /etc/yum.repos.d/vespa-engine-stable.repo
+[vespa-engine-stable]
+name=vespa-engine-stable
+baseurl=https://yahoo.bintray.com/vespa-engine/centos/$releasever/stable/$basearch
+gpgcheck=0
+repo_gpgcheck=0
+enabled=1
+EOF
+
 yum -y install yum-utils epel-release
-yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/g/vespa/vespa/repo/epel-7/group_vespa-vespa-epel-7.repo
 yum -y install vespa bind-utils git
 
 fqdn=$(nslookup $(hostname) |grep Name |awk '{print $2}')
