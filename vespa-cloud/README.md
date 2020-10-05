@@ -4,8 +4,12 @@
 ### album-recommendation
 This is the intro application to Vespa.
 * Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation).
-* [album-recommendation-searcher](album-recommendation-searcher) is an introduction for how to integrate Java code to process queries.
-* [album-recommendation-docproc](album-recommendation-docproc) is an introduction to document processing
+* [album-recommendation-searcher](album-recommendation-searcher)
+  is an introduction for how to integrate Java code to process queries.
+  This is a good first app for writing [Vespa plugins](https://docs.vespa.ai/documentation/vespa-plugins.html).
+* [album-recommendation-docproc](album-recommendation-docproc)
+  is an introduction to asynchronous document processing
+  using the Java [Document API](https://docs.vespa.ai/documentation/document-api-guide.html).
 
 ### cord-19-search
 [cord19.vespa.ai](https://cord19.vespa.ai/) is a is a full-featured application - see
@@ -13,7 +17,13 @@ This is the intro application to Vespa.
 * [cord-19-search](cord-19-search): search backend
 
 ### vespa-documentation-search
-[vespa-documentation-search](vespa-documentation-search) is a simple search application - refer to this for pointers on AWS integration / GitHub Actions automation 
+[vespa-documentation-search](vespa-documentation-search) is a search application -
+refer to this for pointers on AWS integration / GitHub Actions automation.
+This sample app is a good start for [automated deployments](https://cloud.vespa.ai/automated-deployments),
+as it has system, staging and production test examples.
+It uses the [Document API](https://docs.vespa.ai/documentation/document-api-guide.html)
+both for regular PUT operations but also for UPDATE with _create-if-nonexistent_.
+
 
 ----
 
