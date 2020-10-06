@@ -40,13 +40,19 @@ refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) f
     </nodes>
     ```
 
-1.  Add _hosts.xml_
-
-1.  Remove _<client-authorize />_ in services.xml. 
+1.  Add _hosts.xml_:
+    ```
+    <?xml version="1.0" encoding="UTF-8"?>
+    <hosts>
+        <host name="localhost">
+            <alias>node1</alias>
+        </host>
+    </hosts>
+    ```
 
 ----
 
-Note: Applications with pom.xml must be built before being deployed.
+Note: Applications with _pom.xml_ must be built before being deployed.
 Refer to [getting started](https://docs.vespa.ai/documentation/getting-started.html) for more information.
 
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md)
