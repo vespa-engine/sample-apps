@@ -60,7 +60,7 @@ Cheat sheet for quick Docker run after config changes above:
 
     $ mvn clean install
     $ docker run --detach --name vespa --hostname vespa-container --volume $(pwd):/approot \
-      -p 8080:8080 -p19092:19092 vespaengine/vespa
+      -p 8080:8080 -p 19092:19092 vespaengine/vespa
     $ docker exec vespa bash -c \
       '/opt/vespa/bin/vespa-deploy prepare /approot/src/main/application/ && \
       /opt/vespa/bin/vespa-deploy activate'
