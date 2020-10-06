@@ -35,6 +35,12 @@ refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) f
     ```
     <nodes count="1" />
     
+    <!-- For container node -->
+    <nodes>
+        <node hostalias="node1" />
+    </nodes>
+
+    <!-- For content node -->
     <nodes>
         <node hostalias="node1" distribution-key="0" />
     </nodes>
@@ -49,6 +55,17 @@ refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) f
         </host>
     </hosts>
     ```
+
+Cheat sheet for quick Docker run after config changes above:
+
+    $ mvn clean install
+    $ docker run --detach --name vespa --hostname vespa-container --volume $(pwd):/approot \
+      -p 8080:8080 -p19092:19092 vespaengine/vespa
+    $ docker exec vespa bash -c \
+      '/opt/vespa/bin/vespa-deploy prepare /approot/src/main/application/ && \
+      /opt/vespa/bin/vespa-deploy activate'
+
+Expose ports as needed, like the metrics proxy port: http://localhost:19092/prometheus/v1/values
 
 ----
 
