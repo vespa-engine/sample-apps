@@ -56,13 +56,13 @@ refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) f
     </hosts>
     ```
 
-Cheat sheet for quick Docker run after config changes above:
+Cheatsheet for quick Docker run after config changes above:
 
-    $ mvn clean install
+    $ mvn clean package
     $ docker run --detach --name vespa --hostname vespa-container --volume $(pwd):/approot \
       -p 8080:8080 -p 19092:19092 vespaengine/vespa
     $ docker exec vespa bash -c \
-      '/opt/vespa/bin/vespa-deploy prepare /approot/src/main/application/ && \
+      '/opt/vespa/bin/vespa-deploy prepare /approot/target/application.zip && \
       /opt/vespa/bin/vespa-deploy activate'
 
 Expose ports as needed, like the metrics proxy port: http://localhost:19092/prometheus/v1/values
