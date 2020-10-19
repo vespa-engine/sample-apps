@@ -191,4 +191,10 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
                 .filter(l -> !(l.isEmpty()))
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public void deconstruct() {
+        super.deconstruct();
+        asyncSession.destroy();
+    }
 }
