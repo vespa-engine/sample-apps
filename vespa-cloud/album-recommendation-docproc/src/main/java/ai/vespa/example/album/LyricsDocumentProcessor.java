@@ -1,6 +1,7 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
+import com.google.inject.Inject;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
 import com.yahoo.document.Document;
@@ -10,14 +11,13 @@ import com.yahoo.document.DocumentPut;
 import com.yahoo.document.datatypes.FieldValue;
 import com.yahoo.documentapi.AsyncParameters;
 import com.yahoo.documentapi.AsyncSession;
+import com.yahoo.documentapi.DocumentAccess;
 import com.yahoo.documentapi.DocumentIdResponse;
 import com.yahoo.documentapi.DocumentResponse;
 import com.yahoo.documentapi.DocumentUpdateResponse;
 import com.yahoo.documentapi.Response;
 import com.yahoo.documentapi.ResponseHandler;
 import com.yahoo.documentapi.Result;
-import com.yahoo.documentapi.messagebus.MessageBusDocumentAccess;
-
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,8 +33,7 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
     // Maps request ID to Document - the lyrics Document looked up
     private final Map<Long, Response> responses = new ConcurrentHashMap<>();
 
-    private final MessageBusDocumentAccess access = new MessageBusDocumentAccess();
-    private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+    private final AsyncSession asyncSession;
 
     class RespHandler implements ResponseHandler {
         @Override
@@ -42,6 +41,11 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
             logger.info("In handleResponse");
             responses.put(response.getRequestId(), response);
         }
+    }
+
+    @Inject
+    public LyricsDocumentProcessor(DocumentAccess acc) {
+        this.asyncSession = acc.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
     }
 
     @Override
@@ -110,10 +114,4 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
         }
     }
 
-    @Override
-    public void deconstruct() {
-        super.deconstruct();
-        asyncSession.destroy();
-        access.shutdown();
-    }
 }
