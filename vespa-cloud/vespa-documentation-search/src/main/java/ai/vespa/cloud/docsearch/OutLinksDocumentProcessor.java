@@ -45,7 +45,6 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
     static final String OUTLINKS_FIELD_NAME  = "outlinks";
     static final String INLINKS_FIELD_NAME   = "inlinks";
 
-    private final DocumentAccess access;
     private final AsyncSession asyncSession;
 
     class RespHandler implements ResponseHandler {
@@ -62,8 +61,7 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
 
     @Inject
     public OutLinksDocumentProcessor(DocumentAccess acc) {
-        this.access = acc;
-        this.asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+        this.asyncSession = acc.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
     }
 
     @Override
@@ -192,5 +190,11 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
                 .map(l -> l.replaceFirst("#.*$", ""))
                 .filter(l -> !(l.isEmpty()))
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void deconstruct() {
+        super.deconstruct();
+        asyncSession.destroy();
     }
 }
