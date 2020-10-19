@@ -113,5 +113,11 @@ public class LyricsDocumentProcessor extends DocumentProcessor {
             logger.info("  Get failed, lyrics not found");
         }
     }
+    
+    @Override
+    public void deconstruct() {
+        super.deconstruct();
+        asyncSession.destroy();
+    }
 
 }
