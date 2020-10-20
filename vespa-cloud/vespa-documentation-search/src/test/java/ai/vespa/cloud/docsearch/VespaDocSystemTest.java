@@ -119,10 +119,10 @@ public class VespaDocSystemTest {
         int i=0;
         while (nodes.hasNext()) {
             HttpResponse<String> res = feedTestDoc(nodes.next());
-            assert(200 == res.statusCode());
+            assertEquals(200, res.statusCode(), "Status code for feeding document #" + i);
             i++;
         }
-        System.out.println("** Did feed " + i + " documents");
+        assertTrue(i > 0, "Done feeding " + i + " documents");
     }
 
     /**
@@ -136,10 +136,10 @@ public class VespaDocSystemTest {
         int i=0;
         while (nodes.hasNext()) {
             HttpResponse<String> res = updateTestDoc(nodes.next());
-            assert(200 == res.statusCode());
+            assertEquals(200, res.statusCode(), "Status code for updating document #" + i);
             i++;
         }
-        System.out.println("** Did update " + i + " documents");
+        assertTrue(i > 0, "Done updating " + i + " documents");
     }
 
     private HashSet<String> getTestDocIDs() throws Exception {
@@ -162,29 +162,35 @@ public class VespaDocSystemTest {
     }
 
     public HttpResponse<String> feedTestDoc(JsonNode doc) {
-        return testEndpoint.send(testEndpoint
+        HttpResponse<String> res =  testEndpoint.send(testEndpoint
                 .request("/document/v1/open/doc/docid/" + "open" + doc.get("fields").get("path").textValue())
                 .POST(ofString(doc.toString())));
+        assertEquals(200, res.statusCode(), "Status code for post");
+        return res;
     }
 
     public HttpResponse<String> updateTestDoc(JsonNode update) {
-        return testEndpoint.send(testEndpoint
+        HttpResponse<String> res = testEndpoint.send(testEndpoint
                 .request("/document/v1/open/doc/docid/" +
                                 "open"+ update.get("fields").get("path").get("assign").textValue(),
                         Map.of("create", "true"))
                 .PUT(ofString(update.toString())));
+        assertEquals(200, res.statusCode(), "Status code for update");
+        return res;
     }
 
     private void removeTestDoc(String id) {
-        testEndpoint.send(testEndpoint
+        HttpResponse<String> res = testEndpoint.send(testEndpoint
                 .request("/document/v1/open/doc/docid/" + id.split(":")[4]) // id:open:doc::open/documentation/annotations.html
                 .DELETE());
+        assertEquals(200, res.statusCode(), "Status code for delete");
     }
 
     public String getTestDoc(String id) {
         HttpResponse<String> res = testEndpoint.send(testEndpoint
                 .request("/document/v1/open/doc/docid/" + id.split(":")[4])
                 .GET());
+        assertEquals(200, res.statusCode(), "Status code for get");
         return res.body();
     }
 
@@ -193,6 +199,7 @@ public class VespaDocSystemTest {
                 .request("/search/",
                         Map.of("yql", query,
                                 "timeout", timeout)));
+        assertEquals(200, res.statusCode(), "Status code for search");
         return res.body();
     }
 
@@ -200,6 +207,7 @@ public class VespaDocSystemTest {
         HttpResponse<String> res = testEndpoint.send(testEndpoint
                 .request("/document/v1/open/doc/docid/" + continuation)
                 .GET());
+        assertEquals(200, res.statusCode(), "Status code for visiting documents");
         return res.body();
     }
 
