@@ -96,6 +96,10 @@ schema doc {
       index: enable-bm25
     }
 
+    field title_token_ids type tensor<float>(d0[128])  {
+      indexing: summary|attribute
+    }
+
     field abstract type string {
       indexing: summary|index 
       summary: dynamic
@@ -324,36 +328,6 @@ schema doc {
     }
   }
 
-  rank-profile bm25t5-features inherits bm25t5 {
-    rank-properties {
-      term.numTerms: 25
-      fieldTermMatch.numTerms : 25
-    }
-    summary-features  {
-      bm25(title) bm25(abstract) bm25(body_text) bm25(abstract_t5) nativeRank(title) nativeRank(abstract) nativeRank(abstract_t5) attribute(has_full_text)
-      fieldLength(title) fieldLength(abstract) fieldLength(body_text) 
-      textSimilarity(abstract) 
-      textSimilarity(abstract).queryCoverage 
-      textSimilarity(abstract).fieldCoverage 
-      textSimilarity(title) 
-      textSimilarity(title).queryCoverage 
-      textSimilarity(title).fieldCoverage 
-      textSimilarity(abstract_t5)
-      textSimilarity(abstract_t5).queryCoverage
-      textSimilarity(abstract_t5).fieldCoverage
-      freshness(timestamp)
-      rawScore(specter_embedding)
-      rawScore(abstract_embedding)
-      rawScore(title_embedding)
-    }
-  }
-
-  rank-profile bm25t5-gbdt-1000 inherits bm25t5-features {
-    second-phase {
-      expression: lightgbm("lightgbm_model_full.json")
-      rerank-count:1000
-    }
-  }
 
   rank-profile freshness inherits default {
     first-phase {
