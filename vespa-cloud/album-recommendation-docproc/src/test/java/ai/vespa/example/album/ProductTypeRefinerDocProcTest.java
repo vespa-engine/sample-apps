@@ -1,11 +1,9 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
-
 import com.yahoo.container.StatisticsConfig;
 import com.yahoo.docproc.CallStack;
 import com.yahoo.docproc.DocprocService;
-
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
 import com.yahoo.docproc.jdisc.metric.NullMetric;
