@@ -13,7 +13,6 @@ import com.yahoo.document.DocumentOperation;
 import com.yahoo.document.DocumentPut;
 import com.yahoo.document.DocumentType;
 import com.yahoo.document.datatypes.Array;
-import com.yahoo.document.datatypes.FieldValue;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.statistics.StatisticsImpl;
 import org.junit.jupiter.api.Test;
