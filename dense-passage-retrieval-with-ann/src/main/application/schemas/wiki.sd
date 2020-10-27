@@ -108,7 +108,7 @@ schema wiki {
 
     second-phase {
       rerank-count: 5
-      expression: onnxModel(reader).relevance_logits
+      expression: sum(onnxModel(reader).relevance_logits)
     }
 
     summary-features {
