@@ -54,5 +54,4 @@ Because the package will be used by searcher and indexer, it is recommended to d
 
 Code licensed under the Apache 2.0 license. See LICENSE for terms.
 
-Note that only for contributions to the vespa-chinese-linguistics repository on the GitHub (https://github.com/kuipertan/vespa-chinese-linguistics),
-the contributors of them shall be deemed to have agreed to the CLA without individual written agreements.
+refer to the license of https://github.com/huaban/jieba-analysis
