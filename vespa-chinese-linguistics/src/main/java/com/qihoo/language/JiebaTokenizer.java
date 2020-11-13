@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.util.HashSet;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * This is not multithread safe.
@@ -30,33 +31,35 @@ import java.io.IOException;
  */
 public class JiebaTokenizer implements Tokenizer {
 
+    private final Set<String> stopwords;
     private final JiebaSegmenter segmenter;
-    private final HashSet<String> stopwords = new HashSet<>();
 
-    public JiebaTokenizer(DictsLocConfig cfg)  {
+    public JiebaTokenizer(DictsLocConfig config) {
+        this.stopwords = readStopwords(config);
         this.segmenter = new JiebaSegmenter();
-        String dict = cfg.dict();
-        if (dict.length() > 0){
-            File file = new File(dict);
-            if (file.exists()) {
-                String[] p = new String[]{dict};
-                this.segmenter.initUserDict(p);
-            }
+        if ( ! config.dict().isEmpty()) {
+            File dictionaryFile = new File(config.dict());
+            if ( ! dictionaryFile.exists())
+                throw new IllegalArgumentException("Failed initializing the Jieba tokenizer: " +
+                                                   "Could not read dictionary file '" + dictionaryFile + "'");
+            this.segmenter.initUserDict(new String[]{config.dict()});
         }
-        dict = cfg.stopwords();
-        if (dict.length() > 0){
-            File file = new File(dict);
-            if (file.exists()) {
-                try{
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                    String temp;
-                    while ((temp = bufferedReader.readLine()) != null) {
-                        stopwords.add(temp.trim());
-                    }
-                }
-                catch (IOException e) {
-                }
-            }
+
+    }
+
+    private Set<String> readStopwords(DictsLocConfig config) {
+        if (config.stopwords().isEmpty()) return Set.of();
+        File stopwordsFile = new File(config.stopwords());
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(stopwordsFile))) {
+            Set<String> stopwords = new HashSet<>();
+            String temp;
+            while ((temp = bufferedReader.readLine()) != null)
+                stopwords.add(temp.trim());
+            return Collections.unmodifiableSet(stopwords);
+        }
+        catch (IOException e) {
+            throw new IllegalArgumentException("Failed initializing the Jieba tokenizer: " +
+                                               "Could not read dictionary file '" + stopwordsFile + "'", e);
         }
     }
 
