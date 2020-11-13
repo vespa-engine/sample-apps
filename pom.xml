@@ -20,6 +20,7 @@
         <module>tensor-playground</module>
         <module>text-search</module>
         <module>use-case-shopping</module>
+        <module>vespa-chinese-linguistics</module>
         <module>vespa-cloud/album-recommendation-searcher</module>
         <module>vespa-cloud/album-recommendation-docproc</module>
         <module>vespa-cloud/cord-19-search</module>

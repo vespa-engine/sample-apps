@@ -1,0 +1,5 @@
+package=com.qihoo.language.jieba
+
+dict	string	default=""
+stopwords	string	default=""
+synom	string default=""
