@@ -37,19 +37,19 @@ public class JiebaTokenizer implements Tokenizer {
     public JiebaTokenizer(DictsLocConfig config) {
         this.stopwords = readStopwords(config);
         this.segmenter = new JiebaSegmenter();
-        if ( ! config.dict().isEmpty()) {
-            File dictionaryFile = new File(config.dict());
+        if ( ! config.dictionaryPath().isEmpty()) {
+            File dictionaryFile = new File(config.dictionaryPath());
             if ( ! dictionaryFile.exists())
                 throw new IllegalArgumentException("Failed initializing the Jieba tokenizer: " +
                                                    "Could not read dictionary file '" + dictionaryFile + "'");
-            this.segmenter.initUserDict(new String[]{config.dict()});
+            this.segmenter.initUserDict(new String[]{config.dictionaryPath()});
         }
 
     }
 
     private Set<String> readStopwords(DictsLocConfig config) {
-        if (config.stopwords().isEmpty()) return Set.of();
-        File stopwordsFile = new File(config.stopwords());
+        if (config.stopwordsPath().isEmpty()) return Set.of();
+        File stopwordsFile = new File(config.stopwordsPath());
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(stopwordsFile))) {
             Set<String> stopwords = new HashSet<>();
             String temp;
