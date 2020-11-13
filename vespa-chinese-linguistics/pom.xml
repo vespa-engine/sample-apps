@@ -37,10 +37,19 @@
   </properties>
   
   <repositories>
+
     <repository>
       <id>Atilika Open Source repository</id>
       <url>http://www.atilika.org/nexus/content/repositories/atilika</url>
     </repository>
+
+    <!-- TODO: Remove this and the repo dir when jieba-analysis 1.0.3 becomes externally available -->
+    <repository>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/repo</url>
+    </repository>
+
   </repositories>
 
   <dependencies>
@@ -75,11 +84,11 @@
       <version>${guice.version}</version>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
-      <groupId>com.huaban.analysis</groupId>
-      <artifactId>jieba</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
+      <groupId>com.huaban</groupId>
+      <artifactId>jieba-analysis</artifactId>
+      <version>1.0.3</version>
     </dependency>
 
     <dependency>
@@ -108,7 +117,7 @@
         <version>${vespa.version}</version>
         <extensions>true</extensions>
         <configuration>
-          <bundleSymbolicName>${artifactId}</bundleSymbolicName>
+          <bundleSymbolicName>${project.artifactId}</bundleSymbolicName>
         </configuration>
       </plugin>
       <plugin>
