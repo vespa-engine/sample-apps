@@ -1,5 +1,8 @@
-package=com.qihoo.language.jieba
+package=com.qihoo.language.config
 
-dict	string	default=""
-stopwords	string	default=""
-synom	string default=""
+# The path to a stopwords file, or emopty if none
+stopwordsPath	string	default=""
+
+# The path to a dictionary file, or empty if none
+dictionaryPath	string	default=""
+

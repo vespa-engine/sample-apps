@@ -5,11 +5,11 @@
  * Author: Tanzhenghai
  */
 
-package com.qihoo.language.jieba;
+package com.qihoo.language;
 
 import com.google.inject.Inject;
-import com.yahoo.collections.Tuple2;
-import com.yahoo.component.Version;
+import com.qihoo.language.config.DictsLocConfig;
+import com.qihoo.language.JiebaTokenizer;
 import com.yahoo.language.Linguistics;
 import com.yahoo.language.detect.Detector;
 import com.yahoo.language.process.CharacterClasses;
@@ -23,14 +23,10 @@ import com.yahoo.language.process.Tokenizer;
 import com.yahoo.language.process.Transformer;
 import com.yahoo.language.simple.SimpleNormalizer;
 import com.yahoo.language.simple.SimpleTransformer;
-import com.yahoo.language.simple.SimpleToken;
 import com.yahoo.language.simple.SimpleDetector;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * Factory of jieba linguistic processor implementations.
- * Useful for 
  *
  * @author tanzhenghai 
  */
@@ -43,8 +39,6 @@ public class JiebaLinguistics implements Linguistics {
     private final CharacterClasses characterClasses;
     private final GramSplitter gramSplitter;
     private final Tokenizer tokenizer;
-    private final DictsLocConfig cfg;
-private static final Logger log = Logger.getLogger(JiebaLinguistics.class.getName());
 
     @Inject
     public JiebaLinguistics(DictsLocConfig config) {
@@ -53,8 +47,7 @@ private static final Logger log = Logger.getLogger(JiebaLinguistics.class.getNam
         this.detector = new SimpleDetector();
         this.characterClasses = new CharacterClasses();
         this.gramSplitter = new GramSplitter(characterClasses);
-        this.cfg = config;
-        this.tokenizer = new JiebaTokenizer(config, normalizer, transformer);
+        this.tokenizer = new JiebaTokenizer(config);
     }
 
     @Override
