@@ -1,15 +1,14 @@
 // Copyright 2020 Qihoo Corporation. Licensed under the terms of the Apache 2.0 license. 
 // Author: Tanzhenghai
 //
-package com.qihoo.language.jieba;
+package com.qihoo.language;
 
+import com.qihoo.language.config.DictsLocConfig;
 import com.yahoo.language.Language;
-import com.yahoo.language.LinguisticsCase;
-import com.yahoo.language.process.*;
-import com.yahoo.language.simple.SimpleNormalizer;
-import com.yahoo.language.simple.SimpleTransformer;
+import com.yahoo.language.process.StemMode;
+import com.yahoo.language.process.Token;
+import com.yahoo.language.process.Tokenizer;
 import com.yahoo.language.simple.SimpleToken;
-import com.yahoo.language.simple.kstem.KStemmer;
 import com.yahoo.language.process.TokenType;
 import com.huaban.analysis.jieba.SegToken;
 import com.huaban.analysis.jieba.JiebaSegmenter;
@@ -22,39 +21,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.util.HashSet;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.IOException;
 
 /**
- *
- * <p>This is not multithread safe.</p>
+ * This is not multithread safe.
  *
  * @author Tanzhenghai 
  */
 public class JiebaTokenizer implements Tokenizer {
 
-    private final static int SPACE_CODE = 32;
-    private final Normalizer normalizer;
-    private final Transformer transformer;
-    //private final KStemmer stemmer = new KStemmer();
-    private final DictsLocConfig cfg;
     private final JiebaSegmenter segmenter;
-    private final HashSet<String> stopwords = new HashSet<String>();
-    private static final Logger log = Logger.getLogger(JiebaTokenizer.class.getName());
+    private final HashSet<String> stopwords = new HashSet<>();
 
-    public JiebaTokenizer(DictsLocConfig dict) {
-        this(dict, new SimpleNormalizer(), new SimpleTransformer());
-    }
-
-    public JiebaTokenizer(DictsLocConfig dict, Normalizer normalizer) {
-        this(dict, normalizer, new SimpleTransformer());
-    }
-
-    public JiebaTokenizer(DictsLocConfig cfg, Normalizer normalizer, Transformer transformer)  {
-        this.cfg = cfg;
-        this.normalizer = normalizer;
-        this.transformer = transformer;
+    public JiebaTokenizer(DictsLocConfig cfg)  {
         this.segmenter = new JiebaSegmenter();
         String dict = cfg.dict();
         if (dict.length() > 0){
@@ -70,12 +49,13 @@ public class JiebaTokenizer implements Tokenizer {
             if (file.exists()) {
                 try{
                     BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                    String temp = null;
+                    String temp;
                     while ((temp = bufferedReader.readLine()) != null) {
                         stopwords.add(temp.trim());
                     }
                 }
-                catch (IOException e) {}
+                catch (IOException e) {
+                }
             }
         }
     }
@@ -85,21 +65,13 @@ public class JiebaTokenizer implements Tokenizer {
         if (input.isEmpty()) return Collections.emptyList();
 
         List<Token> tokens = new ArrayList<>();
-
-        List<SegToken> tks = segmenter.process(input, SegMode.INDEX);
-        for (SegToken tk : tks){
-            if (stopwords.contains(tk.word)) continue;
-            tokens.add(new SimpleToken(tk.word).setOffset(tk.startOffset)
-                                            .setType(TokenType.ALPHABETIC)
-                                            .setTokenString(tk.word));
+        for (SegToken token : segmenter.process(input, SegMode.INDEX)){
+            if (stopwords.contains(token.word)) continue;
+            tokens.add(new SimpleToken(token.word).setOffset(token.startOffset)
+                                                  .setType(TokenType.ALPHABETIC)
+                                                  .setTokenString(token.word));
         }	
-
-        log.log(Level.FINE, () -> "final tokens are: "+ tokens);
         return tokens;
-    }
-
-    private String processToken(String token, Language language, StemMode stemMode, boolean removeAccents) {
-        return "";
     }
 
 }

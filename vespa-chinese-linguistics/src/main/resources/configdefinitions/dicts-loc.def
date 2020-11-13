@@ -1,4 +1,4 @@
-package=com.qihoo.language.jieba
+package=com.qihoo.language.config
 
 dict	string	default=""
 stopwords	string	default=""
