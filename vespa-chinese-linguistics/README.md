@@ -42,8 +42,8 @@ Because the package will be used by searcher and indexer, it is recommended to d
 <container id="mycontainer" version="1.0">
     <component id="com.qihoo.language.jieba.JiebaLinguistics" bundle="chinese-linguistics" >
       <config name="com.qihoo.language.jieba.dicts-loc">
-      <dict>/opt/vespa/conf/dict</dict>
-      <stopwords>/opt/vespa/conf/stopwords</stopwords>
+      <dictionaryPath>/opt/vespa/conf/dict</dictionaryPath>
+      <stopwordsPath>/opt/vespa/conf/stopwords</stopwords>
       </config>
     </component>
   </container>
