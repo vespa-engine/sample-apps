@@ -5,7 +5,7 @@ Refer to the [Quick Start](http://cloud.vespa.ai/vespa-cloud-quick-start) to try
 
 <p>
 This application ranks music albums using a user profile:
-Albums with scores for a set of categories asre matched with a user's preference.
+Albums with scores for a set of categories are matched with a user's preference.
 </p>
 
 <p>
