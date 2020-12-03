@@ -1,8 +1,8 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-# Vespa sample application - transformers
+# Vespa sample application - Transformers
 
-This sample application is a small example of using transformers for ranking
+This sample application is a small example of using Transformers for ranking
 using a small sample from the MS MARCO data set.
 
 **Clone the sample:**
@@ -17,31 +17,41 @@ $ cd $APP_DIR
 
 <pre data-test="exec">
 $ pip3 install -qqq --upgrade pip
-$ pip3 install -qqq torch transformers
+$ pip3 install -qqq torch transformers onnx onnxruntime
 </pre>
 
 **Set up the application package**:
 
-This downloads the transformer model, converts it to an ONNX model and
-puts it in the `models` directory. Additionally, since we use this model
-for sequence classification, we need to extract two extra tensors for a
-linear model on top of the transformer and add them as constants. For
-this sample we use a fairly small model:
+This downloads the transformer model, converts it to an ONNX model and puts it
+in the `files` directory. For this sample application, we use a standard
+BERT-base model (12 layers, 110 million parameters), however other
+[Transformers models](https://huggingface.co/transformers/index.html) can be
+used. To export other models, for instance DistilBERT or ALBERT, change the
+code in "src/python/setup-model.py". However, this sample application
+contains a `WordPiece` tokenizer, so if the Transformer model requires a
+different tokenizer, you would have to add that yourself.
 
 <pre data-test="exec">
-$ MODEL_NAME="nboost/pt-tinybert-msmarco"
-$ ./bin/setup-ranking-model.sh $MODEL_NAME
+$ ./bin/setup-ranking-model.sh
+</pre>
+
+**Build the application package:**
+
+This sample application contains a Java `WordPiece` tokenizer which is
+invoked during document feeding and query handling. This compiles and
+packages the Vespa application:
+
+<pre data-test="exec">
+$ mvn clean package
 </pre>
 
 **Create data feed:**
 
 Convert from MS MARCO to a Vespa feed. Here we extract from sample data.
-To use the entire MS MARCO data set, use the download script. For this
-sample application, we feed in pre-tokenized documents, meaning that
-tokenization is done outside of Vespa.
+To use the entire MS MARCO data set, use the download script.
 
 <pre data-test="exec">
-$ ./bin/convert-msmarco.sh $MODEL_NAME
+$ ./bin/convert-msmarco.sh
 </pre>
 
 **Start Vespa:**
@@ -60,7 +70,7 @@ $ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationSt
 **Deploy the application:**
 
 <pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /app/src/main/application && \
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /app/target/application.zip && \
     /opt/vespa/bin/vespa-deploy activate'
 </pre>
 
@@ -79,12 +89,11 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 
 **Test the application:**
 
-This script reads from the MS MARCO queries and tokenizes the
-queries based on the transformer model and uses the tokens to
-query Vespa:
+This script reads from the MS MARCO queries and issues a
+query to Vespa:
 
 <pre data-test="exec" data-test-assert-contains="children">
-$ ./src/python/evaluate.py $MODEL_NAME
+$ ./src/python/evaluate.py
 </pre>
 
 **Shutdown and remove the container:**

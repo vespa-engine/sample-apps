@@ -3,23 +3,41 @@
 
 <services version="1.0">
 
-  <container id="transformers" version="1.0">
+  <container id="default" version="1.0">
     <document-api/>
-    <search/>
-    <document-processing/>
+
+    <component id="ai.vespa.tokenizer.WordPieceTokenizer" bundle="transformers">
+      <config name="ai.vespa.tokenizer.vocabulary">
+        <vocabulary>files/bert-base-uncased-vocab.txt</vocabulary>
+      </config>
+    </component>
+
+    <document-processing>
+      <chain id="transformer-processing" inherits="indexing">
+        <documentprocessor id="ai.vespa.processor.TransformerProcessor" bundle="transformers"/>
+      </chain>
+    </document-processing>
+
+    <search>
+      <chain id="transformer" inherits="vespa">
+        <searcher id="ai.vespa.searcher.TransformerSearcher" bundle="transformers"/>
+      </chain>
+    </search>
   </container>
 
-  <content id="msmarco" version="1.0">
-    <redundancy reply-after='1'>1</redundancy>
 
+  <content id='msmarco' version='1.0'>
+    <search>
+      <visibility-delay>1</visibility-delay>
+    </search>
+    <redundancy>1</redundancy>
     <documents>
       <document type='msmarco' mode="index"/>
+      <document-processing cluster="default" chain="transformer-processing" />
     </documents>
-
     <nodes>
-      <node distribution-key='0' hostalias='node1'/>
+      <node hostalias="node1" distribution-key="0" />
     </nodes>
-
     <engine>
       <proton>
         <tuning>
@@ -31,7 +49,6 @@
         </tuning>
       </proton>
     </engine>
-
   </content>
 
 </services>
