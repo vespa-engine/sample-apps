@@ -27,24 +27,21 @@ schema msmarco {
 
     }
 
-    fieldset content {
+    fieldset default {
         fields: title, body
     }
 
-    constant sequence_classification_weights {
-        file: constants/seq_weights.json
-        type: tensor<float>(d1[2],d2[312])
-    }
-
-    constant sequence_classification_bias {
-        file: constants/seq_bias.json
-        type: tensor<float>(d1[2])
+    onnx-model rank_model {
+        file: files/ranking_model.onnx
+        input input_ids: input_ids
+        input attention_mask: attention_mask
+        input token_type_ids: token_type_ids
     }
 
     rank-profile transformer {
 
         constants {
-            TOKEN_NONE: 0   # Need to wait for version >= 7.245.8 to actually use these
+            TOKEN_NONE: 0
             TOKEN_CLS: 101
             TOKEN_SEP: 102
         }
@@ -67,7 +64,7 @@ schema msmarco {
                     if (d1 == 0,
                         TOKEN_CLS,  # 101
                     if (d1 < input_length + 1,
-                        query(input){d0:0, d1:(d1-1)},
+                        query(input){d0:(d1-1)},
                     if (d1 == input_length + 1,
                         TOKEN_SEP,  # 102
                     if (document_length + input_length > 126,
@@ -96,41 +93,16 @@ schema msmarco {
             expression: map(input_ids, f(a)(a > 0))
         }
 
-        # The ranking model.
-        function rankmodel() {
-            expression: onnx("rankmodel.onnx", "default", "output_1")
-        }
-
-        # Use the extra tensors exported from the
-        # AutoModelForSequenceClassification to linearly transform model output
-        function transform_for_sequence_classification() {
-            expression {
-                join(
-                    matmul(
-                        constant(sequence_classification_weights),
-                        rename(rankmodel, d1, d2),  # output has dimensions d0[1],d1[128].
-                        d2
-                    ),
-                    constant(sequence_classification_bias),
-                    f(a,b)(a + b)
-                )
-            }
-        }
-
-        # Classify sequence by doing a softmax over the linear transform
-        function classify_sequence() {
-            expression: softmax(transform_for_sequence_classification, d1)
-        }
-
         # Use BM25 as a first phase
         first-phase {
             expression: bm25(title) + bm25(body)
         }
 
+        # The output of this model is a tensor of size ["batch", 2]
         # Use the probability of the positive sequence classification class as rank score
         second-phase {
             rerank-count: 10
-            expression: classify_sequence{d1:1}
+            expression: onnx(rank_model){d0:0,d1:1}
         }
 
     }
