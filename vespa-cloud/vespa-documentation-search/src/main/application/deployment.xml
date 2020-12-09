@@ -1,4 +1,5 @@
 <deployment version="1.0">
+    <upgrade policy="canary"/>
     <instance id="default">
 
         <prod>
