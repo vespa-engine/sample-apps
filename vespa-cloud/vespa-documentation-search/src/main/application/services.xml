@@ -13,7 +13,7 @@
     </container>
 
     <content id="documentation" version="1.0">
-        <redundancy>1</redundancy>
+        <redundancy>2</redundancy>
         <documents>
             <document mode="index" type="doc"/>
         </documents>
