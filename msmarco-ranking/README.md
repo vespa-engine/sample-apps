@@ -2,7 +2,8 @@
 
 # Vespa sample application - MS Marco Passage and Document Ranking 
 
-This is work in progress. We will soon publish sample app to reproduce this work. 
+This is work in progress. We will soon publish sample app to reproduce this work.  This is the baseline model for MS Marco Document Ranking. We will add
+more Neural Ranking features but this is the first baseline model using traditional lexical ranking.
 
 # Document Schema 
 
