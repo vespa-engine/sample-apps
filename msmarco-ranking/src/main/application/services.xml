@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version='1.0'> 
+
+  <container id='default' version='1.0'>
+     <nodes>
+      <node hostalias="node1" />
+    </nodes>
+    <search>
+      <chain id="docranking" inherits="vespa">
+        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+      </chain>
+    </search>
+    <document-api/>
+    <document-processing/>
+  </container>
+
+  <content id='msmarco' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='doc'/>
+      <document-processing cluster="default"/> 
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+           <requestthreads>
+            <persearch>12</persearch>
+           </requestthreads>
+           <feeding>
+            <concurrency>1.0</concurrency>
+          </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+</services>
