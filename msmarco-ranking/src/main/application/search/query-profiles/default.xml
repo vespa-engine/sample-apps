@@ -1,0 +1,7 @@
+<query-profile id="default">
+ <field name="hits">5</field>
+ <field name="maxHits">1000</field>
+ <field name="maxOffset">1000</field> 
+ <field name="timeout">5s</field>
+ <field name="searchChain">docranking</field>
+</query-profile>
