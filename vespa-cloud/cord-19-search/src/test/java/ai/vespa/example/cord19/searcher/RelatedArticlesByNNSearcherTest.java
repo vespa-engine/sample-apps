@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RelatedArticlesByNNSearcherTest {
 
     private final String titleNNItem =
-            "NEAREST_NEIGHBOR {field=title_embedding,queryTensorName=title_vector,hnsw.exploreAdditionalHits=0,approximate=true,targetHits=100}";
+            "NEAREST_NEIGHBOR {field=title_embedding,queryTensorName=title_vector,hnsw.exploreAdditionalHits=0,distanceThreshold=Infinity,approximate=true,targetHits=100}";
 
     private final String abstractNNItem =
-            "NEAREST_NEIGHBOR {field=abstract_embedding,queryTensorName=abstract_vector,hnsw.exploreAdditionalHits=0,approximate=true,targetHits=100}";
+            "NEAREST_NEIGHBOR {field=abstract_embedding,queryTensorName=abstract_vector,hnsw.exploreAdditionalHits=0,distanceThreshold=Infinity,approximate=true,targetHits=100}";
 
     private final String specterNNItem =
-            "NEAREST_NEIGHBOR {field=specter_embedding,queryTensorName=specter_vector,hnsw.exploreAdditionalHits=0,approximate=true,targetHits=100}";
+            "NEAREST_NEIGHBOR {field=specter_embedding,queryTensorName=specter_vector,hnsw.exploreAdditionalHits=0,distanceThreshold=Infinity,approximate=true,targetHits=100}";
 
     @Test
     public void testNoopIfNoRelated_to() {
