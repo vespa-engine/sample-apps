@@ -55,8 +55,6 @@ def train_epoch(model, sample_data, epoch, optimizer, criterion):
         # get the inputs - data is a user_id and news_id which looks up the embedding, and a label
         user_ids, news_ids, _, _, _, labels = batch
 
-        # noe cuda greier her?
-
         # zero to parameter gradients
         optimizer.zero_grad()
 

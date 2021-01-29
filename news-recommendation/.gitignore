@@ -1,0 +1,4 @@
+mind/
+__pycache__/
+*.pyc
+.idea
