@@ -46,4 +46,5 @@ jobs:
            -Dbranch="$(git rev-parse --abbrev-ref HEAD)" \
            -Dcommit="$(git rev-parse HEAD)" \
            -DauthorEmail="$(git log -1 --format=%aE)" \
+           -DsourceUrl=$(git config --get remote.origin.url) \
            -DapiKey="${VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY}"
