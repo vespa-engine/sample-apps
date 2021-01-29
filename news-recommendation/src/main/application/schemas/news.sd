@@ -1,0 +1,53 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema news {
+    document news {
+
+        field category type string {
+            indexing: summary | attribute
+        }
+        field subcategory type string {
+            indexing: summary | attribute
+        }
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field abstract type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field body type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field url type string {
+            indexing: index | summary
+        }
+        field date type int {
+            indexing: summary | attribute
+        }
+        field clicks type int {
+            indexing: summary | attribute
+        }
+        field impressions type int {
+            indexing: summary | attribute
+        }
+        field embedding type tensor<float>(d0[51]) {
+            indexing: summary | attribute
+        }
+
+    }
+
+    fieldset default {
+        fields: title, abstract, body
+    }
+
+    rank-profile dot_prod {
+        first-phase {
+            expression: sum(query(user_embedding) * attribute(embedding))
+        }
+    }
+
+
+}
