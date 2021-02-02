@@ -110,7 +110,7 @@ public class VespaDocSystemTest {
 
     /**
      * Feed Test documents using Vespa Put
-     * @see <a href="https://docs.vespa.ai/documentation/reference/document-v1-api-reference.html">document-v1-api-reference</a>
+     * @see <a href="https://docs.vespa.ai/en/reference/document-v1-api-reference.html">document-v1-api-reference</a>
      */
     public void feedTestDocs(String testDocs) throws IOException {
         JsonNode docs = mapper.readTree(VespaDocSystemTest.class.getResourceAsStream(testDocs));

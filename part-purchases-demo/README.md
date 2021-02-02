@@ -2,7 +2,7 @@ __<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0
 # Vespa sample applications - Part Purchases Demo
 
 A sample Vespa application to assist with with learning how to group according to the
-[Grouping Guide](https://docs.vespa.ai/documentation/grouping.html)
+[Grouping Guide](https://docs.vespa.ai/en/grouping.html)
 
 
 **Check-out, compile and run:**

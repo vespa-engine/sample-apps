@@ -2,16 +2,16 @@
 # Vespa sample applications - album recommendations docproc
 
 Data written to Vespa pass through document processing,
-where [indexing](https://docs.vespa.ai/documentation/indexing.html) is one example.
+where [indexing](https://docs.vespa.ai/en/indexing.html) is one example.
 
 Applications can add custom processing, normally done before indexing.
-This is done by adding a [Document Processor](https://docs.vespa.ai/documentation/document-processing.html).
+This is done by adding a [Document Processor](https://docs.vespa.ai/en/document-processing.html).
 Such processing is synchronous, and this is problematic for processing
 that requires other resources with high latency -
 this can saturate the threadpool.
 
 This application demonstrates how to use _Progress.LATER_
-and the asynchronous [Document API](https://docs.vespa.ai/documentation/document-api-guide.html)
+and the asynchronous [Document API](https://docs.vespa.ai/en/document-api-guide.html)
 
 Summary:
 - Document Processors: modify / enrich data in the feed pipeline

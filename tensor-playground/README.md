@@ -6,7 +6,7 @@ Once deployed, try the Tensor Playground:
 
     http://localhost:8080/playground/index.html
 
-Find tensor math examples in the [Tensor User Guide](https://docs.vespa.ai/documentation/tensor-user-guide.html#tensor-examples).
+Find tensor math examples in the [Tensor User Guide](https://docs.vespa.ai/en/tensor-user-guide.html#tensor-examples).
 
 <hr/>
 

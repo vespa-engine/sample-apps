@@ -23,7 +23,7 @@ It uses the [MS Marco](http://www.msmarco.org/) dataset.
 ### semantic-qa-retrieval
 [semantic-qa-retrieval](semantic-qa-retrieval) takes text search to the next level using the
 [Stanford Question Answering Dataset (SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/),
-text embeeddings and [tensor ranking](https://docs.vespa.ai/documentation/reference/tensor.html).
+text embeeddings and [tensor ranking](https://docs.vespa.ai/en/reference/tensor.html).
 This sample app demonstrates how to return answers to questions.
 
 
@@ -39,7 +39,7 @@ basic-search-*: Simple application that can be deployed in different environment
 
 <!--
 [travis](travis)
-[part-purchases-demo](part-purchases-demo): A sample Vespa application to assist with with learning how to group according to the [Grouping Guide](https://docs.vespa.ai/documentation/grouping.html).
+[part-purchases-demo](part-purchases-demo): A sample Vespa application to assist with with learning how to group according to the [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
 [generic-request-processing](generic-request-processing)
 http-api-using-*
 -->
@@ -47,7 +47,7 @@ http-api-using-*
 ----
 
 Note: Applications with _pom.xml_ must be built before being deployed.
-Refer to [vespa plugins](http://docs.vespa.ai/documentation/vespa-plugins.html) for more information.
+Refer to [vespa plugins](https://docs.vespa.ai/en/vespa-plugins.html) for more information.
 
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md)
 to the Vespa sample applications.

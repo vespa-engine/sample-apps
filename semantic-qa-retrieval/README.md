@@ -3,9 +3,9 @@
 # Vespa sample application - Semantic Retrieval for Question-Answer Applications 
 
 This sample application contains code, document schema and dependencies for running 
-examples from https://docs.vespa.ai/documentation/semantic-qa-retrieval.html. 
+examples from https://docs.vespa.ai/en/semantic-qa-retrieval.html. 
 
-The sample application uses Vespa's [Approximate Nearest Neighbor Search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html) support. 
+The sample application uses Vespa's [Approximate Nearest Neighbor Search](https://docs.vespa.ai/en/approximate-nn-hnsw.html) support. 
  
 We use ANN to build a semantic end-to-end answer retrieval system building on the methodology 
 described in the [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) paper released by Google
@@ -54,7 +54,7 @@ One can explore the questions and the labeled answers [here](https://rajpurkar.g
 * Operating system: macOS or Linux, Architecture: x86_64
 * Minimum 6GB memory dedicated to Docker (the default is 2GB on Macs).
  
-See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html). This setup is slightly different then the official quick start guide as we build a custom docker image
+See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html). This setup is slightly different then the official quick start guide as we build a custom docker image
 with the tensorflow dependencies.
 
 **Checkout the sample-apps repository**
@@ -99,7 +99,7 @@ context documents (The paragraphs).
 
 **Feed Vespa json** 
 
-We feed the documents using the [Vespa http feeder client](https://docs.vespa.ai/documentation/vespa-http-client.html):
+We feed the documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
 <pre>
 $ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file squad_vespa_feed.json --endpoint http://localhost:8080 
 </pre>
@@ -109,7 +109,7 @@ $ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --f
 The evaluation script runs all questions produced by the convertation script and for each question it executes different recall and ranking strategies and finally it computes the 
 [mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_ and the Recall@1,Recall@5 and Recall@10 metrics. 
 
-The evaluations script uses the [Vespa query api](https://docs.vespa.ai/documentation/query-api.html)
+The evaluations script uses the [Vespa query api](https://docs.vespa.ai/en/query-api.html)
 
 Running the _evaluation.py_ script:
 
