@@ -23,14 +23,14 @@ It uses the [MS Marco](http://www.msmarco.org/) dataset.
 ### semantic-qa-retrieval
 [semantic-qa-retrieval](semantic-qa-retrieval) takes text search to the next level using the
 [Stanford Question Answering Dataset (SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/),
-text embeeddings and [tensor ranking](https://docs.vespa.ai/en/reference/tensor.html).
+text embeddings and [tensor ranking](https://docs.vespa.ai/en/reference/tensor.html).
 This sample app demonstrates how to return answers to questions.
 
 
 ## Detailed sample applications
 [model-evaluation](model-evaluation): A sample Vespa application which demonstrates Stateless ML Model Evaluation.
 
-[boolean-search](boolean-search): Learn how to use prediate fields to implement boolean indexing.
+[boolean-search](boolean-search): Learn how to use predicate fields to implement boolean indexing.
 I.e. how to express in a document a range of values to match, like _"this fits readers in age range 20 to 30"_.
 
 [multiple-bundles](multiple-bundles): Build a Java application using components and dependencies in other bundles (jars). 
