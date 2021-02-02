@@ -27,6 +27,5 @@
         <module>dense-passage-retrieval-with-ann</module>
         <module>msmarco-ranking</module>
         <module>transformers</module>
-        <module>vespa-chinese-linguistics</module>
     </modules>
 </project>
