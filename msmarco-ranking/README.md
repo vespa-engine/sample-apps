@@ -56,12 +56,12 @@ For each positive relevant document we sample 50 negatives from the top-k retrie
 linear combination of 
 bm25 scores for body text, doc_t5_query, title and url. In total 330,302 queries from the training set is used and 16,845,191 total number of data points. 
 We use the efficient
-[Vespa WeakAnd](https://docs.vespa.ai/documentation/using-wand-with-vespa.html) implementation to retrieve efficiently. 
+[Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html) implementation to retrieve efficiently. 
 
-We handpick 15 [ranking features](https://docs.vespa.ai/documentation/reference/rank-features.html)  which are generally cheap to compute except 
+We handpick 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html)  which are generally cheap to compute except 
 nativeProximity but we limit it to the rather short title field. We don't do any type of feature normalization or selection except from what LightGBM does. 
 
-We use LightGBM to train our model since Vespa has great support for GBDT models ([LightGBM](https://docs.vespa.ai/documentation/lightgbm.html), [XGBoost](https://docs.vespa.ai/documentation/xgboost.html)). 
+We use LightGBM to train our model since Vespa has great support for GBDT models ([LightGBM](https://docs.vespa.ai/en/lightgbm.html), [XGBoost](https://docs.vespa.ai/en/xgboost.html)). 
 We tune hyper parameters by observing the performance
 on the development set. We end up with the following hyper parameters and we train for up to 1K iterations with early stopping after 50 iterations if the held out dev set performance does not improve:
 <pre>
@@ -160,7 +160,7 @@ Requirements:
 * Java 11, Maven and python3 installed
 * Operating system: macOS or Linux, Architecture: x86_64
 
-See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html).
+See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
 First, we retrieve the sample app:
 
@@ -207,7 +207,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 ## Feeding Sample Data 
 
 Feed sample data. We feed the documents using the [Vespa http feeder
-client](https://docs.vespa.ai/documentation/vespa-http-client.html):
+client](https://docs.vespa.ai/en/vespa-http-client.html):
 
 <pre data-test="exec">
 $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \

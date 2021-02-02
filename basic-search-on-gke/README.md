@@ -2,9 +2,9 @@
 # Vespa basic search example on GKE
 
 Please refer to
-[Vespa quick start using Docker](http://docs.vespa.ai/documentation/vespa-quick-start.html)
+[Vespa quick start using Docker](https://docs.vespa.ai/en/vespa-quick-start.html)
 for more information on the basic single container example.
-Also see [Vespa quick start using Kubernetes](https://docs.vespa.ai/documentation/vespa-quick-start-kubernetes.html).
+Also see [Vespa quick start using Kubernetes](https://docs.vespa.ai/en/vespa-quick-start-kubernetes.html).
 
 This example assumes that a you already created a Google project, you have the gcloud command line and kubectl installed.
 If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/quickstart).

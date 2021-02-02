@@ -9,7 +9,7 @@
         and to process search queries and results (searchers).
 
         See:
-          - Reference: https://docs.vespa.ai/documentation/reference/services-container.html
+          - Reference: https://docs.vespa.ai/en/reference/services-container.html
     -->
     <container id="default" version="1.0">
         <!--
@@ -21,8 +21,8 @@
             to the content cluster.
 
             See:
-             - Reference: https://docs.vespa.ai/documentation/reference/services-container.html#document-api
-             - Operations: https://docs.vespa.ai/documentation/document-api.html
+             - Reference: https://docs.vespa.ai/en/reference/services-container.html#document-api
+             - Operations: https://docs.vespa.ai/en/document-api.html
         -->
         <document-api />
 
@@ -32,8 +32,8 @@
             will do chained processing of both queries and results.
 
             See:
-             - Reference: https://docs.vespa.ai/documentation/search-api.html
-             - Searchers: https://docs.vespa.ai/documentation/searcher-development.html
+             - Reference: https://docs.vespa.ai/en/search-api.html
+             - Searchers: https://docs.vespa.ai/en/searcher-development.html
         -->
         <search>
             <chain id="metalchain" inherits="vespa">
@@ -64,7 +64,7 @@
         and distributed across the nodes in the cluster.
 
         See:
-          - Reference: https://docs.vespa.ai/documentation/reference/services-content.html
+          - Reference: https://docs.vespa.ai/en/reference/services-content.html
     -->
     <content id="music" version="1.0">
         <redundancy>1</redundancy>

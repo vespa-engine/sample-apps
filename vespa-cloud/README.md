@@ -6,10 +6,10 @@ This is the intro application to Vespa.
 * Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation).
 * [album-recommendation-searcher](album-recommendation-searcher)
   is an introduction for how to integrate Java code to process queries.
-  This is a good first app for writing [Vespa plugins](https://docs.vespa.ai/documentation/vespa-plugins.html).
+  This is a good first app for writing [Vespa plugins](https://docs.vespa.ai/en/vespa-plugins.html).
 * [album-recommendation-docproc](album-recommendation-docproc)
   is an introduction to asynchronous document processing
-  using the Java [Document API](https://docs.vespa.ai/documentation/document-api-guide.html).
+  using the Java [Document API](https://docs.vespa.ai/en/document-api-guide.html).
 
 ### cord-19-search
 [cord19.vespa.ai](https://cord19.vespa.ai/) is a is a full-featured application - see
@@ -21,7 +21,7 @@ This is the intro application to Vespa.
 refer to this for pointers on AWS integration / GitHub Actions automation.
 This sample app is a good start for [automated deployments](https://cloud.vespa.ai/automated-deployments),
 as it has system, staging and production test examples.
-It uses the [Document API](https://docs.vespa.ai/documentation/document-api-guide.html)
+It uses the [Document API](https://docs.vespa.ai/en/document-api-guide.html)
 both for regular PUT operations but also for UPDATE with _create-if-nonexistent_.
 
 
@@ -70,7 +70,7 @@ Expose ports as needed, like the metrics proxy port: http://localhost:19092/prom
 ----
 
 Note: Applications with _pom.xml_ must be built before being deployed.
-Refer to [getting started](https://docs.vespa.ai/documentation/getting-started.html) for more information.
+Refer to [getting started](https://docs.vespa.ai/en/getting-started.html) for more information.
 
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md)
 to the Vespa sample applications.

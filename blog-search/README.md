@@ -2,7 +2,7 @@
 # Vespa sample applications - blog search tutorial
 
 This sample application contains the code for the blog search tutorial. Refer to
-[Vespa tutorial pt.1 - Blog searching](http://docs.vespa.ai/documentation/tutorials/blog-search.html).
+[Vespa tutorial pt.1 - Blog searching](https://docs.vespa.ai/en/tutorials/blog-search.html).
 
 **Validate environment, should be 10G:**
 <pre>

@@ -5,5 +5,5 @@ A simple java.application that feeds data into the Album Recommendations applica
 
 
 Please refer to
-[Monitoring with Grafana quick start](https://docs.vespa.ai/documentation/monitoring-with-grafana-quick-start.html)
+[Monitoring with Grafana quick start](https://docs.vespa.ai/en/monitoring-with-grafana-quick-start.html)
 for more information.

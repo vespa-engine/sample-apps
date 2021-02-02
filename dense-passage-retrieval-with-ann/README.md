@@ -39,7 +39,7 @@ Requirements:
 * Java 11, Maven and python3 installed
 * Operating system: macOS or Linux, Architecture: x86_64
 
-See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html).
+See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
 First, we retrieve the sample app:
 
@@ -88,7 +88,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
 Feed sample data. We feed the documents using the [Vespa http feeder
-client](https://docs.vespa.ai/documentation/vespa-http-client.html):
+client](https://docs.vespa.ai/en/vespa-http-client.html):
 
 <pre data-test="exec">
 $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
@@ -143,7 +143,7 @@ $ python3 data/download_data.py  --resource data.retriever_results.nq.single.wik
 
 We join this data and create a Vespa feed file with one Vespa put document
 operation per line [Vespa json feed
-format](https://docs.vespa.ai/documentation/reference/document-json-format.html).
+format](https://docs.vespa.ai/en/reference/document-json-format.html).
 The scripts reads the entire Wikipedia passage into memory and reads one
 embedding file at a time and emits a join of the textual passage meta data with
 the precomputed DPR embedding.
@@ -205,7 +205,7 @@ $ python3 ./bin/evaluate_em.py NQ-open.dev.jsonl hybrid http://your-vespa-instan
 
 In the following section we describe the experiments we have performed with
 this setup, all experiments are done running queries via the [Vespa query
-api](https://docs.vespa.ai/documentation/query-api) and and checking the
+api](https://docs.vespa.ai/en/query-api) and and checking the
 predicted answer against the golden reference answer.
 
 <pre>
@@ -237,7 +237,7 @@ three different retrieval strategies:
 * **Dense** Using the DPR embeddings and Vespa's nearest neighbor search
   operator
 * **Sparse** Using the Vespa's
-  [weakAnd(WAND)](https://docs.vespa.ai/documentation/using-wand-with-vespa.html)
+  [weakAnd(WAND)](https://docs.vespa.ai/en/using-wand-with-vespa.html)
   query operator and using BM25(title) + BM25(text)
 * **Hybrid** Using a linear combination of the above and using OR to combine
   the weakAnd and nearestNeighbor search operator.
@@ -313,7 +313,7 @@ better accuracy as reported in the DPR paper.
   query input we can convert it into the embedding representation at user time.
 * The DPR query embedding representation is used as input to Vespa.ai's [fast
   approximate nearest neighbor
-  search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html) which
+  search](https://docs.vespa.ai/en/approximate-nn-hnsw.html) which
   enables fast computing the top-k matching passages in the embedding space.
 * The top-k retrieved passages (Using multiple different retrieval strategies)
   are re-ranked using Vespa's support for multi-tier retrieval and ranking with
@@ -412,7 +412,7 @@ the Wikipedia passage id as assigned in the pre-computed dataset published by
 Facebook Research.  The *text_embedding* tensor is a dense 769 dimensional
 tensor which represents the document (text and title) and we enable [HNSW index
 for fast approximate nearest neighbor
-search](https://docs.vespa.ai/documentation/approximate-nn-hnsw.html).
+search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
 
 The dual query and document encoder of the DPR retrieval system uses the inner
 dot product between the query tensor and the document tensor to represent the
@@ -430,18 +430,18 @@ when using [Faiss with HNSW index](https://github.com/facebookresearch/faiss).
 We can express our retrieval strategies by
 
 * A Vespa [search api
-  request](https://docs.vespa.ai/documentation/query-api.html) with a query
+  request](https://docs.vespa.ai/en/query-api.html) with a query
   specified using the [Vespa YQL query
-  language](https://docs.vespa.ai/documentation/reference/query-language-reference.html)
+  language](https://docs.vespa.ai/en/reference/query-language-reference.html)
   or we can build the query request programatically in a custom Searcher plugin
   written in Java. In this sample application we build the query retrieval
   trees using the latter approach.
-* A [ranking](https://docs.vespa.ai/documentation/ranking.html) specification
+* A [ranking](https://docs.vespa.ai/en/ranking.html) specification
   which controls how we score documents retrieved by the query.
 
 Vespa assigns rank score using ranking expressions, configured in a ranking
 profile in the document schema. The rank profile can also specify [multi-phased
-ranking](https://docs.vespa.ai/documentation/phased-ranking.html). Choosing
+ranking](https://docs.vespa.ai/en/phased-ranking.html). Choosing
 rank profile is a run time request parameter (ranking.profile).
 
 The ranking profile is also configured in the schema and our question answering

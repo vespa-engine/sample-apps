@@ -36,8 +36,8 @@ public class MetalSearcher extends Searcher {
      * <pre>MetalNamesConfig</pre> is automatically generated based on the
      * <pre>metal-names.def</pre> file found in resources/configdefinitions.
      * 
-     * @see https://docs.vespa.ai/documentation/jdisc/injecting-components.html
-     * @see https://docs.vespa.ai/documentation/reference/config-files.html#config-definition-files
+     * @see https://docs.vespa.ai/en/jdisc/injecting-components.html
+     * @see https://docs.vespa.ai/en/reference/config-files.html#config-definition-files
      * 
      * @param config The configuration object injected by the container.
      */
@@ -58,7 +58,7 @@ public class MetalSearcher extends Searcher {
      * manipulate both the Query object and the Result object before passing it
      * further in the chain.
      * 
-     * @see https://docs.vespa.ai/documentation/searcher-development.html
+     * @see https://docs.vespa.ai/en/searcher-development.html
      */
     @Override
     public Result search(Query query, Execution execution) {

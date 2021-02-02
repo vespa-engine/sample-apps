@@ -2,7 +2,7 @@
 # Vespa sample applications - blog recommendation tutorial
 
 This sample application contains the code for the blog recommendation tutorial. Refer to
-[Vespa tutorial pt.2 - Blog recommendation](http://docs.vespa.ai/documentation/tutorials/blog-recommendation.html).
+[Vespa tutorial pt.2 - Blog recommendation](https://docs.vespa.ai/en/tutorials/blog-recommendation.html).
 
 ### Executable example
 **Validate environment, should be 10G:**
