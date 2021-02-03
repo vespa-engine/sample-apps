@@ -43,7 +43,7 @@ Note JSON-P being used (_jsoncallback=_) - this simplifies the search result pag
 
 ## Vespa Cloud Development and Deployments
 This is a Vespa Cloud application and has hence implemented
-[automated deployments](https://cloud.vespa.ai/automated-deployments).
+[automated deployments](https://cloud.vespa.ai/en/automated-deployments).
 
 The feed can contain an array of links from each document.
 The [OutLinksDocumentProcessor](src/main/java/ai/vespa/cloud/docsearch/OutLinksDocumentProcessor.java)
