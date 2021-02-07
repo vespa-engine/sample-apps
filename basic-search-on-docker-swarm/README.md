@@ -21,7 +21,7 @@ $ VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
 </pre>
 **Deploy the Vespa stack:**
 <pre data-test="exec">
-$ docker stack deploy -c $VESPA_SAMPLE_APP/docker-compose.yml vespa
+$ docker stack deploy --orchestrator swarm --compose-file docker-compose.yml vespa
 </pre>
 **Wait for successful deployment of the stack:**
 <pre data-test="exec">
