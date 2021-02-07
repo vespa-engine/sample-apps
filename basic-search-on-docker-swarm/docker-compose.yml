@@ -11,10 +11,10 @@ services:
         published: 19071
         mode: host
     networks:
-       - net
+      - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
   cfg2:
     image: vespaengine/vespa
@@ -22,10 +22,10 @@ services:
     environment:
       - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
     networks:
-       - net
+      - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
   cfg3:
     image: vespaengine/vespa
@@ -33,10 +33,10 @@ services:
     environment:
       - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
     networks:
-       - net
+      - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
   container:
     image: vespaengine/vespa
@@ -52,10 +52,10 @@ services:
         published: 8080
         mode: host
     networks:
-       - net
+      - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
   content:
     image: vespaengine/vespa
@@ -67,10 +67,10 @@ services:
        mode: replicated
        replicas: 3
     networks:
-       - net
+      - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
 volumes:
   data:
@@ -85,4 +85,3 @@ networks:
   net:
     driver: overlay
     attachable: true
-
