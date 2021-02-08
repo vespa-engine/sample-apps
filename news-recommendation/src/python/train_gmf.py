@@ -32,23 +32,20 @@ adam_lr = 1e-3
 l2_regularization = 0  # 1e-5
 
 
-class GMF(torch.nn.Module):
+class MF(torch.nn.Module):
     def __init__(self, num_users, num_items, embedding_size):
-        super(GMF, self).__init__()
+        super(MF, self).__init__()
         self.user_embeddings = torch.nn.Embedding(num_embeddings=num_users, embedding_dim=embedding_size)
         self.news_embeddings = torch.nn.Embedding(num_embeddings=num_items, embedding_dim=embedding_size)
-        self.linear = torch.nn.Linear(in_features=embedding_size, out_features=1)
-        self.logistic = torch.nn.Sigmoid()
 
     def forward(self, users, items):
         user_embeddings = self.user_embeddings(users)
         news_embeddings = self.news_embeddings(items)
-        product = torch.mul(user_embeddings, news_embeddings)
-        linear = self.linear(product)
-        return linear
+        dot_prod = torch.sum(torch.mul(user_embeddings, news_embeddings), 1)
+        return torch.sigmoid(dot_prod)
 
 
-def train_epoch(model, sample_data, epoch, optimizer, criterion):
+def train_epoch(model, sample_data, epoch, optimizer, loss_function):
     total_loss = 0
     for batch_num, batch in enumerate(sample_data):
 
@@ -60,7 +57,7 @@ def train_epoch(model, sample_data, epoch, optimizer, criterion):
 
         # forward + backward + optimize
         prediction = model(user_ids, news_ids)
-        loss = criterion(prediction.view(-1), labels)
+        loss = loss_function(prediction.view(-1), labels)
         loss.backward()
         optimizer.step()
 
@@ -71,7 +68,7 @@ def train_epoch(model, sample_data, epoch, optimizer, criterion):
 
 
 def train_model(model, data_loader):
-    criterion = torch.nn.BCEWithLogitsLoss()
+    loss_func = torch.nn.BCELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=adam_lr, weight_decay=l2_regularization)
     for epoch in range(epochs):
 
@@ -79,11 +76,15 @@ def train_model(model, data_loader):
         sample_data = data_loader.sample_training_data(batch_size, negative_sample_size)
 
         # train
-        train_epoch(model, sample_data, epoch, optimizer, criterion)
+        train_epoch(model, sample_data, epoch, optimizer, loss_func)
+
+        if epoch % 10 == 9:
+            eval_model(model, data_loader, train=True)
+            eval_model(model, data_loader)
 
 
-def eval_model(model, data_loader, sample_prob=1.0):
-    sample_data = data_loader.sample_valid_data(sample_prob)
+def eval_model(model, data_loader, sample_prob=1.0, train=False):
+    sample_data = data_loader.sample_valid_data(sample_prob, train=train)
     with torch.no_grad():
 
         all_predictions = []
@@ -137,12 +138,13 @@ def main():
     num_news = len(data_loader.news())
 
     # create model
-    model = GMF(num_users, num_news, embedding_size)
+    model = MF(num_users, num_news, embedding_size)
 
     # train model
     train_model(model, data_loader)
 
     # evaluate model
+    eval_model(model, data_loader, train=True)
     eval_model(model, data_loader)
 
     # save embeddings

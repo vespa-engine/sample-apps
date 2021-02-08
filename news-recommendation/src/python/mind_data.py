@@ -157,9 +157,10 @@ class MindData:
         random_sampler = RandomSampler(data_set, generator=generator)
         return DataLoader(data_set, batch_size=batch_size, sampler=random_sampler)
 
-    def sample_valid_data(self, prob=1.0):
+    def sample_valid_data(self, prob=1.0, train=False):
         data = []
-        for impression in self.valid_impressions:
+        impressions = self.train_impressions if train else self.valid_impressions
+        for impression in impressions:
             if random.random() <= prob:
                 news_indices = impression["news_indices"]
                 labels = impression["labels"]

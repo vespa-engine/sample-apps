@@ -6,9 +6,11 @@
   <container id="default" version="1.0">
     <document-api/>
     <search>
+      <!--
       <chain id='user' inherits='vespa'>
         <searcher bundle='news-recommendation' id='ai.vespa.example.UserProfileSearcher' />
       </chain>
+      -->
     </search>
   </container>
 
