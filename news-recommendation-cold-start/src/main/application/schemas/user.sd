@@ -1,0 +1,21 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema user {
+    document user {
+
+        field user_id type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field embedding type tensor<float>(d0[51]) {
+            indexing: summary | attribute
+        }
+
+        field has_read_items type array<string> {
+            indexing: summary | attribute
+        }
+
+    }
+
+}

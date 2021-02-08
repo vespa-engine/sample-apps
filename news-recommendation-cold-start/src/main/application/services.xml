@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+<services version="1.0">
+
+  <container id="default" version="1.0">
+    <document-api/>
+    <search>
+      <chain id='user' inherits='vespa'>
+        <searcher bundle='news-recommendation' id='ai.vespa.example.UserProfileSearcher' />
+      </chain>
+    </search>
+  </container>
+
+  <content id='mind' version='1.0'>
+    <search>
+      <visibility-delay>1</visibility-delay>
+    </search>
+    <redundancy>1</redundancy>
+    <documents>
+      <document type='news' mode="index"/>
+      <document type='user' mode="index"/>
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>
