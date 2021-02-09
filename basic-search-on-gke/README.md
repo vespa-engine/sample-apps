@@ -46,6 +46,9 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 $ curl -s "http://$(kubectl get service/vespa -o jsonpath='{.status.loadBalancer.ingress[*].ip}'):$(kubectl get service/vespa -o jsonpath='{.spec.ports[?(@.name=="container")].port}')/search/?query=michael" | python -m json.tool
 </pre>
 
+**Security notice**
+This script is just an example, it'll expose the master node to internet. For production purpose you should disable it according to [vespa security guidelines](https://docs.vespa.ai/en/securing-your-vespa-installation.html)
+
 **Congratulations! You have now deployed and tested a Vespa application on a multinode cluster.**
 **After you have finished testing the Vespa appplication excute the following to delete the cluster:** Replace CLUSTER_NAME and ZONE with your own values. By default `CLUSTER_NAME=vespa` and `ZONE=europe-west1-b`
 <pre data-test="after">
