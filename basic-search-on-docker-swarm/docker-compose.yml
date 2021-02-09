@@ -1,11 +1,11 @@
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 version: '3.7'
 services:
-  cfg1:
+  config0:
     image: vespaengine/vespa
-    hostname: "cfg1.vespa_net"
+    hostname: "config0.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
       - target: 19071
         published: 19071
@@ -16,37 +16,34 @@ services:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
 
-  cfg2:
+  config1:
     image: vespaengine/vespa
-    hostname: "cfg2.vespa_net"
+    hostname: "config1.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
 
-  cfg3:
+  config2:
     image: vespaengine/vespa
-    hostname: "cfg3.vespa_net"
+    hostname: "config2.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
 
-  container:
+  container0:
     image: vespaengine/vespa
     command: services
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
+    hostname: "container0.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
-    deploy:
-       mode: replicated
-       replicas: 1
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
       - target: 8080
         published: 8080
@@ -57,15 +54,68 @@ services:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
 
-  content:
+  container1:
     image: vespaengine/vespa
     command: services
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
+    hostname: "container1.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
-    deploy:
-       mode: replicated
-       replicas: 3
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    ports:
+      - target: 8080
+        published: 8081
+        mode: host
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  container2:
+    image: vespaengine/vespa
+    command: services
+    hostname: "container2.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    ports:
+      - target: 8080
+        published: 8082
+        mode: host
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  content0:
+    image: vespaengine/vespa
+    command: services
+    hostname: "content0.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  content1:
+    image: vespaengine/vespa
+    command: services
+    hostname: "content1.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  content2:
+    image: vespaengine/vespa
+    command: services
+    hostname: "content2.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
