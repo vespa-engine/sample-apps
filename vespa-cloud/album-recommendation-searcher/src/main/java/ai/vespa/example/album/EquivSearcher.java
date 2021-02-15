@@ -1,5 +1,4 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.example.album;
 
 import com.yahoo.prelude.query.CompositeItem;
@@ -17,27 +16,26 @@ import com.yahoo.yolean.chain.After;
 import java.util.List;
 import java.util.Map;
 
-
 /**
-* Add to services.xml to enable:
-*  <searcher id="ai.vespa.example.album.EquivSearcher" bundle="albums" after="MinimalQueryInserter"/>
+ * A searcher doing recursive query rewriting - not currently added to any chain.
+ * Add to services.xml to enable:
+ *  &lt;searcher id="ai.vespa.example.album.EquivSearcher" bundle="albums"/&gt;
 */
-
 @After("MinimalQueryInserter")
 public class EquivSearcher extends Searcher {
 
-    Map<String, List<String>> artistSpellings = Map.of(
+    private final Map<String, List<String>> artistSpellings = Map.of(
             "metallica", List.of("metalica", "metallika"),
             "rammstein", List.of("ramstein", "raamstein"));
 
     @Override
     public Result search(Query query, Execution execution) {
-        query.trace("Before equivize:" + query.toDetailString(), false, 6);
+        if (artistSpellings.isEmpty()) return execution.search(query);
+
         QueryTree tree = query.getModel().getQueryTree();
-        Item rootItem = tree.getRoot();
-        rootItem = equivize(rootItem);
-        tree.setRoot(rootItem);
-        query.trace("After equivize:" + query.toDetailString(), false, 6);
+        Item newRoot = equivize(tree.getRoot());
+        tree.setRoot(newRoot);
+        query.trace("Equivizing", true, 2);
         return execution.search(query);
     }
 
@@ -45,21 +43,22 @@ public class EquivSearcher extends Searcher {
         if (item instanceof TermItem) {
             String term  = ((TermItem)item).stringValue();
             String index = ((TermItem)item).getIndexName();
-            if("artist".equals(index)) {
+            if ("artist".equals(index)) {
                 List<String> synonyms = artistSpellings.get(term);
-                if (synonyms != null) {
+                if (synonyms != null)
                     return new EquivItem(item, synonyms);
-                }
             }
-        } else if (item instanceof PhraseItem) {
+        }
+        else if (item instanceof PhraseItem) {
             return item; // cannot put EQUIV inside PHRASE
-        } else if (item instanceof CompositeItem) {
-            CompositeItem cmp = (CompositeItem)item;
-            for (int i = 0; i < cmp.getItemCount(); ++i) {
-                cmp.setItem(i, equivize(cmp.getItem(i)));
-            }
-            return cmp;
+        }
+        else if (item instanceof CompositeItem) {
+            CompositeItem composite = (CompositeItem)item;
+            for (int i = 0; i < composite.getItemCount(); ++i)
+                composite.setItem(i, equivize(composite.getItem(i)));
+            return composite;
         }
         return item;
     }
+
 }
