@@ -13,4 +13,5 @@ public class MetalProductionTest {
     void dummyTest() {
         assertEquals("Prod is all right!","Prod is all right!");
     }
+
 }

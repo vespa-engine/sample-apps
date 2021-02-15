@@ -34,4 +34,5 @@ public class EquivSearcherTest {
             System.out.println(result.getContext(false).getTrace());
         }
     }
+
 }
