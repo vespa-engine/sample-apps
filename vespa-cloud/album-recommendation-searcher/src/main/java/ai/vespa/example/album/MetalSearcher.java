@@ -33,11 +33,12 @@ public class MetalSearcher extends Searcher {
      * 
      * <pre>MetalNamesConfig</pre> is automatically generated based on the
      * <pre>metal-names.def</pre> file found in resources/configdefinitions.
+     *
+     * See
+     *  - https://docs.vespa.ai/en/jdisc/injecting-components.html
+     *  - https://docs.vespa.ai/en/reference/config-files.html#config-definition-files
      * 
-     * @see https://docs.vespa.ai/en/jdisc/injecting-components.html
-     * @see https://docs.vespa.ai/en/reference/config-files.html#config-definition-files
-     * 
-     * @param config The configuration object injected by the container.
+     * @param config the configuration object injected by the container.
      */
     @Inject
     public MetalSearcher(MetalNamesConfig config) {
