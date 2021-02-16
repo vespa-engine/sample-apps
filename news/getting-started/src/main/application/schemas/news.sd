@@ -3,5 +3,10 @@
 schema news {
     document news {
 
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+
     }
 }
