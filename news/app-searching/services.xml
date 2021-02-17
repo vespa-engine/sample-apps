@@ -3,18 +3,18 @@
 
 <services version="1.0">
 
-  <container id="default" version="1.0">
-    <document-api/>
-    <search />
+  <container id='default' version='1.0'>
+    <search></search>
+    <document-api></document-api>
+    <nodes>
+      <node hostalias='node1'></node>
+    </nodes>
   </container>
 
   <content id='mind' version='1.0'>
-    <search>
-      <visibility-delay>1</visibility-delay>
-    </search>
     <redundancy>1</redundancy>
     <documents>
-      <document type='mind' mode="index"/>
+      <document type='news' mode="index"/>
     </documents>
     <nodes>
       <node hostalias="node1" distribution-key="0" />
