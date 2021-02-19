@@ -17,7 +17,7 @@ module Jekyll
                 if page.data["index"] == true
                     operations.push({
                         :fields => {
-                            :path => page.url,
+                            :path => "/" + appname,
                             :namespace => namespace,
                             :title => "Vespa Sample Applications: " + appname,
                             :content => extract_text(page)
