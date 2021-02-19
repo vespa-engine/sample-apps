@@ -46,16 +46,16 @@ def convert_file(output, file_name, docids, click_map):
 
     with io.open(file_name, "r", encoding="utf-8") as f:
 
-        field_list = ["docid", "category", "subcategory", "title", "abstract", "url", "title_entities", "abstract_entities"]
-        include_fields = set(field_list[1:6])
+        field_list = ["news_id", "category", "subcategory", "title", "abstract", "url", "title_entities", "abstract_entities"]
+        include_fields = set(field_list[0:6])
 
         reader = csv.DictReader(f, delimiter="\t", fieldnames=field_list)
         for line in reader:
-            if line["docid"] in docids:
+            if line["news_id"] in docids:
                 continue
             if len(docids) > 0:
                 output.write(",\n")
-            docid = line["docid"]
+            docid = line["news_id"]
             docids.add(docid)
 
             clicks = click_map[docid]["clicks"]

@@ -3,6 +3,10 @@
 schema news {
     document news {
 
+        field news_id type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
         field category type string {
             indexing: summary | attribute
         }
