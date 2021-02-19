@@ -211,15 +211,17 @@ class MindData:
         return clicked, skipped
 
     def get_news_content_tensors(self):
-        news_indices = []
-        category_indices = []
-        subcategory_indices = []
-        entity_indices = []
+        num_docs = len(self.news_map)
+        news_indices = [0] * num_docs
+        category_indices = [0] * num_docs
+        subcategory_indices = [0] * num_docs
+        entity_indices = [0] * num_docs
+
         for news_index, content in self.news_content.items():
-            news_indices.append(news_index)
-            category_indices.append(content["category_index"])
-            subcategory_indices.append(content["subcategory_index"])
-            entity_indices.append(content["entity_index"])
+            news_indices[news_index] = news_index
+            category_indices[news_index] = content["category_index"]
+            subcategory_indices[news_index] = content["subcategory_index"]
+            entity_indices[news_index] = content["entity_index"]
 
         return torch.LongTensor(news_indices), \
                torch.LongTensor(category_indices), \
