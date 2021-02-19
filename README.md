@@ -54,4 +54,4 @@ to the Vespa sample applications.
 
 ----
 
-Travis-CI build status: [![Build Status](https://travis-ci.org/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.org/vespa-engine/sample-apps)
+Travis-CI build status: [![Build Status](https://travis-ci.com/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.org/vespa-engine/sample-apps)
