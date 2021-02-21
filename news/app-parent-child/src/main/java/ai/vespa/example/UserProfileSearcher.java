@@ -30,6 +30,7 @@ public class UserProfileSearcher extends Searcher {
             query.getRanking().getFeatures().put("query(user_embedding)", userEmbedding);
             query.getModel().setRestrict("news");
 
+            // Override default ranking profile
             if (query.getRanking().getProfile().equals("default")) {
                 query.getRanking().setProfile("recommendation");
             }

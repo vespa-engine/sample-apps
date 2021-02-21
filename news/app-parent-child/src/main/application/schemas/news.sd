@@ -44,7 +44,7 @@ schema news {
             }
         }
         field category_tensor type tensor<float>(category{}) {
-            indexing: summary | attribute
+            indexing: attribute
         }
         field category_ctr_ref type reference<category_ctr> {
             indexing: attribute
