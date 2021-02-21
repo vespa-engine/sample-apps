@@ -50,13 +50,9 @@ def main():
     filter = sys.argv[3] if len(sys.argv) > 3 else ""
 
     user_vector = query_user_embedding(user_id)
-
-    start = time.time()
     result = query_news(user_vector, int(hits), filter)
-    end = time.time()
 
     print(json.dumps(result, indent=2))
-    print("Query in {} s".format(end-start))
 
 
 if __name__ == "__main__":
