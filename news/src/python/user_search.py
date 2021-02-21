@@ -3,7 +3,6 @@
 
 import sys
 import json
-import time
 import urllib.parse, urllib.request
 
 
