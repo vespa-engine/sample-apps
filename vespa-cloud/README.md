@@ -6,7 +6,8 @@ This is the intro application to Vespa.
 * Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation).
 * [album-recommendation-searcher](album-recommendation-searcher)
   is an introduction for how to integrate Java code to process queries.
-  This is a good first app for writing [Vespa plugins](https://docs.vespa.ai/en/vespa-plugins.html).
+  This is a good first app for writing Vespa plugins,
+  see the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html).
 * [album-recommendation-docproc](album-recommendation-docproc)
   is an introduction to asynchronous document processing
   using the Java [Document API](https://docs.vespa.ai/en/document-api-guide.html).
