@@ -95,15 +95,15 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
 
                 /*
                   There are two kinds of updates:
-                  * a create-if-nonexistent update for a new document
-                  * updating inlinks to documents
+                  * a create-if-nonexistent update for a new document - if it has a PATH_FIELD_NAME
+                  * updating fields in documents
 
                   The first needs the processing below - the second does not need processing, just send the update as-is
                  */
 
-                if (update.getFieldUpdate(INLINKS_FIELD_NAME) != null) { return Progress.DONE;}  // no extra processing of inlinks update
-
                 FieldUpdate fieldUpdate = update.getFieldUpdate(PATH_FIELD_NAME);
+                if (fieldUpdate == null) { return Progress.DONE;}  // no extra processing
+
                 ValueUpdate<StringFieldValue> valueUpdate = fieldUpdate.getValueUpdate(0);
                 String myPath = valueUpdate.getValue().getString();
 

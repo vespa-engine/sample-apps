@@ -35,6 +35,14 @@ schema doc {
         field inlinks type weightedset<string> {
             indexing: summary | attribute
         }
+
+        field term_count type int {
+            indexing: summary | attribute
+        }
+
+        field last_updated type int {
+            indexing: summary | attribute
+        }
         
     }
 
@@ -61,6 +69,18 @@ schema doc {
             fieldLength(content)
             bm25(title)
             bm25(content)
+        }
+    }
+
+    rank-profile inlinks {
+        first-phase {
+            expression: attribute(inlinks).count
+        }
+    }
+
+    rank-profile inlinks_termcount {
+        first-phase {
+            expression: attribute(inlinks).count * if(isNan(attribute(term_count)), 0, attribute(term_count))   # Avoid "relevance": "-Infinity"
         }
     }
 
