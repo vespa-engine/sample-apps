@@ -1,18 +1,42 @@
 # Vespa Documentation Search
-Vespa Cloud instance for searching Vespa.ai and Vespa Cloud documentation.
+Vespa Documentation Search is a Vespa Cloud instance for searching documents in
+* vespa.ai
+* cloud.vespa.ai
+* blog.vespa.ai
+* Vespa Sample applications README files
 
 This sample app is auto-deployed to Vespa Cloud,
 see [deploy-vespa-documentation-search.yaml](https://github.com/vespa-engine/sample-apps/blob/master/.github/workflows/deploy-vespa-documentation-search.yaml)
 
-
-## Components
 ![Vespa-Documentation-Search-Architecture](img/Vespa-Documentation-Search-Architecture.svg)
+
+
+## Query API
+Open API endpoints:
+* https://doc-search.vespa.oath.cloud/document/v1/
+* https://doc-search.vespa.oath.cloud/search/
+
+Example queries:
+* https://doc-search.vespa.oath.cloud/document/v1/open/doc/docid/open%2Fen%2Freference%2Fquery-api-reference.html
+* https://doc-search.vespa.oath.cloud/search/?yql=select+*+from+doc+where+userInput(@input)%3B&input=vespa+ranking+is+great
+
+Using these endpoints is a good way to get started with Vespa -
+see the [github deploy action](https://github.com/vespa-engine/sample-apps/blob/master/.github/workflows/deploy-vespa-documentation-search.yaml)
+(use `vespa:deploy` to deploy to a dev instance or the [quick-start](https://docs.vespa.ai/en/vespa-quick-start.html))
+to deploy using Docker.
+
+Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build` -
+use this to feed a local instance for experimentation.
+Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb)
+for how to generate the feed file.
 
 
 ## Document feed automation
 Vespa Documentation is stored in GitHub:
-* https://github.com/vespa-engine/documentation
+* https://github.com/vespa-engine/documentation and https://github.com/vespa-engine/frontpage
 * https://github.com/vespa-engine/cloud
+* https://github.com/vespa-engine/blog
+* https://github.com/vespa-engine/sample-apps
 
 Jekyll is used to serve the documentation, it rebuilds at each commit.
 
