@@ -153,7 +153,7 @@ and use in multiple rank-profiles.
 
 ToDo: query here
 
-Note in the results that no document has a _rankingExpression(num_inlinks) < 11.0_,
+Note in the results that no document has a _rankingExpression(num_inlinks) < 10.0_,
 meaning all such documents were purged in the first ranking phase.
 
 
