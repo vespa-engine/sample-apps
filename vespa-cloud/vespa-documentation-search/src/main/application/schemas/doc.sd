@@ -122,10 +122,23 @@ schema doc {
         }
     }
 
-    rank-profile inlinks_termcount {
+    rank-profile term_count_similarity {
         first-phase {
-            expression: attribute(inlinks).count * if(isNan(attribute(term_count)), 0, attribute(term_count))   # Avoid "relevance": "-Infinity"
+            expression: 1 - fabs( attribute(term_count) - query(q_term_count) ) / (1 + attribute(term_count) + query(q_term_count))
+        }
+        summary-features {
+            attribute(term_count)
+            query(q_term_count)
         }
     }
 
+    rank-profile inlink_similarity {
+        first-phase {
+            expression: sum(tensorFromWeightedSet(attribute(inlinks), links) * query(links))
+        }
+        summary-features {
+            query(links)
+            tensorFromWeightedSet(attribute(inlinks), links)
+        }
+    }
 }
