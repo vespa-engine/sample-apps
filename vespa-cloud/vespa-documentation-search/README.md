@@ -11,6 +11,7 @@ see [deploy-vespa-documentation-search.yaml](https://github.com/vespa-engine/sam
 ![Vespa-Documentation-Search-Architecture](img/Vespa-Documentation-Search-Architecture.svg)
 
 
+
 ## Query API
 Open API endpoints:
 * https://doc-search.vespa.oath.cloud/document/v1/
@@ -25,136 +26,13 @@ see the [github deploy action](https://github.com/vespa-engine/sample-apps/blob/
 (use `vespa:deploy` to deploy to a dev instance or the [quick-start](https://docs.vespa.ai/en/vespa-quick-start.html))
 to deploy using Docker.
 
+Refer to [getting-started-ranking](https://docs.vespa.ai/en/getting-started-ranking.html)
+for example use of the Query API.
+
 Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build` -
 use this to feed a local instance for experimentation.
 Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb)
 for how to generate the feed file.
-
-
-
-## Ranking experiments
-Learn how [ranking](https://docs.vespa.ai/en/ranking.html) works in Vespa
-by using the open [query API](http://docs.vespa.ai/en/query-api.html).
-Ranking is the user-defined computation that scores documents to a query,
-here configured in the schema [doc.sd](src/main/application/schemas/doc.sd),
-also the [schema documentation](https://docs.vespa.ai/en/schemas.html).
-This schema has a set of (contrived) ranking functions, to help learn Vespa ranking
-
-
-### Ranking using document features
-Let's start with something simple: _Irrespective of the query, score documents by the number of in-links to it_.
-That is, for any query, return the documents with most in-links first in the result set:
-
-```
-    rank-profile inlinks {
-        first-phase {
-            expression: attribute(inlinks).count
-        }
-        summary-features {
-            attribute(inlinks).count
-        }
-    }
-```
-
-Here we use only the first-phase ranking (Vespa has first- and second-phase) -
-the score, named _relevance_ in query results, is the size of the inlinks attribute array in the document:
-
-https://doc-search.vespa.oath.cloud/search/?yql=select%20*%20from%20sources%20*%20where%20sddocname%20contains%20%22doc%22%3B&ranking=inlinks
-
-Count the number of entries in _inlinks_ in the result and compare with _relevance_ - it will be the same.
-
-Observe that the ranking function does not use any features from the query.
-
-
-### Observing values used in ranking
-When developing an application, it is useful to observe the input values to ranking.
-Use [summary-features](https://docs.vespa.ai/en/reference/schema-reference.html#summary-features)
-to output values in search results.
-
-In this experiment, we will use a more sophisticated rank function, scoring older documents lower.
-Also new is:
-* use of the _now_ [ranking feature](https://docs.vespa.ai/en/reference/rank-features.html)
-* use of constants and functions to write better code
-
-```
-    rank-profile inlinks_age {
-        first-phase {
-            expression: rank_score
-        }
-        summary-features {
-            attribute(inlinks).count
-            attribute(last_updated)
-            now
-            doc_age_seconds
-            age_decay
-            num_inlinks
-            rank_score
-        }
-        constants {
-            decay_const: 0.9
-        }
-        function doc_age_seconds() {
-            expression: now - attribute(last_updated)
-        }
-        function age_decay() {
-            expression: pow(decay_const, doc_age_seconds/3600)
-        }
-        function num_inlinks() {
-            expression: attribute(inlinks).count
-        }
-        function rank_score() {
-            expression: num_inlinks * age_decay
-        }
-    }
-```
-
-In the query results, observe a document with 27 in-links, 9703 seconds old,
-get at relevance at 20.32:
-
-```
-    "relevance": 20.325190122213748,
-...
-    "summaryfeatures": {
-        "attribute(inlinks).count": 27.0,
-        "attribute(last_updated)": 1.615971522E9,
-        "now": 1.615981225E9,
-        "rankingExpression(age_decay)": 0.7527848193412499,
-        "rankingExpression(doc_age_seconds)": 9703.0,
-        "rankingExpression(num_inlinks)": 27.0,
-        "rankingExpression(rank_score)": 20.325190122213748,
-        "vespa.summaryFeatures.cached": 0.0
-    }
-```
-
-Using _summary-features_ makes it easy to validate and develop the rank expression.
-
-
-### Two-phased ranking
-See [first-phase](https://docs.vespa.ai/en/reference/schema-reference.html#firstphase-rank).
-The purpose of two-phased ranking is to use a cheap rank function to eliminate most candidates
-using little resources in the first phase -
-then use a precise, resource intensive function in the second phase.
-
-```
-    rank-profile inlinks_twophase inherits inlinks_age {
-        first-phase {
-            keep-rank-count       : 50
-            rank-score-drop-limit : 10
-            expression            : num_inlinks
-        }
-        second-phase {
-            expression            : rank_score
-        }
-    }
-```
-
-Note how using rank-profile inheritance is a smart way to define functions once
-and use in multiple rank-profiles.
-
-ToDo: query here
-
-Note in the results that no document has a _rankingExpression(num_inlinks) < 10.0_,
-meaning all such documents were purged in the first ranking phase.
 
 
 
