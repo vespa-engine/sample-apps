@@ -6,6 +6,7 @@ import ai.vespa.hosted.cd.SystemTest;
 import ai.vespa.hosted.cd.TestRuntime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestReporter;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -13,11 +14,18 @@ import java.util.Map;
 
 import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SystemTest
 class FeedAndSearchSystemTest {
 
     private final Endpoint endpoint = TestRuntime.get().deploymentToTest().endpoint("default");
+
+    @Test
+    void testOutput(TestReporter testReporter) {
+        testReporter.publishEntry("Hello from an empty test!");
+        assertTrue(true, "Text from assertion for comparison");
+    }
 
     @Test
     void feedAndSearch() throws IOException {
