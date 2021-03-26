@@ -44,7 +44,6 @@ public class JiebaTokenizer implements Tokenizer {
                                                    "Could not read dictionary file '" + dictionaryFile + "'");
             this.segmenter.initUserDict(new String[]{config.dictionaryPath()});
         }
-
     }
 
     private Set<String> readStopwords(DictsLocConfig config) {
@@ -65,7 +64,7 @@ public class JiebaTokenizer implements Tokenizer {
 
     @Override
     public Iterable<Token> tokenize(String input, Language language, StemMode stemMode, boolean removeAccents) {
-        if (input.isEmpty()) return Collections.emptyList();
+        if (input.isEmpty()) return List.of();
 
         List<Token> tokens = new ArrayList<>();
         for (SegToken token : segmenter.process(input, SegMode.INDEX)){
