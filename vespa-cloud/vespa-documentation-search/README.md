@@ -29,10 +29,38 @@ to deploy using Docker.
 Refer to [getting-started-ranking](https://docs.vespa.ai/en/getting-started-ranking.html)
 for example use of the Query API.
 
-Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build` -
-use this to feed a local instance for experimentation.
+
+### Feed your own instance
+It is easy to set up your own instance on Vespa Cloud and feed  documents from
+[vespa-engine/documentation](https://github.com/vespa-engine/documentation/):
+
+1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build`.
 Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb)
-for how to generate the feed file.
+for how the feed file is generated.
+
+2: Add data plane credentials:
+
+    $ pwd; ll *.pem
+    /Users/myuser/github/vespa-engine/documentation
+    -rwxr-xr-x@ 1 myuser  staff  3272 Mar 17 09:30 data-plane-private-key.pem
+    -rwxr-xr-x@ 1 myuser  staff  1696 Mar 17 09:30 data-plane-public-key.pem
+
+3: Set endpoint in `_config.yml` (get this from the Vespa Cloud Console):
+```
+diff --git a/_config.yml b/_config.yml
+...
+     feed_endpoints:
+-        - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.public.vespa.oath.cloud/
+-          indexes:
+-              - open_index.json
+-        - url: https://vespacloud-docsearch.vespa-team.aws-ap-northeast-1a.public.vespa.oath.cloud/
++        - url: https://myinstance.vespacloud-docsearch.mytenant.aws-us-east-1c.dev.public.vespa.oath.cloud/
+           indexes:
+```
+
+Feed `open_index.json`:
+
+    $ ./feed_to_vespa.py
 
 
 
