@@ -20,5 +20,10 @@ jobs:
       - add-front-matter-and-build: |
           find . -not -path './_site/*' -name README.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
           bundle exec jekyll build
-      - check-links: |
-          bundle exec htmlproofer --assume-extension --empty_alt_ignore ./_site
+      - check-links: >
+          bundle exec htmlproofer --assume-extension --empty-alt-ignore
+          --directory-index-file README.html
+          --url-ignore 'src/main/application/schemas/wiki.sd#L80,http://localhost:8080/site'
+          --file-ignore '/tensor-playground/src/main/resources/playground/'
+          ./_site
+
