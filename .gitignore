@@ -10,3 +10,4 @@ target/
 vespaapps_index.json
 _site/
 *.pem
+Gemfile.lock
