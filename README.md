@@ -1,5 +1,10 @@
-<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications
+[![Vespa Sampleapps Search Feed](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml)
+[![/sample-apps link checker](https://cd.screwdriver.cd/pipelines/7038/link-checker-sample-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
+
+Travis-CI build status: [![Build Status](https://travis-ci.com/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.com/vespa-engine/sample-apps)
+
 
 ## Featured sample applications
 ### album-recommendation
@@ -53,5 +58,3 @@ Refer to the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html) fo
 to the Vespa sample applications.
 
 ----
-
-Travis-CI build status: [![Build Status](https://travis-ci.com/vespa-engine/sample-apps.svg?branch=master)](https://travis-ci.com/vespa-engine/sample-apps)
