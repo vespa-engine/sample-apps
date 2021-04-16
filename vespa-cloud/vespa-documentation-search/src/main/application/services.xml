@@ -9,7 +9,7 @@
         </document-processing>
         <search/>
         <document-api/>
-        <nodes count="2"/>
+        <nodes count="2" exclusive="true"/>
     </container>
 
     <content id="documentation" version="1.0">
