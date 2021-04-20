@@ -341,17 +341,14 @@ One can also compare ranking with the *bm25* ranking profile:
     "yql": "select id, text from sources passage where userQuery();",
     "ranking": "bm25",
     "query": "what was the manhattan project?",
-    "hits": 5
+    "hits": 5,
+    "searchChain": 'passageranking' 
 }
 </pre>
 
 
 
 ## Full Evaluation
-
-To reproduce with the full dataset one needs disk space to store the tensor data and enough memory. 
-
-Details to follow.
 
 ### Download all passages 
 
@@ -376,7 +373,9 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
     --file /MSMARCO/sample-feed/passage-all-feed.jsonl --host localhost --port 8080'
 </pre>
 
-Update all 8.8M passages with colbert tensor data. Note that we stream through using *bunzip2* as the uncompressed representation
+Update all 8.8M passages with the pre-computed ColBERT tensor data. This data was produced using the original ColBERT indexing utility.
+
+ Note that we stream through using *bunzip2* as the uncompressed representation
 is large (JSON is not the best format for storing tensor data). 
 
 <pre>
@@ -386,8 +385,6 @@ $ docker exec vespa bash -c 'bunzip2 -c /MSMARCO/sample-feed/colbert-passages-p*
 
 ## Ranking Evaluation using Ms Marco Passage Ranking *dev*
 
-
-## Create your own submission 
 
 # Appendix ColBERT example 
 A toy example using 2 dimensions for the contextual term embedding for a input passage with 4 terms. 
