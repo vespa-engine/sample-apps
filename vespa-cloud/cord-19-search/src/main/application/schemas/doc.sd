@@ -217,7 +217,7 @@ schema doc {
     }
 
     field abstract_embedding type tensor<float>(x[768]) {
-      indexing: attribute
+      indexing: attribute | index
       index {
         hnsw {
           max-links-per-node: 32
@@ -227,7 +227,7 @@ schema doc {
     }
 
     field title_embedding type tensor<float>(x[768]) {
-      indexing: attribute
+      indexing: attribute | index
       index {
         hnsw {
           max-links-per-node: 32
@@ -237,7 +237,7 @@ schema doc {
     }
 
     field specter_embedding type tensor<float>(x[768]) {
-      indexing: attribute
+      indexing: attribute | index
       index {
         hnsw {
           max-links-per-node: 32
