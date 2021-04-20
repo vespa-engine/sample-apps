@@ -1,0 +1,54 @@
+#Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema passage {
+
+  document passage {
+
+    field text type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+
+    field dt type tensor<float>(dt{}, x[32]){
+      indexing: summary | attribute
+      attribute:fast-search
+    }
+
+    field id type long {
+      indexing: summary |attribute
+    }
+  }
+
+  document-summary id {
+    summary id type long {
+      source:id 
+    }
+  }
+
+  fieldset default {
+    fields: text
+  }
+
+  rank-profile bm25 {
+    first-phase {
+      expression: bm25(text)
+    }
+  }
+
+  rank-profile colbert inherits bm25 {
+    second-phase {
+      rerank-count: 1000
+      expression {
+        sum(
+          reduce(
+            sum(
+              query(qt) * attribute(dt), x
+            ),
+            max, dt
+          ),
+         qt
+        )
+      }
+    }
+  }
+}
