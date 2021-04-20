@@ -33,7 +33,6 @@ def get_result(query):
     return [0]
   docs = []
   for h in result['root']['children']:
-    score = h['relevance']
     fields = h.get('fields',None)
     if not fields:
       continue
@@ -58,7 +57,7 @@ def main():
     parser.add_argument("--wand_hits", type=int, default=100) 
     parser.add_argument("--phase_count", type=int, default=1000) 
     parser.add_argument("--run_file", type=str, default="runfile") 
-    parser.add_argument("--endpoint", type=str, default="https://bergum--msmarco--sandbox.us-east-3.perf.vespa.oath.cloud:4443/search/") 
+    parser.add_argument("--endpoint", type=str, default="http://localhost:8080/search/")
     parser.add_argument("--hits", type=int, default=100)
     global args
     args = parser.parse_args()
