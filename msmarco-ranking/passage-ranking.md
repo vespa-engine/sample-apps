@@ -62,7 +62,10 @@ a tuned BM25 using *Apache Lucene 8* which powers text ranking search for engine
 |--------------------------|-------|-------|
 | BM25 (Official baseline) | 0.165 | 0.167 |
 | BM25 (Lucene8, tuned)    | 0.190 | 0.187 |
-| **ColBERT on Vespa.ai** (This work)      | 0.347 | 0.354 |
+| **ColBERT on Vespa.ai**  | 0.347 | 0.354 |
+
+Note that the effectiveness depends on the retriever. In our sample run we used wand sparse retrieval which has about 0.8 recall@1K. The retriever sets
+the upper bound of the re-rankers effectiveness and training ColBERT on a dense retriever with a higher recall (e.g 0.97@1K) would produce a better re-ranker. 
 
 
 ## Representing ColBERT on Vespa.ai
@@ -224,10 +227,10 @@ $ SAMPLE_APP=`pwd`/sample-apps/msmarco-ranking
 $ cd $SAMPLE_APP
 </pre>
 
-Install python dependencies 
+Install python dependencies. There are no run time python dependencies in Vespa. 
 
 <pre data-test="exec">
-$ pip3 install torch ir_datasets lightgbm numpy pandas requests tqdm transformers
+$ pip3 install torch ir_datasets requests tqdm transformers
 </pre>
 
 The model_export download the pre-trained weights from [Huggingface](https://huggingface.co/vespa-engine/colbert-medium) and export 
@@ -236,6 +239,7 @@ the ColBERT query encoder to ONNX format for serving in Vespa:
 <pre data-test="exec">
 $ python3 src/main/python/model_export.py src/main/application/files/colbert_query_encoder.onnx 
 </pre>
+The *mode_export.py* script downloads the model from Hugginface and exports it to ONNX for serving.
 
 The maven clean package will build the Vespa application package file (*target/application.zip*) 
 which is later used when we have started the Vespa services.
