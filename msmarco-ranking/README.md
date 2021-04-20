@@ -6,11 +6,10 @@ This sample application uses the MS Marco Passage and Document ranking datasets 
 
 We express both passage and document ranking in the same Vespa application package using three document types (passage, doc and query). 
 
-
 # MS Marco Passage Ranking 
 
 See [Passage Ranking](passage-ranking.md) to reproduce Vespa.ai runs on MS Marco Passage Ranking Leaderboard
 
 # Document Ranking
-
 See [Document Ranking](document-ranking.md) to reproduce Vespa.ai runs on MS Marco Document Ranking Leaderboard
+
