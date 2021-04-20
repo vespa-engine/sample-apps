@@ -1,0 +1,6 @@
+{
+  "yql": "select id, text from sources passage where userQuery();",
+  "ranking": "colbert",
+  "query": "what was the manhattan project?",
+  "hits": 5
+}
