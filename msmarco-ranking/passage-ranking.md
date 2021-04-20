@@ -330,7 +330,7 @@ curl -s -H "Content-Type: application/json" --data @sample-feed/query.json \
 </pre>
 
 It is also possible to view the result in a 
-[browser](http://localhost:8080/search/?yql=select%20id,%20text%20from%20sources%20passage%20where%20userQuery()%3B&query=what+was+the+Manhattan%20Project&ranking=colbert)
+[browser](http://localhost:8080/search/?yql=select%20id,%20text%20from%20sources%20passage%20where%20userQuery()%3B&query=what+was+the+Manhattan%20Project&ranking=colbert&searchChain=passageranking)
 
 ![Colbert example](img/colbert_sample_query.png)
 
