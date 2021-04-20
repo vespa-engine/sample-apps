@@ -208,7 +208,7 @@ The following is a recipe on how to get started with a tiny set of sample data.
 The sample data only contains the first 1000 documents of the full MS Marco passage ranking dataset. 
 
 This should be able to run on for instance a laptop. For the full dataset to reproduce our submission to the leaderboard see 
-[full evaluation](#full-evaluation-using-the-full-passage-ranking-dataset-all-88m-passages).
+[full evaluation](#full-evaluation).
 
 Requirements:
 
@@ -349,10 +349,11 @@ One can also compare ranking with the *bm25* ranking profile:
 
 ## Full Evaluation
 
-Reproducing the entire end to end evaluation requires a content node with 300 GB of disk and 512Gb memory, from AWS EC2 c5d.24xlarge is a good fit. 
+To reproduce with the full dataset one needs disk space to store the tensor data and enough memory. 
 
-### Download all documents 
+Details to follow.
 
+### Download all passages 
 
 Download and process the entire passage data set using the **ir_datasets** export tool. 
 
@@ -360,10 +361,12 @@ Download and process the entire passage data set using the **ir_datasets** expor
 $ ir_datasets export msmarco-passage/train docs --format jsonl  |./src/main/python/passage-feed.py > sample-feed/passage-all-feed.jsonl
 </pre>
 
-Download the preprocessed colbert document tensors
+Download the preprocessed colbert document tensors data. The data is BZ2 compressed and each file is about 15GB compressed. 
 
 <pre>
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-document-tensors.jsonl.bz2 -O sample-feed/colbert-document-tensors.jsonl.bz2
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p1.bz2  -O sample-feed/colbert-passages-p1.bz2
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p2.bz2  -O sample-feed/colbert-passages-p2.bz2
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p3.bz2  -O sample-feed/colbert-passages-p3.bz2
 </pre>
 
 Feed all 8.8M passages 
@@ -374,16 +377,14 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 </pre>
 
 Update all 8.8M passages with colbert tensor data. Note that we stream through using *bunzip2* as the uncompressed representation
-is large. 
+is large (JSON is not the best format for storing tensor data). 
 
 <pre>
-$ docker exec vespa bash -c 'bunzip2 -c /MSMARCO/sample-feed/colbert-document-tensors.jsonl.bz2 | java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+$ docker exec vespa bash -c 'bunzip2 -c /MSMARCO/sample-feed/colbert-passages-p*.bz2 | java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
      --host localhost --port 8080'
 </pre>
 
-
 ## Ranking Evaluation using Ms Marco Passage Ranking *dev*
-
 
 
 ## Create your own submission 
