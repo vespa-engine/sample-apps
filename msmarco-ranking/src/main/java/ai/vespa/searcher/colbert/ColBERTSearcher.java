@@ -20,19 +20,20 @@ import java.util.List;
 
 /**
  * Searcher which prepares the input to the *query* encoder of ColBERT.
- * The evaluation of the trained BERT model is done at the content node
+ * The evaluation of the trained BERT model is done at the content node(s) using onnx
+ *
  */
 
 public class ColBERTSearcher extends Searcher {
 
     /**
-     * Named tensors used when evaluating the Colbert embeddings
+     * Use by the backend onnx model
      */
     private static String inputIdsTensorName = "query(input_ids)";
     private static String attentionMaskTensorName = "query(attention_mask)";
 
     /**
-     * The tensor from used when ranking documents/passages
+     * The tensor used when re-ranking passages
      */
 
     private static String colbertTensorName = "query(qt)";
