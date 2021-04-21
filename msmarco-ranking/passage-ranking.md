@@ -230,25 +230,25 @@ $ cd $SAMPLE_APP
 Install python dependencies. There are no run time python dependencies in Vespa. 
 
 <pre data-test="exec">
-$ pip3 install torch ir_datasets requests tqdm transformers
+$ pip3 install torch numpy ir_datasets requests tqdm transformers
 </pre>
 
-The model_export download the pre-trained weights from [Huggingface](https://huggingface.co/vespa-engine/colbert-medium) and export 
-the ColBERT query encoder to ONNX format for serving in Vespa:
+The *model_export.py* script downloads the pre-trained weights from [Huggingface model hub](https://huggingface.co/vespa-engine/colbert-medium)
+and exports the ColBERT query encoder to ONNX format for serving in Vespa:
  
 <pre data-test="exec">
 $ python3 src/main/python/model_export.py src/main/application/files/colbert_query_encoder.onnx 
 </pre>
-The *mode_export.py* script downloads the model from Hugginface and exports it to ONNX for serving.
 
-The maven clean package will build the Vespa application package file (*target/application.zip*) 
-which is later used when we have started the Vespa services.
+Once we have downloaded and exported the model we use maven to create the
+ [Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
+
 
 <pre data-test="exec">
 $ mvn clean package -U
 </pre>
 
-Start the Vespa docker container:
+Now, we are ready to start the vespeengine/vespa docker container. We pull the latest version and run it by 
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
@@ -358,14 +358,6 @@ Download and process the entire passage data set using the **ir_datasets** expor
 $ ir_datasets export msmarco-passage/train docs --format jsonl  |./src/main/python/passage-feed.py > sample-feed/passage-all-feed.jsonl
 </pre>
 
-Download the preprocessed colbert document tensors data. The data is BZ2 compressed and each file is about 15GB compressed. 
-
-<pre>
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p1.bz2  -O sample-feed/colbert-passages-p1.bz2
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p2.bz2  -O sample-feed/colbert-passages-p2.bz2
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p3.bz2  -O sample-feed/colbert-passages-p3.bz2
-</pre>
-
 Feed all 8.8M passages 
 
 <pre>
@@ -373,21 +365,69 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
     --file /MSMARCO/sample-feed/passage-all-feed.jsonl --host localhost --port 8080'
 </pre>
 
+Feed query document (which allows the evaluation of the ColBERT query encoder):
+
+<pre>
+$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+    --file /MSMARCO/sample-feed/sample_query_feed.jsonl	--host localhost --port 8080'
+</pre>
+
+### Download pre-processed ColBERT document representation 
+Download the preprocessed document tensor data. The data is BZ2 compressed and each file is about 15GB compressed. 
+
+<pre>
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p1.bz2  -O sample-feed/colbert-passages-p1.bz2
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p2.bz2  -O sample-feed/colbert-passages-p2.bz2
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p3.bz2  -O sample-feed/colbert-passages-p3.bz2
+</pre>
+
 Update all 8.8M passages with the pre-computed ColBERT tensor data. This data was produced using the original ColBERT indexing utility.
 
- Note that we stream through using *bunzip2* as the uncompressed representation
-is large (JSON is not the best format for storing tensor data). 
+Note that we stream through using *bunzip2* as the uncompressed representation
+is large (300GB). 
 
 <pre>
 $ docker exec vespa bash -c 'bunzip2 -c /MSMARCO/sample-feed/colbert-passages-p*.bz2 | java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
      --host localhost --port 8080'
 </pre>
 
-## Ranking Evaluation using Ms Marco Passage Ranking *dev*
+### Ranking Evaluation using Ms Marco Passage Ranking 
+Run through all queries from the MS Marco Passage Ranking Dev set
+
+<pre>
+./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse --rank_profile colbert --hits 10 --run_file run.dev.txt
+</pre>
+
+To evaluate ranking performance download the official evaluation scripts
+
+<pre>
+wget https://raw.githubusercontent.com/spacemanidol/MSMARCO/master/Ranking/Baselines/msmarco_eval.py
+</pre>
+
+Generate the dev qrels file using the *ir_datasets* which the evaluation script expects:
+<pre>
+./src/main/python/dump_passage_dev_qrels.py 
+</pre>
+
+Above will write a **qrels.dev.small.tsv** file to the current directory, now we can run evaluation:
+<pre>
+python3 msmarco_eval.py qrels.dev.small.tsv run.dev.txt 
+#####################
+MRR @10: 0.3540263564833764
+QueriesRanked: 6980
+#####################
+</pre>
+
+To generate runs using the eval set pass *--query_split eval: 
+<pre>
+./src/main/python/evaluate_passage_run.py --query_split eval --retriever sparse --rank_profile colbert --hits 10 --run_file run.eval.txt
+</pre>
+The *eval* split is the hold out test set where there are no available judgments in the public domain. 
+See [MS Marco Passage Ranking](https://microsoft.github.io/MSMARCO-Passage-Ranking/) for how to submit runs for the leaderboard. 
 
 
 # Appendix ColBERT example 
-A toy example using 2 dimensions for the contextual term embedding for a input passage with 4 terms. 
+A toy example using 2 dimensions for the contextual term embeddings for a input passage with 4 terms. 
 
 The text is processed using a sub-word BERT tokenizer which maps the text to bert token_ids in a fixed vocabulary. The english BERT vocabulary 
 has about 30K terms.  
