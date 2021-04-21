@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 import ir_datasets
 import json
 import numpy
@@ -5,24 +8,28 @@ import requests
 import sys
 import argparse
 
+
+# Fetch data from vespa routine
 def get_result(query):
   request_body = {
     'hits': args.hits,
     'type': 'any',
     'presentation.summary':'id',
-    'yql': "select id,summaryfeatures from sources * where userQuery();",
+    'yql': "select id from sources * where userQuery();",
     'query': query,
     'retriever': args.retriever,
     'ranking.profile': args.rank_profile,
     'wand.field': args.wand_field,
     'wand.hits': args.wand_hits,
     'phase.count': args.phase_count,
-    'restrict': 'passage' 
+    'restrict': 'passage',
+    'searchChain': 'passageranking'
   }
+
   response = requests.post(args.endpoint, json=request_body,timeout=25.05)
   if not response.ok:
     print("Failed request for query {}, response {}, response json {}".format(query, response,response.json()))
-    return [0]
+    return []
 
   result = response.json()
   if result['root']['fields']['totalCount'] == 0:
@@ -37,11 +44,11 @@ def get_result(query):
 
 def eval():  
   queries = []
-  with open('queries.' + args.query_split + '.small.tsv') as fp:
-    for line in fp:
-      line = line.strip()
-      qid, query = line.split('\t')
-      queries.append((qid,query))
+
+  dataset = ir_datasets.load('msmarco-passage/' + args.query_split + '/small')
+
+  for query_id,text in dataset.queries_iter():
+    queries.append((query_id,text))
 
   with open(args.run_file, "w") as fp:
     for id,query in queries:
@@ -63,7 +70,6 @@ def main():
     parser.add_argument("--query_split", choices=["dev", "eval"], required=True)
     global args
     args = parser.parse_args()
-    print(args)
     eval()
 
 if __name__ == "__main__":
