@@ -10,16 +10,16 @@ import sys
 
 class VespaColBERT(BertPreTrainedModel):
 
-    def __init__(self,config):
-        super().__init__(config)
-        self.bert = BertModel(config)
-        self.linear = nn.Linear(config.hidden_size, 32, bias=False)
-        self.init_weights()
+  def __init__(self,config):
+    super().__init__(config)
+    self.bert = BertModel(config)
+    self.linear = nn.Linear(config.hidden_size, 32, bias=False)
+    self.init_weights()
 
-    def forward(self, input_ids, attention_mask):
-        Q = self.bert(input_ids,attention_mask=attention_mask)[0]
-        Q = self.linear(Q)
-        return torch.nn.functional.normalize(Q, p=2, dim=2)  
+  def forward(self, input_ids, attention_mask):
+    Q = self.bert(input_ids,attention_mask=attention_mask)[0]
+    Q = self.linear(Q)
+    return torch.nn.functional.normalize(Q, p=2, dim=2)  
 
 
 print("Downloading model from Huggingface")
@@ -36,9 +36,15 @@ output_names = ["contextual"]
 input_ids = torch.ones(1,32, dtype=torch.int64)
 attention_mask = torch.ones(1,32,dtype=torch.int64)
 args = (input_ids, attention_mask)
+
 torch.onnx.export(colbert_query_encoder,
-                args=args,
-                f=out_file,
-                input_names = input_names,
-                output_names = output_names,
-                opset_version=11)
+  args=args,
+  f=out_file,
+  input_names = input_names,
+  output_names = output_names,
+  dynamic_axes = {
+    "input_ids": {0: "batch"},
+    "attention_mask": {0: "batch"},
+    "contextual": {0: "batch"},
+  },
+  opset_version=11)
