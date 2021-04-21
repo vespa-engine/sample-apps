@@ -418,7 +418,7 @@ QueriesRanked: 6980
 #####################
 </pre>
 
-To generate runs using the eval set pass *--query_split eval: 
+To generate runs using the eval set pass *--query_split* eval: 
 <pre>
 ./src/main/python/evaluate_passage_run.py --query_split eval --retriever sparse --rank_profile colbert --hits 10 --run_file run.eval.txt
 </pre>
