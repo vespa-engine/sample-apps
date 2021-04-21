@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RelatedArticlesByWeakAndSearcherTest {
 
     private final String titleWeakAndItem =
-            "(WAND(100) default:title!150)";
+            "(WEAKAND(100) default:title!150)";
 
     private final String titleAndAbstractWeakAndTerm =
-            "(WAND(100) default:title!150 default:fine default:abstract)";
+            "(WEAKAND(100) default:title!150 default:fine default:abstract)";
 
     @Test
     public void testNoopIfNoRelated_to() {
