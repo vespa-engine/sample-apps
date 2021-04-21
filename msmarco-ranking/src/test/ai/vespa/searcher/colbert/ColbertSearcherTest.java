@@ -17,7 +17,6 @@ import com.yahoo.search.Query;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
 import org.junit.Test;
-
 import com.yahoo.data.access.slime.SlimeAdapter;
 import com.yahoo.slime.Cursor;
 import com.yahoo.slime.Slime;
@@ -102,10 +101,7 @@ public class ColbertSearcherTest {
         Tensor embedding = builder.build();
         features.setData(name, TypedBinaryFormat.encode(embedding));
         return new FeatureData(new SlimeAdapter(features));
-
     }
-
-
 }
 
 

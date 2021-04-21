@@ -46,6 +46,5 @@ public class RetrievalSearcherTest {
         assertEquals("Not expected WAND query",
                 "WAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
 
-
     }
 }
