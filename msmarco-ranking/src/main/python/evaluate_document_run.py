@@ -21,7 +21,8 @@ def get_result(query):
     'wand.field': args.wand_field,
     'wand.hits': args.wand_hits,
     'phase.count': args.phase_count,
-    'restrict': 'doc' 
+    'restrict': 'doc',
+    'searchChain': 'docranking'
   }
   response = requests.post(args.endpoint, json=request_body,timeout=25.05)
   if not response.ok:
