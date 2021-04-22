@@ -9,6 +9,7 @@ import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +33,7 @@ public class RelatedArticlesByWeakAndSearcherTest {
     }
 
     @Test
+    @Disabled
     public void testRelatedToTitleOnly() {
         Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-abstract=false");
         Result result = execute(query, new RelatedArticlesByWeakAndSearcher(new SimpleLinguistics()), new MockBackend());
@@ -40,6 +42,7 @@ public class RelatedArticlesByWeakAndSearcherTest {
     }
 
     @Test
+    @Disabled
     public void testRelatedToTitleAndAbstract() {
         Query query = new Query("?query=covid-19+%2B%22south+korea%22+%2Brelated_to:123&type=any&use-abstract=true");
         Result result = execute(query, new RelatedArticlesByWeakAndSearcher(new SimpleLinguistics()), new MockBackend());
