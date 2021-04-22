@@ -230,13 +230,14 @@ $ cd $SAMPLE_APP
 Install python dependencies. There are no run time python dependencies in Vespa. 
 
 <pre data-test="exec">
-$ pip3 install torch numpy ir_datasets requests tqdm transformers
+$ pip3 install torch numpy ir_datasets requests tqdm transformers onnx onnxruntime
 </pre>
 
 The *model_export.py* script downloads the pre-trained weights from [Huggingface model hub](https://huggingface.co/vespa-engine/colbert-medium)
 and exports the ColBERT query encoder to ONNX format for serving in Vespa:
  
 <pre data-test="exec">
+$ mkdir src/main/application/files/
 $ python3 src/main/python/model_export.py src/main/application/files/colbert_query_encoder.onnx 
 </pre>
 
@@ -290,7 +291,7 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 Feed the empty query document type 
 <pre data-test="exec">
 $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/sample_query_feed.jsonl	--host localhost --port 8080'
+    --file /MSMARCO/sample-feed/sample_query_feed.jsonl --host localhost --port 8080'
 </pre>
 
 Download pre-computed sample for the first 1K documents
