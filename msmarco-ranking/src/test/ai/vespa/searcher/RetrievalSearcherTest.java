@@ -31,11 +31,11 @@ public class RetrievalSearcherTest {
     public void test_queries() {
         RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics());
         test_query_tree("this is a test query",
-                "WAND(10) default:this default:is default:a default:test default:query",searcher);
+                "WEAKAND(10) default:this default:is default:a default:test default:query",searcher);
         test_query_tree("with some +.% not ",
-                "WAND(10) default:with default:some default:not",searcher);
+                "WEAKAND(10) default:with default:some default:not",searcher);
         test_query_tree("a number+:123  ?",
-                "WAND(10) default:a default:number default:123",searcher);
+                "WEAKAND(10) default:a default:number default:123",searcher);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class RetrievalSearcherTest {
         Query query = new Query("?query=a+test&wand.field=foo&wand.hits=100");
         Result result = execute(query,searcher);
         assertEquals("Not expected WAND query",
-                "WAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
+                "WEAKAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
 
     }
 }
