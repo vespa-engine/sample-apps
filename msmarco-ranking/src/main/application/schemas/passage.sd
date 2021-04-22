@@ -9,7 +9,7 @@ schema passage {
       index: enable-bm25
     }
 
-    field dt type tensor<float>(dt{}, x[32]){
+    field dt type tensor<bfloat16>(dt{}, x[32]){
       indexing: summary | attribute
       attribute:fast-search
     }
@@ -42,7 +42,7 @@ schema passage {
         sum(
           reduce(
             sum(
-              query(qt) * attribute(dt), x
+              query(qt) * cell_cast(attribute(dt),float), x
             ),
             max, dt
           ),
