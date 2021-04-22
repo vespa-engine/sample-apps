@@ -65,6 +65,8 @@ public class ColBERTSearcher extends Searcher {
                 rewriteTensor(
                         getEmbedding(getQueryEmbeddingQuery(query),
                                 execution)));
+        if(query.properties().getBoolean("encoding-only"))
+            return new Result(query);
         return execution.search(query);
     }
 
@@ -117,6 +119,7 @@ public class ColBERTSearcher extends Searcher {
             attention_mask.add(0);
 
         Query query = new Query();
+        query.setTimeout("5s");
         originalQuery.attachContext(query);
         query.setHits(1);
         query.getRanking().setProfile(this.questionEncoderRankProfile);
@@ -129,7 +132,7 @@ public class ColBERTSearcher extends Searcher {
 
 
     private Tensor rewriteTensor(Tensor embedding) {
-        //remove batch dimension d0
+        //remove batch dimension d0 from encoder
         Tensor t = embedding.reduce(Reduce.Aggregator.min,"d0");
         Tensor.Builder builder = Tensor.Builder.of(colbertTensorType);
         for(int i = 0; i < query_max_length;i++)
