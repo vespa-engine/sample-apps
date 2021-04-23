@@ -278,42 +278,33 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 ## Feeding Sample Data 
 
-Feed sample data. 
+We feed the sample documents using the [Vespa http feeder
+client](https://docs.vespa.ai/en/vespa-http-client.html).
 
-We feed the passage documents using the [Vespa http feeder
-client](https://docs.vespa.ai/en/vespa-http-client.html):
+Download the sample data
 
 <pre data-test="exec">
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/sample_passage_feed.jsonl --host localhost --port 8080'
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-sample.jsonl.zst\
+    -O sample-feed/colbert-passages-sample.jsonl.zst
 </pre>
 
-Feed the empty query document type 
+Feed the data 
+
+<pre data-test="exec">
+$ docker exec vespa bash -c 'zcat /MSMARCO/sample-feed/colbert-passages-sample.jsonl.zst| java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+     --host localhost --port 8080'
+</pre>
+
+Feed the query document:
+
 <pre data-test="exec">
 $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
     --file /MSMARCO/sample-feed/sample_query_feed.jsonl --host localhost --port 8080'
 </pre>
 
-Download pre-computed sample for the first 1K documents
-<pre data-test="exec">
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-tensor-update-sample.jsonl \
-    -O sample-feed/colbert-tensor-update-sample.jsonl
-</pre>
+Now all the data is indexed and one can play around with the search interface. Note, only searching 1K passages.
 
-<pre data-test="exec">
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/colbert-tensor-update-sample.jsonl --host localhost --port 8080'
-</pre>
-
-
-Now all the data is in place and one can play around with the search interface (Though only searching 1K documents)
-
-View a sample document 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s http://localhost:8080/document/v1/msmarco/passage/docid/0 |python3 -m json.tool
-</pre>
-
-Do a query for *what was the Manhattan Project*:
+For example do a query for *what was the Manhattan Project*:
 
 <pre>
 $ cat sample-feed/query.json
@@ -353,19 +344,6 @@ One can also compare ranking with the *bm25* ranking profile:
 
 ### Download all passages 
 
-Download and process the entire passage data set using the **ir_datasets** export tool. 
-
-<pre>
-$ ir_datasets export msmarco-passage/train docs --format jsonl  |./src/main/python/passage-feed.py > sample-feed/passage-all-feed.jsonl
-</pre>
-
-Feed all 8.8M passages 
-
-<pre>
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/passage-all-feed.jsonl --host localhost --port 8080'
-</pre>
-
 Feed query document (which allows the evaluation of the ColBERT query encoder):
 
 <pre>
@@ -374,21 +352,22 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
 </pre>
 
 ### Download pre-processed ColBERT document representation 
-Download the preprocessed document tensor data. The data is BZ2 compressed and each file is about 15GB compressed. 
+Download the preprocessed document tensor data. The data is compressed using [ZSTD](https://facebook.github.io/zstd/): 
 
 <pre>
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p1.bz2  -O sample-feed/colbert-passages-p1.bz2
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p2.bz2  -O sample-feed/colbert-passages-p2.bz2
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-p3.bz2  -O sample-feed/colbert-passages-p3.bz2
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-1.jsonl.zst  -O sample-feed/colbert-passages-1.jsonl.zst
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-2.jsonl.zst  -O sample-feed/colbert-passages-2.jsonl.zst
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-3.jsonl.zst  -O sample-feed/colbert-passages-3.jsonl.zst
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-4.jsonl.zst  -O sample-feed/colbert-passages-4.jsonl.zst
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-5.jsonl.zst  -O sample-feed/colbert-passages-5.jsonl.zst
+$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-6.jsonl.zst  -O sample-feed/colbert-passages-6.jsonl.zst
 </pre>
 
-Update all 8.8M passages with the pre-computed ColBERT tensor data. This data was produced using the original ColBERT indexing utility.
-
-Note that we stream through using *bunzip2* as the uncompressed representation
+Note that we stream through the data using *zstdcat* as the uncompressed representation
 is large (300GB). 
 
 <pre>
-$ docker exec vespa bash -c 'bunzip2 -c /MSMARCO/sample-feed/colbert-passages-p*.bz2 | java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+$ docker exec vespa bash -c 'zstdcat /MSMARCO/sample-feed/colbert-passages-*.zst | java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
      --host localhost --port 8080'
 </pre>
 
