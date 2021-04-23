@@ -291,7 +291,7 @@ $ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-sample.jsonl.
 Feed the data 
 
 <pre data-test="exec">
-$ docker exec vespa bash -c 'zcat /MSMARCO/sample-feed/colbert-passages-sample.jsonl.zst| java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+$ docker exec vespa bash -c 'zstdcat /MSMARCO/sample-feed/colbert-passages-sample.jsonl.zst| java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
      --host localhost --port 8080'
 </pre>
 
