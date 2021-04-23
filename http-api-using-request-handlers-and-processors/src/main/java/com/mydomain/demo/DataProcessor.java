@@ -1,7 +1,20 @@
 // Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package com.mydomain.demo;
 
+import com.google.inject.Inject;
 import com.yahoo.component.provider.ListenableFreezableClass;
+import com.yahoo.docproc.DocprocService;
+import com.yahoo.docproc.DocumentProcessor.Progress;
+import com.yahoo.docproc.Processing;
+import com.yahoo.docproc.jdisc.DocumentProcessingHandler;
+import com.yahoo.document.Document;
+import com.yahoo.document.DocumentOperation;
+import com.yahoo.document.DocumentPut;
+import com.yahoo.document.DocumentType;
+import com.yahoo.document.DocumentUpdate;
+import com.yahoo.documentapi.DocumentAccess;
+import com.yahoo.documentapi.SyncParameters;
+import com.yahoo.documentapi.SyncSession;
 import com.yahoo.processing.Processor;
 import com.yahoo.processing.Request;
 import com.yahoo.processing.Response;
@@ -11,6 +24,8 @@ import com.yahoo.processing.response.Data;
 import com.yahoo.processing.response.DataList;
 import com.yahoo.yolean.chain.After;
 import com.yahoo.yolean.chain.Provides;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A processor making a nested result sets of "normalized" strings from the
@@ -19,6 +34,7 @@ import com.yahoo.yolean.chain.Provides;
 @Provides(DataProcessor.DemoData.NAME)
 @After(AnnotatingProcessor.DemoProperty.NAME)
 public class DataProcessor extends Processor {
+
     public static class DemoData extends ListenableFreezableClass implements Data {
         public static final String NAME = "DemoData";
 
@@ -45,9 +61,16 @@ public class DataProcessor extends Processor {
     }
 
     private final DemoComponent termChecker;
+    private final DocumentProcessingHandler docHandler;
+    private final DemoFreezableComponent docApiClient;
+    private final DocumentType musicType;
 
-    public DataProcessor(DemoComponent termChecker) {
+    @Inject
+    public DataProcessor(DemoComponent termChecker, DemoFreezableComponent docApiClient, DocumentProcessingHandler docHandler) {
         this.termChecker = termChecker;
+        this.docHandler = docHandler;
+        this.docApiClient = docApiClient;
+        this.musicType = docHandler.getDocumentTypeManager().getDocumentType("music");
     }
 
     @Override
@@ -58,6 +81,7 @@ public class DataProcessor extends Processor {
         DataList<Data> previous = null;
         String exampleProperty = request.properties().getString(DemoHandler.REQUEST_URI);
         Object o = request.properties().get(AnnotatingProcessor.DemoProperty.NAME_AS_COMPOUND);
+        List<Document> newDocuments = new ArrayList<>();
 
 
         if (exampleProperty != null) {
@@ -79,8 +103,27 @@ public class DataProcessor extends Processor {
                 }
                 previous = current;
                 current = null;
+
+                // For Demo purposes lets create a new Document named after each given term
+                newDocuments.add(new Document(this.musicType, "id:default:music::" + normalized));
             }
         }
+
+        // Now lets send those Document down the Document pipeline
+        Processing processing = new com.yahoo.docproc.Processing();
+        for (Document document : newDocuments) {
+            DocumentPut docPut = new DocumentPut(document);
+            processing.addDocumentOperation(docPut);
+        }
+
+        // NOTE: I'm not sure if this is needed, seems to work without it
+        DocprocService docProcService = this.docHandler.getDocprocServiceRegistry()
+            .getComponent("default");
+        processing.setDocprocServiceRegistry(this.docHandler.getDocprocServiceRegistry());
+
+        if ( docProcService.getExecutor().processUntilDone(processing).equals(Progress.DONE))
+            docApiClient.syncProcess(processing);
+
         return r;
     }
 

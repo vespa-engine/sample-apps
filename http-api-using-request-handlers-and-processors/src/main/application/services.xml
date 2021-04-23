@@ -17,9 +17,27 @@
             </chain>
             <renderer id="demo" class="com.mydomain.demo.DemoRenderer" bundle="http-api-using-request-handlers-and-processors" />
         </processing>
+        <document-processing>
+          <chain id="default">
+            <documentprocessor id="com.mydomain.demo.DemoDocumentProcessor" bundle="http-api-using-request-handlers-and-processors"/>
+          </chain>
+        </document-processing>
         <handler id="com.mydomain.demo.DemoHandler" bundle="http-api-using-request-handlers-and-processors">
             <binding>http://*/demo</binding>
         </handler>
         <component id="com.mydomain.demo.DemoComponent" bundle="http-api-using-request-handlers-and-processors"/>
+        <document-api/>
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
     </container>
+    <content id="music" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="music" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
 </services>
