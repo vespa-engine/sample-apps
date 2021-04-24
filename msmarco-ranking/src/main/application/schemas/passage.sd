@@ -30,12 +30,14 @@ schema passage {
   }
 
   rank-profile bm25 {
+    num-threads-per-search: 1
     first-phase {
       expression: bm25(text)
     }
   }
 
   rank-profile colbert inherits bm25 {
+    num-threads-per-search: 1
     second-phase {
       rerank-count: 1000
       expression {
