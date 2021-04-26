@@ -27,3 +27,13 @@ jobs:
           --file-ignore '/tensor-playground/src/main/resources/playground/'
           ./_site
 
+  build-and-deploy-apps:
+    requires: [~pr, ~commit]
+    image: vespaengine/vespa-pipeline
+    annotations:
+      screwdriver.cd/buildPeriodically: H 0 * * *
+    steps:
+      - build: |
+          set -e
+          source /etc/profile.d/jdk-env.sh
+          mvn -V --batch-mode --no-snapshot-updates install
