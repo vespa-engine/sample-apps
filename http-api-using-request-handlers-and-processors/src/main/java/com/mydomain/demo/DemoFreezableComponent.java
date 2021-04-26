@@ -10,10 +10,10 @@ import com.yahoo.documentapi.SyncSession;
 
 public class DemoFreezableComponent extends FreezableSimpleComponent {
 
-  private final DocumentAccess access = DocumentAccess.createDefault();
-  private final SyncSession session = access.createSyncSession(new SyncParameters());
+  private final SyncSession session;
 
-  public DemoFreezableComponent() {
+  public DemoFreezableComponent(DocumentAccess acc) {
+    this.session = acc.createSyncSession(new SyncParameters.Builder().build());
   }
 
   public void syncProcess(Processing processing) {
