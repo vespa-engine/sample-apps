@@ -10,8 +10,6 @@ jobs:
     image: ruby:2.6
     environment:
       USER_SHELL_BIN: bash
-    annotations:
-      screwdriver.cd/buildPeriodically: H 0 * * *
     steps:
       - install: |
           gem install bundler
@@ -30,8 +28,6 @@ jobs:
   build-and-deploy-apps:
     requires: [~pr, ~commit]
     image: vespaengine/vespa-pipeline
-    annotations:
-      screwdriver.cd/buildPeriodically: H 0 * * *
     steps:
       - build: |
           set -e
