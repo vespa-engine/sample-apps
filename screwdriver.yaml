@@ -10,8 +10,6 @@ jobs:
     image: ruby:2.6
     environment:
       USER_SHELL_BIN: bash
-    annotations:
-      screwdriver.cd/buildPeriodically: H 0 * * *
     steps:
       - install: |
           gem install bundler
@@ -27,3 +25,11 @@ jobs:
           --file-ignore '/tensor-playground/src/main/resources/playground/'
           ./_site
 
+  build-and-deploy-apps:
+    requires: [~pr, ~commit]
+    image: vespaengine/vespa-pipeline
+    steps:
+      - build: |
+          set -e
+          source /etc/profile.d/jdk-env.sh
+          mvn -V --batch-mode --no-snapshot-updates install
