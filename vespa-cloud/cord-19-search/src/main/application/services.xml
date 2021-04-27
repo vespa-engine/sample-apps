@@ -32,7 +32,7 @@
     </document-processing>
 
     <nodes count="[2,4]">
-      <resources memory="16Gb" vcpu="8" disk="100Gb" disk-speed="fast"/>
+      <resources memory="8Gb" vcpu="4" disk="50Gb" disk-speed="fast"/>
     </nodes>
   </container>
 
@@ -61,7 +61,7 @@
       <document-processing cluster="default" chain="bert-tensorizer" />
     </documents>
     <nodes count="[2,4]">
-      <resources memory="16Gb" vcpu="8" disk="100Gb" disk-speed="fast"/>
+      <resources memory="8Gb" vcpu="4" disk="50Gb" disk-speed="fast"/>
     </nodes>
   </content>
 </services>
