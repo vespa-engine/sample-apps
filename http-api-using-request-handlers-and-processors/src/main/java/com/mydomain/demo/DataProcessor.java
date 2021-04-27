@@ -1,4 +1,4 @@
-// Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package com.mydomain.demo;
 
 import com.google.inject.Inject;
@@ -8,13 +8,8 @@ import com.yahoo.docproc.DocumentProcessor.Progress;
 import com.yahoo.docproc.Processing;
 import com.yahoo.docproc.jdisc.DocumentProcessingHandler;
 import com.yahoo.document.Document;
-import com.yahoo.document.DocumentOperation;
 import com.yahoo.document.DocumentPut;
 import com.yahoo.document.DocumentType;
-import com.yahoo.document.DocumentUpdate;
-import com.yahoo.documentapi.DocumentAccess;
-import com.yahoo.documentapi.SyncParameters;
-import com.yahoo.documentapi.SyncSession;
 import com.yahoo.processing.Processor;
 import com.yahoo.processing.Request;
 import com.yahoo.processing.Response;

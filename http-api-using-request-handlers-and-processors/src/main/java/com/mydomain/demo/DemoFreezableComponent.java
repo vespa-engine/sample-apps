@@ -1,5 +1,6 @@
 package com.mydomain.demo;
 
+import com.google.inject.Inject;
 import com.yahoo.component.provider.FreezableSimpleComponent;
 import com.yahoo.docproc.Processing;
 import com.yahoo.document.DocumentOperation;
@@ -12,6 +13,7 @@ public class DemoFreezableComponent extends FreezableSimpleComponent {
 
   private final SyncSession session;
 
+  @Inject
   public DemoFreezableComponent(DocumentAccess acc) {
     this.session = acc.createSyncSession(new SyncParameters.Builder().build());
   }
