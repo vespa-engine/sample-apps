@@ -37,6 +37,7 @@ input_ids = torch.ones(1,32, dtype=torch.int64)
 attention_mask = torch.ones(1,32,dtype=torch.int64)
 args = (input_ids, attention_mask)
 
+colbert_query_encoder.eval()
 torch.onnx.export(colbert_query_encoder,
   args=args,
   f=out_file,
