@@ -25,7 +25,7 @@ jobs:
           --file-ignore '/tensor-playground/src/main/resources/playground/'
           ./_site
 
-  build-and-deploy-apps:
+  build-apps:
     requires: [~pr, ~commit]
     image: vespaengine/vespa-pipeline
     steps:
