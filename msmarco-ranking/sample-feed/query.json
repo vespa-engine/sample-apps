@@ -3,6 +3,6 @@
   "ranking": "colbert",
   "query": "what was the manhattan project?",
   "hits": 5,
-  "searchChain":'passageranking',
+  "searchChain":"passageranking",
   "timeout":'2s' 
 }
