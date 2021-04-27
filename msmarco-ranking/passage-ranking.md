@@ -370,7 +370,7 @@ One can also compare ranking with the *bm25* ranking profile:
     "ranking": "bm25",
     "query": "what was the manhattan project?",
     "hits": 5,
-    "searchChain": 'passageranking' 
+    "searchChain": "passageranking" 
 }
 </pre>
 
