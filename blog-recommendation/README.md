@@ -12,7 +12,7 @@ $ docker info | grep "Total Memory"
 
 **Check-out, compile and run:**
 <pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APPS=`pwd`/sample-apps
 $ cd $VESPA_SAMPLE_APPS/blog-recommendation &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container \
