@@ -16,7 +16,7 @@ $ git clone https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APPS=`pwd`/sample-apps
 $ cd $VESPA_SAMPLE_APPS/blog-recommendation &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container \
-  --volume $VESPA_SAMPLE_APPS:/vespa-sample-apps --publish 8080:8080 --publish 19071:19071 \
+  --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
 **Wait for the configserver to start:**
@@ -27,6 +27,7 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 <pre data-test="exec">
 $ curl --header Content-Type:application/zip --data-binary @target/application.zip \
   http://localhost:19071/application/v2/tenant/default/prepareandactivate
+$ docker exec vespa bash -c '/opt/vespa/bin/vespa-logfmt'  
 </pre>
 **Wait for the application to start:**
 <pre data-test="exec" data-test-wait-for="200 OK">
