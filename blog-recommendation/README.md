@@ -26,7 +26,7 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 **Deploy the application:**
 <pre data-test="exec">
 $ curl --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+  http://localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 **Wait for the application to start:**
 <pre data-test="exec" data-test-wait-for="200 OK">
