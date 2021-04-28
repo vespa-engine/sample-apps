@@ -12,11 +12,6 @@ This is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 Try the apps on [Vespa Cloud](vespa-cloud) or [using Docker](album-recommendation-selfhosted)
 
-### blog-recommendation
-This set of sample apps goes deeper. Starting with [blog-search](blog-search), a more complex search app is build.
-Then transform this into an app for making recommendations in [blog-recommendation](blog-recommendation).
-Finally, use machine learning to train and use a model for use in recommendations.
-
 ### use-case-shopping
 Create an end-to-end E-Commerce shopping engine using [use-case-shopping](use-case-shopping)
 and an [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links.html).
