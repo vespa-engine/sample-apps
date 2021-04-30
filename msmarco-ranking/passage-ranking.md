@@ -231,7 +231,8 @@ See [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performa
 
 ## Further work 
 
-
+* Use bfloat16 or int8 for the ColBERT document tensors to save memory. The current full model takes about 138GB of memory when loaded in a Vespa instance.
+* Replace the sparse wand based retrieved with a dense retriever with higher recall@1K and train ColBERT on the distribution of the dense retriever instead 
 
 
 # Reproducing this work 
