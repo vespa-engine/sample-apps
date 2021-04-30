@@ -35,57 +35,99 @@ http benchmarking utility and latency includes everything including https and da
 The client benchmarking node is in the same region so network latency is insignificant.  
 
 The single threaded client allows comparing latency of the overall end to end performance and it's variance with respect to the 
-different queries in the dev set.  For throughput tests the same query might be performed several times during a run.
-We don't perform any caching of neither the query term tensors obtained by the colBERT query encoder model or caching the result of the passage ranking. 
+different queries in the dev set.  
+
+For throughput tests with more than one client thread the same query might be performed several times during a run.
+We don't perform any caching of neither the query term tensors obtained by the colBERT query encoder
+ model or caching the result of the passage ranking. 
 For a production setup caching the query tensor embeddings would likely have a high cache hit ratio. 
 
 For every test all terms and posting 
 lists are in-memory so the performance of the IO subsystem is not measured.  
+Vespa allows controling how index (postings and dictionary) are
+read from disk, it can use mmap (default) or prepopulate. 
+See [index search tunings](https://docs.vespa.ai/documentation/reference/services-content.html#index-io-search)
 
-We perform the experiments on a single content node with 2 x Xeon Gold 6240 2.60GHz (hyper-threaded 36 core) but limited to use only 36 threads (docker cpu limits). 
-We also use a 16 v-cpu instance to run the stateless container node where the custom logic is implemented. 
+We perform the experiments on a single content node with 2 x Xeon Gold 6240 2.60GHz (36 core, 72 threads with hyperthread). 
+We also use a 16 v-cpu instance to run the stateless container node where the custom 
+[searcher logic](src/main/java/ai/vespa/searcher/colbert/ColBERTSearcher.java) is implemented.
 The system is deployed as an instance in [cloud.vespa.ai](https://cloud.vespa.ai/).
 
+The performance might differ on different cpu models depending on what type of instructions they support (e.g avx512 availability) as 
+Vespa uses openblas and mlas via onnx runtime to optimze evaluation where possible. 
 
-The evaluation performance might differ on different cpu models depending on what type of instructions they support (e.g avx512 availability).
+We use 6 threads per search in all the experiments. 
 
-The content node process (vespa-proton-bin) which holds the entire 8.8M passages and tensor data is just short of using 100GB of memory and feeding and indexing the dataset is 1500 documents per second 
-(real time indexing).
+## Retriever Recall and Performance
 
+First we evaluate the the Recall@K for the dev query set using the [weakAnd query operator](https://docs.vespa.ai/en/using-wand-with-vespa.html) 
+to get a sense for the re-ranking depth. We also measure latency for weakAnd versus brute force exhaustive search. 
 
-# Retriever 
-
-We first look at the retriever and evaluate the Recall@K for the dev query set. The retriever accuracy as measured by Recall@k sets the upper bound on the re-ranker at depth k so we focus on the recall@k metric 
-since we aim to re-rank the top k documents using ColBERT. Reported Recall@1K and MRR@10 is inline with [Lucene BM25 based experiments](https://github.com/castorini/anserini/blob/master/docs/experiments-msmarco-passage.md).
+The retriever accuracy as measured by Recall@k sets the upper bound on the re-ranker at depth k so we focus on the recall@k metric 
+since we aim to re-rank the top k passages with ColBERT. 
+Reported Recall@1K and MRR@10 is inline with 
+[Lucene BM25 based experiments](https://github.com/castorini/anserini/blob/master/docs/experiments-msmarco-passage.md).
  
 
-| WAND k  |  Recall@100 | Recall@500 | Recall@1000 | MRR@10                 |Average number of hits evaluated per query|
-|---------|-------------|------------|-------------|------------------------|------------------------------------------|
-|1000     |      0.6613 |0.8080      |0.8554       |0.184                   | 871,702                                  |
-| 500     |      0.6612 |0.8077      |0.8551       |0.184                   | 532,179                                  |
-| 100     |      0.6611 |0.8040      |0.8501       |0.184                   | 179,300                                  |
-|  10     |      0.6575 |0.7894      |0.8228       |0.184                   |  50,080                                  |
+### WeakAnd versus Exhaustive OR 
+Recall is measured by fetching 1000 hits and usign the *trec_eval* tool. 6,980 queries from the passage *dev* query set:
+
+| Retriever   |  Recall@100    | Recall@500 | Recall@1000 | MRR@10  |Average number of passages ranked per query|
+|----------------|-------------|------------|-------------|---------|-------------------------------------------|
+|WeakAnd(K=1000) |      0.66   |      0.80  |0.85         |0.184    | 158,270                                   |
+|Exhaustive OR   |      0.66   |      0.80  |0.85         |0.184    | 5,792,167                                 |
 
 
+Note that we don't perform any type of stopword removal which impacts the number of passages ranked for both the WeakAnd run
+and the exhaustive OR. 
 
-# Query encoder 
+We also evaluate the latency of the 6,980 queries in the *dev* set, in this case we only fetch 10 documents since that is what 
+we intend to return to the end user, this to not let the time it takes transfering and rendering a large result set to the client dominate the latency benchmark.
+ 
 
+| Search        |  Recall@1000| Average latency(ms)| 90P latency (ms) | 99P Latency  (ms)          |99.9P Latency (ms)  |
+|---------------|-------------|--------------------|------------------|----------------------------|------------------------------------------|
+|WeakAnd(k=1000)|   0.85      | 15.53              | 23.20            | 36.06                      | 128.53             |
+|Exhaustive OR  |      0.85   |103.01              |169.81            |274.07                      | 384.86             |
 
-
-# End to end latency 
-
-## Threads per search = 1
-
-## Threads per search = 2
-
-
-## Threads per search = 
-
-
-# End to end throughput
+As we can see we have as significant cost saving without any impact on Recall@k metric replacing exhaustive OR search with Weak And.
+For a deployed system we would need about 7x more resources with the exhaustive version to match the latency/cost of using the WAND retriever. 
 
 
+# End to end benchmark 
 
+The following experiments are end to end with WAND K = 1000 for 6980 queries from the *dev* query set and re-ranking 1K using
+the ColBERT MaxSim tensor. End to end also includes query encoding via BERT. 
+
+Latency and throughput is measured end to end including https. In this benchmark we use a quantized (int8) version
+of the query encoder, this reduces the MRR@10 from 0.354 to 0.342 but is significantly faster to encode the query.
+
+
+| MRR@10  |  Average Latency | 90P Latency| 99P Latency | QPS     | Clients | Re-rank depth| Quantized BERT|
+|---------|------------------|------------|-------------|---------|---------|--------------|-------------- |
+|0.342    |      34.08       |  42.30     |55.71        | 29.27   |  1      |     1000     | Yes           |
+|0.342    |      33.24       |  41.30     |57.70        | 60.16   |  2      |     1000     | Yes           |
+|0.342    |      33.53       |  42.70     |60.85        | 119.28  |  4      |     1000     | Yes           |
+|0.342    |      40.62       |  51.60     |71.00        | 196.94  |  8      |     1000     | Yes           |
+|0.342    |      44.11       |  61.50     |78.60        | 271.94  |  12     |     1000    | Yes           |
+|0.342    |      48.56       |  56.20     |83.60        | 329.43  |  16     |     1000    | Yes           |
+|0.342    |      57.72       |  74.50     |102.20       | 346.43  |  20     |     1000    | Yes           |
+
+
+At 240 QPS the content node is at 50% cpu(36 cores) util and after that hyper threading causes latency to become higher.
+At 346 QPS the content node is at 85% cpu util and we reach 99p 102 ms where we have reached the maxium throughput we can get out
+of a single content node with this type of cpu.  
+
+
+# Scaling ColBERT evaluation with Vespa 
+
+There are three main components which can be scaled independently:
+
+* The stateless container nodes powering the http api. Stateless container nodes can be scaled horizontally to increase total overall throughput 
+* The passage or document types where the retrieval and ranking is performed can be scaled horizontally to handle a large document volume.  
+
+To scale query encoding throughput across more nodes using Vespa.ai one should use a grouped content cluster for the query document type, 
+this allows linear query encoding throughput scaling. 
 
 
 
