@@ -1,0 +1,31 @@
+[
+  {
+    "id":"id:sampleapp:ad::http://example.com/tornado",
+    "fields":{
+      "title":"ACME Do-It Yourself Tornado Kit",
+      "target":"name in ['Wile E. Coyote'] or age in [20..40]"
+    }
+  },
+  {
+    "id":"id:sampleapp:ad::http://example.com/seed",
+    "fields":{
+      "title":"Bird seeds",
+      "target":"name in ['Road Runner']"
+    }
+  },
+  {
+    "id":"id:sampleapp:ad::http://example.com/sled",
+    "fields":{
+      "title":"ACME Rocket Sled",
+      "target":"name in ['Wile E. Coyote'] or age in [14..25]"
+    }
+  },
+  {
+    "id":"id:sampleapp:ad::http://example.com/boulder",
+    "fields":{
+      "title":"ACME Dehydrated Boulders",
+      "target":"name in ['Wile E. Coyote'] or age in [10..20]"
+    }
+  }
+]
+
