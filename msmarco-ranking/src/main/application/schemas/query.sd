@@ -1,0 +1,21 @@
+schema query {
+    document query {
+    }
+
+    onnx-model encoder {
+      file: files/colbert_query_encoder.onnx
+      input  input_ids: query(input_ids)
+      input  attention_mask: query(attention_mask)
+      output contextual:contextual 
+    }
+
+    rank-profile colbert_query_encoder {
+      num-threads-per-search: 1
+      first-phase {
+        expression: random 
+      }
+      summary-features {
+        onnxModel(encoder).contextual
+      }
+    }
+}

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+#This is an example of how to train a LTR model using LightGBM
 
 import lightgbm as lgb
 import numpy
@@ -70,4 +71,3 @@ for i in range(0,len(columns)):
 
 with open("docranker.json","w") as fp:
     fp.write(model_json)
-
