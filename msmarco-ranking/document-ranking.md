@@ -56,16 +56,16 @@ The authors have published their pre-generated model and we use their prediction
 We use the MS Marco Train split to scrape features for traditional LTR. This enables us to use a range of features and the we use the training data to 
 learn the optimal combination of these features.  
 
-For each positive relevant document we sample 50 negatives from the top-k retrieved using a simple 
+For each positive relevant document we sample 50 negatives from the top-k retrieved, using a simple 
 linear combination of 
 bm25 scores for body text, doc_t5_query, title and url. In total 330,302 queries from the training set is used and 16,845,191 total number of data points. 
 We use the efficient
-[Vespa WeakAnd](https://docs.vespa.ai/documentation/using-wand-with-vespa.html) implementation to retrieve efficiently. 
+[Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html) implementation to retrieve efficiently. 
 
-We handpick 15 [ranking features](https://docs.vespa.ai/documentation/reference/rank-features.html)  which are generally cheap to compute except 
-nativeProximity but we limit it to the rather short title field. We don't do any type of feature normalization or selection except from what LightGBM does. 
+We handpick 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html) which are generally cheap to compute except 
+nativeProximity, but we limit it to the rather short title field. We don't do any type of feature normalization or selection except from what LightGBM does. 
 
-We use LightGBM to train our model since Vespa has great support for GBDT models ([LightGBM](https://docs.vespa.ai/documentation/lightgbm.html), [XGBoost](https://docs.vespa.ai/documentation/xgboost.html)). 
+We use LightGBM to train our model since Vespa has great support for GBDT models ([LightGBM](https://docs.vespa.ai/en/lightgbm.html), [XGBoost](https://docs.vespa.ai/en/xgboost.html)). 
 We tune hyper parameters by observing the performance
 on the development set. We end up with the following hyper parameters and we train for up to 1K iterations with early stopping after 50 iterations if the held out dev set performance does not improve:
 <pre>
@@ -112,7 +112,7 @@ rank-profile ltr inherits ltr-scrape {
   }
 </pre>
 
-The docranker.json file is deployed with the Vespa application package and translated to Vespa's optimized GBDT model evaluation. 
+docranker.json is deployed with the Vespa application package and translated to Vespa's optimized GBDT model evaluation. 
 See [docranker.json (25MB)](src/main/application/models/docranker.json)
 
 
@@ -139,10 +139,9 @@ Vespa supports using multiple threads per *query*
 and in our experiment we use up to 12 threads per query. 
 This allows scaling latency per node and make use of multi-core cpu architectures efficiently.
 
-Below the top two documents
-ranked for the question *when was nelson mandela born*. 
+See the top two documents ranked for the question *when was nelson mandela born* below.
 The per hit relevance score is assigned by the GBDT model. We search 3.2M documents on a single node and single partition and the 
-weakAnd retrieves about 23K hits and the top 1K of those are re-ranked using the GBDT function using the featuers.
+weakAnd retrieves about 23K hits and the top 1K of those are re-ranked using the GBDT function using the features.
 
 ![Vespa Response for when was nelson mandela born](img/screen.png)
 
@@ -167,12 +166,12 @@ Requirements:
 * Java 11, Maven and python3 installed
 * Operating system: macOS or Linux, Architecture: x86_64
 
-See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html).
+See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
 First, we retrieve the sample app:
 
 <pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ SAMPLE_APP=`pwd`/sample-apps/msmarco-ranking
 $ cd $SAMPLE_APP
 </pre>
@@ -213,8 +212,8 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 ## Feeding Sample Data 
 
-Feed sample data. We feed the documents using the [Vespa http feeder
-client](https://docs.vespa.ai/documentation/vespa-http-client.html):
+Feed sample data using the [Vespa http feeder
+client](https://docs.vespa.ai/en/vespa-http-client.html):
 
 <pre data-test="exec">
 $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
@@ -226,7 +225,7 @@ $ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar
     --file /MSMARCO/sample-feed/sample_doc_t5_query.jsonl --host localhost --port 8080'
 </pre>
 
-Now all the data is in place and one can play around with the search interface (Though only searching 1K documents)
+Now all the data is in place and one can play around with the query interface (Though only searching 1K documents)
 
 View a sample document 
 <pre>
@@ -238,7 +237,7 @@ Do a query
 curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr" |python -m json.tool
 </pre>
 
-The data set is small, but one gets a feel for how the data and how the doc tttt query expansion work. Note that negative relevance scores from the GBDT evaluation
+The data set is small, but one gets a feel for how the data and how the doc ttttt query expansion work. Note that negative relevance scores from the GBDT evaluation
 is normal. 
 
 ## Full Evaluation (Using full dataset, all 2.3M documents)
@@ -308,5 +307,4 @@ $ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile magic-rank
 
 The **eval** set relevancy judgements are hidden. To submit to the MS MARCO document ranking see 
 [this repo](https://github.com/microsoft/MSMARCO-Document-Ranking-Submissions)
-
 

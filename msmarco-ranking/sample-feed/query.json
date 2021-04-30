@@ -4,5 +4,5 @@
   "query": "what was the manhattan project?",
   "hits": 5,
   "searchChain":"passageranking",
-  "timeout":'2s' 
+  "timeout": "2s"
 }

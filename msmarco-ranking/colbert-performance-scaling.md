@@ -3,7 +3,7 @@
 # MS Marco Passage Ranking using ColBERT - Performance and Scaling
 
 This document describes scaling and serving performance of the ColBERT representation on Vespa. For a general intro to performance
-and sizing Vespa see [Vespa performance and sizing documentation](https://docs.vespa.ai/documentation/performance/sizing-search.html)
+and sizing Vespa see [Vespa performance and sizing documentation](https://docs.vespa.ai/documentation/en/sizing-search.html)
 
 ![Colbert MaxSim](img/colbert_illustration_zoom.png)
 
@@ -25,12 +25,12 @@ does per default not remove common stop words. The Vespa weakAnd implementation 
 
 The retrieval and re-ranking can be be done using multiple threads per query but the query encoding realization is single threaded.  
 
-In this document we document how changing these parameters impacts the offical evaluation metric MRR@10 as measured on 
+Below we document how changing these parameters impacts the official evaluation metric MRR@10 as measured on 
  the *dev* query split and the end to end performance.  
 
 # Benchmarking setup
 We use the 6,980 queries in the dev set to measure end to end latency versus MRR@10.  The latency oriented experiments are run using a single
-benchmarking thread and we use the [vespa-fbench](https://docs.vespa.ai/documentation/performance/vespa-benchmarking.html)
+benchmarking thread and we use the [vespa-fbench](https://docs.vespa.ai/en/performance/vespa-benchmarking.html)
 http benchmarking utility and latency includes everything including https and data transfer. Since we used MRR at 10 we only fetch the top 10 hits. 
 The client benchmarking node is in the same region so network latency is insignificant.  
 
@@ -38,15 +38,15 @@ The single threaded client allows comparing latency of the overall end to end pe
 different queries in the dev set.  
 
 For throughput tests with more than one client thread the same query might be performed several times during a run.
-We don't perform any caching of neither the query term tensors obtained by the colBERT query encoder
+We don't perform any caching of neither the query term tensors obtained by the ColBERT query encoder
  model or caching the result of the passage ranking. 
-For a production setup caching the query tensor embeddings would likely have a high cache hit ratio. 
+For a production setup, caching the query tensor embeddings would likely have a high cache hit ratio. 
 
 For every test all terms and posting 
 lists are in-memory so the performance of the IO subsystem is not measured.  
 Vespa allows controling how index (postings and dictionary) are
 read from disk, it can use mmap (default) or prepopulate. 
-See [index search tunings](https://docs.vespa.ai/documentation/reference/services-content.html#index-io-search)
+See [index search tunings](https://docs.vespa.ai/en/reference/services-content.html#index-io-search)
 
 We perform the experiments on a single content node with 2 x Xeon Gold 6240 2.60GHz (36 core, 72 threads with hyperthread). 
 We also use a 16 v-cpu instance to run the stateless container node where the custom 
@@ -81,7 +81,7 @@ Recall is measured by fetching 1000 hits and usign the *trec_eval* tool. 6,980 q
 Note that we don't perform any type of stopword removal which impacts the number of passages ranked for both the WeakAnd run
 and the exhaustive OR. 
 
-We also evaluate the latency of the 6,980 queries in the *dev* set, in this case we only fetch 10 documents since that is what 
+We also evaluate the latency of the 6,980 queries in the *dev* set. In this case we only fetch 10 documents since that is what 
 we intend to return to the end user, this to not let the time it takes transfering and rendering a large result set to the client dominate the latency benchmark.
  
 
@@ -126,9 +126,9 @@ There are three main components which can be scaled independently:
 * The stateless container nodes powering the http api. Stateless container nodes can be scaled horizontally to increase total overall throughput 
 * The passage or document types where the retrieval and ranking is performed can be scaled horizontally to handle a large document volume.  
 
-To scale query encoding throughput across more nodes using Vespa.ai one should use a grouped content cluster for the query document type, 
+To scale query encoding throughput across more nodes using Vespa.ai
+one should use a [grouped content cluster](https://docs.vespa.ai/en/performance/sizing-search.html) for the query document type, 
 this allows linear query encoding throughput scaling. 
-
 
 
 
