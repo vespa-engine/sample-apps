@@ -65,6 +65,7 @@ public class ColBERTSearcher extends Searcher {
                 rewriteTensor(
                         getEmbedding(getQueryEmbeddingQuery(query),
                                 execution)));
+        //Switch for benchmarking the encoder only
         if(query.properties().getBoolean("encoding-only"))
             return new Result(query);
         return execution.search(query);
@@ -97,7 +98,7 @@ public class ColBERTSearcher extends Searcher {
         int CLS_TOKEN_ID = 101; //[CLS]
         int SEP_TOKEN_ID = 102; //[SEP]
         int MASK_TOKEN_ID = 103;// [MASK]
-        int Q_TOKEN_ID = 1; //[unused0] token id used during training to represent Query
+        int Q_TOKEN_ID = 1; //[unused0] token id used during training to represent the query. unused1 for document.
 
         List<Integer> token_ids = this.tokenizer.tokenize(queryString,query_max_length,false);
         List<Integer> input_ids = new ArrayList<>(query_max_length);
@@ -130,6 +131,11 @@ public class ColBERTSearcher extends Searcher {
         return query;
     }
 
+    /**
+     * Remove batch
+     * @param embedding the Tensor from query encoding with batch dimension
+     * @return
+     */
 
     private Tensor rewriteTensor(Tensor embedding) {
         //remove batch dimension d0 from encoder
@@ -153,7 +159,7 @@ public class ColBERTSearcher extends Searcher {
         for(Integer in:input)  {
             if (i == dim)
                 break;
-            builder.cell(TensorAddress.of(0,i),in);
+            builder.cell(TensorAddress.of(0,i),in); // 0 is batch dim
             i++;
         }
         return builder.build();
