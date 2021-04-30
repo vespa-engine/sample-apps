@@ -25,8 +25,10 @@ by approximate nearest neighbor search. For example see [Dense Passage retrieval
 
 *Illustration from [ColBERT paper](https://arxiv.org/abs/2004.12832)*
 
-Unlike the *all to all* query document interaction model, the late interaction *ColBERT* model enables processing the documents offline since the per term contextual 
-embedding is independent of the query. This significantly speeds up query evaluation since at query time we only need to calculate the contextual query term embeddings and finally
+Unlike the *all to all* query document interaction model, the late interaction *ColBERT* model enables processing 
+the documents offline since the per term contextual embedding is independent of the query. 
+
+This significantly speeds up onstage query evaluation since at query time one just need to calculate the contextual query term embeddings and 
 calculate the MaxSim operator over the pre-computed contextualized embeddings for the documents we want to re-rank. 
 
 As demonstrated in the paper, the late interaction ColBERT model achieves almost the same ranking accuracy
@@ -117,14 +119,14 @@ like in MS Marco or implicit through user feedback (click or dwell time) used to
 
 <pre> 
 rank-profile bm25 {
-  num-threads-per-search: 1
+  num-threads-per-search: 6
   first-phase {
     expression: bm25(text)
   }
 }
 </pre>
 The bm25 ranking feature has two hyperparameters and we leave them at the default in Vespa (b=0.75, k=1.2). We specify 
-that retrieval and ranking should be using 1 thread. Vespa supports using multiple threads to evaluate a query which allows tuning latency
+that retrieval and ranking should be using 6 threads per search. Vespa supports using multiple threads to evaluate a query which allows tuning latency
 versus throughput. Not all retrieval and ranking cases needs a lot of throughput but end to end latency needs to meet service latency agreement
 and controlling the number of threads per search query can help. 
 See [Vespa performance and sizing guide](https://docs.vespa.ai/documentation/performance/sizing-search.html) 
@@ -141,7 +143,7 @@ The ColBERT MaxSim operator is expressed using Vespa's
  
 <pre> 
 rank-profile colbert inherits bm25 {
-  num-threads-per-search: 1
+  num-threads-per-search: 6
   second-phase {
     rerank-count: 1000
     expression {
@@ -227,17 +229,19 @@ we provide instructions on howto export the Transformer model to ONNX format
 See [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling.md)
 
 
+## Further work 
+
+
+
+
 # Reproducing this work 
-
-We use the [IR_datasets](https://github.com/allenai/ir_datasets) python package to obtain the MS Marco Document and Passage ranking dataset.
-
 Make sure to go read and agree to terms and conditions of [MS Marco Team](https://microsoft.github.io/msmarco/) 
-before downloading the dataset by using the *ir_datasets* package. Note that the terms and conditions bans using the MS Marco Document/Passage data for commercial use.
+before downloading the dataset. Note that the terms and conditions does not permit using the MS Marco Document/Passage data for commercial use.
 
 ## Quick start
 
 The following is a quick start recipe on how to get started with a tiny set of sample data.
-The sample data only contains the first 1000 documents of the full MS Marco passage ranking dataset. We use pre-computed document tensors.
+The sample data only contains the first 1000 documents of the full MS Marco passage ranking dataset. We use pre-computed document ColBERT tensors.
 
 This should be able to run on for instance a laptop. For the full dataset to reproduce our submission to the MS Marco Passage ranking leaderboard see 
 [full evaluation](#full-evaluation).
@@ -440,54 +444,3 @@ To generate runs using the eval set pass *--query_split* eval:
 </pre>
 The *eval* split is the hold out test set where there are no available judgments in the public domain. 
 See [MS Marco Passage Ranking](https://microsoft.github.io/MSMARCO-Passage-Ranking/) for how to submit runs for the leaderboard. 
-
-
-# Appendix ColBERT example 
-A toy example using 2 dimensions for the contextual term embeddings for a input passage with 4 terms. 
-
-The text is processed using a sub-word BERT tokenizer which maps the text to bert token_ids in a fixed vocabulary. The english BERT vocabulary 
-has about 30K terms.  
-
-<pre>
-colbert_document_encoder("An colbert example passage") 
-[
- [0.12 , 0.133 ],
- [0.39 , 0.34 ],
- [0.02 , 0.42 ],
- [0.77, 0.24 ]
-]
-</pre>
-
-The above representation can be stored in Vespa document schema using Vespa [tensor fields](https://docs.vespa.ai/documentation/tensor-user-guide.html).
-At run time we need to compute the same tensor representation of the query:
-
-<pre>
-colbert_query_encoder("passage ranking")
-[
- [0.3 , 0.144 ],
- [0.34 , 0.32 ]
-]
-</pre>
-
-The **MaxSim** score for our toy passage given the query *q*. The passage tensor representation can be pre-processed offline:
-
-<pre>
-score(q,d_id):
- d = get_tensor_data(d_id)
- inner_product = dot(q,d.transpose())
- [
-   [0.055152, 0.16596 , 0.06648 , 0.26556 ],
-   [0.08336 , 0.2414  , 0.1412  , 0.3386  ]
- ]
- max_sim = inner_product.max(1)
- [
-    0.26556, 
-    0.3386 
- ]
- score = sum(max_sim)
- score
- 0.60416
- return score
-</pre>
-
-
