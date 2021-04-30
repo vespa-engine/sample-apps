@@ -1,4 +1,4 @@
-<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - Tensor Playground
 
 The rank expression playground used to visualize rank operations.
@@ -6,7 +6,8 @@ Once deployed, try the Tensor Playground:
 
     http://localhost:8080/playground/index.html
 
-Find tensor math examples in the [Tensor User Guide](https://docs.vespa.ai/documentation/tensor-user-guide.html#tensor-examples).
+Refer to [Tensor Math Examples](https://docs.vespa.ai/en/tensor-examples.html) and the
+[Tensor User Guide](https://docs.vespa.ai/en/tensor-user-guide.html#tensor-examples).
 
 <hr/>
 

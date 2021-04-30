@@ -35,6 +35,14 @@ schema doc {
         field inlinks type weightedset<string> {
             indexing: summary | attribute
         }
+
+        field term_count type int {
+            indexing: summary | attribute
+        }
+
+        field last_updated type int {
+            indexing: summary | attribute
+        }
         
     }
 
@@ -64,4 +72,73 @@ schema doc {
         }
     }
 
+    rank-profile inlinks {
+        first-phase {
+            expression: attribute(inlinks).count
+        }
+        summary-features {
+            attribute(inlinks).count
+        }
+    }
+
+    rank-profile inlinks_age {
+        first-phase {
+            expression: rank_score
+        }
+        summary-features {
+            attribute(inlinks).count
+            attribute(last_updated)
+            now
+            doc_age_seconds
+            age_decay
+            num_inlinks
+            rank_score
+        }
+        constants {
+            decay_const: 0.9
+        }
+        function doc_age_seconds() {
+            expression: now - attribute(last_updated)
+        }
+        function age_decay() {
+            expression: pow(decay_const, doc_age_seconds/3600)
+        }
+        function num_inlinks() {
+            expression: attribute(inlinks).count
+        }
+        function rank_score() {
+            expression: num_inlinks * age_decay
+        }
+    }
+
+    rank-profile inlinks_twophase inherits inlinks_age {
+        first-phase {
+            keep-rank-count       : 50
+            rank-score-drop-limit : 10.0
+            expression            : num_inlinks
+        }
+        second-phase {
+            expression            : rank_score
+        }
+    }
+
+    rank-profile term_count_similarity {
+        first-phase {
+            expression: 1 - fabs( attribute(term_count) - query(q_term_count) ) / (1 + attribute(term_count) + query(q_term_count))
+        }
+        summary-features {
+            attribute(term_count)
+            query(q_term_count)
+        }
+    }
+
+    rank-profile inlink_similarity {
+        first-phase {
+            expression: sum(tensorFromWeightedSet(attribute(inlinks), links) * query(links))
+        }
+        summary-features {
+            query(links)
+            tensorFromWeightedSet(attribute(inlinks), links)
+        }
+    }
 }

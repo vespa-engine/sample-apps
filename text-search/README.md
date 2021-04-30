@@ -3,7 +3,7 @@
 # Vespa sample application - text search tutorial
 
 This sample application contains the code for the text search tutorial. Please refer to the
-[text search tutorial](http://docs.vespa.ai/documentation/tutorials/text-search.html)
+[text search tutorial](https://docs.vespa.ai/en/tutorials/text-search.html)
 for more information.
 
 **Executable example:**

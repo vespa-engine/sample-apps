@@ -24,5 +24,9 @@
         <module>vespa-cloud/album-recommendation-searcher</module>
         <module>vespa-cloud/album-recommendation-docproc</module>
         <module>vespa-cloud/cord-19-search</module>
+        <module>vespa-cloud/vespa-documentation-search</module>
+        <module>dense-passage-retrieval-with-ann</module>
+        <module>msmarco-ranking</module>
+        <module>transformers</module>
     </modules>
 </project>

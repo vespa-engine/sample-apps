@@ -7,3 +7,7 @@ target/
 .project
 .settings/
 .classpath
+vespaapps_index.json
+_site/
+*.pem
+Gemfile.lock

@@ -16,7 +16,7 @@
   </container>
 
   <content id='content' version='1.0'>
-    <redundancy>1</redundancy>
+    <redundancy>2</redundancy>
     <documents>
       <document mode='index' type='blog_post'/>
       <document mode='index' type='user'/>

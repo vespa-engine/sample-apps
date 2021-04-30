@@ -2,7 +2,7 @@
 
 # Vespa sample applications - e-commerce
 
-A sample application showcasing a simple e-commerce site built with Vespa. Refer to [Use Case - shopping](https://docs.vespa.ai/documentation/use-case-shopping.html).
+A sample application showcasing a simple e-commerce site built with Vespa. Refer to [Use Case - shopping](https://docs.vespa.ai/en/use-case-shopping.html).
 
 Included scripts to convert data from Julian McAuley's Amazon product data set
 (http://jmcauley.ucsd.edu/data/amazon/links.html)

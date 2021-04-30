@@ -30,7 +30,7 @@
     <search>
       <visibility-delay>1</visibility-delay>
     </search>
-    <redundancy>1</redundancy>
+    <redundancy>2</redundancy>
     <documents>
       <document type='msmarco' mode="index"/>
       <document-processing cluster="default" chain="transformer-processing" />

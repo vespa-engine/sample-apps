@@ -1,5 +1,4 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
-
 # Vespa sample application - MS Marco Passage and Document Ranking 
 
 This sample application uses the MS Marco Passage and Document ranking datasets to demonstrate Vespa retrieval and ranking capabilities.
@@ -12,4 +11,3 @@ See [Passage Ranking](passage-ranking.md) to reproduce Vespa.ai runs on MS Marco
 
 # Document Ranking using doc to query and GBDT model
 See [Document Ranking](document-ranking.md) to reproduce Vespa.ai runs on MS Marco Document Ranking Leaderboard
-

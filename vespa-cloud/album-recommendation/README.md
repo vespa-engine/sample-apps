@@ -1,7 +1,7 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - album recommendations
 
-Refer to the [Quick Start](http://cloud.vespa.ai/vespa-cloud-quick-start) to try this sample application.
+Refer to the [Quick Start](https://cloud.vespa.ai/en/getting-started) to try this sample application.
 
 <p>
 This application ranks music albums using a user profile:
@@ -66,10 +66,10 @@ Albums with scores for a set of categories are matched with a user's preference.
 </pre>
 <strong>Rank profile</strong>
 </p><p>
-A <a href="https://docs.vespa.ai/documentation/ranking.html">rank profile</a>
+A <a href="https://docs.vespa.ai/en/ranking.html">rank profile</a>
 calculates a <em>relevance score</em> per document.
 This is defined by the application author - in this case, it is the tensor product.
-The data above is represented using <a href="http://docs.vespa.ai/documentation/tensor-user-guide.html">tensors</a>.
+The data above is represented using <a href="https://docs.vespa.ai/en/tensor-user-guide.html">tensors</a>.
 As the tensor is one-dimensional (the <em>cat</em> dimension), this a vector,
 hence this is the dot product of the user profile and album categories:
 <pre>

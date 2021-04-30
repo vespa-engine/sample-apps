@@ -1,91 +1,137 @@
-# Copyright 2018 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-version: '3'
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+version: '3.7'
 services:
-  cfg1:
+  config0:
     image: vespaengine/vespa
-    command: configserver
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
+    hostname: "config0.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
-      - "19071:19071"
-    networks:
-      net:
-        aliases: 
-          - cfg1.vespa_net
-    volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
-
-  cfg2:
-    image: vespaengine/vespa
-    command: configserver
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
-    environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
-    networks:
-      net:
-        aliases: 
-          - cfg2.vespa_net
-    volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
-
-  cfg3:
-    image: vespaengine/vespa
-    command: configserver
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
-    environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
-    networks:
-      net:
-        aliases: 
-          - cfg3.vespa_net
-    volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
-
-  container:
-    image: vespaengine/vespa
-    command: services
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
-    environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
-    deploy:
-       mode: replicated
-       replicas: 3
-    ports:
-      - "8080:8080"
+      - target: 19071
+        published: 19071
+        mode: host
     networks:
       - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
-  content:
+  config1:
     image: vespaengine/vespa
-    command: services
-    hostname: "{{.Service.Name}}.{{.Task.Slot}}.{{.Task.ID}}.vespa_net"
+    hostname: "config1.vespa_net"
     environment:
-      - VESPA_CONFIGSERVERS=cfg1.vespa_net,cfg2.vespa_net,cfg3.vespa_net
-    deploy:
-       mode: replicated
-       replicas: 3
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
-       - data:/opt/vespa/var
-       - logs:/opt/vespa/logs
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  config2:
+    image: vespaengine/vespa
+    hostname: "config2.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  container0:
+    image: vespaengine/vespa
+    command: services
+    hostname: "container0.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    ports:
+      - target: 8080
+        published: 8080
+        mode: host
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  container1:
+    image: vespaengine/vespa
+    command: services
+    hostname: "container1.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    ports:
+      - target: 8080
+        published: 8081
+        mode: host
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  container2:
+    image: vespaengine/vespa
+    command: services
+    hostname: "container2.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    ports:
+      - target: 8080
+        published: 8082
+        mode: host
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  content0:
+    image: vespaengine/vespa
+    command: services
+    hostname: "content0.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  content1:
+    image: vespaengine/vespa
+    command: services
+    hostname: "content1.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
+
+  content2:
+    image: vespaengine/vespa
+    command: services
+    hostname: "content2.vespa_net"
+    environment:
+      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+    networks:
+      - net
+    volumes:
+      - data:/opt/vespa/var
+      - logs:/opt/vespa/logs
 
 volumes:
   data:
-    external:
-      name: '{{.Service.Name}}-{{.Task.Slot}}-data'
+    external: true
+    name: '{{.Service.Name}}-{{.Task.Slot}}-data'
 
   logs:
-    external:
-      name: '{{.Service.Name}}-{{.Task.Slot}}-logs'
+    external: true
+    name: '{{.Service.Name}}-{{.Task.Slot}}-logs'
 
 networks:
   net:
     driver: overlay
+    attachable: true

@@ -2,7 +2,7 @@
 # Vespa basic search example on Docker Swarm
 
 Please refer to
-[Vespa quick start using Docker](http://docs.vespa.ai/documentation/vespa-quick-start.html)
+[Vespa quick start using Docker](https://docs.vespa.ai/en/vespa-quick-start.html)
 for more information on the basic single container example.
 
 This example assumes that a [Docker Swarm](https://docs.docker.com/engine/swarm/) is up and running and that you have console access to one of the masters.
@@ -21,7 +21,7 @@ $ VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
 </pre>
 **Deploy the Vespa stack:**
 <pre data-test="exec">
-$ docker stack deploy -c $VESPA_SAMPLE_APP/docker-compose.yml vespa
+$ docker stack deploy --orchestrator swarm --compose-file $VESPA_SAMPLE_APP/docker-compose.yml vespa
 </pre>
 **Wait for successful deployment of the stack:**
 <pre data-test="exec">

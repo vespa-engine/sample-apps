@@ -6,6 +6,7 @@ import ai.vespa.hosted.cd.TestRuntime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestReporter;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -24,6 +25,12 @@ public class VespaDocSystemTest {
 
     Endpoint testEndpoint = TestRuntime.get().deploymentToTest().endpoint("default");
     ObjectMapper mapper = new ObjectMapper();
+
+    @Test
+    void testOutput(TestReporter testReporter) {
+        testReporter.publishEntry("Hello from an empty test!");
+        assertTrue(true, "Text from assertion for comparison");
+    }
 
     @Test
     public void testFeedSearchDelete() throws Exception {
@@ -110,7 +117,7 @@ public class VespaDocSystemTest {
 
     /**
      * Feed Test documents using Vespa Put
-     * @see <a href="https://docs.vespa.ai/documentation/reference/document-v1-api-reference.html">document-v1-api-reference</a>
+     * @see <a href="https://docs.vespa.ai/en/reference/document-v1-api-reference.html">document-v1-api-reference</a>
      */
     public void feedTestDocs(String testDocs) throws IOException {
         JsonNode docs = mapper.readTree(VespaDocSystemTest.class.getResourceAsStream(testDocs));

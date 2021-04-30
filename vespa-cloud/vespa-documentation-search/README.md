@@ -1,18 +1,75 @@
 # Vespa Documentation Search
-Vespa Cloud instance for searching Vespa.ai and Vespa Cloud documentation.
+Vespa Documentation Search is a Vespa Cloud instance for searching documents in
+* vespa.ai
+* cloud.vespa.ai
+* blog.vespa.ai
+* Vespa Sample applications README files
 
 This sample app is auto-deployed to Vespa Cloud,
 see [deploy-vespa-documentation-search.yaml](https://github.com/vespa-engine/sample-apps/blob/master/.github/workflows/deploy-vespa-documentation-search.yaml)
 
-
-## Components
 ![Vespa-Documentation-Search-Architecture](img/Vespa-Documentation-Search-Architecture.svg)
+
+
+
+## Query API
+Open API endpoints:
+* https://doc-search.vespa.oath.cloud/document/v1/
+* https://doc-search.vespa.oath.cloud/search/
+
+Example queries:
+* https://doc-search.vespa.oath.cloud/document/v1/open/doc/docid/open%2Fen%2Freference%2Fquery-api-reference.html
+* https://doc-search.vespa.oath.cloud/search/?yql=select+*+from+doc+where+userInput(@input)%3B&input=vespa+ranking+is+great
+
+Using these endpoints is a good way to get started with Vespa -
+see the [github deploy action](https://github.com/vespa-engine/sample-apps/blob/master/.github/workflows/deploy-vespa-documentation-search.yaml)
+(use `vespa:deploy` to deploy to a dev instance or the [quick-start](https://docs.vespa.ai/en/vespa-quick-start.html))
+to deploy using Docker.
+
+Refer to [getting-started-ranking](https://docs.vespa.ai/en/getting-started-ranking.html)
+for example use of the Query API.
+
+
+### Feed your own instance
+It is easy to set up your own instance on Vespa Cloud and feed  documents from
+[vespa-engine/documentation](https://github.com/vespa-engine/documentation/):
+
+1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build`.
+Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb)
+for how the feed file is generated.
+
+2: Add data plane credentials:
+
+    $ pwd; ll *.pem
+    /Users/myuser/github/vespa-engine/documentation
+    -rwxr-xr-x@ 1 myuser  staff  3272 Mar 17 09:30 data-plane-private-key.pem
+    -rwxr-xr-x@ 1 myuser  staff  1696 Mar 17 09:30 data-plane-public-key.pem
+
+3: Set endpoint in `_config.yml` (get this from the Vespa Cloud Console):
+```
+diff --git a/_config.yml b/_config.yml
+...
+     feed_endpoints:
+-        - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.public.vespa.oath.cloud/
+-          indexes:
+-              - open_index.json
+-        - url: https://vespacloud-docsearch.vespa-team.aws-ap-northeast-1a.public.vespa.oath.cloud/
++        - url: https://myinstance.vespacloud-docsearch.mytenant.aws-us-east-1c.dev.public.vespa.oath.cloud/
+           indexes:
+```
+
+Feed `open_index.json`:
+
+    $ ./feed_to_vespa.py
+
 
 
 ## Document feed automation
 Vespa Documentation is stored in GitHub:
-* https://github.com/vespa-engine/documentation
+* https://github.com/vespa-engine/documentation and https://github.com/vespa-engine/frontpage
 * https://github.com/vespa-engine/cloud
+* https://github.com/vespa-engine/blog
+* https://github.com/vespa-engine/sample-apps
 
 Jekyll is used to serve the documentation, it rebuilds at each commit.
 
@@ -23,10 +80,12 @@ The _Build_ step in the workflow uses the Jekyll Generator plugin to build a JSO
 * https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb
 
 
+
 ### Security
 Vespa Cloud secures endpoints using mTLS. Secrets can be stored in GitHub Settings for a repository.
 Here, the private key secret is accessed in the GitHub Actions workflow that feeds to Vespa Cloud:
 [feed.yml](https://github.com/vespa-engine/documentation/blob/master/.github/workflows/feed.yml)
+
 
 
 ## Query integration
@@ -41,9 +100,10 @@ Note JSON-P being used (_jsoncallback=_) - this simplifies the search result pag
 <!-- ToDo: ref to Vespa JSON interface for this quirk -->
 
 
+
 ## Vespa Cloud Development and Deployments
 This is a Vespa Cloud application and has hence implemented
-[automated deployments](https://cloud.vespa.ai/automated-deployments).
+[automated deployments](https://cloud.vespa.ai/en/automated-deployments).
 
 The feed can contain an array of links from each document.
 The [OutLinksDocumentProcessor](src/main/java/ai/vespa/cloud/docsearch/OutLinksDocumentProcessor.java)
@@ -62,12 +122,14 @@ Creating a System Test is also a great way to develop a Vespa application:
 <!-- ToDo: link to a Vespa Cloud Developer Guide once completed -->
 
 
+
 ## Status
 [![Deploy vespa-documentation-search to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20vespa-documentation-search%20to%20Vespa%20Cloud/badge.svg?branch=master)](https://github.com/vespa-engine/sample-apps/actions?query=workflow%3A%22Deploy+vespa-documentation-search+to+Vespa+Cloud%22)
 
 [![Vespa Documentation Search Feed](https://github.com/vespa-engine/documentation/workflows/Vespa%20Documentation%20Search%20Feed/badge.svg?branch=master)](https://github.com/vespa-engine/documentation/actions?query=workflow%3A%22Vespa+Documentation+Search+Feed%22)
 
 [![Vespa Cloud Documentation Search Feed](https://github.com/vespa-engine/cloud/workflows/Vespa%20Cloud%20Documentation%20Search%20Feed/badge.svg?branch=master)](https://github.com/vespa-engine/cloud/actions?query=workflow%3A%22Vespa+Cloud+Documentation+Search+Feed%22)
+
 
 
 ## Simplified node.js Lambda code

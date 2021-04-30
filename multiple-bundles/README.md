@@ -7,7 +7,7 @@ The extra bundle for this application is found in [multiple-bundles-lib][1] .
 
 Refer to [container components][2] and the [bundle plugin][3] for more information.
 
-Docker requirements same as in the [quick-start](https://docs.vespa.ai/documentation/vespa-quick-start.html).
+Docker requirements same as in the [quick-start](https://docs.vespa.ai/en/vespa-quick-start.html).
 
 
 ### Executable example
@@ -59,5 +59,5 @@ $ docker rm -f vespa
 </pre>
 
 [1]: https://github.com/vespa-engine/sample-apps/tree/master/multiple-bundles-lib
-[2]: https://docs.vespa.ai/documentation/jdisc/container-components.html
-[3]: https://docs.vespa.ai/documentation/bundle-plugin.html
+[2]: https://docs.vespa.ai/en/jdisc/container-components.html
+[3]: https://docs.vespa.ai/en/bundle-plugin.html

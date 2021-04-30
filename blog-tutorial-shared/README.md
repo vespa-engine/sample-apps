@@ -9,11 +9,11 @@ This directory contains utility code for the blog-search and blog-recommendation
 
     $ python parse.py trainPosts.json > somefile.json
 
-Parses JSON from the file trainPosts.json downloaded from Kaggle during the [blog search tutorial](http://docs.vespa.ai/documentation/tutorials/blog-search.html) and format it according to Vespa Document JSON format.
+Parses JSON from the file trainPosts.json downloaded from Kaggle during the [blog search tutorial](https://docs.vespa.ai/en/tutorials/blog-search.html) and format it according to Vespa Document JSON format.
 
     $ python parse.py -p trainPosts.json > somefile.json
 
-Give it the flag "-p" or "--popularity", and the script also calculates and adds the field `popularity`, as introduced [in the tutorial](http://docs.vespa.ai/documentation/tutorials/blog-search.html#blog-popularity-signal).
+Give it the flag "-p" or "--popularity", and the script also calculates and adds the field `popularity`, as introduced [in the tutorial](https://docs.vespa.ai/en/tutorials/blog-search.html#blog-popularity-signal).
 
 ## Vespa Tutorial pt. 2
 
@@ -77,7 +77,7 @@ Visualize the accuracy and loss metrics with
 
 The `vespaModel.py` script saves the model to a directory `saved` which can be
 imported directly into Vespa. Please see [Ranking with TensorFlow models in
-Vespa](http://docs.vespa.ai/documentation/tensorflow.html) for more details.
+Vespa](https://docs.vespa.ai/en/tensorflow.html) for more details.
 
 ### Offline evaluation
 

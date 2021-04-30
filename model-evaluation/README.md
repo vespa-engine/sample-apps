@@ -4,7 +4,7 @@
 A sample Vespa application to evaluate models in the application package.
 
 Please refer to
-[stateless model evaluation](https://docs.vespa.ai/documentation/stateless-model-evaluation.html)
+[stateless model evaluation](https://docs.vespa.ai/en/stateless-model-evaluation.html)
 for more information.
 
 ### Executable example

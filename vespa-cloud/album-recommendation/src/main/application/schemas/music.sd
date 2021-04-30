@@ -1,5 +1,9 @@
-# Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
+# A description of a type of data, how to store and index it, and what to compute over the data elements
+#
+# See:
+#  - https://docs.vespa.ai/en/schemas.html
 schema music {
 
     document music {
@@ -22,6 +26,12 @@ schema music {
 
     }
 
+    # Rank profiles defines what to compute over the data, and how to use the computation result to order them
+    # They can be selected at query time (ranking.profile=[name]), and can be everything from simple handwritten
+    # expressions as below to references to large machine-learned models.
+    #
+    # See
+    #  - https://docs.vespa.ai/en/ranking.html
     rank-profile rank_albums inherits default {
         first-phase {
             expression: sum(query(user_profile) * attribute(category_scores))

@@ -10,17 +10,17 @@
             </chain>
         </document-processing>
         <search/>
-        <nodes count="1" />
+        <nodes count="2" />
     </container>
 
     <content id="musiccluster" version="1.0">
-        <redundancy>1</redundancy>
+        <redundancy>2</redundancy>
         <documents>
             <document type="music"  mode="index" />
             <document type="lyrics" mode="index" />
             <document-processing cluster="my-processing-cluster" chain="my-processing-chain" />
         </documents>
-        <nodes count="1" />
+        <nodes count="2" />
     </content>
 
 </services>

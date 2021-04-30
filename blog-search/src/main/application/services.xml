@@ -11,7 +11,7 @@
   </container>
 
   <content id='blog_post' version='1.0'>
-    <redundancy>1</redundancy>
+    <redundancy>2</redundancy>
     <search>
       <visibility-delay>1.0</visibility-delay>
     </search>

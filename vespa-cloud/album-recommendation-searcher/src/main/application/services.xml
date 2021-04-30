@@ -3,17 +3,16 @@
 <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
 
     <!--
-        The container cluster answers HTTP requests on behalf of the content cluster (see below).
-
-        You can optionally write Java plugins for the containers to both process content (document processors)
-        and to process search queries and results (searchers).
+        A container cluster handles incoming requests to the application and processes those requests,
+        and their results. The processing to do and the API's to expose can be provides by Vespa
+        or by the application through Java components supplied as part of the application.
 
         See:
-          - Reference: https://docs.vespa.ai/documentation/reference/services-container.html
+          - Reference: https://docs.vespa.ai/en/reference/services-container.html
     -->
     <container id="default" version="1.0">
         <!--
-            <document-api /> tells the container that it should accept documents for indexing. Through the
+            <document-api> tells the container that it should accept documents for indexing. Through the
             Document REST API you can PUT new documents, UPDATE existing documents, and DELETE documents
             already in the cluster.
 
@@ -21,23 +20,23 @@
             to the content cluster.
 
             See:
-             - Reference: https://docs.vespa.ai/documentation/reference/services-container.html#document-api
-             - Operations: https://docs.vespa.ai/documentation/document-api.html
+             - Reference: https://docs.vespa.ai/en/reference/services-container.html#document-api
+             - Operations: https://docs.vespa.ai/en/document-api.html
         -->
-        <document-api />
+        <document-api/>
 
         <!--
-            <search /> tells the container to answers queries and serve results for those queries.
-            Inside the <search /> cluster you can configure "search chains" - a Java plugin that
-            will do chained processing of both queries and results.
+            <search> tells the container to answers queries and serve results for those queries.
+            Inside the <search /> cluster you can configure chains of "searchers" -
+            Java components processing the query and/or result.
 
             See:
-             - Reference: https://docs.vespa.ai/documentation/search-api.html
-             - Searchers: https://docs.vespa.ai/documentation/searcher-development.html
+             - Reference: https://docs.vespa.ai/en/search-api.html
+             - Searchers: https://docs.vespa.ai/en/searcher-development.html
         -->
         <search>
             <chain id="metalchain" inherits="vespa">
-                <searcher id="ai.vespa.example.album.MetalSearcher" bundle="albums" after="MinimalQueryInserter">
+                <searcher id="ai.vespa.example.album.MetalSearcher" bundle="albums">
                     <config name="ai.vespa.example.album.metal-names">
                         <metalWords>
                             <item>hetfield</item>
@@ -50,24 +49,25 @@
         </search>
 
         <!--
-            <nodes /> tells Vespa Cloud how many nodes the container should be scaled across.  You can
-            also add requirements such as vcpus, memory, and disk space.
+            <nodes> specifies the nodes that should run this cluster, and through the <resources>
+            subtag, the resources on those nodes. You can also specify ranges of nodes and resources
+            to activate autoscaling.
 
             See:
-             - Reference: Does-not-exist-yet
+             - Reference: https://cloud.vespa.ai/en/reference/services.html
         -->
         <nodes count="2" />
     </container>
 
     <!--
-        <content /> describes the stateful contant nodes in Vespa.  Here all your documents are stored
-        and distributed across the nodes in the cluster.
+        <content/> content clusters store application data, maintain indexes and executes the
+        distributed parts of a query.
 
         See:
-          - Reference: https://docs.vespa.ai/documentation/reference/services-content.html
+          - Reference: https://docs.vespa.ai/en/reference/services-content.html
     -->
     <content id="music" version="1.0">
-        <redundancy>1</redundancy>
+        <redundancy>2</redundancy>
         <documents>
             <document type="music" mode="index" />
         </documents>

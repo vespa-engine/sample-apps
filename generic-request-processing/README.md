@@ -5,7 +5,7 @@ A simple stateless Vespa application demonstrating general composable request-re
 with Vespa. No content cluster is configured just a stateless Java container. A custom config class
 is created and used to control the processing component.
 
-Refer to [getting started](https://docs.vespa.ai/documentation/getting-started.html) for more information.
+Refer to [getting started](https://docs.vespa.ai/en/getting-started.html) for more information.
 
 
 ### Executable example

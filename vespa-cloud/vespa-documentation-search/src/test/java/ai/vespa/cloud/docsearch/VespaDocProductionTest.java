@@ -26,14 +26,14 @@ public class VespaDocProductionTest {
         // Here, ensure > 50 documents about ranking
         HttpRequest req = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("https://5f6trv8063.execute-api.us-east-1.amazonaws.com/default/VespaDocSearchLambda/?jsoncallback=?&query=ranking&ranking=documentation&locale=en-US&hits=1"))
+                .uri(URI.create("https://doc-search.vespa.oath.cloud/search/?query=ranking&ranking=documentation&locale=en-US&hits=1"))
                 .build();
         HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, res.statusCode());
 
         String body = res.body();
-        long hitCount = new ObjectMapper().readTree(body.substring(2, body.length()-2))  // Strip ?( ); from JSON-P response
+        long hitCount = new ObjectMapper().readTree(body)
                 .get("root").get("fields").get("totalCount").asLong();
         assert(hitCount > 50);
     }

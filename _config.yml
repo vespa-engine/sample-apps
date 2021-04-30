@@ -1,0 +1,32 @@
+markdown: kramdown
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - .idea
+  - vespaapps_index.json
+
+defaults:
+  -
+    scope:
+      path  : ""
+    values:
+      index : true
+
+search:
+  namespace: "vespaapps"
+  endpoint : "https://vespa-documentation-search.vespa.global.vespa.oath.cloud"
+  do_feed  : true
+  do_index_removal_before_feed: false
+  feed_endpoints:
+    - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.public.vespa.oath.cloud/
+      indexes:
+        - vespaapps_index.json
+    - url: https://vespacloud-docsearch.vespa-team.aws-ap-northeast-1a.public.vespa.oath.cloud/
+      indexes:
+        - vespaapps_index.json

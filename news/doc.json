@@ -1,0 +1,3 @@
+[
+{ "put": "id:news:news::1", "fields": { "title": "Hello world!" } }
+]

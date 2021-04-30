@@ -1,0 +1,29 @@
+shared:
+  settings:
+    email:
+      addresses: [kraune@verizonmedia.com]
+      statuses: [SUCCESS, FAILURE]
+
+jobs:
+  link-checker-sample-apps:
+    requires: [~pr, ~commit]
+    image: ruby:2.6
+    environment:
+      USER_SHELL_BIN: bash
+    annotations:
+      screwdriver.cd/buildPeriodically: H 0 * * *
+    steps:
+      - install: |
+          gem install bundler
+          export LANG=C.UTF-8
+          bundle install
+      - add-front-matter-and-build: |
+          find . -not -path './_site/*' -name README.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
+          bundle exec jekyll build
+      - check-links: >
+          bundle exec htmlproofer --assume-extension --empty-alt-ignore
+          --directory-index-file README.html
+          --url-ignore 'src/main/application/schemas/wiki.sd#L80,http://localhost:8080/site'
+          --file-ignore '/tensor-playground/src/main/resources/playground/'
+          ./_site
+

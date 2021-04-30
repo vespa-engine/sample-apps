@@ -2,9 +2,9 @@
 # Vespa basic search example on GKE
 
 Please refer to
-[Vespa quick start using Docker](http://docs.vespa.ai/documentation/vespa-quick-start.html)
+[Vespa quick start using Docker](https://docs.vespa.ai/en/vespa-quick-start.html)
 for more information on the basic single container example.
-Also see [Vespa quick start using Kubernetes](https://docs.vespa.ai/documentation/vespa-quick-start-kubernetes.html).
+Also see [Vespa quick start using Kubernetes](https://docs.vespa.ai/en/vespa-quick-start-kubernetes.html).
 
 This example assumes that a you already created a Google project, you have the gcloud command line and kubectl installed.
 If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/quickstart).
@@ -45,6 +45,9 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 <pre data-test="exec">
 $ curl -s "http://$(kubectl get service/vespa -o jsonpath='{.status.loadBalancer.ingress[*].ip}'):$(kubectl get service/vespa -o jsonpath='{.spec.ports[?(@.name=="container")].port}')/search/?query=michael" | python -m json.tool
 </pre>
+
+**Security notice**
+This script is just an example, it'll expose the master node to internet. For production purpose you should disable it according to [vespa security guidelines](https://docs.vespa.ai/en/securing-your-vespa-installation.html)
 
 **Congratulations! You have now deployed and tested a Vespa application on a multinode cluster.**
 **After you have finished testing the Vespa appplication excute the following to delete the cluster:** Replace CLUSTER_NAME and ZONE with your own values. By default `CLUSTER_NAME=vespa` and `ZONE=europe-west1-b`
