@@ -56,7 +56,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
     https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
 $ java -jar vespa-http-client-jar-with-dependencies.jar \
-    --verbose --file adsdata.xml --endpoint http://localhost:8080
+    --verbose --file adsdata.json --endpoint http://localhost:8080
 </pre>
 
 **Test the application:**
