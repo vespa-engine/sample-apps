@@ -1,4 +1,7 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample applications - album recommendations docproc
 
 Data written to Vespa pass through document processing,
