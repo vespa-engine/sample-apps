@@ -30,6 +30,7 @@ Create an application in the Vespa Cloud.
 Log in to [console.vespa.ai](http://console.vespa.ai) and click "Create application", choose a name like _album-rec-docproc_.
 This requires a Google or GitHub account, and will start your free trial if you don't already have a Vespa Cloud tenant.
 
+
 Clone sample apps:
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
@@ -49,7 +50,7 @@ $ cp data-plane-public-cert.pem src/main/application/security/clients.pem
 
 Create a deployment API key. In [console.vespa.ai](http://console.vespa.ai),
 choose tenant and click _Keys_ to generate and save the _user API key_.
-The key is saved to `$HOME/Downloads/USER.TENANTNAME.pem.
+The key is saved to `$HOME/Downloads/USER.TENANTNAME.pem`.
 
 
 Set the tenant and application name.
