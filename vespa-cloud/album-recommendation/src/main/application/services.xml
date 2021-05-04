@@ -44,9 +44,7 @@
             See:
              - Reference: https://cloud.vespa.ai/en/reference/services.html
         -->
-        <nodes count="2">
-            <resources vcpu="2.0" memory="8Gb" disk="50Gb"/>
-        </nodes>
+        <nodes count="[2,3]" />
     </container>
 
     <!--
@@ -61,9 +59,7 @@
         <documents>
             <document type="music" mode="index" />
         </documents>
-        <nodes count="2">
-            <resources vcpu="2.0" memory="[8Gb,128Gb]" disk="[50Gb,1000Gb]"/>
-        </nodes>
+        <nodes count="2" />
     </content>
 
 </services>
