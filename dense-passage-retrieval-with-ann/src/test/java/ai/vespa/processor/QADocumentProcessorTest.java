@@ -16,10 +16,11 @@ import com.yahoo.document.datatypes.TensorFieldValue;
 import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.statistics.StatisticsImpl;
 import com.yahoo.tensor.TensorType;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.*;
 
 public class QADocumentProcessorTest {
 
@@ -71,8 +72,8 @@ public class QADocumentProcessorTest {
         TensorFieldValue text_tensor = (TensorFieldValue)doc.getFieldValue("text_token_ids");
         assertNotNull(title_tensor);
         assertNotNull(text_tensor);
-        assertTrue(title_tensor.toString().startsWith("tensor(d0[256]):[29168.0, 1035.0, 13957.0"));
-        assertTrue(text_tensor.toString().startsWith("tensor(d0[256]):[29168.0, 3744.0, 13957.0, 1006.0, 2141.0, 2285.0, 1016.0, 1010.0"));
+        assertTrue(title_tensor.toString().startsWith("tensor<float>(d0[256]):[29168.0, 1035.0, 13957.0"));
+        assertTrue(text_tensor.toString().startsWith("tensor<float>(d0[256]):[29168.0, 3744.0, 13957.0, 1006.0, 2141.0, 2285.0, 1016.0, 1010.0"));
     }
 
     @Test
