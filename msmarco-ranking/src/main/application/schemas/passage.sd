@@ -44,7 +44,7 @@ schema passage {
         sum(
           reduce(
             sum(
-              query(qt) * (attribute(dt), x
+              query(qt) * attribute(dt), x
             ),
             max, dt
           ),
