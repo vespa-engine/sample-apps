@@ -25,35 +25,84 @@ Flow:
 1. Look up in _lyrics_ schema if album with given ID has lyrics stored
 1. Store album with lyrics in _music_ schema 
 
-Follow steps 1-8 in [Getting started](https://cloud.vespa.ai/en/getting-started-java) -
-but do not change directory, use the _album-recommendation-docproc_ directory -
-stop after setting $ENDPOINT
+
+Create an application in the Vespa Cloud.
+Log in to [console.vespa.ai](http://console.vespa.ai) and click "Create application", choose a name like _album-rec-docproc_.
+This requires a Google or GitHub account, and will start your free trial if you don't already have a Vespa Cloud tenant.
+
+Clone sample apps:
+<pre data-test="exec">
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ cd sample-apps/vespa-cloud/album-recommendation-docproc
+</pre>
+
+
+Create a self-signed certificate. This certificate and key will be used to send requests to Vespa Cloud.
+<pre data-test="exec">
+$ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
+-subj "/CN=cloud.vespa.example" \
+-keyout data-plane-private-key.pem -out data-plane-public-cert.pem
+$ mkdir -p src/main/application/security
+$ cp data-plane-public-cert.pem src/main/application/security/clients.pem
+</pre>
+
+
+Create a deployment API key. In [console.vespa.ai](http://console.vespa.ai),
+choose tenant and click _Keys_ to generate and save the _user API key_.
+The key is saved to `$HOME/Downloads/USER.TENANTNAME.pem.
+
+
+Set the tenant and application name.
+Update `pom.xml` with the `tenant` and `application` names you chose when creating the application in the console.
+
+
+Build and deploy the application. This deploys an instance (with a name you choose here) of the application to the `dev` zone:
+<pre>
+$ mvn package vespa:deploy -DapiKeyFile=$HOME/Downloads/USER.TENANTNAME.pem -Dinstance=my-instance
+</pre>
+<!-- Version of the above for automatic testing -->
+<pre data-test="exec" style="display:none">
+$ API_KEY=`echo $VESPA_TEAM_API_KEY | openssl base64 -A -a -d`
+$ mvn clean package vespa:deploy -DapiKey="$API_KEY" -Dinstance=my-instance
+</pre>
+The first deployment can take a few minutes.
+
+
+Verify that you can reach the application endpoint.
+The endpoint URL is printed in the _Install application_ section when the deployment is successful.
+Put this in an environment variable and verify it.
+<pre data-test="exec">
+$ ENDPOINT=https://my-instance.album-rec-docproc.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
+$ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem $ENDPOINT
+</pre>
+You can also [do this in a browser](https://cloud.vespa.ai/en/security-model#using-a-browser).
+
 
 Feed a _lyrics_ document:
-```
+<pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     -H "Content-Type:application/json" --data-binary @src/test/resources/A-Head-Full-of-Dreams-lyrics.json \
     $ENDPOINT/document/v1/mynamespace/lyrics/docid/1
-```
+</pre>
 
 Get the document to validate - dump all docs in lyrics schema:
-```
+<pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     "$ENDPOINT/document/v1/mynamespace/lyrics/docid?wantedDocumentCount=100"
-```
+</pre>
 
 Feed a _music_ document:
-```
+<pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     -H "Content-Type:application/json" --data-binary @src/test/resources/A-Head-Full-of-Dreams.json \
     $ENDPOINT/document/v1/mynamespace/music/docid/1
-```
+</pre>
 
 Get the document to validate - dump all docs in music schema - see lyrics in music document:
-```
+<pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     "$ENDPOINT/document/v1/mynamespace/music/docid?wantedDocumentCount=100"
-```
+</pre>
 
 Use the https://console.vespa.oath.cloud to download logs, then inspect what happened:
 ```
@@ -76,10 +125,10 @@ Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Set lyrics, Prog
   set _Progress.DONE_
 
 Get / delete a document by ID:
-```
+<pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     "$ENDPOINT/document/v1/mynamespace/music/docid/1"
     
 $ curl -X DELETE --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     "$ENDPOINT/document/v1/mynamespace/music/docid/1"
-```
+</pre>
