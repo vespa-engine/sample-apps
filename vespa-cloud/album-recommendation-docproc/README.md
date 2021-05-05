@@ -30,6 +30,7 @@ Flow:
 ## Steps
 
 **Create a Vespa Cloud application:**
+
 Use _Create application_ at [console.vespa.ai](http://console.vespa.ai),
 choose a name like _album-rec-docproc_.
 This requires a Google or GitHub account,
@@ -37,6 +38,7 @@ and will start your free trial if you don't already have a Vespa Cloud tenant.
 
 
 **Clone sample apps:**
+
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/vespa-cloud/album-recommendation-docproc
@@ -44,6 +46,7 @@ $ cd sample-apps/vespa-cloud/album-recommendation-docproc
 
 
 **Create a self-signed certificate:**
+
 This certificate/key pair will be used to access the application deployed to Vespa Cloud.
 <pre data-test="exec">
 $ openssl req -x509 -nodes -days 14 -newkey rsa:4096 \
@@ -55,16 +58,19 @@ $ cp data-plane-public-cert.pem src/main/application/security/clients.pem
 
 
 **Create an API key:**
+
 In [console.vespa.ai](http://console.vespa.ai),
 choose _tenant_ and click _Keys_ to generate and save the _user API key_.
 The key is saved to `$HOME/Downloads/USER.TENANTNAME.pem`.
 
 
 **Set tenant and application name in pom.xml:**
+
 Set the `tenant` and `application` names used when creating the application above.
 
 
 **Build and deploy:**
+
 This builds and deploys an application instance called _my-instance_
 to the `dev` [zone](https://cloud.vespa.ai/en/reference/zones).
 The first deployment can take a few minutes:
@@ -79,6 +85,7 @@ $ mvn clean package vespa:deploy -DapiKey="$API_KEY" -Dinstance=my-instance
 
 
 **Verify endpoint:**
+
 The endpoint URL is output above "Installation succeeded!" in the deployment log.
 Put this in an environment variable and verify it
 (You can also [do this in a browser](https://cloud.vespa.ai/en/security-model#using-a-browser)):
@@ -89,6 +96,7 @@ $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem $E
 
 
 **Feed a _lyrics_ document:**
+
 <pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     -H "Content-Type:application/json" --data-binary @src/test/resources/A-Head-Full-of-Dreams-lyrics.json \
@@ -102,6 +110,7 @@ $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
 
 
 **Feed a _music_ document:**
+
 <pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
     -H Content-Type:application/json --data-binary @src/test/resources/A-Head-Full-of-Dreams.json \
@@ -117,6 +126,10 @@ Compare, the original document did not have lyrics - it has been added in the
 <pre data-test="exec">
 $ cat src/test/resources/A-Head-Full-of-Dreams.json
 </pre>
+
+
+**Review logs:**
+
 Use the [console](http://console.vespa.ai) to download logs, then inspect what happened:
 ```
 Container.ai.vespa.example.album.LyricsDocumentProcessor	info	In process
@@ -139,6 +152,7 @@ Container.ai.vespa.example.album.LyricsDocumentProcessor	info	  Set lyrics, Prog
 
 
 **Other /document/v1 operations:**
+
 Dump documents using [visiting](https://docs.vespa.ai/en/content/visiting.html):
 <pre data-test="exec">
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem \
@@ -159,10 +173,10 @@ $ curl -X DELETE --cert ./data-plane-public-cert.pem --key ./data-plane-private-
     $ENDPOINT/document/v1/mynamespace/music/docid/1
 </pre>
 
+
 --------------------------------
 
-
-## Further reading
+Further reading:
 
 * https://docs.vespa.ai/en/getting-started.html
 * https://docs.vespa.ai/en/developer-guide.html
