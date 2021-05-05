@@ -20,7 +20,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tenant>mytenant</tenant>
-        <application>album-rec-docproc</application>
+        <tenant>vespa-team</tenant>                   <!-- Name from the web console -->
+        <application>album-rec-docproc</application>  <!-- Name from the web console -->
     </properties>
 </project>
