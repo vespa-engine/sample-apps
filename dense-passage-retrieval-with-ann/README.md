@@ -44,9 +44,8 @@ See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.ht
 First, we retrieve the sample app:
 
 <pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git
-$ SAMPLE_APP=`pwd`/sample-apps/dense-passage-retrieval-with-ann
-$ cd $SAMPLE_APP
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ cd sample-apps/dense-passage-retrieval-with-ann
 </pre>
 
 Download and setup the Transformer models, and build the application package.
@@ -64,20 +63,21 @@ Start the Vespa docker container:
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container --privileged \
-  --volume $SAMPLE_APP:/DPR --publish 8080:8080 vespaengine/vespa
+  --publish 8080:8080 --publish 19071:19071 \
+  vespaengine/vespa
 </pre>
 
 Wait for configuration service to start (the command below should return a 200 OK):
 
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+$ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
 Deploy the application package:
 
-<pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /DPR/target/application.zip && \
-  /opt/vespa/bin/vespa-deploy activate'
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
+$ $ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+  localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
 Now, wait for the application to start. This is a fairly large application, so
@@ -91,8 +91,10 @@ Feed sample data. We feed the documents using the [Vespa http feeder
 client](https://docs.vespa.ai/en/vespa-http-client.html):
 
 <pre data-test="exec">
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /DPR/sample-feed.jsonl --host localhost --port 8080'
+$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
+  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+  --file sample-feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 Now we can test the application. You can enter these queries directly into the
@@ -176,12 +178,6 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar \
     --file feed.jsonl --endpoint http://your-vespa-instance-hostname:8080
 </pre>
 
-We can obtain the feeding client jar from the Docker image by:
-
-<pre>
-docker cp vespa:/opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar .
-</pre>
-
 Note that this is a large batch of data to feed. To give some idea, loading the
 data to Vespa using a single content node instance with 36 vcpu's takes about 5
 hours (21M passages , 1350 puts/s sustained, with visibility-delay 1.0 seconds
@@ -195,7 +191,7 @@ With the full dataset indexed in Vespa, we can now run all questions from the
 Natural Questions (NQ) dev split using the three different retrieval strategies:
 
 <pre>
-$ wget https://raw.githubusercontent.com/google-research-datasets/natural-questions/master/nq_open/NQ-open.dev.jsonl
+$ curl -L -o NQ-open.dev.jsonl https://raw.githubusercontent.com/google-research-datasets/natural-questions/master/nq_open/NQ-open.dev.jsonl
 $ python3 ./bin/evaluate_em.py NQ-open.dev.jsonl dense http://your-vespa-instance-hostname:8080
 $ python3 ./bin/evaluate_em.py NQ-open.dev.jsonl sparse http://your-vespa-instance-hostname:8080
 $ python3 ./bin/evaluate_em.py NQ-open.dev.jsonl hybrid http://your-vespa-instance-hostname:8080
@@ -556,4 +552,3 @@ The application has 4 custom plugins:
   best matching answer span to an textual answer which is returned as the
   predicted answer.
   [QASearcher.java](src/main/java/ai/vespa/searcher/QASearcher.java)
-
