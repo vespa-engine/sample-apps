@@ -27,5 +27,7 @@
         <module>dense-passage-retrieval-with-ann</module>
         <module>msmarco-ranking</module>
         <module>transformers</module>
+        <module>news/app-6-recommendation-with-searchers</module>
+        <module>news/app-7-parent-child</module>
     </modules>
 </project>

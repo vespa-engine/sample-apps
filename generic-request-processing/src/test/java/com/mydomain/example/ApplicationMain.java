@@ -1,14 +1,12 @@
-// Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package com.mydomain.example;
 
 import com.yahoo.application.Application;
 import com.yahoo.application.Networking;
-import org.junit.Test;
 
 import java.nio.file.FileSystems;
 import java.util.Objects;
 
-import static org.junit.Assume.assumeTrue;
 
 /**
  * This uses the Application class to set up a container instance of this application

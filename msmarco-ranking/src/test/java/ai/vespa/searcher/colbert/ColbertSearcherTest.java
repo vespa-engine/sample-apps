@@ -16,15 +16,16 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.Query;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
-import org.junit.Test;
 import com.yahoo.data.access.slime.SlimeAdapter;
 import com.yahoo.slime.Cursor;
 import com.yahoo.slime.Slime;
 import com.yahoo.tensor.serialization.TypedBinaryFormat;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ColbertSearcherTest {
 

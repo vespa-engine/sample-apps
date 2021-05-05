@@ -1,13 +1,12 @@
-// Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 package ai.vespa.example.text_search.site;
 
 import ai.vespa.example.text_search.site.view.SimpleHtmlBuilder;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SimpleHtmlBuilderTest {
 

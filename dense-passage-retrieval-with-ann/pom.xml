@@ -10,8 +10,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
+    <junit.version>5.7.1</junit.version>
     <vespa_version>7.398.17</vespa_version>
-    <junit_version>5.7.1</junit_version>
   </properties>
 
   <dependencies>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit_version}</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
