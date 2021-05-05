@@ -90,7 +90,7 @@ The endpoint URL is output above "Installation succeeded!" in the deployment log
 Put this in an environment variable and verify it
 (You can also [do this in a browser](https://cloud.vespa.ai/en/security-model#using-a-browser)):
 <pre data-test="exec">
-$ ENDPOINT=https://my-instance.album-rec-docproc.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
+$ ENDPOINT=https://my-processing-cluster.my-instance.album-rec-docproc.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem $ENDPOINT
 </pre>
 
