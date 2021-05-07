@@ -163,7 +163,8 @@ Requirements:
 
 * [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
 * Git client to checkout the sample application repository
-* Java 11, Maven and python3 installed
+* Java 11, Maven and python3
+* zstd: `brew install zstd`
 * Operating system: macOS or Linux, Architecture: x86_64
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
@@ -172,8 +173,7 @@ First, we retrieve the sample app:
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ SAMPLE_APP=`pwd`/sample-apps/msmarco-ranking
-$ cd $SAMPLE_APP
+$ cd sample-apps/msmarco-ranking
 </pre>
 
 <pre data-test="exec">
@@ -181,30 +181,41 @@ $ pip3 install ir_datasets lightgbm numpy pandas requests tqdm
 $ mvn clean package -U
 </pre>
 
-The maven package will build the Vespa application package file (*target/application.zip*) which is later used when we have started the Vespa services.
+The *model_export.py* script downloads the pre-trained weights from
+[Huggingface model hub](https://huggingface.co/vespa-engine/colbert-medium)
+and exports the ColBERT query encoder to ONNX format for serving in Vespa:
+
+<pre data-test="exec">
+$ mkdir -p src/main/application/files/
+$ python3 src/main/python/model_export.py src/main/application/files/colbert_query_encoder.onnx
+</pre>
+
+The maven package will build the Vespa application package file (*target/application.zip*)
+which is later used when we have started the Vespa services.
 
 Start the Vespa docker container:
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run --detach --name vespa --hostname vespa-container --privileged \
-  --volume $SAMPLE_APP:/MSMARCO --publish 8080:8080 vespaengine/vespa
+$ docker run --detach --name vespa --hostname vespa-container \
+  --publish 8080:8080 --publish 19071:19071 \
+  vespaengine/vespa
 </pre>
 
 Wait for configuration service to start (the command below should return a 200 OK):
 
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+$ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
 Deploy the application package:
 
-<pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /MSMARCO/target/application.zip && \
-  /opt/vespa/bin/vespa-deploy activate'
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
+$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+  localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-now, wait for the application to start. 
+Now, wait for the application to start.
 
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
@@ -212,17 +223,20 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 ## Feeding Sample Data 
 
-Feed sample data using the [Vespa http feeder
-client](https://docs.vespa.ai/en/vespa-http-client.html):
-
+Feed the sample documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
 <pre data-test="exec">
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/sample_regular_fields.jsonl --host localhost --port 8080'
+$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
+    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
 </pre>
 
 <pre data-test="exec">
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/sample_doc_t5_query.jsonl --host localhost --port 8080'
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file sample-feed/sample_regular_fields.jsonl --endpoint http://localhost:8080
+</pre>
+
+<pre data-test="exec">
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file sample-feed/sample_doc_t5_query.jsonl --endpoint http://localhost:8080
 </pre>
 
 Now all the data is in place and one can play around with the query interface (Though only searching 1K documents)
@@ -245,12 +259,13 @@ First we need to download and index the entire data set plus the doc t5 query ex
 
 ### Download all documents 
 <pre>
-$ ir_datasets export msmarco-document/train docs --format jsonl  |./src/main/python/document-feed.py > all-feed.jsonl
+$ ir_datasets export msmarco-document/train docs --format jsonl | ./src/main/python/document-feed.py > all-feed.jsonl
 </pre>
 
 ## doc to query document expansion
 For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
-Follow the instructions at [https://github.com/castorini/docTTTTTquery#Replicating-MS-MARCO-Document-Ranking-Results-with-Anserini](https://github.com/castorini/docTTTTTquery#Replicating-MS-MARCO-Document-Ranking-Results-with-Anserini) but replace *paste -d" "* with *paste -d"#"* and replace the convert_msmarco_doc_to.. with
+Follow the instructions at [https://github.com/castorini/docTTTTTquery#Replicating-MS-MARCO-Document-Ranking-Results-with-Anserini](https://github.com/castorini/docTTTTTquery#Replicating-MS-MARCO-Document-Ranking-Results-with-Anserini),
+but replace *paste -d" "* with *paste -d"#"* and replace the convert_msmarco_doc_to.. with
 
 <pre>
 python3 src/main/python/convert_msmarco_doc_to_vespa.py 
@@ -263,13 +278,13 @@ python3 src/main/python/convert_msmarco_doc_to_vespa.py
 Place the output file *doc_t5_query_updates.json* in the directory of the sample app. ($SAMPLE_APP)
 
 <pre>
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/all-feed.jsonl --host localhost --port 8080'
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file all-feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 <pre>
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/doc_t5_query_updates.jsonl --host localhost --port 8080'
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
 </pre>
 
 ## Query Evaluation
@@ -277,10 +292,11 @@ The following script will run all queries from the MS Marco document ranking **d
 fetch at most 100 hits.
 
 <pre>
-$ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile ltr --query_split dev --wand_field default --wand_hits 500 --phase_count 1000 --run_file ltr.run.txt           
+$ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile ltr --query_split dev \
+  --wand_field default --wand_hits 500 --phase_count 1000 --run_file ltr.run.txt
 </pre>
 
-We can evaluate the run file *ltr.run.txt* by using the [official ms marco eval script](https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py)
+We can evaluate the run file *ltr.run.txt* by using the [official ms marco eval script](https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py).
 
 <pre>
 $ wget https://msmarco.blob.core.windows.net/msmarcoranking/msmarco-docdev-qrels.tsv.gz

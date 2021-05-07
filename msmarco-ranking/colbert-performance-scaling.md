@@ -3,7 +3,7 @@
 # MS Marco Passage Ranking using ColBERT - Performance and Scaling
 
 This document describes scaling and serving performance of the ColBERT representation on Vespa. For a general intro to performance
-and sizing Vespa see [Vespa performance and sizing documentation](https://docs.vespa.ai/documentation/en/sizing-search.html)
+and sizing Vespa see [Vespa performance and sizing documentation](https://docs.vespa.ai/en/sizing-search.html)
 
 ![Colbert MaxSim](img/colbert_illustration_zoom.png)
 

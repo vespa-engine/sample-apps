@@ -8,13 +8,13 @@ using Vespa.ai. There are three key features of Vespa which allows representing 
 
 * The ability to run online inference using pretrained language models like BERT in Vespa using Vespa's [ONNX](https://docs.vespa.ai/en/onnx.html) support.
 ColBERT only requires encoding the short query in user time.  
-* Ability to store tensor representations in documents and in queries. Using a [tensor expressions](https://docs.vespa.ai/documentation/tensor-user-guide.html)
+* Ability to store tensor representations in documents and in queries. Using a [tensor expressions](https://docs.vespa.ai/en/tensor-user-guide.html)
  we can express the ColBERT MaxSim operator of ColBERT in a Vespa ranking expression.
 * [Multi-phase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html) in Vespa allows expressing an efficient 
 retriever which retrieves candidate documents which are re-ranked using ColBERT.
 
 We deploy ColBERT on Vespa as a re-ranker, re-ranking the top K documents from a more efficient retriever and in our case we
-use the sparse [weak And](https://docs.vespa.ai/documentation/using-wand-with-vespa.html) query operator to 
+use the sparse [weak And](https://docs.vespa.ai/en/using-wand-with-vespa.html) query operator to
 efficiently retrieve a candidate set of documents which are re-ranking using the ColBERT model. Vespa also allows dense retrieval accelerated 
 by approximate nearest neighbor search. For example see [Dense Passage retrieval sample application](../dense-passage-retrieval-with-ann).
 
@@ -113,7 +113,7 @@ dataset. This id is used to evaluate the ranking accuracy. We also define a *id*
 We define two ranking profile in our *passage* document schema. See [Vespa Ranking Documentation](https://docs.vespa.ai/en/ranking.html)
 for an overview of how to represent ranking in Vespa.
 
-The baseline ranking model is using [bm25](https://docs.vespa.ai/documentation/reference/bm25.html). BM25 could be 
+The baseline ranking model is using [bm25](https://docs.vespa.ai/en/reference/bm25.html). BM25 could be
 a good baseline model for many domains where there are no prior training data available. Be it by explicit relevancy judgements 
 like in MS Marco or implicit through user feedback (click or dwell time) used to train a dense retriever. Below is the the *bm25* ranking profile:
 
@@ -129,7 +129,7 @@ The bm25 ranking feature has two hyperparameters and we leave them at the defaul
 that retrieval and ranking should be using 6 threads per search. Vespa supports using multiple threads to evaluate a query which allows tuning latency
 versus throughput. Not all retrieval and ranking cases needs a lot of throughput but end to end latency needs to meet service latency agreement
 and controlling the number of threads per search query can help. 
-See [Vespa performance and sizing guide](https://docs.vespa.ai/documentation/performance/sizing-search.html) 
+See [Vespa performance and sizing guide](https://docs.vespa.ai/en/performance/sizing-search.html).
 
  
 We define the *colBERT* reranker with a Vespa ranking profile which uses [phased ranking](https://docs.vespa.ai/en/phased-ranking.html). 
@@ -219,7 +219,7 @@ The [bert-medium-uncased](https://huggingface.co/google/bert_uncased_L-8_H-512_A
 We limit the query length to 32 subword tokens and passage text to 80 tokens. This is the default in ColBERT.
 * We use the GPU powered indexing routine in the mentioned *ColBERT repository* to obtain the document tensor representation
 * We export the ColBERT query encoder to [ONNX](https://onnx.ai/) format for serving in Vespa.ai using the ONNX runtime which Vespa integrates with. 
-See [Ranking with ONNX Models](https://docs.vespa.ai/documentation/onnx.html) and 
+See [Ranking with ONNX Models](https://docs.vespa.ai/en/onnx.html) and
 [How we accelerate inference using ONNX runtime](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/)
 * The trained weights of our model is published on [Hugginface model hub](https://huggingface.co/vespa-engine/colbert-medium) and 
 we provide instructions on howto export the Transformer model to ONNX format 
@@ -251,67 +251,63 @@ Requirements:
 
 * [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
 * Git client to checkout the sample application repository
-* Java 11, Maven and python3 installed, curl and wget in $PATH
+* Java 11, Maven and python3
+* zstd: `brew install zstd`
 * Operating system: macOS or Linux, Architecture: x86_64
-
-See also [Vespa quick start guide](https://docs.vespa.ai/documentation/vespa-quick-start.html).
 
 First, we clone the sample apps :
 
 <pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git
-$ SAMPLE_APP=`pwd`/sample-apps/msmarco-ranking
-$ cd $SAMPLE_APP
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ cd sample-apps/msmarco-ranking
 </pre>
 
-Install python dependencies. There are no run time python dependencies in Vespa but we use. 
+Install python dependencies. There are no run time python dependencies in Vespa, but this sample app uses:
 
 <pre data-test="exec">
 $ pip3 install torch numpy ir_datasets requests tqdm transformers onnx onnxruntime
 </pre>
 
-The *model_export.py* script downloads the pre-trained weights from [Huggingface model hub](https://huggingface.co/vespa-engine/colbert-medium)
+The *model_export.py* script downloads the pre-trained weights from
+[Huggingface model hub](https://huggingface.co/vespa-engine/colbert-medium)
 and exports the ColBERT query encoder to ONNX format for serving in Vespa:
  
 <pre data-test="exec">
-$ mkdir src/main/application/files/
+$ mkdir -p src/main/application/files/
 $ python3 src/main/python/model_export.py src/main/application/files/colbert_query_encoder.onnx 
 </pre>
 
-Once we have downloaded and exported the model we use maven to create the
-
- [Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
-
+Once we have downloaded and exported the model, we use maven to create the
+[Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
 
 <pre data-test="exec">
 $ mvn clean package -U
 </pre>
 
 If you run into issues running mvn package please check  mvn -v and that the Java version is 11. 
-
-
-Now, we are ready to start the vespeengine/vespa docker container. We pull the latest version and run it by 
+Now, we are ready to start the vespeengine/vespa docker container - pull the latest version and run it by
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run --detach --name vespa --hostname vespa-container --privileged \
-  --volume $SAMPLE_APP:/MSMARCO --publish 8080:8080 vespaengine/vespa
+$ docker run --detach --name vespa --hostname vespa-container \
+  --publish 8080:8080 --publish 19071:19071 \
+  vespaengine/vespa
 </pre>
 
 Wait for configuration service to start, the command below should return a 200 OK:
 
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ docker exec vespa bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+$ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
 Deploy the application package:
 
-<pre data-test="exec">
-$ docker exec vespa bash -c '/opt/vespa/bin/vespa-deploy prepare /MSMARCO/target/application.zip && \
-  /opt/vespa/bin/vespa-deploy activate'
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
+$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+  localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-now, wait for the application to start, the command below should return a 200 OK
+Now, wait for the application to start, the command below should return a 200 OK
 
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
@@ -319,28 +315,32 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 ## Feeding Sample Data 
 
-We feed the sample documents using the [Vespa http feeder
-client](https://docs.vespa.ai/en/vespa-http-client.html).
-
-Download the sample data
-
+Feed the sample documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
 <pre data-test="exec">
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-sample.jsonl.zst\
-    -O sample-feed/colbert-passages-sample.jsonl.zst
+$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
+    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
 </pre>
 
-Feed the data 
+Download the sample data:
 
 <pre data-test="exec">
-$ docker exec vespa bash -c 'zstdcat /MSMARCO/sample-feed/colbert-passages-sample.jsonl.zst| java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-     --host localhost --port 8080'
+$ curl -L -o sample-feed/colbert-passages-sample.jsonl.zst \
+    https://data.vespa.oath.cloud/colbert_data/colbert-passages-sample.jsonl.zst
+</pre>
+
+Feed the data :
+
+<pre data-test="exec">
+$ zstdcat sample-feed/colbert-passages-sample.jsonl.zst | \
+    java -jar vespa-http-client-jar-with-dependencies.jar \
+     --endpoint http://localhost:8080
 </pre>
 
 Feed the query document:
 
 <pre data-test="exec">
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/sample_query_feed.jsonl --host localhost --port 8080'
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file sample-feed/sample_query_feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 Now all the data is indexed and one can play around with the search interface. Note, only searching 1K passages.
@@ -358,8 +358,8 @@ $ cat sample-feed/query.json
 </pre>
 
 <pre data-test="exec" data-test-wait-for="200 OK">
-curl -s -H "Content-Type: application/json" --data @sample-feed/query.json \
- http://localhost:8080/search/ |python3 -m json.tool
+$ curl -s -H Content-Type:application/json --data @sample-feed/query.json \
+    http://localhost:8080/search/ |python3 -m json.tool
 </pre>
 
 It is also possible to view the result in a 
@@ -370,13 +370,15 @@ It is also possible to view the result in a
 One can also compare ranking with the *bm25* ranking profile: 
 
 <pre>
-{
-    "yql": "select id, text from sources passage where userQuery();",
-    "ranking": "bm25",
-    "query": "what was the manhattan project?",
-    "hits": 5,
-    "searchChain": "passageranking" 
-}
+$ curl -s -H Content-Type:application/json --data \
+'{ \
+    "yql": "select id, text from sources passage where userQuery();", \
+    "ranking": "bm25", \
+    "query": "what was the manhattan project?", \
+    "hits": 5, \
+    "searchChain": "passageranking" \
+}' \
+    http://localhost:8080/search/ |python3 -m json.tool
 </pre>
 
 
@@ -388,51 +390,49 @@ One can also compare ranking with the *bm25* ranking profile:
 Feed query document (which allows the evaluation of the ColBERT query encoder):
 
 <pre>
-$ docker exec vespa bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-    --file /MSMARCO/sample-feed/sample_query_feed.jsonl	--host localhost --port 8080'
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+    --file sample-feed/sample_query_feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 ### Download pre-processed ColBERT document representation 
 Download the preprocessed document tensor data. The data is compressed using [ZSTD](https://facebook.github.io/zstd/): 
 
 <pre>
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-1.jsonl.zst  -O sample-feed/colbert-passages-1.jsonl.zst
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-2.jsonl.zst  -O sample-feed/colbert-passages-2.jsonl.zst
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-3.jsonl.zst  -O sample-feed/colbert-passages-3.jsonl.zst
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-4.jsonl.zst  -O sample-feed/colbert-passages-4.jsonl.zst
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-5.jsonl.zst  -O sample-feed/colbert-passages-5.jsonl.zst
-$ wget https://data.vespa.oath.cloud/colbert_data/colbert-passages-6.jsonl.zst  -O sample-feed/colbert-passages-6.jsonl.zst
+$ for i in 1 2 3 4 5 6; do curl -L -o sample-feed/colbert-passages-$i.jsonl.zst \
+  https://data.vespa.oath.cloud/colbert_data/colbert-passages-$i.jsonl.zst; done
 </pre>
 
 Note that we stream through the data using *zstdcat* as the uncompressed representation
 is large (300GB). 
 
 <pre>
-$ docker exec vespa bash -c 'zstdcat /MSMARCO/sample-feed/colbert-passages-*.zst | java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-     --host localhost --port 8080'
+$ zstdcat sample-feed/colbert-passages-*.zst | \
+    java -jar vespa-http-client-jar-with-dependencies.jar \
+    --endpoint http://localhost:8080
 </pre>
 
 ### Ranking Evaluation using Ms Marco Passage Ranking 
 Run through all queries from the MS Marco Passage Ranking Dev set
 
 <pre>
-./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse --rank_profile colbert --hits 10 --run_file run.dev.txt
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse \
+  --rank_profile colbert --hits 10 --run_file run.dev.txt
 </pre>
 
 To evaluate ranking performance download the official evaluation scripts
 
 <pre>
-wget https://raw.githubusercontent.com/spacemanidol/MSMARCO/master/Ranking/Baselines/msmarco_eval.py
+$ curl -L -o msmarco_eval.py https://raw.githubusercontent.com/spacemanidol/MSMARCO/master/Ranking/Baselines/msmarco_eval.py
 </pre>
 
 Generate the dev qrels file using the *ir_datasets* which the evaluation script expects:
 <pre>
-./src/main/python/dump_passage_dev_qrels.py 
+$ ./src/main/python/dump_passage_dev_qrels.py
 </pre>
 
 Above will write a **qrels.dev.small.tsv** file to the current directory, now we can run evaluation:
 <pre>
-python3 msmarco_eval.py qrels.dev.small.tsv run.dev.txt 
+$ python3 msmarco_eval.py qrels.dev.small.tsv run.dev.txt
 #####################
 MRR @10: 0.3540263564833764
 QueriesRanked: 6980
@@ -441,7 +441,14 @@ QueriesRanked: 6980
 
 To generate runs using the eval set pass *--query_split* eval: 
 <pre>
-./src/main/python/evaluate_passage_run.py --query_split eval --retriever sparse --rank_profile colbert --hits 10 --run_file run.eval.txt
+$ ./src/main/python/evaluate_passage_run.py --query_split eval --retriever sparse \
+  --rank_profile colbert --hits 10 --run_file run.eval.txt
 </pre>
 The *eval* split is the hold out test set where there are no available judgments in the public domain. 
 See [MS Marco Passage Ranking](https://microsoft.github.io/MSMARCO-Passage-Ranking/) for how to submit runs for the leaderboard. 
+
+-------------------
+
+Further reading:
+* https://docs.vespa.ai/en/vespa-quick-start.html
+* https://docs.vespa.ai/en/getting-started.html
