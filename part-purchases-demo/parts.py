@@ -19,4 +19,4 @@ with open(args.file, mode='r') as infile:
         part = {}
         part['put'] = 'id:purchase:purchase::' + str(idx)
         part['fields'] = row
-        print json.dumps(part, indent=0, sort_keys=True).replace('\n','')
+        print(json.dumps(part, indent=0, sort_keys=True).replace('\n',''))
