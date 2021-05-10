@@ -33,3 +33,28 @@ jobs:
           set -e
           source /etc/profile.d/jdk-env.sh
           mvn -V --batch-mode --no-snapshot-updates install
+
+  verify-guides:
+    requires: [~commit]
+    secrets:
+      - VESPA_TEAM_API_KEY
+    image: vespaengine/vespa-pipeline
+    environment:
+      USER_SHELL_BIN: bash
+      DOCKER_HOST: 'localhost:2375'
+    annotations:
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
+    steps:
+      - install-deps: |
+          source /etc/profile.d/jdk-env.sh
+          yum install -y python36-pip
+          python3 -m pip install -qqq --upgrade pip
+          python3 -m pip install -qqq -r test/requirements.txt --user
+          yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          yum install -y docker-ce docker-ce-cli containerd.io openssl yum-utils
+      - run-tests: |
+          export VESPA_TEAM_API_KEY
+          cd $SD_DIND_SHARE_PATH
+          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml

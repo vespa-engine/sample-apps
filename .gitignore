@@ -11,3 +11,5 @@ vespaapps_index.json
 _site/
 *.pem
 Gemfile.lock
+test/__pycache__
+
