@@ -11,9 +11,7 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
-    # Test passage-ranking first
-    #- "https://github.com/vespa-engine/sample-apps/blob/master/msmarco-ranking/document-ranking.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
     #
     #
     #- basic-search-on-docker-swarm
@@ -24,5 +22,8 @@ urls:
     #
     # Disable for now: Downloading torch-1.8.1-cp36-cp36m-manylinux1_x86_64.whl (804.1 MB) fails on Screwdriver.cd
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
+    #
+    # Disable for now: Downloading torch-1.8.1-cp36-cp36m-manylinux1_x86_64.whl (804.1 MB) fails on Screwdriver.cd
+    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     #
     #
