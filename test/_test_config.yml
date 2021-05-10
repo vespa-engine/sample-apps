@@ -22,7 +22,7 @@ urls:
     #- msmarco-ranking: this is two readme files that should be auto tested
     #- semantic-qa-retrieval Do not auto test yet, downloads large models and takes an hour or two to run
     #
-    # Disable for now: Downloading torch-1.8.1-cp36-cp36m-manylinux1_x86_64.whl (804.1 MB) fails
+    # Disable for now: Downloading torch-1.8.1-cp36-cp36m-manylinux1_x86_64.whl (804.1 MB) fails on Screwdriver.cd
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
     #
     #
