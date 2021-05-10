@@ -347,7 +347,7 @@ Now all the data is indexed and one can play around with the search interface. N
 
 For example do a query for *what was the Manhattan Project*:
 
-<pre>
+<pre data-test="exec">
 $ cat sample-feed/query.json
 {
     "yql": "select id, text from sources passage where userQuery();",
@@ -369,7 +369,7 @@ It is also possible to view the result in a
 
 One can also compare ranking with the *bm25* ranking profile: 
 
-<pre>
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s -H Content-Type:application/json --data \
 '{ \
     "yql": "select id, text from sources passage where userQuery();", \
@@ -381,6 +381,12 @@ $ curl -s -H Content-Type:application/json --data \
     http://localhost:8080/search/ |python3 -m json.tool
 </pre>
 
+
+Shutdown and remove the Docker container:
+
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
 
 
 ## Full Evaluation

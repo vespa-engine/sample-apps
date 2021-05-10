@@ -10,10 +10,19 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/album-recommendation-docproc/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
+    # Test passage-ranking first
+    #- "https://github.com/vespa-engine/sample-apps/blob/master/msmarco-ranking/document-ranking.md"
+    #
+    #
     #- basic-search-on-docker-swarm
     #- basic-search-on-gke
     #- dense-passage-retrieval-with-ann Await this one, downloads large models. ready for testing
     #- msmarco-ranking: this is two readme files that should be auto tested
     #- semantic-qa-retrieval Do not auto test yet, downloads large models and takes an hour or two to run
+    #
+    # Disable for now: Downloading torch-1.8.1-cp36-cp36m-manylinux1_x86_64.whl (804.1 MB) fails
+    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
+    #
+    #
