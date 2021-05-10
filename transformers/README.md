@@ -17,8 +17,8 @@ $ cd sample-apps/transformers
 **Install required packages**:
 
 <pre data-test="exec">
-$ pip3 install -qqq --upgrade pip
-$ pip3 install -qqq torch transformers onnx onnxruntime
+$ python3 -m pip install --upgrade pip
+$ python3 -m pip install torch transformers onnx onnxruntime
 </pre>
 
 
