@@ -1,0 +1,19 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+urls:
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/boolean-search/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/multiple-bundles/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/tensor-playground/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/use-case-shopping/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/album-recommendation-docproc/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
+    #- basic-search-on-docker-swarm
+    #- basic-search-on-gke
+    #- dense-passage-retrieval-with-ann Await this one, downloads large models. ready for testing
+    #- msmarco-ranking: this is two readme files that should be auto tested
+    #- semantic-qa-retrieval Do not auto test yet, downloads large models and takes an hour or two to run
