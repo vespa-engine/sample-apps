@@ -60,3 +60,10 @@ $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
 $ java -jar vespa-http-client-jar-with-dependencies.jar \
     --verbose --file purchase.json --endpoint http://localhost:8080
 </pre>
+
+
+**Shutdown and remove the container:**
+
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
