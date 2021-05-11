@@ -24,7 +24,7 @@ jobs:
             vespa-cloud/cord-19-search/feeding.md \
             vespa-cloud/cord-19-search/experiment-yourself.md; \
             do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
-          bundle exec jekyll build
+          bundle exec jekyll build -p /dev/null
       - check-links: >
           bundle exec htmlproofer --assume-extension --empty-alt-ignore
           --directory-index-file README.html
