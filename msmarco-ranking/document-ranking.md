@@ -177,7 +177,7 @@ $ cd sample-apps/msmarco-ranking
 </pre>
 
 <pre data-test="exec">
-$ python3 -m pip install transformers ir_datasets lightgbm numpy pandas requests tqdm
+$ python3 -m pip install torch transformers ir_datasets lightgbm numpy pandas requests tqdm
 $ mvn clean package -U
 </pre>
 
