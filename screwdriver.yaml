@@ -17,6 +17,13 @@ jobs:
           bundle install
       - add-front-matter-and-build: |
           find . -not -path './_site/*' -name README.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
+          for f in \
+            msmarco-ranking/passage-ranking.md \
+            msmarco-ranking/document-ranking.md \
+            msmarco-ranking/colbert-performance-scaling.md \
+            vespa-cloud/cord-19-search/feeding.md \
+            vespa-cloud/cord-19-search/experiment-yourself.md; \
+            do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
           bundle exec jekyll build
       - check-links: >
           bundle exec htmlproofer --assume-extension --empty-alt-ignore
