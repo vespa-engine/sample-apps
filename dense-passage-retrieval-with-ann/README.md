@@ -396,7 +396,7 @@ using the same scalable serving engine:
 * **Dense retrieval:** Using trained embedding representations of query and document (Low dimensional, dense)
 * **Hybrid:** Using a combination of the above
 
-The schema defines two indexed string fields which.
+The schema defines two indexed string fields.
 This enables fast and efficient term based retrieval, e.g. using WeakAND (WAND).
 The *id* represents the Wikipedia passage id
 as assigned in the pre-computed dataset published by Facebook Research.
