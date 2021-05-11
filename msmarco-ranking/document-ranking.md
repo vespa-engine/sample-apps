@@ -177,7 +177,7 @@ $ cd sample-apps/msmarco-ranking
 </pre>
 
 <pre data-test="exec">
-$ pip3 install ir_datasets lightgbm numpy pandas requests tqdm
+$ python3 -m pip install transformers ir_datasets lightgbm numpy pandas requests tqdm
 $ mvn clean package -U
 </pre>
 
@@ -243,23 +243,26 @@ Now all the data is in place and one can play around with the query interface (T
 
 View a sample document 
 <pre>
-$ curl -s http://localhost:8080/document/v1/msmarco/doc/docid/D1840066 |python -m json.tool
+$ curl -s http://localhost:8080/document/v1/msmarco/doc/docid/D1840066 | \
+    python -m json.tool
 </pre>
 
 Do a query 
 <pre>
-curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr" |python -m json.tool
+$ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr" | \
+    python -m json.tool
 </pre>
 
-The data set is small, but one gets a feel for how the data and how the doc ttttt query expansion work. Note that negative relevance scores from the GBDT evaluation
-is normal. 
+The data set is small, but one gets a feel for how the data and how the doc ttttt query expansion work.
+Note that negative relevance scores from the GBDT evaluation is normal. 
 
 ## Full Evaluation (Using full dataset, all 2.3M documents)
 First we need to download and index the entire data set plus the doc t5 query expansion. 
 
 ### Download all documents 
 <pre>
-$ ir_datasets export msmarco-document/train docs --format jsonl | ./src/main/python/document-feed.py > all-feed.jsonl
+$ ir_datasets export msmarco-document/train docs --format jsonl | \
+  ./src/main/python/document-feed.py > all-feed.jsonl
 </pre>
 
 ## doc to query document expansion
@@ -268,8 +271,8 @@ Follow the instructions at [https://github.com/castorini/docTTTTTquery#Replicati
 but replace *paste -d" "* with *paste -d"#"* and replace the convert_msmarco_doc_to.. with
 
 <pre>
-python3 src/main/python/convert_msmarco_doc_to_vespa.py 
---original_docs_path=msmarco-docs.tsv.gz \
+$ python3 src/main/python/convert_msmarco_doc_to_vespa.py \
+  --original_docs_path=msmarco-docs.tsv.gz \
   --doc_ids_path=msmarco_doc_passage_ids.txt \
   --predictions_path=doc-predictions/predicted_queries_doc_sample_all.txt \
   --output_docs_path=doc_t5_query_updates.jsonl
@@ -299,8 +302,10 @@ $ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile ltr --quer
 We can evaluate the run file *ltr.run.txt* by using the [official ms marco eval script](https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py).
 
 <pre>
-$ wget https://msmarco.blob.core.windows.net/msmarcoranking/msmarco-docdev-qrels.tsv.gz
-$ wget https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py
+$ curl -L -o msmarco-docdev-qrels.tsv.gz \
+  https://msmarco.blob.core.windows.net/msmarcoranking/msmarco-docdev-qrels.tsv.gz
+$ curl -L -o ms_marco_doc_eval.py \
+  https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py
 $ gunzip msmarco-docdev-qrels.tsv.gz
 $ python3 ms_marco_doc_eval.py --run ltr.run.txt --judgments msmarco-docdev-qrels.tsv  
 </pre>
@@ -318,9 +323,9 @@ If you want to alter the application and submit to the leaderboard you can gener
 
 
 <pre>
-$ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile magic-rank-profile --query_split eval --wand_field default --wand_hits 500 --phase_count 1000 --run_file eval.run.txt           
+$ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile magic-rank-profile \
+  --query_split eval --wand_field default --wand_hits 500 --phase_count 1000 --run_file eval.run.txt           
 </pre>
 
 The **eval** set relevancy judgements are hidden. To submit to the MS MARCO document ranking see 
 [this repo](https://github.com/microsoft/MSMARCO-Document-Ranking-Submissions)
-
