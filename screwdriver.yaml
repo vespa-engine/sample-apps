@@ -21,8 +21,9 @@ jobs:
       - check-links: >
           bundle exec htmlproofer --assume-extension --empty-alt-ignore
           --directory-index-file README.html
-          --url-ignore 'src/main/application/schemas/wiki.sd#L80,http://localhost:8080/site'
+          --url-ignore 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/'
           --file-ignore '/tensor-playground/src/main/resources/playground/'
+          --url-swap 'Code-of-Conduct.md:Code-of-Conduct.html,document-ranking.md:document-ranking.html,passage-ranking.md:passage-ranking.html,colbert-performance-scaling.md:colbert-performance-scaling.html,experiment-yourself.md:experiment-yourself.html,feeding.md:feeding.html'
           ./_site
 
   build-apps:
