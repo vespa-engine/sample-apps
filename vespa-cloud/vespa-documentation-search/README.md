@@ -35,7 +35,7 @@ It is easy to set up your own instance on Vespa Cloud and feed  documents from
 [vespa-engine/documentation](https://github.com/vespa-engine/documentation/):
 
 1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build`.
-Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb)
+Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins-vespafeed/vespa_index_generator.rb)
 for how the feed file is generated.
 
 2: Add data plane credentials:
