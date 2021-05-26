@@ -9,13 +9,32 @@ schema passage {
       index: enable-bm25
     }
 
+    field text_token_ids type tensor<float>(d0[128])  {
+      indexing: summary | attribute
+    }
+
     field dt type tensor<float>(dt{}, x[32]){
       indexing: summary | attribute
       attribute:fast-search
     }
 
+    field mini_document_embedding type tensor<bfloat16>(d0[384]) {
+      indexing: attribute | index
+      attribute {
+        distance-metric: innerproduct
+      }
+      index {
+        hnsw {
+          max-links-per-node: 32
+          neighbors-to-explore-at-insert: 500
+        }
+      }
+    }
+
     field id type long {
       indexing: summary |attribute
+      attribute:fast-search
+      dictionary: hash
     }
   }
 
@@ -29,6 +48,13 @@ schema passage {
     fields: text
   }
 
+  onnx-model minilmranker {
+    file: models/miniLM-L-6-V2-quantized.onnx
+    input input_ids: input_ids
+    input attention_mask: attention_mask
+    input token_type_ids: token_type_ids
+  }
+
   rank-profile bm25 {
     num-threads-per-search: 6
     first-phase {
@@ -36,7 +62,7 @@ schema passage {
     }
   }
 
-  rank-profile colbert inherits bm25 {
+  rank-profile bm25-colbert inherits bm25 {
     num-threads-per-search: 6
     second-phase {
       rerank-count: 1000
@@ -44,13 +70,87 @@ schema passage {
         sum(
           reduce(
             sum(
-              query(qt) * (attribute(dt), x
+              query(qt) * cell_cast(attribute(dt), float) , x
             ),
             max, dt
           ),
-         qt
+          qt
         )
       }
+    }
+  }
+
+  rank-profile dense {
+    num-threads-per-search: 6
+    first-phase {
+        expression: closeness(field,mini_document_embedding)
+    }
+  }
+
+  rank-profile dense-colbert {
+    num-threads-per-search: 6
+    first-phase {
+      expression: closeness(field,mini_document_embedding)
+    }
+    second-phase {
+      rerank-count: 1000
+      expression {
+        sum(
+          reduce(
+            sum(
+              query(qt) * cell_cast(attribute(dt), float) , x
+            ),
+            max, dt
+          ),
+          qt
+        )
+      }
+    }
+  }
+
+  rank-profile dense-colbert-mini-lm {
+    num-threads-per-search: 24
+
+    function input_ids() {
+        expression: tokenInputIds(128, query(query_token_ids), attribute(text_token_ids))
+    }
+
+    function token_type_ids() {
+      expression: tokenTypeIds(128, query(query_token_ids), attribute(text_token_ids))
+    }
+
+    function attention_mask() {
+      expression: tokenAttentionMask(128, query(query_token_ids), attribute(text_token_ids))
+    }
+
+    #Max score is 32 * 1.0
+    function maxSimNormalized() {
+      expression {
+        sum(
+          reduce(
+            sum(
+              query(qt) * attribute(dt), x
+            ),
+            max, dt
+          ),
+          qt
+        )/32.0
+       }
+    }
+    function dense() {
+      expression: closeness(field,mini_document_embedding)
+    }
+    function crossModel() {
+      expression: onnx(minilmranker){d0:0,d1:0}
+    }
+
+    first-phase {
+        expression: maxSimNormalized()
+    }
+
+    second-phase {
+      rerank-count: 24
+      expression: 0.2*crossModel() + 1.1*maxSimNormalized() + 0.8*dense()
     }
   }
 }
