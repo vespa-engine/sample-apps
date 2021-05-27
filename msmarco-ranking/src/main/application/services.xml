@@ -62,6 +62,7 @@
           <searchnode>
             <requestthreads>
               <persearch>48</persearch>
+              <summary>36</summary>
             </requestthreads>
             <feeding>
               <concurrency>1.0</concurrency>
