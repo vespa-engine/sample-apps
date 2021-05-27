@@ -4,8 +4,10 @@
 
 This is the baseline model for MS Marco *Document* Ranking. 
 
-This document our first baseline model using traditional lexical matching (sparse) and ranking but using an offline 
-document expansion technique which is based on a sequence-to-sequence neural network (T5). 
+This document our first baseline model using traditional lexical matching (sparse) and ranking. 
+
+We use sequence-to-sequence neural network (T5) to perform document expansion. 
+ 
 This initial baseline scores a MRR@100 of 0.355 on the **dev** and 0.312 on the **eval** set.
 See [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/).
 
@@ -121,20 +123,17 @@ See our entry on the [MS Marco Document Ranking Leaderboard](https://microsoft.g
 
   **MS Marco Judgements** 
 
- The offical metric on MS Marco is [MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank). 
+The offical metric on MS Marco is [MRR@100](https://en.wikipedia.org/wiki/Mean_reciprocal_rank). 
  
-  **Dev MRR@100 = 0.355**,
-  **Eval MRR@100 = 0.312** 
+**Dev MRR@100 = 0.355**,
+**Eval MRR@100 = 0.312** 
 
-  A baseline bm25 model has MRR@100 around 0.161 on the Eval set. Note that the leaderboard has no run time constraints so some submissions will take 
-  several hours or even days to evaluate.
+A baseline bm25 model has MRR@100 around 0.161 on the Eval set. 
   
-  **2019 DL TREC Judgements**
- 
-  **NDCG@10 0.6136**
-
+  
 # Run Time Serving Performance
-Vespa's evaluation of GBDT models is hyper optimized after 20 years of using GBDT at scale so end to end serving time is roughly 20 ms. 
+Vespa's evaluation of GBDT models is hyper optimized after 20 years of using GBDT at scale 
+so end to end serving time is roughly 20 ms. 
 Vespa supports using multiple threads per *query* 
 and in our experiment we use up to 12 threads per query. 
 This allows scaling latency per node and make use of multi-core cpu architectures efficiently.
@@ -169,7 +168,7 @@ Requirements:
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
-First, we retrieve the sample app:
+Clone the sample app 
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
@@ -181,17 +180,44 @@ $ python3 -m pip install torch transformers ir_datasets lightgbm numpy pandas re
 $ mvn clean package -U
 </pre>
 
-The *model_export.py* script downloads the pre-trained weights from
-[Huggingface model hub](https://huggingface.co/vespa-engine/colbert-medium)
-and exports the ColBERT query encoder to ONNX format for serving in Vespa:
+<pre data-test="exec">
+$ pip3 install torch numpy ir_datasets requests tqdm transformers onnx onnxruntime
+</pre>
+
+Since we use a shared application package for both [passage](passage-ranking.md) and document ranking 
+we also need download models which are used by the passage ranking part of this sample app.
+ 
+Download ONNX models which have been exported by us and made available for this sample app. 
 
 <pre data-test="exec">
 $ mkdir -p src/main/application/files/
-$ python3 src/main/python/model_export.py src/main/application/files/colbert_query_encoder.onnx
 </pre>
 
-The maven package will build the Vespa application package file (*target/application.zip*)
-which is later used when we have started the Vespa services.
+<pre data-test="exec">
+$ curl -L -o src/main/application/files/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx \
+    https://data.vespa.oath.cloud/onnx_models/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
+</pre>
+
+<pre data-test="exec">
+$ curl -L -o src/main/application/files/ms-marco-MiniLM-L-6-v2-quantized.onnx \
+    https://data.vespa.oath.cloud/onnx_models/ms-marco-MiniLM-L-6-v2-quantized.onnx
+</pre>
+
+<pre data-test="exec">
+$ curl -L -o src/main/application/files/vespa-colMiniLM-L-6-quantized.onnx \
+    https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-quantized.onnx
+</pre>
+
+Once we have downloaded the models, 
+we use maven to create the
+[Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
+
+<pre data-test="exec">
+$ mvn clean package -U
+</pre>
+
+If you run into issues running mvn package please check  mvn -v and that the Java version is 11. 
+Now, we are ready to start the vespeengine/vespa docker container - pull the latest version and run it by
 
 Start the Vespa docker container:
 
@@ -253,11 +279,11 @@ $ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of
     python -m json.tool
 </pre>
 
-The data set is small, but one gets a feel for how the data and how the doc ttttt query expansion work.
+The data set is small, but one gets a feel for how the data and how the document to query expansion work. 
 Note that negative relevance scores from the GBDT evaluation is normal. 
 
-## Full Evaluation (Using full dataset, all 2.3M documents)
-First we need to download and index the entire data set plus the doc t5 query expansion. 
+## Full Evaluation (Using full dataset, all 3.2M documents)
+First we need to download and index the entire data set and the document to query expansion. 
 
 ### Download all documents 
 <pre>
@@ -323,7 +349,7 @@ If you want to alter the application and submit to the leaderboard you can gener
 
 
 <pre>
-$ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile magic-rank-profile \
+$ ./src/main/python/evaluate_document_run.py --retriever sparse --rank_profile ltr \
   --query_split eval --wand_field default --wand_hits 500 --phase_count 1000 --run_file eval.run.txt           
 </pre>
 
