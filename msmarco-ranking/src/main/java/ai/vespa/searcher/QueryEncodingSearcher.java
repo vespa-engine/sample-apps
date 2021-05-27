@@ -15,11 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Searcher which asynchronously invokes the colbert and embedding search chains to
- * in parallel compute the colbert query tensor representation and the dense query embedding representation
+ * Searcher which asynchronously invokes the colbert and embedding search chains
+ * to compute the colbert query tensor representation and the dense query embedding representation
  *
- *
- * The query embedding
  */
 
 public class QueryEncodingSearcher  extends Searcher {
@@ -34,8 +32,7 @@ public class QueryEncodingSearcher  extends Searcher {
         List<SearchChain> targets = new ArrayList<>();
         if(RetrievalModelSearcher.needQueryEmbedding(query))
             targets.add(query_embedding);
-        if(!query.properties().getBoolean("dense-only"))
-         targets.add(colbert);
+        targets.add(colbert);
         federateAndUpdateQuery(query,execution,targets);
         return execution.search(query);
     }
@@ -50,10 +47,14 @@ public class QueryEncodingSearcher  extends Searcher {
             Result r = f.get();
             Hit hit = r.hits().get(0);
             Tensor tensor = (Tensor)hit.getField("tensor");
-            if(hit.getSource().equals("colbert"))
+            if(hit.getSource().equals("colbert")) {
                 query.getRanking().getFeatures().put(colbertTensorName, tensor);
-            else if(hit.getSource().equals("embedding"))
+                query.trace("colbert tensor " + tensor,3);
+            }
+            else if(hit.getSource().equals("embedding")) {
                 query.getRanking().getFeatures().put(embeddingTensorName, tensor);
+                query.trace("embedding tensor " + tensor,3);
+            }
         }
     }
 }

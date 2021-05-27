@@ -16,13 +16,14 @@ jobs:
           export LANG=C.UTF-8
           bundle install
       - add-front-matter-and-build: |
-          find . -not -path './_site/*' -name README.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
+          find . -not -path './_site/*' -name \*.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
           bundle exec jekyll build
       - check-links: >
           bundle exec htmlproofer --assume-extension --empty-alt-ignore
           --directory-index-file README.html
-          --url-ignore 'src/main/application/schemas/wiki.sd#L80,http://localhost:8080/site'
+          --url-ignore 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/'
           --file-ignore '/tensor-playground/src/main/resources/playground/'
+          --url-swap 'Code-of-Conduct.md:Code-of-Conduct.html,document-ranking.md:document-ranking.html,passage-ranking.md:passage-ranking.html,colbert-performance-scaling.md:colbert-performance-scaling.html,experiment-yourself.md:experiment-yourself.html,feeding.md:feeding.html'
           ./_site
 
   build-apps:
@@ -33,3 +34,28 @@ jobs:
           set -e
           source /etc/profile.d/jdk-env.sh
           mvn -V --batch-mode --no-snapshot-updates install
+
+  verify-guides:
+    requires: [~commit]
+    secrets:
+      - VESPA_TEAM_API_KEY
+    image: vespaengine/vespa-pipeline
+    environment:
+      USER_SHELL_BIN: bash
+      DOCKER_HOST: 'localhost:2375'
+    annotations:
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
+    steps:
+      - install-deps: |
+          source /etc/profile.d/jdk-env.sh
+          yum install -y python36-pip
+          python3 -m pip install -qqq --upgrade pip
+          python3 -m pip install -qqq -r test/requirements.txt --user
+          yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          yum install -y docker-ce docker-ce-cli containerd.io openssl yum-utils
+      - run-tests: |
+          export VESPA_TEAM_API_KEY
+          cd $SD_DIND_SHARE_PATH
+          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml

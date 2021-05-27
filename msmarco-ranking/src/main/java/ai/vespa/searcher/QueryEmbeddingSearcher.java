@@ -61,7 +61,7 @@ public class QueryEmbeddingSearcher extends Searcher {
             throw new RuntimeException(errorHit.toString());
         }
         FeatureData featureData = (FeatureData)r.hits().get(0).getField("summaryfeatures");
-        return featureData.getTensor("rankingExpression(cls_token_embedding)").rename("d2","d0");
+        return featureData.getTensor("rankingExpression(mean_token_embedding)").rename("d1","d0");
     }
 
     private Query getQueryEmbeddingQuery(Query originalQuery)  {

@@ -1,0 +1,8 @@
+<query-profile id="dense" inherits="default">
+  <field name="hits">10</field>
+  <field name="searchChain">passageranking</field>
+  <field name="ann.hits">1000</field>
+  <field name="ranking.profile">dense</field>
+  <field name="retriever">dense</field>
+  <field name="yql">select id,text from passage where userQuery();</field>
+</query-profile>

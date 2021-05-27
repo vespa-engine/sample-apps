@@ -1,0 +1,3 @@
+<query-profile id="sparse-colbert" inherits="sparse-bm25">
+  <field name="ranking.profile">bm25-colbert</field>
+</query-profile>

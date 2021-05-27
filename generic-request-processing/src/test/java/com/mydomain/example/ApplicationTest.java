@@ -7,11 +7,12 @@ import com.yahoo.application.container.Processing;
 import com.yahoo.component.ComponentSpecification;
 import com.yahoo.processing.Request;
 import com.yahoo.processing.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.FileSystems;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Unit test of the container aspect of this application.

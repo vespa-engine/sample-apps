@@ -1,0 +1,3 @@
+<query-profile id="dense-colbert" inherits="dense">
+  <field name="ranking.profile">dense-colbert</field>
+</query-profile>

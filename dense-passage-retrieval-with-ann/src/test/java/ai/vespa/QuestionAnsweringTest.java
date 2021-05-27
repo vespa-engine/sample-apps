@@ -6,8 +6,9 @@ import ai.vespa.tokenizer.BertModelConfig;
 import ai.vespa.tokenizer.BertTokenizer;
 import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.tensor.Tensor;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class QuestionAnsweringTest {

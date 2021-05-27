@@ -13,12 +13,12 @@ schema passage {
       indexing: summary | attribute
     }
 
-    field dt type tensor<float>(dt{}, x[32]){
+    field dt type tensor<bfloat16>(dt{}, x[32]){
       indexing: summary | attribute
       attribute:fast-search
     }
 
-    field mini_document_embedding type tensor<bfloat16>(d0[384]) {
+    field mini_document_embedding type tensor<float>(d0[384]) {
       indexing: attribute | index
       attribute {
         distance-metric: innerproduct
@@ -49,7 +49,7 @@ schema passage {
   }
 
   onnx-model minilmranker {
-    file: models/miniLM-L-6-V2-quantized.onnx
+    file: files/ms-marco-MiniLM-L-6-v2-quantized.onnx
     input input_ids: input_ids
     input attention_mask: attention_mask
     input token_type_ids: token_type_ids
@@ -140,6 +140,7 @@ schema passage {
     function dense() {
       expression: closeness(field,mini_document_embedding)
     }
+
     function crossModel() {
       expression: onnx(minilmranker){d0:0,d1:0}
     }

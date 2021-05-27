@@ -13,13 +13,15 @@ import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.query.QueryTree;
 import com.yahoo.search.searchchain.Execution;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.*;
 
 public class RetrievalSearcherTest {
 
@@ -40,22 +42,23 @@ public class RetrievalSearcherTest {
         return execution.search(query);
     }
 
-    private void test_query_tree(String queryString, String expected,Searcher searcher){
+    private void test_query_tree(String queryString, String expected, Searcher searcher){
         Query query = new Query("?query=" + URLEncoder.encode(queryString, StandardCharsets.UTF_8));
         Result r = execute(query,searcher);
-        assertEquals("Not expected WAND query", expected,
-                r.getQuery().getModel().getQueryTree().toString());
+        assertEquals(expected,
+                r.getQuery().getModel().getQueryTree().toString(),
+                "Not expected WAND query");
     }
 
     @Test
     public void test_queries() {
         RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(),tokenizer);
         test_query_tree("this is a test query",
-                "WEAKAND(10) default:this default:is default:a default:test default:query",searcher);
+                "WEAKAND(10) default:this default:is default:a default:test default:query", searcher);
         test_query_tree("with some +.% not ",
-                "WEAKAND(10) default:with default:some default:not",searcher);
+                "WEAKAND(10) default:with default:some default:not", searcher);
         test_query_tree("a number+:123  ?",
-                "WEAKAND(10) default:a default:number default:123",searcher);
+                "WEAKAND(10) default:a default:number default:123", searcher);
     }
 
     @Test
@@ -63,9 +66,11 @@ public class RetrievalSearcherTest {
         RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(),tokenizer);
         Query query = new Query("?query=a+test&wand.field=foo&wand.hits=100");
         Result result = execute(query,searcher);
-        assertEquals("Not expected WAND query",
+
+        assertEquals(
                 "WEAKAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
     }
+
 
     @Test
     public void test_dense_params() {

@@ -11,7 +11,6 @@
         <vocabulary>models/bert-base-uncased-vocab.txt</vocabulary>
       </config>
     </component>
-
     <document-processing>
       <chain id="bert-tensorizer" inherits="indexing">
         <documentprocessor id="ai.vespa.docproc.DocumentTensorizer" bundle="msmarco"/>
@@ -62,7 +61,7 @@
         <tuning>
           <searchnode>
             <requestthreads>
-              <persearch>12</persearch>
+              <persearch>48</persearch>
             </requestthreads>
             <feeding>
               <concurrency>1.0</concurrency>

@@ -1,38 +1,40 @@
 # vespa-chinese-linguistics
-## Overview
-
 This package provides Chinese tokenizer with Vespa using Jieba.
-Jieba is one of the famous Chinese tokenizer, it is used by various services such as Solr, Elasticsearch, QihooVerticalSearch(based on lucene)and so on.
+Jieba is one of the famous Chinese tokenizer,
+it is used by various services such as Solr, Elasticsearch, QihooVerticalSearch(based on lucene)and so on.
 
 * [Jieba](https://github.com/huaban/jieba-analysis)
 
 
 ## Create Package
 
-### Requirement
 
-JDK (>= 11) and maven are required to build package.
+### Requirements
+* JDK (>= 11)
+* maven
+
 
 ### Build
+Execute mvn command as below to produce the component jar target/chinese-linguistics-1.0.0-deploy.jar
 
-Execute mvn command as below, and you can get package as target/kuromoji-linguistics-${VERSION}-deploy.jar
+<pre data-test="exec">
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ cd sample-apps/vespa-chinese-linguistics
+$ mvn package
+</pre>
 
-```
-$ cd vespa-chinese-linguistics
-$ mvn install:install-file -Dfile=./libs/jieba-analysis-1.0.3-SNAPSHOT.jar -DgroupId=com.huaban.analysis -DartifactId=jieba -Dversion=1.0.3-SNAPSHOT -Dpackaging=jar
-$ mvn package -Dvespa.version='7.301.24'     # You can specify 7.301.24 or later.
-```
 
 ## Use Package
 
-### Deploy
 
+### Deploy
 Put the built package to components directory of your service. If there is no components directory, create it. For example, the structure will be like below with sampleapps.
 
 * sampleapps/search/kosmos/
     * services.xml
     * components/
         * chinese-linguistics-1.0.0-deploy.jar
+
 
 ### Configuration
 
@@ -51,7 +53,5 @@ Because the package will be used by searcher and indexer, it is recommended to d
 
 
 ## License
-
 Code licensed under the Apache 2.0 license. See LICENSE for terms.
-
 refer to the license of https://github.com/huaban/jieba-analysis

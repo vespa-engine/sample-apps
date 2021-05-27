@@ -3,14 +3,14 @@ schema query {
     }
 
     onnx-model colbert_encoder {
-      file: models/vespa-colMiniLM-L-6-quantized.onnx
+      file: files/vespa-colMiniLM-L-6-quantized.onnx
       input input_ids: query(input_ids)
       input attention_mask: query(attention_mask)
       output contextual:contextual 
     }
 
     onnx-model query_embedding {
-      file: models/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
+      file: files/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
       input input_ids: query(input_ids)
       input attention_mask: query(attention_mask)
       output output_0: embedding
@@ -33,12 +33,12 @@ schema query {
         expression: random
       }
 
-      function cls_token_embedding() {
-        expression: onnxModel(query_embedding).embedding{d0:0,d1:0}
+      function mean_token_embedding() {
+        expression: onnxModel(query_embedding).embedding{d0:0}
       }
 
       summary-features {
-        cls_token_embedding
+        mean_token_embedding
       }
     }
 }

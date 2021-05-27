@@ -3,22 +3,23 @@
 # Vespa sample application - Semantic Retrieval for Question-Answer Applications 
 
 This sample application contains code, document schema and dependencies for running 
-examples from https://docs.vespa.ai/en/semantic-qa-retrieval.html. 
+examples from https://docs.vespa.ai/en/semantic-qa-retrieval.html.
 
-The sample application uses Vespa's [Approximate Nearest Neighbor Search](https://docs.vespa.ai/en/approximate-nn-hnsw.html) support. 
+The sample application uses Vespa's
+[Approximate Nearest Neighbor Search](https://docs.vespa.ai/en/approximate-nn-hnsw.html) support.
  
 We use ANN to build a semantic end-to-end answer retrieval system building on the methodology 
-described in the [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) paper released by Google
-October 5th 2019.
+described in the [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780)
+paper released by Google October 5th 2019.
 We reproduce [Recall@K](https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)) and 
-[MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) 
-results as reported in the paper on Vespa over [The Stanford Question Answering Dataset(SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/) dataset. 
+[MRR](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) results as reported in the paper on Vespa over
+[The Stanford Question Answering Dataset(SQuAD)](https://rajpurkar.github.io/SQuAD-explorer/) dataset.
 
 
 ## Evaluation results for 87,599 questions
 
-As reported in  [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780) versus the Vespa implementation for sentence 
-level retrieval and paragraph level retrieval is given in the tables below:
+As reported in  [ReQA: An Evaluation for End-to-End Answer Retrieval Models](https://arxiv.org/abs/1907.04780)
+versus the Vespa implementation for sentence level retrieval and paragraph level retrieval is given in the tables below:
 
 **Sentence Level Retrieval**
 
@@ -34,8 +35,9 @@ level retrieval and paragraph level retrieval is given in the tables below:
 |USE_QA for paragraph answer retrieval | 0.634 | 0.533 | 0.757 | 0.823   |
 |USE_QA on Vespa using tensors and Vespa grouping       | 0.633 | 0.532| 0.756  | 0.822|
 
-On average the sentence tensor encoding model described in the paper and realized on Vespa has the sentence with the correct answer at the top 1 position in 44% of the questions for sentence level retrieval over a collection of 
-91,729 sentences and 53% when doing paragraph retrieval over a collection of 18,896 paragraphs. 
+On average the sentence tensor encoding model described in the paper and realized on Vespa
+has the sentence with the correct answer at the top 1 position in 44% of the questions for sentence level retrieval
+over a collection of 91,729 sentences and 53% when doing paragraph retrieval over a collection of 18,896 paragraphs.
 
 Some sample questions from the SQuAD v1.1 dataset is show below:
 
@@ -44,6 +46,7 @@ Some sample questions from the SQuAD v1.1 dataset is show below:
 * What virus did Walter Reed discover?
 
 One can explore the questions and the labeled answers [here](https://rajpurkar.github.io/SQuAD-explorer/explore/1.1/dev/)
+
 
 ## Running this sample application 
 
@@ -54,8 +57,10 @@ One can explore the questions and the labeled answers [here](https://rajpurkar.g
 * Operating system: macOS or Linux, Architecture: x86_64
 * Minimum 6GB memory dedicated to Docker (the default is 2GB on Macs).
  
-See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html). This setup is slightly different then the official quick start guide as we build a custom docker image
-with the tensorflow dependencies.
+See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
+This setup is slightly different then the official quick start guide
+as we build a custom docker image  with the tensorflow dependencies.
+
 
 **Checkout the sample-apps repository**
 
@@ -64,20 +69,24 @@ This step requires that you have a working git client:
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample-apps/semantic-qa-retrieval
 </pre>
 
+
 **Build a docker image (See [Dockerfile](Dockerfile) for details)**
 
-The image builds on the [vespaengine/vespa docker image (latest)](https://hub.docker.com/r/vespaengine/vespa/tags) and installs python3 and the python dependencies to run tensorflow. This 
-step takes a few minutes. 
+The image builds on the [vespaengine/vespa docker image (latest)](https://hub.docker.com/r/vespaengine/vespa/tags)
+and installs python3 and the python dependencies to run tensorflow.
+This step takes a few minutes.
 <pre>
-$ docker build . --tag vespa_semantic_qa_retrieval:1.0 
+$ docker build . --tag vespa_semantic_qa_retrieval:1.0
 </pre>
+
 
 **Run the docker container built in the previous step and enter the running docker container**
 
 <pre>
-$ docker run --detach --name vespa_qa --hostname vespa-container --privileged vespa_semantic_qa_retrieval:1.0
+$ docker run --detach --name vespa_qa --hostname vespa-container vespa_semantic_qa_retrieval:1.0
 $ docker exec -it vespa_qa bash 
 </pre>
+
 
 **Deploy the document schema and configuration - this will start Vespa services**
 
@@ -85,8 +94,11 @@ $ docker exec -it vespa_qa bash
 $ vespa-deploy prepare qa/src/main/application/ && vespa-deploy activate
 </pre>
 
+
 **Download the SQuaAD train v1.1 dataset and convert format to Vespa (Sample of 269 questions)**
-The download script will extract a sample set (As processing the whole dataset using the Sentence Encoder for QA takes time).
+
+The download script will extract a sample set
+(As processing the whole dataset using the Sentence Encoder for QA takes time).
 
 <pre>
 $ ./qa/bin/download.sh
@@ -94,27 +106,33 @@ $ ./qa/bin/convert-to-vespa-squad.py sample_squad.json 2> /dev/null
 </pre>
 
 After the above we have two new files in the working directory: 
-_squad_queries.txt_ and _squad_vespa_feed.json_. The _queries.txt_ file contains question. The sample question set generates 351 sentence documents and 55
-context documents (The paragraphs). 
+_squad_queries.txt_ and _squad_vespa_feed.json_.
+The _queries.txt_ file contains question.
+The sample question set generates 351 sentence documents and 55 context documents (The paragraphs).
+
 
 **Feed Vespa json** 
 
 We feed the documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
 <pre>
-$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file squad_vespa_feed.json --endpoint http://localhost:8080 
+$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+  --file squad_vespa_feed.json --endpoint http://localhost:8080
 </pre>
+
 
 **Run evaluation**
 
-The evaluation script runs all questions produced by the convertation script and for each question it executes different recall and ranking strategies and finally it computes the 
-[mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_ and the Recall@1,Recall@5 and Recall@10 metrics. 
+The evaluation script runs all questions produced by the convertation script
+and for each question it executes different recall and ranking strategies and finally it computes the
+[mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_
+and the Recall@1,Recall@5 and Recall@10 metrics.
 
 The evaluations script uses the [Vespa query api](https://docs.vespa.ai/en/query-api.html)
 
 Running the _evaluation.py_ script:
 
 <pre>
-$ cat squad_queries.txt |./qa/bin/evaluation.py 
+$ cat squad_queries.txt | ./qa/bin/evaluation.py
 </pre>
 
 Which should produce output like this:
@@ -133,13 +151,15 @@ Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0
 Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.9405
 </pre>
 
+
 **Reproducing the paper metrics**
 
 To reproduce the paper one need to convert the entire dataset and do evaluation over all questions:
 
 <pre>
 $ ./qa/bin/convert-to-vespa-squad.py SQuAD_train_v1.1.json 2> /dev/null
-$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar --file squad_vespa_feed.json --endpoint http://localhost:8080
+$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar \
+  --file squad_vespa_feed.json --endpoint http://localhost:8080
 $ cat squad_queries.txt |./qa/bin/evaluation.py 2> /dev/null
 </pre>
 
@@ -157,5 +177,3 @@ Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@1 0
 Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@5 0.7555
 Profile 'sentence-semantic-similarity', doc='sentence', dataset='squad',   R@10 0.8218
 </pre>
-
-

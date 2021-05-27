@@ -35,7 +35,7 @@ It is easy to set up your own instance on Vespa Cloud and feed  documents from
 [vespa-engine/documentation](https://github.com/vespa-engine/documentation/):
 
 1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build`.
-Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins/vespa_index_generator.rb)
+Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins-vespafeed/vespa_index_generator.rb)
 for how the feed file is generated.
 
 2: Add data plane credentials:
@@ -125,6 +125,8 @@ Creating a System Test is also a great way to develop a Vespa application:
 
 ## Status
 [![Deploy vespa-documentation-search to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20vespa-documentation-search%20to%20Vespa%20Cloud/badge.svg?branch=master)](https://github.com/vespa-engine/sample-apps/actions?query=workflow%3A%22Deploy+vespa-documentation-search+to+Vespa+Cloud%22)
+
+[![Vespa Cloud Documentation Search Deployment](https://api.vespa-external.aws.oath.cloud/badge/v1/vespa-team/vespacloud-docsearch/default/)](https://console.vespa.oath.cloud/tenant/vespa-team/application/vespacloud-docsearch/prod/deployment)
 
 [![Vespa Documentation Search Feed](https://github.com/vespa-engine/documentation/workflows/Vespa%20Documentation%20Search%20Feed/badge.svg?branch=master)](https://github.com/vespa-engine/documentation/actions?query=workflow%3A%22Vespa+Documentation+Search+Feed%22)
 

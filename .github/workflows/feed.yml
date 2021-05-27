@@ -18,7 +18,7 @@ jobs:
     - name: Generate feed-file (add empty frontmatter to README files first)
       run: |
         find . -not -path './_site/*' -name README.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
-        bundle exec jekyll build
+        bundle exec jekyll build -p _plugins-vespafeed
 
     - name: Setup Python
       uses: actions/setup-python@v1
