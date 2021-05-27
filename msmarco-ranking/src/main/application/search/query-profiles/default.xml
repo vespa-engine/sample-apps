@@ -4,4 +4,5 @@
  <field name="maxOffset">1000</field> 
  <field name="timeout">5s</field>
  <field name="searchChain">docranking</field>
+ <field name="presentation.timing">true</field>
 </query-profile>
