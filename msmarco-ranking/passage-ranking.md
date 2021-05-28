@@ -6,12 +6,19 @@ This sample appplication demonstrates how to efficiently represent three differe
 models for text ranking in Vespa. The three methods are described in detail in 
 this [blog post](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/).
 
-With this sample application you can reproduce our MS Marco Passage Ranking Leaderboard submission which currently ranks #15, above
-many huge ensemble models using large Transformer models (e.g T5 using 3B parameters).
+With this sample application you can reproduce our 
+[MS Marco Passage Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Passage-Ranking-Submissions/leaderboard/) 
+submission which currently ranks #15, above many huge ensemble models using large Transformer models (e.g T5 using 3B parameters).
 
+![MS Marco Leaderboard](img/leaderboard.png)
+
+
+## Transformers for Ranking 
 ![Colbert overview](img/colbert_illustration.png)
 
 *Illustration from [ColBERT paper](https://arxiv.org/abs/2004.12832)*
+
+## Sample application 
 
 In this sample application we demonstrate:
 
