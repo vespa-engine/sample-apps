@@ -1,6 +1,6 @@
 <query-profile id="sparse-bm25" inherits="default">
   <field name="hits">10</field>
-  <field name="searchChain">passageranking</field>
+  <field name="searchChain">passagerankingsimple</field>
   <field name="wand.hits">1000</field>
   <field name="ranking.profile">bm25</field>
   <field name="retriever">sparse</field>

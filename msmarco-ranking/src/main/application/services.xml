@@ -27,6 +27,10 @@
         <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
       </chain>
 
+      <chain id="passagerankingsimple" inherits="vespa">
+        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+      </chain>
+
       <chain id="embedding" inherits="vespa">
         <searcher id="ai.vespa.searcher.QueryEmbeddingSearcher" bundle="msmarco"/>
       </chain>
