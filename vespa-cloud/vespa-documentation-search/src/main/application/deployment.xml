@@ -4,7 +4,7 @@
 
         <prod>
             <region active="true">aws-us-east-1c</region>
-            <delay minutes="10" />
+            <delay minutes="2" />
             <test>aws-us-east-1c</test>
             <region active="true">aws-ap-northeast-1a</region>
         </prod>
