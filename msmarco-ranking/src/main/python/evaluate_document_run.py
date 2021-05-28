@@ -57,16 +57,11 @@ def main():
     parser.add_argument("--wand_field", type=str, default="default") 
     parser.add_argument("--wand_hits", type=int, default=100) 
     parser.add_argument("--phase_count", type=int, default=1000) 
-    parser.add_argument("--run_file", type=str, default="runfile") 
-<<<<<<< HEAD:msmarco-ranking/src/main/python/evaluate_document_run.py
+    parser.add_argument("--run_file", type=str, default="runfile")
     parser.add_argument("--endpoint", type=str, default="http://localhost:8080/search/")
-=======
-    parser.add_argument("--endpoint", type=str, default="http://localhost:8080/search/") 
->>>>>>> master:msmarco-ranking/src/main/python/evaluate_run.py
     parser.add_argument("--hits", type=int, default=100)
     global args
     args = parser.parse_args()
-    print(args)
     do()
 
 if __name__ == "__main__":

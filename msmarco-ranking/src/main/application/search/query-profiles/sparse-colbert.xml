@@ -1,0 +1,5 @@
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<query-profile id="sparse-colbert" inherits="sparse-bm25">
+  <field name="ranking.profile">bm25-colbert</field>
+  <field name="searchChain">passageranking</field>
+</query-profile>

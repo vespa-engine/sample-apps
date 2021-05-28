@@ -1,34 +1,53 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<services version='1.0'> 
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version='1.0'>
 
   <container id='default' version='1.0'>
-     <nodes>
-      <node hostalias="node1" />
+    <nodes>
+      <node hostalias="node1"/>
     </nodes>
     <component id="ai.vespa.tokenizer.BertTokenizer" bundle="msmarco">
       <config name="ai.vespa.tokenizer.bert-model">
-        <max_input>256</max_input>
+        <max_input>512</max_input>
         <vocabulary>models/bert-base-uncased-vocab.txt</vocabulary>
       </config>
     </component>
+    <document-processing>
+      <chain id="bert-tensorizer" inherits="indexing">
+        <documentprocessor id="ai.vespa.docproc.DocumentTensorizer" bundle="msmarco"/>
+      </chain>
+    </document-processing>
+
     <search>
       <chain id="docranking" inherits="vespa">
         <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
       </chain>
+
       <chain id="passageranking" inherits="vespa">
+        <searcher id="ai.vespa.searcher.QueryEncodingSearcher" bundle="msmarco"/>
         <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+      </chain>
+
+      <chain id="passagerankingsimple" inherits="vespa">
+        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+      </chain>
+
+      <chain id="embedding" inherits="vespa">
+        <searcher id="ai.vespa.searcher.QueryEmbeddingSearcher" bundle="msmarco"/>
+      </chain>
+
+      <chain id="colbert" inherits="vespa">
         <searcher id="ai.vespa.searcher.colbert.ColBERTSearcher" bundle="msmarco">
           <config name="ai.vespa.colbert.colbert">
             <max_query_length>32</max_query_length>
             <dim>32</dim>
             <rank_profile>colbert_query_encoder</rank_profile>
-            <output_name>onnxModel(encoder).contextual</output_name>
+            <output_name>onnxModel(colbert_encoder).contextual</output_name>
           </config>
         </searcher>
       </chain>
     </search>
     <document-api/>
-    <document-processing/>
   </container>
 
   <content id='msmarco' version='1.0'>
@@ -37,21 +56,22 @@
       <document mode='index' type='doc'/>
       <document mode='index' type='passage'/>
       <document mode='index' type='query'/>
-      <document-processing cluster="default"/> 
+      <document-processing cluster="default" chain="bert-tensorizer"/>
     </documents>
     <nodes>
-      <node hostalias="node1" distribution-key="0" />
+      <node hostalias="node1" distribution-key="0"/>
     </nodes>
     <engine>
       <proton>
         <tuning>
           <searchnode>
-           <requestthreads>
-            <persearch>12</persearch>
-           </requestthreads>
-           <feeding>
-            <concurrency>1.0</concurrency>
-          </feeding>
+            <requestthreads>
+              <persearch>48</persearch>
+              <summary>36</summary>
+            </requestthreads>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
           </searchnode>
         </tuning>
       </proton>

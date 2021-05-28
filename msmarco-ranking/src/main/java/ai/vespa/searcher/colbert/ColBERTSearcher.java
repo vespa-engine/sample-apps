@@ -1,3 +1,4 @@
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher.colbert;
 
 import ai.vespa.colbert.ColbertConfig;
@@ -8,6 +9,7 @@ import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.result.ErrorHit;
 import com.yahoo.search.result.FeatureData;
+import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
@@ -55,20 +57,23 @@ public class ColBERTSearcher extends Searcher {
         this.dim = config.dim();
         this.questionEncoderRankProfile = config.rank_profile();
         this.outputName = config.output_name();
-        this.encoderTensorType = TensorType.fromSpec("tensor<float>(d0[1],t[" + this.dim + "])");
+        this.encoderTensorType = TensorType.fromSpec("tensor<float>(d0[1],d1[" + this.dim + "])");
         this.colbertTensorType = TensorType.fromSpec("tensor<float>(qt{},x[" + this.dim + "])");
     }
 
     @Override
     public Result search(Query query, Execution execution) {
-        query.getRanking().getFeatures().put(colbertTensorName,
+        Tensor colBertTensor =
                 rewriteTensor(
                         getEmbedding(getQueryEmbeddingQuery(query),
-                                execution)));
-        //Switch for benchmarking the encoder only
-        if(query.properties().getBoolean("encoding-only"))
-            return new Result(query);
-        return execution.search(query);
+                                execution));
+        Result result = new Result(query);
+        result.hits().setSource("colbert");
+        Hit tensorHit = new Hit("tensor");
+        tensorHit.setSource("colbert");
+        tensorHit.setField("tensor", colBertTensor);
+        result.hits().add(tensorHit);
+        return result;
     }
 
     protected Tensor getEmbedding(Query embeddingQuery, Execution execution) throws RuntimeException{

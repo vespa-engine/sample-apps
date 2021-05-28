@@ -23,7 +23,7 @@ class VespaColBERT(BertPreTrainedModel):
 
 
 print("Downloading model from Huggingface")
-colbert_query_encoder = VespaColBERT.from_pretrained("vespa-engine/colbert-medium") 
+colbert_query_encoder = VespaColBERT.from_pretrained("vespa-engine/col-minilm")
 out_file = sys.argv[1]
 
 print("Exporting model to ONNX format to '{}'".format(out_file))

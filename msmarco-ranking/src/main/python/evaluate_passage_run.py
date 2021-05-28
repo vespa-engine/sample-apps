@@ -8,6 +8,7 @@ import requests
 import sys
 import argparse
 
+session = requests.Session()
 
 # Fetch data from vespa routine
 def get_result(query):
@@ -21,12 +22,14 @@ def get_result(query):
     'ranking.profile': args.rank_profile,
     'wand.field': args.wand_field,
     'wand.hits': args.wand_hits,
-    'phase.count': args.phase_count,
+    'ann.hits': args.ann_hits,
+    'ann.extra-hits': 0,
+    'phase.count': args.rerank_hits,
     'restrict': 'passage',
     'searchChain': 'passageranking'
   }
 
-  response = requests.post(args.endpoint, json=request_body,timeout=25.05)
+  response = session.post(args.endpoint, json=request_body,timeout=25.05)
   if not response.ok:
     print("Failed request for query {}, response {}, response json {}".format(query, response,response.json()))
     return []
@@ -44,30 +47,33 @@ def get_result(query):
 
 def eval():  
   queries = []
-
   dataset = ir_datasets.load('msmarco-passage/' + args.query_split + '/small')
-
   for query_id,text in dataset.queries_iter():
     queries.append((query_id,text))
-
+  from tqdm import tqdm
   with open(args.run_file, "w") as fp:
-    for id,query in queries:
+    for id,query in tqdm(queries):
       docs = get_result(query)
       for i,d in enumerate(docs):
-        fp.write("{}\t{}\t{}\n".format(id,d,i+1))
+        if args.trec_format:
+          fp.write("{}\tQ0\t{}\t{}\t{}\trun\n".format(id,d,i+1,1000-i))
+        else:
+          fp.write("{}\t{}\t{}\n".format(id,d,i+1))
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rank_profile", type=str, required=True)
-    parser.add_argument("--retriever", choices=["sparse"], required=True)
+    parser.add_argument("--retriever", choices=["sparse","dense"], required=True)
     parser.add_argument("--wand_field", type=str, default="default") 
-    parser.add_argument("--wand_hits", type=int, default=10) 
+    parser.add_argument("--wand_hits", type=int, default=1000) 
+    parser.add_argument("--ann_hits", type=int, default=1000) 
     parser.add_argument("--endpoint", type=str, default="http://localhost:8080/search/") 
-    parser.add_argument("--phase_count", type=int, default=1000)
+    parser.add_argument("--rerank_hits", type=int, default=24)
     parser.add_argument("--hits", type=int, default=10)
     parser.add_argument("--run_file", type=str, default="runfile") 
     parser.add_argument("--query_split", choices=["dev", "eval"], required=True)
+    parser.add_argument('--trec_format', dest='trec_format', default=False, action='store_true')
     global args
     args = parser.parse_args()
     eval()

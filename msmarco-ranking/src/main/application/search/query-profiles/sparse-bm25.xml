@@ -1,0 +1,9 @@
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<query-profile id="sparse-bm25" inherits="default">
+  <field name="hits">10</field>
+  <field name="searchChain">passagerankingsimple</field>
+  <field name="wand.hits">1000</field>
+  <field name="ranking.profile">bm25</field>
+  <field name="retriever">sparse</field>
+  <field name="yql">select id,text from passage where userQuery();</field>
+</query-profile>
