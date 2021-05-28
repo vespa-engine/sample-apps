@@ -538,30 +538,64 @@ Indexing everything on a single node using real time indexing takes a few hours,
 
 ### Ranking Evaluation using Ms Marco Passage Ranking 
 
-For example, run through all queries from the MS Marco Passage Ranking Dev set using dense retrieval and re-ranking using
-ColBERT:
+With the [evaluate_passage_run.py](src/main/python/evaluate_passage_run.py) we can run retrieval and ranking using the methods
+demonstrated in this sample application
 
+
+**BM25(WAND) Single phase sparse retrieval**
 <pre>
-$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
-  --rank_profile dense-colbert --hits 10 --run_file run.dev.txt
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse \
+  --rank_profile bm25 --wand_hits 100 --hits 10 --run_file run.dev.txt --endpoint \
+  http:://localhost:8080/search/
 </pre>
 
-To evaluate ranking performance download the official evaluation scripts
+**BM25(WAND) + ColMiniLM re-ranking**
+<pre>
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse \
+  --rank_profile bm25-colbert --wand_hits 1000 --rerank_hits 1000 --hits 10 --run_file run.dev.txt --endpoint \
+  http:://localhost:8080/search/
+</pre>
+
+**dense(ANN) Single phase dense retrieval**
+<pre>
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
+  --rank_profile dense --ann_hits 10 --hits 10 --run_file run.dev.txt --endpoint \
+  http:://localhost:8080/search/
+</pre>
+
+**dense(ANN) + ColMiniLM re-ranking**
+<pre>
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
+  --rank_profile dense-colbert --ann_hits 1000 --rerank_hits 1000 --hits 10 --run_file run.dev.txt --endpoint \
+  http:://localhost:8080/search/
+</pre>
+
+**dense(ANN) + ColMiniLM re-ranking + CrossMiniLm**
+<pre>
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
+  --rank_profile dense-colbert-mini-lm --ann_hits 1000 --rerank_hits 24 --hits 10 --run_file run.dev.txt --endpoint \
+  http:://localhost:8080/search/
+</pre>
+
+To evaluate ranking accuracy download the official evaluation script
 
 <pre>
 $ curl -L -o msmarco_eval.py https://raw.githubusercontent.com/spacemanidol/MSMARCO/master/Ranking/Baselines/msmarco_eval.py
 </pre>
 
-Generate the dev qrels file using the *ir_datasets* which the evaluation script expects:
+Generate the dev qrels (query relevancy labels) file using the *ir_datasets* which the evaluation script expects:
+
 <pre>
 $ ./src/main/python/dump_passage_dev_qrels.py
 </pre>
 
-Above will write a **qrels.dev.small.tsv** file to the current directory, now we can run evaluation:
+Above will write a **qrels.dev.small.tsv** file to the current directory, now we can evaluate using 
+the **run.dev.txt** file created by any of the evaluate_passage_run.py runs listed above 
+
 <pre>
 $ python3 msmarco_eval.py qrels.dev.small.tsv run.dev.txt
 #####################
-MRR @10: 0.350263564833764
+MRR @10: 0.xx
 QueriesRanked: 6980
 #####################
 </pre>
