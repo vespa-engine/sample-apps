@@ -96,7 +96,7 @@ schema passage {
       index: enable-bm25
     }
     
-    field text_token_ids type tensor<float>(d0[128])  {
+    field text_token_ids type tensor&lt;float&gt;(d0[128])  {
       indexing: summary | attribute
     }
     
@@ -104,7 +104,7 @@ schema passage {
       indexing: summary | attribute
     }
     
-    field mini_document_embedding type tensor<float>(d0[384]) {
+    field mini_document_embedding type tensor&lt;float&gt;(d0[384]) {
       indexing: attribute | index
       attribute {
         distance-metric: innerproduct
@@ -272,7 +272,7 @@ that these re-ranking steps are performed per node without crossing the network.
 We represent both the ColBERT and the dense query encoder in Vespa 
 using Vespa's support for inference and [ranking with ONNX](https://docs.vespa.ai/en/onnx.html) models. 
 In this case we don't rank any documents directly with the ONNX model but we use the support to make a single pass through them
-to obtain the embedding vector for nearest neighbor search and the colbert query tensor representation for re-ranking. 
+to obtain the embedding vector for nearest neighbor search and the ColBERT query tensor representation for re-ranking. 
  
 We plug the model into the Vespa serving architecture 
 using a *query* document type which is empty as it's only used to represent the query encoder models
@@ -351,7 +351,7 @@ in the *passage* and *query* vespa doucment schemas.
 ## The sentence encoder model (bi-encoder)
 
 This model is used for dense retrieval using HNSW indexing. The model uses mean pooling 
-and we add a L2 normalization on top so we can use innerproduct distance metric instead
+and we add an L2 normalization on top so we can use innerproduct distance metric instead
 of angular. The mean pooling and normalization is part of the onnx model generation. 
 
 <pre data-test="exec">
@@ -363,7 +363,7 @@ $ curl -L -o src/main/application/files/sentence-msmarco-MiniLM-L-6-v3-quantized
 
 This is the final re-ranking stage using full all to all
 interaction between the query and the passage with a classification head on top of the CLS token
-embedding. 
+embedding:
 
 <pre data-test="exec">
 $ curl -L -o src/main/application/files/ms-marco-MiniLM-L-6-v2-quantized.onnx \
@@ -371,7 +371,7 @@ $ curl -L -o src/main/application/files/ms-marco-MiniLM-L-6-v2-quantized.onnx \
 </pre>
 
 ## The late interaction model 
-This is the ColMiniLM model which uses late contextualized interaction and Vespa MaxSim tensor expression
+This is the ColMiniLM model which uses late contextualized interaction and Vespa MaxSim tensor expression:
 
 <pre data-test="exec">
 $ curl -L -o src/main/application/files/vespa-colMiniLM-L-6-quantized.onnx \
@@ -615,7 +615,7 @@ Model training and offline text to tensor processing
 * The *ColBERT* model is trained the instructions from the [ColBERT repository](https://github.com/stanford-futuredata/ColBERT) 
 using the MS Marco Passage training set. The *bert-base-uncased* is replaced with the *MiniLM-L6*. 
 We use cosine similarity (innerproduct as the vectors are unit length normalized).
-* The dimensionality of the token tensor is reduced from 384 (hidden dim) to 32 dimensions by a linear layer. 
+* The dimensionality of the token tensor is reduced from 384 (hidden dim) to 32 dimensions by a linear layer
 * GPU powered indexing routine in the mentioned *ColBERT repository* to obtain the document tensor representation
 
 
