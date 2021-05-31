@@ -4,7 +4,11 @@
 
 This sample appplication demonstrates how to efficiently represent three different ways of applying pretrained Transformer
 models for text ranking in Vespa. The three methods are described in detail in 
-this [blog post](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/).
+these blog posts:
+
+* [Pretrained language models for search - part 1 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/)
+* [Pretrained language models for search - part 2 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/)
+* [Pretrained language models for search - part 3 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/)
 
 With this sample application you can reproduce our 
 [MS Marco Passage Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Passage-Ranking-Submissions/leaderboard/) 
