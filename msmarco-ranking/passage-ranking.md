@@ -6,7 +6,7 @@ This sample appplication demonstrates how to efficiently represent three differe
 models for text ranking in Vespa. The three methods are described in detail in 
 these blog posts:
 
-* [Pretrained language models for search - part 1 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/)
+* [Pretrained language models for search - part 1 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/)
 * [Pretrained language models for search - part 2 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/)
 * [Pretrained language models for search - part 3 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/)
 
