@@ -485,7 +485,7 @@ It is also possible to view the result in a browser using HTTP GET
 A set of predefined methods for doing different retrieval and re-ranking methods is 
 configured using [query profiles](https://docs.vespa.ai/en/query-profiles.html) 
 
-See query profile definitions in [src/main/application/search/query-profiles](src/main/application/search/query-profiles/)
+See query profile definitions in [src/main/application/search/query-profiles](src/main/application/search/query-profiles)
 
 Examples of retrieval and ranking methods demonstrated with this sample application:
 
