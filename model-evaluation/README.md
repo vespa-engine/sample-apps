@@ -7,6 +7,10 @@ Please refer to
 [stateless model evaluation](https://docs.vespa.ai/en/stateless-model-evaluation.html)
 for more information.
 
+The directory `src/main/application/models` contains the `simple_model.onnx` ONNX
+model that is generated from the `pytorch_simple.py` script in the same directory.
+
+
 ### Executable example
 
 **Check-out, compile and run:**
@@ -40,18 +44,25 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 **Test the application - REST API**
 
-<pre data-test="exec" data-test-assert-contains="mnist_softmax">
+<pre data-test="exec" data-test-assert-contains="simple_model">
 $ curl -s 'http://localhost:8080/model-evaluation/v1/' | python -m json.tool
 </pre>
 
-<pre data-test="exec" data-test-assert-contains="-0.35465">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/mnist_softmax/eval?Placeholder=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A0.1%7D' | python -m json.tool
+<pre data-test="exec" data-test-assert-contains="0.49985">
+$ curl -s 'http://localhost:8080/model-evaluation/v1/simple_model/eval?input=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A0.1%2C%7Bd0%3A0%2Cd1%3A1%7D%3A0.2%2C%7Bd0%3A0%2Cd1%3A2%7D%3A0.3%7D' | python -m json.tool
 </pre>
+
+The input here is a URL encoded Vespa tensor in
+[literal form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
+
+```
+    {{d0:0,d1:0}:0.1,{d0:0,d1:1}:0.2,{d0:0,d1:2}:0.3}
+```
 
 **Test the application - Java API**
 
-<pre data-test="exec" data-test-assert-contains="-0.35465">
-$ curl -s 'http://localhost:8080/models/?model=mnist_softmax&function=default.add&argumentName=Placeholder&argumentValue=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A0.1%7D' | python -m json.tool
+<pre data-test="exec" data-test-assert-contains="0.49985">
+$ curl -s 'http://localhost:8080/models/?model=simple_model&function=output&argumentName=input&argumentValue=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A0.1%2C%7Bd0%3A0%2Cd1%3A1%7D%3A0.2%2C%7Bd0%3A0%2Cd1%3A2%7D%3A0.3%7D' | python -m json.tool
 </pre>
 
 **Shutdown and remove the container:**
