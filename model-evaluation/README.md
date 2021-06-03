@@ -56,7 +56,7 @@ The input here is a URL encoded Vespa tensor in
 [literal form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
 
 ```
-    {{d0:0,d1:0}:0.1,{d0:0,d1:1}:0.2,{d0:0,d1:2}:0.3}
+    { {d0:0,d1:0}:0.1, {d0:0,d1:1}:0.2, {d0:0,d1:2}:0.3 }
 ```
 
 **Test the application - Java API**
