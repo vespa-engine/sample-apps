@@ -141,16 +141,15 @@ public class RetrievalModelSearcher extends Searcher {
      * @return a rewritten tensor.
      */
     protected Tensor rewriteQueryTensor(Tensor embedding) {
-        BitSet set = new BitSet();
+        BitSet set = new BitSet(768);
         for(int i = 0; i < 768;i++)  {
             if (embedding.get(TensorAddress.of(i)) > 0)
-                set.set(i);
+                set.set(768 - i -1);
         }
         byte[] bytes = set.toByteArray();
-
         Tensor.Builder builder =  Tensor.Builder.of(queryHashEmbedding);
         for(int i = 0; i < 96; i++)
-            builder.cell().label("d0", String.valueOf(i)).value(bytes[i]);
+            builder.cell().label("d0", String.valueOf(i)).value(bytes[96 - i -1]);
         return builder.build();
     }
 }
