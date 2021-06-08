@@ -14,22 +14,28 @@ import com.yahoo.search.result.ErrorMessage;
 import com.yahoo.search.result.FeatureData;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
+import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
 import com.yahoo.tensor.functions.Reduce;
+
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 
 @Before("QuestionAnswering")
-public class RetrieveModelSearcher extends Searcher {
+public class RetrievalModelSearcher extends Searcher {
 
     private static String QUERY_TENSOR_NAME = "query(query_token_ids)";
     TensorType questionInputTensorType = TensorType.fromSpec("tensor<float>(d0[32])");
+    TensorType queryHashEmbedding = TensorType.fromSpec("tensor<int8>(d0[96])");
     private static String QUERY_EMBEDDING_TENSOR_NAME = "query(query_embedding)";
+    private static String QUERY_HASH_TENSOR_NAME = "query(query_hash)";
 
     BertTokenizer tokenizer;
 
     @Inject
-    public RetrieveModelSearcher(BertTokenizer tokenizer) {
+    public RetrievalModelSearcher(BertTokenizer tokenizer) {
         this.tokenizer = tokenizer;
     }
 
@@ -45,22 +51,18 @@ public class RetrieveModelSearcher extends Searcher {
 
         switch (QuestionAnswering.getRetrivalMethod(query)) {
             case DENSE:
-                query.getModel().getQueryTree().setRoot(denseRetrieval(getEmbeddingTensor(questionTokenIds, execution, query), query));
+                Tensor floatQueryEmbedding = getEmbeddingTensor(questionTokenIds, execution, query);
+                Tensor clsEmbedding = floatQueryEmbedding.rename("d2", "d0");
+                Tensor hashEmbedding = rewriteQueryTensor(clsEmbedding);
+                query.getModel().getQueryTree().setRoot(denseRetrieval(clsEmbedding,hashEmbedding,query));
                 query.getRanking().setProfile("dense");
                 break;
             case SPARSE:
                 query.getModel().getQueryTree().setRoot(sparseRetrieval(queryInput, query));
                 query.getRanking().setProfile("sparse");
                 break;
-            case HYBRID:
-                Item ann = denseRetrieval(getEmbeddingTensor(questionTokenIds, execution, query),query);
-                Item wand = sparseRetrieval(queryInput,query);
-                OrItem disjunction = new OrItem();
-                disjunction.addItem(ann);
-                disjunction.addItem(wand);
-                query.getModel().getQueryTree().setRoot(disjunction);
-                query.getRanking().setProfile("hybrid");
         }
+
         if(QuestionAnswering.isRetrieveOnly(query))
             query.getRanking().setProfile(query.getRanking().getProfile() + "-retriever");
 
@@ -77,13 +79,13 @@ public class RetrieveModelSearcher extends Searcher {
         return wand;
     }
 
-    private Item denseRetrieval(Tensor questionEmbedding, Query query) {
-        NearestNeighborItem nn = new NearestNeighborItem("text_embedding", "query_embedding");
-        nn.setTargetNumHits(query.getHits());
+    private Item denseRetrieval(Tensor questionEmbedding, Tensor hashEmbedding, Query query) {
+        NearestNeighborItem nn = new NearestNeighborItem("hash", "query_hash");
+        nn.setTargetNumHits(1000);
         nn.setAllowApproximate(true);
-        nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra",1000));
-        Tensor l2convertedTensor = rewriteQueryTensor(questionEmbedding);
-        query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , l2convertedTensor);
+        nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra",0));
+        query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , questionEmbedding);
+        query.getRanking().getFeatures().put(QUERY_HASH_TENSOR_NAME,hashEmbedding);
         return nn;
     }
 
@@ -95,7 +97,7 @@ public class RetrieveModelSearcher extends Searcher {
      * @return The embedding tensor as produced by the DPR query encoder
      */
 
-    private Tensor getEmbeddingTensor(Tensor questionTensor, Execution execution, Query query) {
+    protected Tensor getEmbeddingTensor(Tensor questionTensor, Execution execution, Query query) {
         long start = System.currentTimeMillis();
         Query embeddingModelQuery = new Query();
         query.attachContext(embeddingModelQuery);
@@ -113,7 +115,7 @@ public class RetrieveModelSearcher extends Searcher {
         long duration = System.currentTimeMillis() - start;
         embeddingModelQuery.trace("Encoder phase took " + duration + "ms" , 3);
         FeatureData featureData = (FeatureData)embeddingResult.hits().get(0).getField("summaryfeatures");
-        return featureData.getTensor("onnxModel(encoder).embedding");
+        return featureData.getTensor("rankingExpression(cls_embedding)");
     }
 
     /**
@@ -123,7 +125,7 @@ public class RetrieveModelSearcher extends Searcher {
      * @return A tensor of type questionInputTensorType storing the token_ids
      */
 
-    private Tensor getQueryTokenIds(String queryInput, int maxLength) {
+    protected Tensor getQueryTokenIds(String queryInput, int maxLength) {
         List<Integer> tokensIds = tokenizer.tokenize(queryInput, maxLength,true);
         Tensor.Builder builder = Tensor.Builder.of(questionInputTensorType);
         int i = 0;
@@ -138,7 +140,17 @@ public class RetrieveModelSearcher extends Searcher {
      * @param embedding the question embedding returned from query encoder
      * @return a rewritten tensor.
      */
-    private Tensor rewriteQueryTensor(Tensor embedding) {
-        return embedding.reduce(Reduce.Aggregator.min, "d0").concat(0, "d1").rename("d1", "x");
+    protected Tensor rewriteQueryTensor(Tensor embedding) {
+        BitSet set = new BitSet();
+        for(int i = 0; i < 768;i++)  {
+            if (embedding.get(TensorAddress.of(i)) > 0)
+                set.set(i);
+        }
+        byte[] bytes = set.toByteArray();
+
+        Tensor.Builder builder =  Tensor.Builder.of(queryHashEmbedding);
+        for(int i = 0; i < 96; i++)
+            builder.cell().label("d0", String.valueOf(i)).value(bytes[i]);
+        return builder.build();
     }
 }

@@ -22,8 +22,12 @@
 
     <search>
       <chain id="qa" inherits="vespa">
-        <searcher id="ai.vespa.searcher.RetrieveModelSearcher" bundle="question-answering"/>
+        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="question-answering"/>
         <searcher id="ai.vespa.searcher.QASearcher" bundle="question-answering"/>
+      </chain>
+
+      <chain id="qa-test" inherits="vespa">
+        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="question-answering"/>
       </chain>
     </search>
     <document-api/>
@@ -44,6 +48,10 @@
     </nodes>
     <engine>
       <proton>
+        <resource-limits>
+          <disk>0.95</disk>
+          <memory>0.82</memory>
+        </resource-limits>
         <tuning>
           <searchnode>
            <requestthreads>

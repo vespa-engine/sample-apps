@@ -23,18 +23,19 @@ schema wiki {
     }
 
     field id type long {
-      indexing: summary |attribute
+      indexing: summary | attribute
     }
 
-    field text_embedding type tensor<float>(x[769]){
-      indexing: attribute|index
+    #bpr hash
+    field hash type tensor<int8>(d0[96]){
+      indexing: attribute | index
       attribute {
-        distance-metric:euclidean
+        distance-metric:hamming
       }
       index {
         hnsw {
-          max-links-per-node: 32
-          neighbors-to-explore-at-insert: 500
+          max-links-per-node: 16
+          neighbors-to-explore-at-insert: 200
         }
       }
     }
@@ -55,55 +56,22 @@ schema wiki {
   }
 
   rank-profile openqa {
-    constants {
-      TOKEN_NONE: 0
-      TOKEN_CLS:  101
-      TOKEN_SEP:  102
-    }
 
-    # Find length of question input
-    function question_length() {
-      expression: sum(map(query(query_token_ids), f(a)(a > 0)))
-    }
-
-    # Find length of the title
-    function title_length() {
-      expression: sum(map(attribute(title_token_ids), f(a)(a > 0)))
-    }
-
-    # Find length of the text
-    function text_length() {
-      expression: sum(map(attribute(text_token_ids), f(a)(a > 0)))
-    }
-
-    # Create input sequence: CLS + query + SEP + title + SEP + text + 0's
     function input_ids() {
-      expression {
-        tensor<float>(d0[1],d1[128])(
-           if (d1 == 0,
-             TOKEN_CLS,
-           if (d1 < question_length + 1,
-             query(query_token_ids){d0:(d1-1)},
-           if (d1 == question_length + 1,
-             TOKEN_SEP,
-           if (d1 < question_length + title_length + 2,
-             attribute(title_token_ids){d0:(d1-question_length-2)},
-           if (d1 == question_length + title_length + 2,
-             TOKEN_SEP,
-           if (d1 < text_length + title_length + question_length + 3,
-             attribute(text_token_ids){d0:(d1-question_length-title_length-3)},
-              TOKEN_NONE
-           )))))))
-      }
+      expression: tokenInputIds(80, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
 
-    # The attention mask has 1's for every token that is set
-    function attention_mask() {
-      expression: map(input_ids, f(a)(a > 0))
+    function token_type_ids() {
+      expression: tokenTypeIds(80, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
+
+    function attention_mask() {
+      expression: tokenAttentionMask(80, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
+    }
+
 
     first-phase {
-      expression: closeness(field, text_embedding)
+      expression: closeness(field, hash) #Replace with dot product when we can unpackbits from has
     }
 
     second-phase {
@@ -115,8 +83,8 @@ schema wiki {
       onnxModel(reader).start_logits
       onnxModel(reader).end_logits
       input_ids # The input sequence with special tokens (CLS/SEP)
+      firstPhase
     }
-
   }
 
   rank-profile sparse inherits openqa {
@@ -127,37 +95,9 @@ schema wiki {
 
   rank-profile dense inherits openqa {
     first-phase {
-      expression: closeness(field, text_embedding)
+      expression: closeness(field, hash)
     }
   }
 
-  rank-profile hybrid inherits openqa {
-    num-threads-per-search: 1
-    first-phase {
-      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
-    }
-  }
-
-  # The following rank profiles are used for retrieval only, i.e. they don't invoke the reader
-
-  rank-profile sparse-retriever  {
-    first-phase {
-      expression: bm25(text) + bm25(title)
-    }
-  }
-
-  rank-profile dense-retriever {
-    num-threads-per-search: 1
-    first-phase {
-      expression: closeness(field, text_embedding)
-    }
-  }
-
-  rank-profile hybrid-retriever {
-    num-threads-per-search: 1
-    first-phase {
-      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
-    }
-  }
 
 }

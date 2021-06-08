@@ -32,9 +32,7 @@ public class QASearcher extends Searcher {
                 QuestionAnswering.isRetrieveOnly(query))
             return execution.search(query);
 
-        query.getRanking().getProperties().put("vespa.hitcollector.heapsize",query.getHits());
         query.setHits(1); //We only extract text spans from the hit with the highest Reader relevancy score
-
         Result result = execution.search(query);
         execution.fill(result);
         Hit answerHit = getPredictedAnswer(result);
@@ -52,6 +50,7 @@ public class QASearcher extends Searcher {
         if(result.getTotalHitCount() == 0 || result.hits().getErrorHit() != null) {
             return formatAnswerHit(null);
         }
+
         Hit bestReaderHit = result.hits().get(0);
         double readerScore = bestReaderHit.getRelevance().getScore();
 
