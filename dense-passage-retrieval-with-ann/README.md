@@ -52,11 +52,19 @@ $ cd sample-apps/dense-passage-retrieval-with-ann
 Download and setup the Transformer models, and build the application package.
 This can take some time as the BERT-based models are around 400Mb each.
 
+# DPR models using float
 <pre data-test="exec">
 $ pip3 install -r requirements.txt
 $ python3 bin/export-reader-model.py src/main/application/files/reader.onnx
 $ python3 bin/export-query-model.py src/main/application/files/question_encoder.onnx
 $ mvn clean package
+</pre>
+
+# BPR models
+
+<pre>
+wget https://data.vespa.oath.cloud/onnx_models/bpr-question-encoder.onnx -O src/main/application/files/question_encoder.onnx
+wget https://data.vespa.oath.cloud/onnx_models/dpr-reader-nq-quantized.onnx -O src/main/application/files/reader.onnx 
 </pre>
 
 Start the Vespa docker container:
