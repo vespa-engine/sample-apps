@@ -3,14 +3,20 @@
 # Vespa sample application - Open-Domain Question Answering
 
 This sample application demonstrates how to build an open domain
-retrieval-based question-answering **serving** system using Vespa.  This
-application implements the [Dense Passage Retriever](https://github.com/facebookresearch/DPR)
-system, and demonstrates:
+retrieval-based question-answering **serving** system using Vespa. 
+
+This
+application implements the 
+[Dense Passage Retriever](https://github.com/facebookresearch/DPR) architecture
+but uses the [Binary Passage Retriever](https://github.com/studio-ousia/bpr) to save memory.
+
+The Binary Passage Retriever uses only 96 bytes per passage instead of 3072 bytes with
+the dense passage retriever. 
 
 * Term-based (sparse) retrieval using BM25.
 * Semantic similarity (dense) using fast approximate nearest-neighbors search based on HNSW indexes.
 * BERT-based models for text encoding and answer extraction.
-* Custom Java components for glue all the parts together.
+* Custom Java components to glue all the parts together.
 
 For more details, refer to the companion blog post:
 [Efficient open-domain question-answering on Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/).
@@ -29,9 +35,7 @@ This README contains the following:
 ## Quick start
 
 The following is a recipe on how to get started with a tiny set of sample data.
-The sample data only contains the first 100 passages of the full dataset, but
-this should be able to run on for instance a laptop. For the full dataset to
-recreate the results in the DPR paper, see the next section.
+The sample data only contains the first 100 passages of the full dataset.
 
 Requirements:
 
@@ -52,15 +56,8 @@ $ cd sample-apps/dense-passage-retrieval-with-ann
 Download and setup the Transformer models, and build the application package.
 This can take some time as the BERT-based models are around 400Mb each.
 
-# DPR models using float
-<pre data-test="exec">
-$ pip3 install -r requirements.txt
-$ python3 bin/export-reader-model.py src/main/application/files/reader.onnx
-$ python3 bin/export-query-model.py src/main/application/files/question_encoder.onnx
-$ mvn clean package
-</pre>
 
-# BPR models
+# Download BPR models
 
 <pre>
 wget https://data.vespa.oath.cloud/onnx_models/bpr-question-encoder.onnx -O src/main/application/files/question_encoder.onnx
@@ -130,70 +127,9 @@ $ docker rm -f vespa
 
 ## How to feed the entire dataset
 
-To run the full dataset, you need minimum **128GB** system memory,
+To run the full dataset, you need minimum **12GB** system memory,
 unless you  are running on multiple content nodes, but that is not demonstrated here.
-To recreate the Exact Match score, you also need to increase the size of the input
-token sequence in the [wiki document schema](src/main/application/schemas/wiki.sd#L80) to 380.
 
-We get the evaluation scripts and data from the DPR repository:
-
-<pre>
-$ git clone --depth 1 https://github.com/facebookresearch/DPR.git
-$ cd DPR; pip3 install .
-</pre>
-
-Thanks to [Facebook Research](https://opensource.fb.com/) for providing both
-the pre-tokenized Wikipedia text passages and the corresponding passage embeddings.
-Note that the data is large, the text passage representation
-(data.wikipedia_split) is 13G and the pre-computed embeddings are 62G.
-
-To download the pre-generated Wikipedia snippets and the pre-computed passage
-embeddings use the DPR download utility:
-
-<pre>
-$ python3 data/download_data.py --resource data.wikipedia_split
-$ python3 data/download_data.py --resource data.retriever_results.nq.single.wikipedia_passages
-</pre>
-
-We join this data and create a Vespa feed file with one Vespa put document
-operation per line [Vespa json feed
-format](https://docs.vespa.ai/en/reference/document-json-format.html).
-The scripts reads the entire Wikipedia passage into memory, reads one embedding file at a time
-and emits a join of the textual passage metadata with the precomputed DPR embedding.
-
-<pre>
-$ cd ..
-$ python3 bin/make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv \
-    DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
-</pre>
-
-This will create data like the following (newline formatted for readability):
-
-<pre>
-{
-  "put": "id:wiki:wiki::41",
-  "fields": {
-    "title": "Alcohol",
-    "text": "Alcohol In chemistry, an alcohol is any organic compound in which the hydroxyl functional group is bound to a carbon. ...",
-    "id": 41,
-    "text_embedding": {"values": [0.030272305011749268, ...]}
-  }
-}
-</pre>
-
-We are now ready to index the data in our Vespa installation. The feed file is 273G uncompressed.
-Feed the documents as we did above:
-
-<pre>
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-    --file feed.jsonl --endpoint http://your-vespa-instance-hostname:8080
-</pre>
-
-Note that this is a large batch of data to feed. To give some idea,
-loading the data to Vespa using a single content node instance with 36 vcpu's takes about 5 hours
-(21M passages, 1350 puts/s sustained, with visibility-delay 1.0 seconds and real time indexing).
-However, note that indexing builds both the inverted indexes for efficient sparse term based retrieval
-and HNSW graph for fast efficient dense embedding retrieval.
 
 
 ## Experiments
