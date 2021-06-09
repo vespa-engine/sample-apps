@@ -99,11 +99,16 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 Feed sample data. We feed the documents using the [Vespa http feeder
 client](https://docs.vespa.ai/en/vespa-http-client.html):
 
+Feed the original documents, then feed updates with BPR hashes
+
 <pre data-test="exec">
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
   https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
 $ java -jar vespa-http-client-jar-with-dependencies.jar \
   --file sample-feed.jsonl --endpoint http://localhost:8080
+
+$ java -jar vespa-http-client-jar-with-dependencies.jar \
+  --file sample-binary-feed-updates.json --endpoint http://localhost:8080
 </pre>
 
 Now we can test the application - enter these queries into a browser or from the command line:
