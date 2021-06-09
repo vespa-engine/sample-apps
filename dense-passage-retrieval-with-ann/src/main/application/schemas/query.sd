@@ -37,6 +37,9 @@ schema query {
 
     summary-features {
       cls_embedding
+      input_ids
+      token_type_ids
+      attention_mask
     }
   }
 
