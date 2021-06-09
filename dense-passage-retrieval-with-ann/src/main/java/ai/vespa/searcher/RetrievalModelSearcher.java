@@ -52,7 +52,7 @@ public class RetrievalModelSearcher extends Searcher {
         switch (QuestionAnswering.getRetrivalMethod(query)) {
             case DENSE:
                 Tensor floatQueryEmbedding = getEmbeddingTensor(questionTokenIds, execution, query);
-                Tensor clsEmbedding = floatQueryEmbedding.rename("d2", "d0");
+                Tensor clsEmbedding = floatQueryEmbedding.rename("d2", "x");
                 Tensor hashEmbedding = rewriteQueryTensor(clsEmbedding);
                 query.getModel().getQueryTree().setRoot(denseRetrieval(clsEmbedding,hashEmbedding,query));
                 query.getRanking().setProfile("dense");
