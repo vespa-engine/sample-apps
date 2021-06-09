@@ -28,7 +28,7 @@ schema wiki {
 
     #bpr hash
     field hash type tensor<int8>(d0[96]){
-      indexing: attribute | index
+      indexing: attribute | index | summary
       attribute {
         distance-metric:hamming
       }
@@ -75,7 +75,7 @@ schema wiki {
 
     function unpack(t) {
       # assuming tensor t has type tensor<int8>(d0[96])
-      expression:tensor<int8>(x[768])( unpack_lookup{bit:(x % 8),z:(128 + t{d0:(x / 8)})} )
+      expression:tensor<float>(x[768])( unpack_lookup{bit:(x % 8),z:(128 + t{d0:(x / 8)})} )
     }
 
     function signit()  {
@@ -118,10 +118,14 @@ schema wiki {
 
   rank-profile dense-retriever inherits openqa {
       first-phase {
-        expression: closeness(field, hash)
+        expression: rawScore(hash)
       }
       second-phase {
-        expression: firstPhase
+        expression: innerproduct
+      }
+      summary-features {
+        innerproduct
+        signit
       }
     }
 
