@@ -100,7 +100,6 @@ schema wiki {
       onnxModel(reader).end_logits
       input_ids # The input sequence with special tokens (CLS/SEP)
       firstPhase
-      signit
     }
   }
 
@@ -122,10 +121,6 @@ schema wiki {
       }
       second-phase {
         expression: innerproduct
-      }
-      summary-features {
-        innerproduct
-        signit
       }
     }
 
