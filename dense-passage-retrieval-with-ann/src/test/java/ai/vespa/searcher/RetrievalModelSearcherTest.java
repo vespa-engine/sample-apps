@@ -2,28 +2,23 @@
 
 package ai.vespa.searcher;
 
+import ai.vespa.models.evaluation.FunctionEvaluator;
+import ai.vespa.models.evaluation.ModelsEvaluator;
 import ai.vespa.tokenizer.BertModelConfig;
 import ai.vespa.tokenizer.BertTokenizer;
 import com.yahoo.component.chain.Chain;
-import com.yahoo.data.access.slime.SlimeAdapter;
 import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.prelude.query.NearestNeighborItem;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
-import com.yahoo.search.result.FeatureData;
-import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.Query;
-import com.yahoo.slime.Cursor;
-import com.yahoo.slime.Slime;
 import com.yahoo.tensor.Tensor;
-import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
-import com.yahoo.tensor.serialization.TypedBinaryFormat;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.BitSet;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,7 +40,6 @@ public class RetrievalModelSearcherTest {
         }
     }
 
-
     private Result execute(Query query, Searcher... searcher) {
         Execution execution = new Execution(new Chain<>(searcher), Execution.Context.createContextStub());
         return execution.search(query);
@@ -53,11 +47,11 @@ public class RetrievalModelSearcherTest {
 
     @Test
     public void test_searcher() {
-        RetrievalModelSearcher retrievalModelSearcher = new RetrievalModelSearcher(tokenizer, null);
-        MockBackend mock = new MockBackend();
+        MockModelsEvaluator modelsEvaluator = new MockModelsEvaluator();
         Query query = new Query("/search/?query=hello+nelson");
+        RetrievalModelSearcher retrievalModelSearcher = new RetrievalModelSearcher(tokenizer, modelsEvaluator);
 
-        Result r = execute(query, retrievalModelSearcher, mock);
+        Result r = execute(query, retrievalModelSearcher);
         Optional<Tensor> t = query.getRanking().getFeatures().getTensor("query(query_embedding)");
         assertFalse(t.isEmpty());
         Tensor queryEmbedding = t.get();
@@ -78,37 +72,29 @@ public class RetrievalModelSearcherTest {
         assertEquals("query_hash", nn.getQueryTensorName());
     }
 
-
-    private static class MockBackend extends Searcher {
+    private class MockModelsEvaluator extends ModelsEvaluator {
+        public MockModelsEvaluator() {
+            super(Collections.emptyMap());
+        }
         @Override
-        public Result search(Query query, Execution execution) {
-            if (isEncoderQuery(query)) {
-                Result result = execution.search(query);
-                result.setTotalHitCount(1);
-                Hit hit = new Hit("query", 1.0);
-                hit.setField("summaryfeatures", getFeatureData("rankingExpression(cls_embedding)"));
-                result.hits().add(hit);
-                return result;
-            }
-            return execution.search(query);
-        }
-
-        private boolean isEncoderQuery(Query query) {
-            return query.getModel().getRestrict().contains("query");
+        public FunctionEvaluator evaluatorOf(String modelName, String... names) {
+            return new MockFunctionEvaluator();
         }
     }
 
-    private static FeatureData getFeatureData(String name) {
-        Cursor features = new Slime().setObject();
-        Tensor.Builder b = Tensor.Builder.of(TensorType.fromSpec("tensor<float>(d2[768])"));
-        for (int i = 0; i < 768; i++)
-            b.cell(TensorAddress.of(i), clsEmbedding[i]);
-        Tensor embedding = b.build();
-        features.setData(name, TypedBinaryFormat.encode(embedding));
-        return new FeatureData(new SlimeAdapter(features));
+    private class MockFunctionEvaluator extends ai.vespa.models.evaluation.MockFunctionEvaluator {
+        @Override
+        public FunctionEvaluator bind(String name, Tensor value) {
+            return this;
+        }
+        @Override
+        public Tensor evaluate() {
+            Tensor.Builder embedding = Tensor.Builder.of(TensorType.fromSpec("tensor<float>(d0[1],d1[1],d2[768])"));
+            for (int i = 0; i < 768; i++)
+                embedding.cell(clsEmbedding[i], 0, 0, i);
+            return embedding.build();
+        }
     }
-
-
 
     static double[] clsEmbedding = new double[] {
             -8.45924690e-02,  6.01639748e-02,  1.28954962e-01, -3.66017371e-02,
