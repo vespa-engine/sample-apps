@@ -58,15 +58,15 @@ schema wiki {
   rank-profile openqa {
 
     function input_ids() {
-      expression: tokenInputIds(80, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
+      expression: tokenInputIds(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
 
     function token_type_ids() {
-      expression: tokenTypeIds(80, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
+      expression: tokenTypeIds(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
 
     function attention_mask() {
-      expression: tokenAttentionMask(80, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
+      expression: tokenAttentionMask(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
 
     function unpack_lookup() {
@@ -100,6 +100,7 @@ schema wiki {
       onnxModel(reader).end_logits
       input_ids # The input sequence with special tokens (CLS/SEP)
       firstPhase
+      rawScore(hash)
     }
   }
 
@@ -111,17 +112,13 @@ schema wiki {
 
   rank-profile dense inherits openqa {
     first-phase {
-      expression: closeness(field, hash)
+      expression: innerproduct()
     }
   }
 
-  rank-profile dense-retriever inherits openqa {
+  rank-profile dense-retriever {
       first-phase {
-        expression: rawScore(hash)
-      }
-      second-phase {
-        expression: innerproduct
+        expression: rawScore(hash) # 1/(1 + hamming distance)
       }
     }
-
 }
