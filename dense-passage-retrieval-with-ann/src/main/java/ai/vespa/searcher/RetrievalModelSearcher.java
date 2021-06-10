@@ -84,7 +84,7 @@ public class RetrievalModelSearcher extends Searcher {
         if(query.properties().getBoolean("ann.brute-force") )
             nn.setAllowApproximate(false);
         else
-            nn.setAllowApproximate(false);
+            nn.setAllowApproximate(true);
 
         nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra-hits",0));
         query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , questionEmbedding);
