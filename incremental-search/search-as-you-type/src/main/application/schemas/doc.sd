@@ -1,0 +1,89 @@
+schema doc {
+
+    field gram_title type string {
+        indexing: input title | index | summary
+        match {
+            gram
+            gram-size: 3
+        }
+        summary: dynamic
+        stemming: best
+    }
+
+    field gram_content type string {
+        indexing: input content | index | summary
+        match {
+            gram
+            gram-size: 3
+        }
+        summary: dynamic
+        stemming: best
+    }
+
+    document doc {
+
+        field path type string {
+            indexing: summary | index
+        }
+
+        field title type string {
+            indexing: index | summary
+            summary: dynamic
+            index: enable-bm25
+            stemming: best
+        }
+
+        field content type string {
+            indexing: index | summary
+            summary: dynamic
+            index: enable-bm25
+            stemming: best
+        }
+
+        field namespace type string {
+            indexing: summary | attribute
+        }
+
+        field outlinks type array<string> {
+            indexing: summary | index
+        }
+
+        field inlinks type weightedset<string> {
+            indexing: summary | attribute
+        }
+
+        field term_count type int {
+            indexing: summary | attribute
+        }
+
+        field last_updated type int {
+            indexing: summary | attribute
+        }
+        
+    }
+
+    fieldset default {
+        fields: title, content
+    }
+
+    rank-profile weighted_doc_rank inherits default {
+        rank-properties {
+            $titleWeight: 20.0
+            $contentWeight: 10.0
+            $gramTitleWeight: 2.0
+            $gramContentWeight: 1.0
+            #nativeProximity.proximityImportance: 1.0
+        }
+        first-phase {
+            expression: query(titleWeight)*nativeRank(title) + query(contentWeight)*nativeRank(content) + query(gramTitleWeight)*nativeRank(gram_title) + query(gramContentWeight)*nativeRank(gram_content)
+        }
+        summary-features {
+            attribute(namespace)
+            nativeRank(title)
+            nativeRank(content)
+            nativeRank(gram_title)
+            nativeRank(gram_content)
+        }
+    }
+
+}
