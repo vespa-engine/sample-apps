@@ -10,9 +10,15 @@ application implements the
 [Dense Passage Retriever](https://github.com/facebookresearch/DPR) architecture
 but uses the [Binary Passage Retriever](https://github.com/studio-ousia/bpr) to save memory.
 
-The Binary Passage Retriever uses only 96 bytes per passage instead of 3072 bytes with
+
+The binary passage retriever learns a 769 dimensional hash of both queries and documents so that
+relevant passages are close in hamming distance while none-relevant has a higher. We can use Vespa's support for 
+int8 tensor fields and approximate nearest neighbor search 
+
+The Binary Passage Retriever uses only 96 bytes per passage instead of 3072 bytes (768*4) with
 the dense passage retriever. 
 
+In addition to the Dense
 * Term-based (sparse) retrieval using BM25.
 * Semantic similarity (dense) using fast approximate nearest-neighbors search based on HNSW indexes.
 * BERT-based models for text encoding and answer extraction.
