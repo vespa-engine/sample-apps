@@ -24,27 +24,6 @@ def call(args):
     (out, err) = proc.communicate()
     return out
 
-
-def get_private_key_path():
-    private_key_path = "data-plane-private-key.pem"
-    if not os.path.isfile(private_key_path):
-        private_key_raw = os.environ['DATA_PLANE_PRIVATE_KEY']
-        private_key = private_key_raw.replace(" ", "\n")
-        with open(private_key_path, "w") as f:
-            f.write("-----BEGIN PRIVATE KEY-----\n" + private_key  + "\n-----END PRIVATE KEY-----")
-    return private_key_path
-
-
-def get_public_cert_path():
-    public_cert_path = "data-plane-public-key.pem"
-    if not os.path.isfile(public_cert_path):
-        public_cert_raw = os.environ['DATA_PLANE_PUBLIC_KEY']
-        public_cert = public_cert_raw.replace(" ", "\n")
-        with open(public_cert_path, "w") as f:
-            f.write("-----BEGIN CERTIFICATE-----\n" + public_cert  + "\n-----END CERTIFICATE-----")
-    return public_cert_path
-
-
 def vespa_get(endpoint, operation, options):
     endpoint = endpoint[:-1] if endpoint.endswith("/") else endpoint
     url = "{0}/{1}?{2}".format(endpoint, operation, "&".join(options))
@@ -52,8 +31,6 @@ def vespa_get(endpoint, operation, options):
     return call([
         "curl",
         "-gsS",
-#        "--cert", get_public_cert_path(),
-#        "--key", get_private_key_path(),
         url ])
 
 
@@ -63,8 +40,6 @@ def vespa_delete(endpoint, operation, options):
     return call([
         "curl",
         "-gsS",
-#        "--cert", get_public_cert_path(),
-#        "--key", get_private_key_path(),
         "-X", "DELETE",
         url
     ])
@@ -77,8 +52,6 @@ def vespa_post(endpoint, doc, docid, namespace):
         "curl",
         "-sS",
         "-H", "Content-Type:application/json",
-#        "--cert", get_public_cert_path(),
-#        "--key", get_private_key_path(),
         "-X", "POST",
         "--data-binary", "{0}".format(doc),
         url
