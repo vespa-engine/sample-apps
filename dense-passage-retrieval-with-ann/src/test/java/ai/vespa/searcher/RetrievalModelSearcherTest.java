@@ -53,7 +53,7 @@ public class RetrievalModelSearcherTest {
 
     @Test
     public void test_searcher() {
-        RetrievalModelSearcher retrievalModelSearcher = new RetrievalModelSearcher(tokenizer);
+        RetrievalModelSearcher retrievalModelSearcher = new RetrievalModelSearcher(tokenizer, null);
         MockBackend mock = new MockBackend();
         Query query = new Query("/search/?query=hello+nelson");
 

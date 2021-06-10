@@ -3,6 +3,8 @@
 package ai.vespa.searcher;
 
 import ai.vespa.QuestionAnswering;
+import ai.vespa.models.evaluation.FunctionEvaluator;
+import ai.vespa.models.evaluation.ModelsEvaluator;
 import ai.vespa.tokenizer.BertTokenizer;
 import com.google.inject.Inject;
 import com.yahoo.component.chain.dependencies.Before;
@@ -16,10 +18,13 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
+import com.yahoo.tensor.functions.ConstantTensor;
 import com.yahoo.tensor.functions.Reduce;
+import com.yahoo.tensor.functions.Slice;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -27,16 +32,18 @@ import java.util.List;
 public class RetrievalModelSearcher extends Searcher {
 
     private static String QUERY_TENSOR_NAME = "query(query_token_ids)";
-    TensorType questionInputTensorType = TensorType.fromSpec("tensor<float>(d0[32])");
     TensorType queryHashEmbedding = TensorType.fromSpec("tensor<int8>(d0[96])");
     private static String QUERY_EMBEDDING_TENSOR_NAME = "query(query_embedding)";
     private static String QUERY_HASH_TENSOR_NAME = "query(query_hash)";
 
     BertTokenizer tokenizer;
 
+    private final ModelsEvaluator modelsEvaluator;
+
     @Inject
-    public RetrievalModelSearcher(BertTokenizer tokenizer) {
+    public RetrievalModelSearcher(BertTokenizer tokenizer, ModelsEvaluator evaluator) {
         this.tokenizer = tokenizer;
+        this.modelsEvaluator = evaluator;
     }
 
     @Override
@@ -46,13 +53,9 @@ public class RetrievalModelSearcher extends Searcher {
                 query.getModel().getQueryString().length() == 0)
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
 
-        Tensor questionTokenIds = getQueryTokenIds(queryInput, questionInputTensorType.sizeOfDimension("d0").get().intValue());
-        query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, questionTokenIds);
-
         switch (QuestionAnswering.getRetrivalMethod(query)) {
             case DENSE:
-                Tensor floatQueryEmbedding = getEmbeddingTensor(questionTokenIds, execution, query);
-                Tensor clsEmbedding = floatQueryEmbedding.rename("d2", "x");
+                Tensor clsEmbedding = getEmbeddingTensor(queryInput, query);
                 Tensor hashEmbedding = rewriteQueryTensor(clsEmbedding);
                 query.getModel().getQueryTree().setRoot(denseRetrieval(clsEmbedding,hashEmbedding,query));
                 query.getRanking().setProfile("dense");
@@ -91,47 +94,27 @@ public class RetrievalModelSearcher extends Searcher {
 
     /**
      * Fetches the DPR query embedding vector
-     * @param questionTensor The input tensor with the question token_ids
-     * @param execution The execution to pass the new query
+     * @param queryInput The text representation of the query
      * @param query The original query
      * @return The embedding tensor as produced by the DPR query encoder
      */
-
-    protected Tensor getEmbeddingTensor(Tensor questionTensor, Execution execution, Query query) {
+    protected Tensor getEmbeddingTensor(String queryInput, Query query) {
         long start = System.currentTimeMillis();
-        Query embeddingModelQuery = new Query();
-        query.attachContext(embeddingModelQuery);
-        embeddingModelQuery.setHits(1);
-        embeddingModelQuery.setTimeout(query.getTimeLeft());
-        embeddingModelQuery.getRanking().setQueryCache(true);
-        embeddingModelQuery.getModel().setRestrict("query");
-        embeddingModelQuery.getRanking().setProfile("question_encoder");
-        embeddingModelQuery.getModel().getQueryTree().setRoot(new WordItem("query","sddocname"));
-        embeddingModelQuery.getRanking().getFeatures().put(QUERY_TENSOR_NAME, questionTensor);
-        Result embeddingResult = execution.search(embeddingModelQuery);
-        execution.fill(embeddingResult);
-        if(embeddingResult.getTotalHitCount() == 0)
-            throw new RuntimeException("No results for query document - Did you index the query document? ");
+
+        List<Integer> tokenIds = tokenizer.tokenize(queryInput, 32);
+
+        FunctionEvaluator evaluator = modelsEvaluator.evaluatorOf("question_encoder", "output_0");
+        evaluator.bind("input_ids", transformTokenInputIds(tokenIds));
+        evaluator.bind("token_type_ids", transformTokenTypeIds(tokenIds));
+        evaluator.bind("attention_mask", transformTokenAttentionMask(tokenIds));
+
+        Tensor embedding = evaluator.evaluate();
+        Tensor cls = slice(embedding, "d0", 0, "d1", 0).rename("d2", "x");  // Slice out CLS embedding
+
         long duration = System.currentTimeMillis() - start;
-        embeddingModelQuery.trace("Encoder phase took " + duration + "ms" , 3);
-        FeatureData featureData = (FeatureData)embeddingResult.hits().get(0).getField("summaryfeatures");
-        return featureData.getTensor("rankingExpression(cls_embedding)");
-    }
+        query.trace("Encoder phase took " + duration + "ms" , 3);
 
-    /**
-     * Encode the input question
-     * @param queryInput The input question
-     * @param maxLength The maximum sequence length reserved for the question
-     * @return A tensor of type questionInputTensorType storing the token_ids
-     */
-
-    protected Tensor getQueryTokenIds(String queryInput, int maxLength) {
-        List<Integer> tokensIds = tokenizer.tokenize(queryInput, maxLength,true);
-        Tensor.Builder builder = Tensor.Builder.of(questionInputTensorType);
-        int i = 0;
-        for(Integer tokenId: tokensIds)
-            builder.cell(tokenId,i++);
-        return builder.build();
+        return cls;
     }
 
     /**
@@ -152,4 +135,44 @@ public class RetrievalModelSearcher extends Searcher {
             builder.cell().label("d0", String.valueOf(i)).value(bytes[96 - i -1]);
         return builder.build();
     }
+
+    private static Tensor.Builder tokenTensorBuilder(List<Integer> tokens) {
+        TensorType.Dimension d0 = TensorType.Dimension.indexed("d0", 1);
+        TensorType.Dimension d1 = TensorType.Dimension.indexed("d1", tokens.size() + 2);
+        TensorType type = new TensorType(TensorType.Value.FLOAT, List.of(d0, d1));
+        return Tensor.Builder.of(type);
+    }
+
+    private Tensor transformTokenInputIds(List<Integer> tokens) {
+        Tensor.Builder builder = tokenTensorBuilder(tokens);
+        builder.cell(101, 0);  // Starting CLS
+        for (int i = 0; i < tokens.size(); ++i) {
+            builder.cell(tokens.get(i), i+1);
+        }
+        builder.cell(102, tokens.size() + 1);  // Ending SEP
+        return builder.build();
+    }
+
+    private Tensor transformTokenTypeIds(List<Integer> tokens) {
+        Tensor.Builder builder = tokenTensorBuilder(tokens);
+        for (int i = 0; i < tokens.size() + 2; ++i) {
+            builder.cell(0, i);
+        }
+        return builder.build();
+    }
+
+    private Tensor transformTokenAttentionMask(List<Integer> tokens) {
+        Tensor.Builder builder = tokenTensorBuilder(tokens);
+        for (int i = 0; i < tokens.size() + 2; ++i) {
+            builder.cell(1, i);
+        }
+        return builder.build();
+    }
+
+    private static Tensor slice (Tensor tensor, String d0, int i0, String d1, int i1) {
+        return new Slice<>(new ConstantTensor<>(tensor),
+                List.of(new Slice.DimensionValue<>(d0, i0),new Slice.DimensionValue<>(d1, i1)))
+                .evaluate();
+    }
+
 }

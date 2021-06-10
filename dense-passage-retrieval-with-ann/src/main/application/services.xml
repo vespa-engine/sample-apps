@@ -31,6 +31,7 @@
       </chain>
     </search>
     <document-api/>
+    <model-evaluation />
   </container>
 
   <content id='wikipedia' version='1.0'>
@@ -40,7 +41,6 @@
     <redundancy>2</redundancy>
     <documents>
       <document mode='index' type='wiki'/>
-      <document mode='index' type='query'/>
       <document-processing cluster="default" chain="bert-tensorizer" />
     </documents>
      <nodes>
