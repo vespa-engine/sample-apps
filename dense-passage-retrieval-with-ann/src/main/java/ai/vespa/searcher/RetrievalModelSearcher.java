@@ -13,30 +13,25 @@ import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.result.ErrorMessage;
-import com.yahoo.search.result.FeatureData;
+
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
 import com.yahoo.tensor.functions.ConstantTensor;
-import com.yahoo.tensor.functions.Reduce;
 import com.yahoo.tensor.functions.Slice;
-
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 
 
 @Before("QuestionAnswering")
 public class RetrievalModelSearcher extends Searcher {
 
-    private static String QUERY_TENSOR_NAME = "query(query_token_ids)";
-    TensorType queryHashEmbedding = TensorType.fromSpec("tensor<int8>(d0[96])");
+    private final TensorType queryHashEmbeddingType = TensorType.fromSpec("tensor<int8>(d0[96])");
     private static String QUERY_EMBEDDING_TENSOR_NAME = "query(query_embedding)";
     private static String QUERY_HASH_TENSOR_NAME = "query(query_hash)";
 
-    BertTokenizer tokenizer;
+    private final BertTokenizer tokenizer;
 
     private final ModelsEvaluator modelsEvaluator;
 
@@ -84,9 +79,14 @@ public class RetrievalModelSearcher extends Searcher {
 
     private Item denseRetrieval(Tensor questionEmbedding, Tensor hashEmbedding, Query query) {
         NearestNeighborItem nn = new NearestNeighborItem("hash", "query_hash");
-        nn.setTargetNumHits(1000);
-        nn.setAllowApproximate(true);
-        nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra",0));
+        nn.setTargetNumHits(1000); //Number we want to retrieve for re-ranking
+
+        if(query.properties().getBoolean("ann.brute-force") )
+            nn.setAllowApproximate(false);
+        else
+            nn.setAllowApproximate(false);
+
+        nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra-hits",0));
         query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , questionEmbedding);
         query.getRanking().getFeatures().put(QUERY_HASH_TENSOR_NAME,hashEmbedding);
         return nn;
@@ -118,7 +118,7 @@ public class RetrievalModelSearcher extends Searcher {
     }
 
     /**
-     * Rewrites the question embedding tensor and remove the batch dimension, grow from 768 to 769
+     * Rewrites from float vector to a int8 tensor
      *
      * @param embedding the question embedding returned from query encoder
      * @return a rewritten tensor.
@@ -130,7 +130,7 @@ public class RetrievalModelSearcher extends Searcher {
                 set.set(768 - i -1);
         }
         byte[] bytes = set.toByteArray();
-        Tensor.Builder builder =  Tensor.Builder.of(queryHashEmbedding);
+        Tensor.Builder builder =  Tensor.Builder.of(queryHashEmbeddingType);
         for(int i = 0; i < 96; i++)
             builder.cell().label("d0", String.valueOf(i)).value(bytes[96 - i -1]);
         return builder.build();
