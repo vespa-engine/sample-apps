@@ -19,7 +19,7 @@ import com.yahoo.search.result.FeatureData;
 @Provides("QuestionAnswering")
 public class QASearcher extends Searcher {
 
-    BertTokenizer tokenizer;
+    private final BertTokenizer tokenizer;
 
     @Inject
     public QASearcher(BertTokenizer tokenizer)  {
@@ -48,27 +48,26 @@ public class QASearcher extends Searcher {
      */
     private Hit getPredictedAnswer(Result result) {
         if(result.getTotalHitCount() == 0 || result.hits().getErrorHit() != null) {
-            return formatAnswerHit(null);
+            return formatAnswerHit(null,0,0);
         }
 
         Hit bestReaderHit = result.hits().get(0);
+        long id = (long)bestReaderHit.getField("id");
         double readerScore = bestReaderHit.getRelevance().getScore();
 
-        Tensor input = getTensor(bestReaderHit, "rankingExpression(input_ids)");
-        Tensor startLogits = getTensor(bestReaderHit, "onnxModel(reader).start_logits");
-        Tensor endLogits = getTensor(bestReaderHit, "onnxModel(reader).end_logits");
+        FeatureData featureData = (FeatureData)bestReaderHit.getField("summaryfeatures");
+
+        Tensor input = featureData.getTensor("rankingExpression(input_ids)");
+        Tensor startLogits = featureData.getTensor( "onnxModel(reader).start_logits");
+        Tensor endLogits = featureData.getTensor("onnxModel(reader).end_logits");
+        double firstPhase = featureData.getDouble("firstPhase");
         Span bestSpan = QuestionAnswering.getSpan(startLogits,endLogits,input, readerScore, tokenizer);
         bestSpan.setContext((String)bestReaderHit.getField("text"));
         bestSpan.setContextTitle((String)bestReaderHit.getField("title"));
-        return formatAnswerHit(bestSpan);
+        return formatAnswerHit(bestSpan,id,firstPhase);
     }
 
-    private Tensor getTensor(Hit hit, String output) {
-        FeatureData featureData = (FeatureData)hit.getField("summaryfeatures");
-        return featureData.getTensor(output);
-    }
-
-    private Hit formatAnswerHit(Span span) {
+    private Hit formatAnswerHit(Span span, long id, double firstPhase) {
         Hit answer = new Hit("answer");
         if(span == null) {
             return answer;
@@ -76,8 +75,10 @@ public class QASearcher extends Searcher {
         answer.setField("prediction", span.getPrediction());
         answer.setField("context", span.getContext());
         answer.setField("context_title", span.getTitle());
-        answer.setField("prediction_score", span.getSpanScore());
+        answer.setField("passage_id", id);
+        answer.setField("span_score", span.getSpanScore());
         answer.setField("reader_score", span.getReaderScore());
+        answer.setField("retriever_score", firstPhase);
         return answer;
     }
 }
