@@ -66,7 +66,7 @@ This can take some time as the BERT-based models are around 400Mb each.
 # Download BPR models
 
 <pre>
-wget https://data.vespa.oath.cloud/onnx_models/bpr-question-encoder.onnx -O src/main/application/files/question_encoder.onnx
+wget https://data.vespa.oath.cloud/onnx_models/bpr-question-encoder.onnx -O src/main/application/models/question_encoder.onnx
 wget https://data.vespa.oath.cloud/onnx_models/dpr-reader-nq-quantized.onnx -O src/main/application/files/reader.onnx 
 </pre>
 
