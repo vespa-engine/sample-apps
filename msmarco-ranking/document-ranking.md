@@ -293,16 +293,29 @@ $ ir_datasets export msmarco-document/train docs --format jsonl | \
 
 ## doc to query document expansion
 For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
-Follow the instructions at [https://github.com/castorini/docTTTTTquery#Replicating-MS-MARCO-Document-Ranking-Results-with-Anserini](https://github.com/castorini/docTTTTTquery#Replicating-MS-MARCO-Document-Ranking-Results-with-Anserini),
-but replace *paste -d" "* with *paste -d"#"* and replace the convert_msmarco_doc_to.. with
+Follow the instructions at [https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
+but replace *paste -d" "* with *paste -d"#"* and modify the *generate_output_dict* in *convert_msmarco_doc_to_anserini.py* to emit Vespa json instead 
 
 <pre>
-$ python3 src/main/python/convert_msmarco_doc_to_vespa.py \
-  --original_docs_path=msmarco-docs.tsv.gz \
-  --doc_ids_path=msmarco_doc_passage_ids.txt \
-  --predictions_path=doc-predictions/predicted_queries_doc_sample_all.txt \
-  --output_docs_path=doc_t5_query_updates.jsonl
+def generate_output_dict(doc, predicted_queries):
+    doc_id = doc[0]
+    preds = []
+    for s in predicted_queries:
+      s = s.strip().split("#")
+      for k in s:
+        preds.append(k)
+    update = {
+      "update": "id:msmarco:doc::{}".format(doc_id),
+      "fields": {
+        "doc_t5_query": {
+         "assign": preds
+        }
+      }
+    }
+    return update
 </pre>
+
+Then run the script with --output_docs_path *doc_t5_query_updates.jsonl*.
 
 Place the output file *doc_t5_query_updates.json* in the directory of the sample app. ($SAMPLE_APP)
 
