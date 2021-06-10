@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa">
+
+    <container id="default" version="1.0">
+        <document-api/>
+        <search/>
+
+        <handler id="ai.vespa.example.typesearch.SiteHandler" bundle="vespaexample-typesearch">
+            <binding>http://*/site/*</binding>
+            <binding>http://*/site</binding>
+            <config name="ai.vespa.example.typesearch.site-handler">
+                <vespaHostName>localhost</vespaHostName>
+                <vespaHostPort>8080</vespaHostPort>
+            </config>
+        </handler>
+
+        <nodes jvmargs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8998">
+            <node hostalias="node1" />
+        </nodes>
+    </container>
+
+    <content id="documentation" version="1.0">
+        <redundancy>2</redundancy>
+        <documents>
+            <document mode="index" type="doc"/>
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+
+</services>
