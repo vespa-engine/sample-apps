@@ -1,36 +1,43 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.tokenizer;
+
 import com.google.inject.Inject;
 import com.yahoo.collections.Tuple2;
 import com.yahoo.component.AbstractComponent;
 import com.yahoo.language.Language;
-import com.yahoo.language.Linguistics;
 import com.yahoo.language.process.StemMode;
 import com.yahoo.language.process.Token;
 import com.yahoo.language.process.Tokenizer;
 import com.yahoo.language.simple.SimpleLinguistics;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
- * Adopted from
+ * Adapted from
  * https://github.com/eclipse/deeplearning4j/blob/master/deeplearning4j/deeplearning4j-nlp-parent/deeplearning4j-nlp/src/main/java/org/deeplearning4j/text/tokenization/tokenizer/BertWordPieceTokenizer.java
+ * licensed under the Apache License, Version 2.0
  */
-
 public class BertTokenizer extends AbstractComponent {
 
-    private final Logger logger = Logger.getLogger(BertTokenizer.class.getName());
+    private static final Logger logger = Logger.getLogger(BertTokenizer.class.getName());
 
-    private NavigableMap<String, Integer> vocabulary;
-    private Map<Integer,String> tokenId2Token;
-    private Tokenizer tokenizer;
-
-
+    private final NavigableMap<String, Integer> vocabulary;
+    private final Map<Integer,String> tokenId2Token;
+    private final Tokenizer tokenizer;
 
     @Inject
     public BertTokenizer(BertModelConfig config, SimpleLinguistics linguistics) throws IOException {
@@ -40,13 +47,13 @@ public class BertTokenizer extends AbstractComponent {
         logger.info("Loading vocabulary from " + path.toString());
         this.vocabulary = new TreeMap<>(Collections.reverseOrder());
         this.tokenId2Token = new HashMap<>();
-        try (final BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(path.toFile()), Charset.forName("UTF-8")))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path.toFile()),
+                                                                              StandardCharsets.UTF_8))) {
             String token;
             int i = 0;
             while ((token = reader.readLine()) != null) {
                 this.vocabulary.put(token, i);
-                this.tokenId2Token.put(i,token);
+                this.tokenId2Token.put(i, token);
                 i++;
             }
             logger.info("Loaded " + i + " tokens from vocabulary file");
@@ -54,36 +61,32 @@ public class BertTokenizer extends AbstractComponent {
     }
 
 
-   public List<Integer>tokenize(String input, int maxLength)  {
+   public List<Integer> tokenize(String input, int maxLength)  {
         return tokenize(input, maxLength, false);
    }
 
    /**
     *
     * Tokenize the input string and return a list of token ids
-    * @param input The string input to tokenize and map to bert token ids
-    * @param maxLength The max length
-    * @param padToMaxLength If true padd with 0s up to the max sequence lenght
+    * @param input the string input to tokenize and map to bert token ids
+    * @param maxLength the max length
+    * @param padToMaxLength if true pad with 0s up to the max sequence lenght
     * @return List of token_ids
     */
-
    public List<Integer> tokenize(String input,  int maxLength, boolean padToMaxLength) {
         List<Integer> tensor = new ArrayList<>();
         input = input.toLowerCase();
-        for(Token t: this.tokenizer.tokenize(input, Language.ENGLISH, StemMode.NONE, true)) {
+        for (Token t: this.tokenizer.tokenize(input, Language.ENGLISH, StemMode.NONE, true)) {
             String originalToken = t.getTokenString();
             String candidate = originalToken;
             int count = 0;
-            while(candidate.length() > 0 && ! "##".equals(candidate)){
-                Tuple2<String,Integer> entry = findLongestSubstring(candidate);
-                if (entry == null)
-                    break;
-                if(tensor.size() < maxLength) {
+            while (candidate.length() > 0 && ! "##".equals(candidate)){
+                Tuple2<String, Integer> entry = findLongestSubstring(candidate);
+                if (entry == null) break;
+                if (tensor.size() < maxLength)
                     tensor.add(entry.second);
-                }
                 candidate = "##" +candidate.substring(entry.first.length());
-                if (count++ > originalToken.length())
-                    break;
+                if (count++ > originalToken.length()) break;
             }
         }
 
@@ -94,12 +97,6 @@ public class BertTokenizer extends AbstractComponent {
         return tensor;
     }
 
-    /**
-     *
-     * @param tokenIds The tokens ids to map back to string
-     * @return
-     */
-
     public List<String> convert2Tokens(List<Integer> tokenIds) {
         List<String> tokens = new ArrayList<>();
         for(Integer token_id : tokenIds)
@@ -109,8 +106,8 @@ public class BertTokenizer extends AbstractComponent {
 
     public String removeSubWords(List<String> words)  {
         StringBuilder builder = new StringBuilder();
-        for(String w: words) {
-            if(isSubWord(w)) {
+        for (String w: words) {
+            if (isSubWord(w)) {
                 builder.append(w.replace("##",""));
             }
             else {
@@ -129,7 +126,6 @@ public class BertTokenizer extends AbstractComponent {
         return (word.startsWith("##") || word.startsWith(" ##"));
     }
 
-
     protected Tuple2<String,Integer> findLongestSubstring(String candidate) {
         NavigableMap<String, Integer> tailMap = this.vocabulary.tailMap(candidate, true);
         if (tailMap.isEmpty())
@@ -137,7 +133,7 @@ public class BertTokenizer extends AbstractComponent {
         String longestSubstring = tailMap.firstKey();
         Integer id = tailMap.firstEntry().getValue();
         int subStringLength = Math.min(candidate.length(), longestSubstring.length());
-        while(!candidate.startsWith(longestSubstring)){
+        while (!candidate.startsWith(longestSubstring)) {
             subStringLength--;
             tailMap = tailMap.tailMap(candidate.substring(0, subStringLength), true);
             if (tailMap.isEmpty())
@@ -147,4 +143,5 @@ public class BertTokenizer extends AbstractComponent {
         }
         return new Tuple2<>(longestSubstring,id);
     }
+
 }

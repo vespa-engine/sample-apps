@@ -23,32 +23,24 @@ import java.util.List;
 /**
  * Searcher which prepares the input to the *query* encoder of ColBERT.
  * The evaluation of the trained BERT model is done at the content node(s) using onnx
- *
  */
-
 public class ColBERTSearcher extends Searcher {
 
-    /**
-     * Use by the backend onnx model
-     */
-    private static String inputIdsTensorName = "query(input_ids)";
-    private static String attentionMaskTensorName = "query(attention_mask)";
+    // Used by the backend onnx model
+    private static final String inputIdsTensorName = "query(input_ids)";
+    private static final String attentionMaskTensorName = "query(attention_mask)";
 
-    /**
-     * The tensor used when re-ranking passages
-     */
+     // The tensor used when re-ranking passages
+    private static final String colbertTensorName = "query(qt)";
 
-    private static String colbertTensorName = "query(qt)";
+    private final TensorType colbertTensorType;
+    private final TensorType encoderTensorType;
 
-    private TensorType colbertTensorType;
-    private TensorType encoderTensorType;
-
-    private int query_max_length;
-    private int dim;
-    private String questionEncoderRankProfile;
-    private String outputName;
-    private BertTokenizer tokenizer;
-
+    private final int query_max_length;
+    private final int dim;
+    private final String questionEncoderRankProfile;
+    private final String outputName;
+    private final BertTokenizer tokenizer;
 
     @Inject
     public ColBERTSearcher(BertTokenizer tokenizer, ColbertConfig config)  {
@@ -66,7 +58,7 @@ public class ColBERTSearcher extends Searcher {
         Tensor colBertTensor =
                 rewriteTensor(
                         getEmbedding(getQueryEmbeddingQuery(query),
-                                execution));
+                                     execution));
         Result result = new Result(query);
         result.hits().setSource("colbert");
         Hit tensorHit = new Hit("tensor");
@@ -80,32 +72,29 @@ public class ColBERTSearcher extends Searcher {
         Result r = execution.search(embeddingQuery);
         execution.fill(r);
         ErrorHit errorHit = r.hits().getErrorHit();
-        if(errorHit != null) {
+        if (errorHit != null)
             throw new RuntimeException(errorHit.toString());
-        }
         FeatureData featureData = (FeatureData)r.hits().get(0).getField("summaryfeatures");
-        if(featureData == null)
+        if (featureData == null)
             throw new RuntimeException("No summary produced but no error hit");
         return featureData.getTensor(this.outputName);
     }
 
-
     /**
-     *Builds the input_ids tensor which for colbert is
+     * Builds the input_ids tensor which for colbert is
      * [CLS] [unused0] query_token_ids [SEP] [MASK] [MASK]...]
      *
-     * @param originalQuery The original query instance
+     * @param originalQuery the original query instance
      * @return a query to execute to get the query embeddings
      */
-
     protected Query getQueryEmbeddingQuery(Query originalQuery)  {
         String queryString = originalQuery.getModel().getQueryString();
-        int CLS_TOKEN_ID = 101; //[CLS]
-        int SEP_TOKEN_ID = 102; //[SEP]
-        int MASK_TOKEN_ID = 103;// [MASK]
-        int Q_TOKEN_ID = 1; //[unused0] token id used during training to represent the query. unused1 for document.
+        int CLS_TOKEN_ID = 101;  // [CLS]
+        int SEP_TOKEN_ID = 102;  // [SEP]
+        int MASK_TOKEN_ID = 103; // [MASK]
+        int Q_TOKEN_ID = 1; // [unused0] token id used during training to represent the query. unused1 for document.
 
-        List<Integer> token_ids = this.tokenizer.tokenize(queryString,query_max_length,false);
+        List<Integer> token_ids = this.tokenizer.tokenize(queryString, query_max_length, false);
         List<Integer> input_ids = new ArrayList<>(query_max_length);
         List<Integer> attention_mask = new ArrayList<>(query_max_length);
 
@@ -114,14 +103,14 @@ public class ColBERTSearcher extends Searcher {
         input_ids.addAll(token_ids);
         input_ids.add(SEP_TOKEN_ID);
         int length = input_ids.size();
-        //Pad up to max length with mask token_id
+        // Pad up to max length with mask token_id
         int padding = query_max_length - length;
-        for(int i = 0; i < padding; i++)
+        for (int i = 0; i < padding; i++)
             input_ids.add(MASK_TOKEN_ID);
 
-        for(int i = 0; i < length;i++)
+        for (int i = 0; i < length; i++)
             attention_mask.add(1);
-        for(int i = 0; i < padding;i++)
+        for (int i = 0; i < padding; i++)
             attention_mask.add(0);
 
         Query query = new Query();
@@ -130,41 +119,38 @@ public class ColBERTSearcher extends Searcher {
         query.setHits(1);
         query.getRanking().setProfile(this.questionEncoderRankProfile);
         query.getModel().setRestrict("query");
-        query.getModel().getQueryTree().setRoot(new WordItem("query","sddocname"));
-        query.getRanking().getFeatures().put(inputIdsTensorName,toTensor(input_ids));
-        query.getRanking().getFeatures().put(attentionMaskTensorName,toTensor(attention_mask));
+        query.getModel().getQueryTree().setRoot(new WordItem("query", "sddocname"));
+        query.getRanking().getFeatures().put(inputIdsTensorName, toTensor(input_ids));
+        query.getRanking().getFeatures().put(attentionMaskTensorName, toTensor(attention_mask));
         return query;
     }
 
     /**
-     * Remove batch
+     * Removes the batch dimension ("d0") from the given tensor
+     *
      * @param embedding the Tensor from query encoding with batch dimension
-     * @return
      */
-
     private Tensor rewriteTensor(Tensor embedding) {
-        //remove batch dimension d0 from encoder
-        Tensor t = embedding.reduce(Reduce.Aggregator.min,"d0");
+        Tensor t = embedding.reduce(Reduce.Aggregator.min, "d0");
         Tensor.Builder builder = Tensor.Builder.of(colbertTensorType);
-        for(int i = 0; i < query_max_length;i++)
-            for(int j = 0; j< dim; j++)
-                builder.cell(TensorAddress.of(i,j),t.get(TensorAddress.of(i,j)));
+        for (int i = 0; i < query_max_length; i++)
+            for (int j = 0; j< dim; j++)
+                builder.cell(TensorAddress.of(i, j), t.get(TensorAddress.of(i, j)));
         return builder.build();
     }
 
     /**
      * Convert to tensor representation with batch dim
+     *
      * @param input the List of token_ids
      * @return tensor representation with batch dim
      */
-
     private Tensor toTensor(List<Integer> input) {
         Tensor.Builder builder = Tensor.Builder.of(encoderTensorType);
         int i = 0;
-        for(Integer in:input)  {
-            if (i == dim)
-                break;
-            builder.cell(TensorAddress.of(0,i),in); // 0 is batch dim
+        for (Integer in:input)  {
+            if (i == dim) break;
+            builder.cell(TensorAddress.of(0, i), in); // 0 is batch dim
             i++;
         }
         return builder.build();

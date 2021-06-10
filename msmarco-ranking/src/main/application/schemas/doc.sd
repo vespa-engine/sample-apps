@@ -1,4 +1,4 @@
-#Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 schema doc {
 
@@ -23,7 +23,7 @@ schema doc {
       indexing: summary |attribute
     }
     
-    #Top-k prediction queries for this doc using T5
+    # Top-k prediction queries for this doc using T5
     field doc_t5_query type array<string> {
       indexing: summary | index
       index: enable-bm25
@@ -40,7 +40,7 @@ schema doc {
 
   document-summary id {
     summary id type string {
-      source:id 
+      source: id
     }
   }
 
@@ -81,4 +81,5 @@ schema doc {
       matchCount(doc_t5_query)
     }
   }
+
 }

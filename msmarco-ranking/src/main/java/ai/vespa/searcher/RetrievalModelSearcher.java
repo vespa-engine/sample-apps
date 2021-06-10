@@ -1,7 +1,5 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.searcher;
-
 
 import ai.vespa.tokenizer.BertTokenizer;
 import com.google.inject.Inject;
@@ -9,7 +7,9 @@ import com.yahoo.language.Language;
 import com.yahoo.language.Linguistics;
 import com.yahoo.language.process.StemMode;
 import com.yahoo.language.process.Token;
-import com.yahoo.prelude.query.*;
+import com.yahoo.prelude.query.NearestNeighborItem;
+import com.yahoo.prelude.query.WeakAndItem;
+import com.yahoo.prelude.query.WordItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
@@ -23,17 +23,17 @@ import java.util.List;
 
 public class RetrievalModelSearcher extends Searcher {
 
-    private Linguistics linguistics;
-    private BertTokenizer tokenizer;
+    private static final String QUERY_TENSOR_NAME = "query(query_token_ids)";
+
+    private final Linguistics linguistics;
+    private final BertTokenizer tokenizer;
+    private final TensorType questionInputTensorType = TensorType.fromSpec("tensor<float>(d0[32])");
 
     public enum RetrievalMethod {
         SPARSE,
         DENSE,
         RANK
     }
-
-    private static String QUERY_TENSOR_NAME = "query(query_token_ids)";
-    private TensorType questionInputTensorType = TensorType.fromSpec("tensor<float>(d0[32])");
 
     @Inject
     public RetrievalModelSearcher(Linguistics linguistics, BertTokenizer tokenizer) {
@@ -44,16 +44,13 @@ public class RetrievalModelSearcher extends Searcher {
     @Override
     public Result search(Query query, Execution execution) {
         String queryInput = query.getModel().getQueryString();
-        if (query.getModel().getQueryString() == null ||
-                query.getModel().getQueryString().length() == 0)
+        if (query.getModel().getQueryString() == null || query.getModel().getQueryString().length() == 0)
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
 
         Tensor questionTokenIds = getQueryTokenIds(queryInput, questionInputTensorType.sizeOfDimension("d0").get().intValue());
-        query.getRanking().getFeatures().put(QUERY_TENSOR_NAME,questionTokenIds);
+        query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, questionTokenIds);
 
-        query.getRanking().setRerankCount(
-                query.properties().getInteger("phase.count", 24)
-        );
+        query.getRanking().setRerankCount(query.properties().getInteger("phase.count", 24));
 
         switch(getMethod(query))  {
             case SPARSE:
@@ -67,18 +64,17 @@ public class RetrievalModelSearcher extends Searcher {
                 int annExtraHits = query.properties().getInteger("ann.extra-hits", query.getHits());
                 String queryTensorName = query.properties().getString("ann.query", "query_embedding");
                 query.getModel().getQueryTree().setRoot(
-                        denseRetrieval(annHits,annExtraHits,annField,queryTensorName,
-                                query.properties().getBoolean("ann.brute-force")));
+                        denseRetrieval(annHits, annExtraHits, annField, queryTensorName,
+                                       query.properties().getBoolean("ann.brute-force")));
                 break;
         }
         return execution.search(query);
     }
 
     private List<String> tokenize(String query) {
-        Iterable<Token> tokens = this.linguistics.getTokenizer().
-                tokenize(query, Language.ENGLISH, StemMode.NONE,true);
+        Iterable<Token> tokens = this.linguistics.getTokenizer().tokenize(query, Language.ENGLISH, StemMode.NONE, true);
         List<String> queryTokens = new ArrayList<>();
-        for(Token t:tokens) {
+        for (Token t : tokens) {
             if (t.isIndexable())
                 queryTokens.add(t.getTokenString());
         }
@@ -95,7 +91,7 @@ public class RetrievalModelSearcher extends Searcher {
     }
 
     private NearestNeighborItem denseRetrieval(int annHits, int annExtraHits, String field, String queryTensorName, boolean approximate) {
-        NearestNeighborItem nn = new NearestNeighborItem(field,queryTensorName);
+        NearestNeighborItem nn = new NearestNeighborItem(field, queryTensorName);
         nn.setAllowApproximate(!approximate);
         nn.setTargetNumHits(annHits);
         nn.setHnswExploreAdditionalHits(annExtraHits);
@@ -103,14 +99,13 @@ public class RetrievalModelSearcher extends Searcher {
     }
 
     public static RetrievalMethod getMethod(Query query) {
-        String method = query.properties().getString("retriever","sparse");
-        if (method.equals("sparse"))
-            return RetrievalMethod.SPARSE;
-        else if (method.equals("dense"))
-            return RetrievalMethod.DENSE;
-        else if(method.equals("rank"))
-            return RetrievalMethod.RANK;
-        else return RetrievalMethod.SPARSE;
+        String method = query.properties().getString("retriever", "sparse");
+        switch (method) {
+            case "sparse": return RetrievalMethod.SPARSE;
+            case "dense": return RetrievalMethod.DENSE;
+            case "rank": return RetrievalMethod.RANK;
+            default: return RetrievalMethod.SPARSE;
+        }
     }
 
     protected static boolean needQueryEmbedding(Query query) {
@@ -126,4 +121,5 @@ public class RetrievalModelSearcher extends Searcher {
             builder.cell(tokenId, i++);
         return builder.build();
     }
+
 }

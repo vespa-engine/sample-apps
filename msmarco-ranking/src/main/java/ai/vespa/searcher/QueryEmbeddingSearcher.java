@@ -1,7 +1,6 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
-
 import ai.vespa.tokenizer.BertTokenizer;
 import com.google.inject.Inject;
 import com.yahoo.prelude.query.WordItem;
@@ -18,24 +17,21 @@ import com.yahoo.tensor.TensorType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * This class encodes the query using the sentence transformer model
+ * This Searcher encodes the query using the sentence transformer model
  * https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3
  *
  * It builds the input tensor data
  *  - query(input_ids)
  *  - query(attention_mask)
  */
-
 public class QueryEmbeddingSearcher extends Searcher {
 
+    private static final String inputIdsTensorName = "query(input_ids)";
+    private static final String attentionMaskTensorName = "query(attention_mask)";
+    private final TensorType inputType = TensorType.fromSpec("tensor<float>(d0[1],d1[32])");
 
-    private static String inputIdsTensorName = "query(input_ids)";
-    private static String attentionMaskTensorName = "query(attention_mask)";
-    private TensorType inputType = TensorType.fromSpec("tensor<float>(d0[1],d1[32])");
-
-    private BertTokenizer tokenizer;
+    private final BertTokenizer tokenizer;
 
     @Inject
     public QueryEmbeddingSearcher(BertTokenizer tokenizer) {
@@ -44,12 +40,12 @@ public class QueryEmbeddingSearcher extends Searcher {
 
     @Override
     public Result search(Query query, Execution execution) {
-        Tensor embedding =  getEmbedding(getQueryEmbeddingQuery(query),execution);
+        Tensor embedding =  getEmbedding(getQueryEmbeddingQuery(query), execution);
         Result result = new Result(query);
         result.hits().setSource("embedding");
         Hit tensorHit = new Hit("tensor");
         tensorHit.setSource("embedding");
-        tensorHit.setField("tensor",embedding);
+        tensorHit.setField("tensor", embedding);
         result.hits().add(tensorHit);
         return result;
     }
@@ -58,20 +54,19 @@ public class QueryEmbeddingSearcher extends Searcher {
         Result r = execution.search(query);
         execution.fill(r);
         ErrorHit errorHit = r.hits().getErrorHit();
-        if(errorHit != null) {
+        if (errorHit != null)
             throw new RuntimeException(errorHit.toString());
-        }
         FeatureData featureData = (FeatureData)r.hits().get(0).getField("summaryfeatures");
-        return featureData.getTensor("rankingExpression(mean_token_embedding)").rename("d1","d0");
+        return featureData.getTensor("rankingExpression(mean_token_embedding)").rename("d1", "d0");
     }
 
     private Query getQueryEmbeddingQuery(Query originalQuery)  {
         String queryString = originalQuery.getModel().getQueryString();
-        int CLS_TOKEN_ID = 101; //[CLS]
-        int SEP_TOKEN_ID = 102; //[SEP]
+        int CLS_TOKEN_ID = 101; // [CLS]
+        int SEP_TOKEN_ID = 102; // [SEP]
         int query_max_length = 32;
 
-        List<Integer> token_ids = this.tokenizer.tokenize(queryString,query_max_length,false);
+        List<Integer> token_ids = this.tokenizer.tokenize(queryString, query_max_length, false);
         List<Integer> input_ids = new ArrayList<>(query_max_length);
         List<Integer> attention_mask = new ArrayList<>(query_max_length);
 
@@ -92,28 +87,29 @@ public class QueryEmbeddingSearcher extends Searcher {
         query.setHits(1);
         query.getRanking().setProfile("query_embedding");
         query.getModel().setRestrict("query");
-        query.getModel().getQueryTree().setRoot(new WordItem("query","sddocname"));
-        query.getRanking().getFeatures().put(inputIdsTensorName,toTensor(input_ids));
-        query.getRanking().getFeatures().put(attentionMaskTensorName,toTensor(attention_mask));
+        query.getModel().getQueryTree().setRoot(new WordItem("query", "sddocname"));
+        query.getRanking().getFeatures().put(inputIdsTensorName, toTensor(input_ids));
+        query.getRanking().getFeatures().put(attentionMaskTensorName, toTensor(attention_mask));
         return query;
     }
 
     /**
      * Convert to tensor representation with batch dim
+     *
      * @param input the List of token_ids
      * @return tensor representation with batch dim
      */
-
     private Tensor toTensor(List<Integer> input) {
         Tensor.Builder builder = Tensor.Builder.of(inputType);
         int i = 0;
-        for(Integer in:input)  {
+        for (Integer in:input)  {
             if (i == 32)
                 break;
-            builder.cell(TensorAddress.of(0,i),in); // 0 is batch dim
+            builder.cell(TensorAddress.of(0, i), in); // 0 is batch dim
             i++;
         }
         return builder.build();
     }
+
 }
 

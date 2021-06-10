@@ -1,5 +1,5 @@
-#Modified to output Vespa json format, original version
-#https://github.com/castorini/docTTTTTquery/blob/master/convert_msmarco_passages_doc_to_anserini.py
+# Modified to output Vespa json format, original version
+# https://github.com/castorini/docTTTTTquery/blob/master/convert_msmarco_passages_doc_to_anserini.py
 
 import json
 import os
