@@ -50,11 +50,11 @@ for how the feed file is generated.
 diff --git a/_config.yml b/_config.yml
 ...
      feed_endpoints:
--        - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.public.vespa.oath.cloud/
+-        - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
 -          indexes:
 -              - open_index.json
--        - url: https://vespacloud-docsearch.vespa-team.aws-ap-northeast-1a.public.vespa.oath.cloud/
-+        - url: https://myinstance.vespacloud-docsearch.mytenant.aws-us-east-1c.dev.public.vespa.oath.cloud/
+-        - url: https://vespacloud-docsearch.vespa-team.aws-ap-northeast-1a.z.vespa-app.cloud/
++        - url: https://myinstance.vespacloud-docsearch.mytenant.aws-us-east-1c.dev.z.vespa-app.cloud/
            indexes:
 ```
 
@@ -164,7 +164,7 @@ exports.handler = async (event, context) => {
     });
 
     var options = {
-        hostname: 'vespacloud-docsearch.vespa-team.aws-us-east-1c.public.vespa.oath.cloud',
+        hostname: 'vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud',
         port: 443,
         path: path,
         method: 'GET',
