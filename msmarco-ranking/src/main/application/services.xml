@@ -3,15 +3,18 @@
 <services version='1.0'>
 
   <container id='default' version='1.0'>
+
     <nodes>
       <node hostalias="node1"/>
     </nodes>
+
     <component id="ai.vespa.tokenizer.BertTokenizer" bundle="msmarco">
       <config name="ai.vespa.tokenizer.bert-model">
         <max_input>512</max_input>
         <vocabulary>models/bert-base-uncased-vocab.txt</vocabulary>
       </config>
     </component>
+
     <document-processing>
       <chain id="bert-tensorizer" inherits="indexing">
         <documentprocessor id="ai.vespa.docproc.DocumentTensorizer" bundle="msmarco"/>
@@ -47,7 +50,9 @@
         </searcher>
       </chain>
     </search>
+
     <document-api/>
+
   </container>
 
   <content id='msmarco' version='1.0'>
@@ -77,4 +82,5 @@
       </proton>
     </engine>
   </content>
+
 </services>

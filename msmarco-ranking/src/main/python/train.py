@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-#This is an example of how to train a LTR model using LightGBM
+
+# An example of training an LTR model using LightGBM
 
 import lightgbm as lgb
 import numpy

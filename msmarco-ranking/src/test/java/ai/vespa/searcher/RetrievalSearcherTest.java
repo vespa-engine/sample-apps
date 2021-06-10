@@ -1,5 +1,4 @@
 // Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.searcher;
 
 import ai.vespa.tokenizer.BertModelConfig;
@@ -22,13 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 public class RetrievalSearcherTest {
 
     private static BertTokenizer tokenizer;
+
     static {
         BertModelConfig.Builder builder = new BertModelConfig.Builder();
-        builder.vocabulary(new com.yahoo.config.FileReference("src/test/resources/bert-base-uncased-vocab.txt")).max_input(512);
+        builder.vocabulary(new com.yahoo.config.FileReference("src/test/resources/bert-base-uncased-vocab.txt"))
+               .max_input(512);
         BertModelConfig bertModelConfig = builder.build();
         try {
             tokenizer = new BertTokenizer(bertModelConfig, new SimpleLinguistics());
@@ -45,30 +45,27 @@ public class RetrievalSearcherTest {
     private void test_query_tree(String queryString, String expected, Searcher searcher){
         Query query = new Query("?query=" + URLEncoder.encode(queryString, StandardCharsets.UTF_8));
         Result r = execute(query,searcher);
-        assertEquals(expected,
-                r.getQuery().getModel().getQueryTree().toString(),
-                "Not expected WAND query");
+        assertEquals(expected, r.getQuery().getModel().getQueryTree().toString(), "Not expected WAND query");
     }
 
     @Test
     public void test_queries() {
-        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(),tokenizer);
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         test_query_tree("this is a test query",
-                "WEAKAND(10) default:this default:is default:a default:test default:query", searcher);
+                        "WEAKAND(10) default:this default:is default:a default:test default:query", searcher);
         test_query_tree("with some +.% not ",
-                "WEAKAND(10) default:with default:some default:not", searcher);
+                        "WEAKAND(10) default:with default:some default:not", searcher);
         test_query_tree("a number+:123  ?",
-                "WEAKAND(10) default:a default:number default:123", searcher);
+                        "WEAKAND(10) default:a default:number default:123", searcher);
     }
 
     @Test
     public void test_sparse_params() {
-        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(),tokenizer);
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         Query query = new Query("?query=a+test&wand.field=foo&wand.hits=100");
-        Result result = execute(query,searcher);
+        Result result = execute(query, searcher);
 
-        assertEquals(
-                "WEAKAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
+        assertEquals("WEAKAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
     }
 
 
@@ -76,7 +73,7 @@ public class RetrievalSearcherTest {
     public void test_dense_params() {
         RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         Query query = new Query("?query=a+test&retriever=dense&ann.hits=98");
-        Result result = execute(query,searcher);
+        Result result = execute(query, searcher);
         QueryTree tree = result.getQuery().getModel().getQueryTree();
         Item item = tree.getRoot();
         if (!(item instanceof NearestNeighborItem))
@@ -84,9 +81,8 @@ public class RetrievalSearcherTest {
         NearestNeighborItem nn = (NearestNeighborItem)item;
         assertTrue(nn.getAllowApproximate());
         assertEquals(98, nn.getTargetNumHits());
-        assertEquals("mini_document_embedding",nn.getIndexName());
-        assertEquals("query_embedding",nn.getQueryTensorName());
+        assertEquals("mini_document_embedding", nn.getIndexName());
+        assertEquals("query_embedding", nn.getQueryTensorName());
     }
-
 
 }

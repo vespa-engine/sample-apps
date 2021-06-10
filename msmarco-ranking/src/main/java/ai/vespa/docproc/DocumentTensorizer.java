@@ -18,8 +18,9 @@ import java.util.List;
 
 public class DocumentTensorizer extends DocumentProcessor {
 
-    private BertTokenizer tokenizer;
-    private static TensorType textTensorType = new TensorType.Builder(TensorType.Value.FLOAT).indexed("d0", 128).build();
+    private final BertTokenizer tokenizer;
+    private final static TensorType textTensorType = new TensorType.Builder(TensorType.Value.FLOAT)
+                                                             .indexed("d0", 128).build();
 
     @Inject
     public DocumentTensorizer(BertTokenizer tokenizer) {
@@ -54,4 +55,5 @@ public class DocumentTensorizer extends DocumentProcessor {
             token_ids_float_rep[i] = token_ids.get(i).floatValue();
         return new TensorFieldValue(IndexedTensor.Builder.of(type, token_ids_float_rep).build());
     }
+
 }

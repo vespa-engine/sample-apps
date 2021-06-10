@@ -1,3 +1,4 @@
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
 import ai.vespa.tokenizer.BertModelConfig;
@@ -30,9 +31,8 @@ public class QueryEmbeddingSearcherTest {
 
     private static BertTokenizer tokenizer;
 
-
-    private static String outputName = "rankingExpression(mean_token_embedding)";
-    private static Tensor.Builder backEndTensor = Tensor.Builder.of("tensor<float>(d2[384])");
+    private static final String outputName = "rankingExpression(mean_token_embedding)";
+    private static final Tensor.Builder backEndTensor = Tensor.Builder.of("tensor<float>(d2[384])");
 
     static {
         BertModelConfig.Builder builder = new BertModelConfig.Builder();
@@ -48,22 +48,21 @@ public class QueryEmbeddingSearcherTest {
     @Test
     public void testEmbeddingSearcher() {
         QueryEmbeddingSearcher embeddingSearcher = new QueryEmbeddingSearcher(tokenizer);
-        MockBackend backend = new  MockBackend();
+        MockBackend backend = new MockBackend();
         Query query = new Query("?query=what+was+the+impact+of+the+manhattan+project");
-        Result result = execute(query,embeddingSearcher,backend);
-        assertEquals(1,result.getConcreteHitCount());
+        Result result = execute(query, embeddingSearcher, backend);
+        assertEquals(1, result.getConcreteHitCount());
         Hit tensorHit = result.hits().get(0);
-        assertEquals("embedding",tensorHit.getSource());
+        assertEquals("embedding", tensorHit.getSource());
         Tensor embeddingTensor = (Tensor)tensorHit.getField("tensor");
         assertNotNull(embeddingTensor);
-        assertEquals(384,embeddingTensor.size());
+        assertEquals(384, embeddingTensor.size());
     }
 
     private Result execute(Query query, Searcher... searcher) {
         Execution execution = new Execution(new Chain<>(searcher), Execution.Context.createContextStub());
         return execution.search(query);
     }
-
 
     private static class MockBackend extends Searcher {
 
@@ -72,26 +71,29 @@ public class QueryEmbeddingSearcherTest {
             if (isEmbeddingQuery(query)) {
                 Result result = execution.search(query);
                 result.setTotalHitCount(1);
-                Hit hit = new Hit("query",1.0);
+                Hit hit = new Hit("query", 1.0);
                 hit.setSource("query");
-                hit.setField("summaryfeatures",getFeatureData(outputName));
+                hit.setField("summaryfeatures", getFeatureData(outputName));
                 result.hits().add(hit);
                 return result;
             } else {
                 return execution.search(query);
             }
         }
+
         private boolean isEmbeddingQuery(Query query) {
             return (query.getModel().getRestrict().contains("query"));
         }
+
     }
 
     private static FeatureData getFeatureData(String name) {
-        for(int i = 0; i < 384 ;i++ )
-            backEndTensor.cell(TensorAddress.of(i),0.1);
+        for (int i = 0; i < 384 ;i++ )
+            backEndTensor.cell(TensorAddress.of(i), 0.1);
         Tensor embedding = backEndTensor.build();
         Cursor features = new Slime().setObject();
         features.setData(name, TypedBinaryFormat.encode(embedding));
         return new FeatureData(new SlimeAdapter(features));
     }
+
 }

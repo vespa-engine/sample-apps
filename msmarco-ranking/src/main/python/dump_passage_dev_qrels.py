@@ -3,7 +3,6 @@
 
 import ir_datasets
 
-
 dataset = ir_datasets.load('msmarco-passage/dev/small')
 with open('qrels.dev.small.tsv', 'w') as fp:
     for query_id,doc_id,relevance,iteration in dataset.qrels_iter():
