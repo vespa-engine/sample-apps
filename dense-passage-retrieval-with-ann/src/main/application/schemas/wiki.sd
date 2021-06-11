@@ -61,10 +61,6 @@ schema wiki {
       expression: tokenInputIds(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
 
-    function token_type_ids() {
-      expression: tokenTypeIds(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
-    }
-
     function attention_mask() {
       expression: tokenAttentionMask(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
@@ -91,7 +87,7 @@ schema wiki {
     }
 
     second-phase {
-      rerank-count: 5
+      rerank-count: 10
       expression: sum(onnxModel(reader).relevance_logits)
     }
 
