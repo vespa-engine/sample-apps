@@ -30,14 +30,12 @@ schema doc {
         field title type string {
             indexing: index | summary
             summary: dynamic
-            index: enable-bm25
             stemming: best
         }
 
         field content type string {
             indexing: index | summary
             summary: dynamic
-            index: enable-bm25
             stemming: best
         }
 
@@ -73,10 +71,14 @@ schema doc {
             $contentWeight: 10.0
             $gramTitleWeight: 2.0
             $gramContentWeight: 1.0
-            #nativeProximity.proximityImportance: 1.0
         }
         first-phase {
-            expression: query(titleWeight)*nativeRank(title) + query(contentWeight)*nativeRank(content) + query(gramTitleWeight)*nativeRank(gram_title) + query(gramContentWeight)*nativeRank(gram_content)
+            expression {
+                query(titleWeight) * nativeRank(title)
+                + query(contentWeight) * nativeRank(content)
+                + query(gramTitleWeight) * nativeRank(gram_title)
+                + query(gramContentWeight) * nativeRank(gram_content)
+            }
         }
         summary-features {
             attribute(namespace)

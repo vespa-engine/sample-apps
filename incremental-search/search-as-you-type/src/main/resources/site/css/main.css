@@ -23,8 +23,18 @@ hi {
   border: 0;
 }
 
+#title {
+  color: #1a7db6;
+  padding-left: 1em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin: 0;
+}
+
 #input-wrapper {
-  padding:  2em;
+  padding-left:  2em;
+  padding-top: 1em;
+  padding-bottom: 1em;
 }
 
 #output-wrapper {
