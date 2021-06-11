@@ -1,0 +1,97 @@
+html, body {
+  background: #222;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  border: 0;
+}
+
+hi {
+  background-color: #666;
+}
+
+datalist {
+	display: none;
+  background-color: #1a7db6;
+}
+
+
+#wrapper {
+  background: #222;
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  border: 0;
+}
+
+#input-wrapper {
+  padding:  2em;
+}
+
+#output-wrapper {
+  color: #fff;
+  padding: 2em;
+}
+
+.result {
+  margin-bottom: 2em;
+}
+
+.result-title {
+  color: #1a7db6;
+}
+
+.result-content {
+}
+
+.result-path {
+  color: #3c763d;
+}
+
+
+
+
+
+#input-wrapper {
+  display: flex; /* or inline-flex */
+  flex-direction: column;
+  width: 30%;
+}
+
+
+#results {
+  background-color: rgb(255, 255, 255);
+  min-width: 160px;
+  border: 1px solid rgb(255, 254, 254);
+  z-index: 1;
+}
+
+#results p {
+  background: rgb(255, 254, 254);
+  color: rgb(0, 0, 0);
+  padding: 5px 4px;
+  text-decoration: none;
+  display: block;
+  user-select: none;
+}
+
+#results p:hover {
+  background: #ddd;
+}
+
+#results p:active {
+  background: rgb(158, 182, 248);
+}
+
+.show {
+  display: inline-block;
+  }
+
+.hide{
+  display: none;
+}

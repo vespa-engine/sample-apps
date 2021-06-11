@@ -1,0 +1,3 @@
+package=ai.vespa.example.searchsuggest
+
+blocklist[] string
