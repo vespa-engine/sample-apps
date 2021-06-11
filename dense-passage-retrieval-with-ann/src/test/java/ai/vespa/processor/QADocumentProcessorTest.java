@@ -53,9 +53,9 @@ public class QADocumentProcessorTest {
     private static DocumentType createWikiDocType() {
         DocumentType type = new DocumentType("wiki");
         type.addField("title", DataType.STRING);
-        type.addField("title_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[256])")));
+        type.addField("title_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[32])")));
         type.addField("text", DataType.STRING);
-        type.addField("text_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[256])")));
+        type.addField("text_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[128])")));
         return type;
     }
 
@@ -72,8 +72,8 @@ public class QADocumentProcessorTest {
         TensorFieldValue text_tensor = (TensorFieldValue)doc.getFieldValue("text_token_ids");
         assertNotNull(title_tensor);
         assertNotNull(text_tensor);
-        assertTrue(title_tensor.toString().startsWith("tensor<float>(d0[256]):[29168.0, 1035.0, 13957.0"));
-        assertTrue(text_tensor.toString().startsWith("tensor<float>(d0[256]):[29168.0, 3744.0, 13957.0, 1006.0, 2141.0, 2285.0, 1016.0, 1010.0"));
+        assertTrue(title_tensor.toString().startsWith("tensor<float>(d0[32]):[29168.0, 1035.0, 13957.0"));
+        assertTrue(text_tensor.toString().startsWith("tensor<float>(d0[128]):[29168.0, 3744.0, 13957.0, 1006.0, 2141.0, 2285.0, 1016.0, 1010.0"));
     }
 
     @Test

@@ -9,7 +9,7 @@ schema wiki {
       index: enable-bm25
     }
 
-    field title_token_ids type tensor<float>(d0[256]) {
+    field title_token_ids type tensor<float>(d0[32]) {
         indexing: summary | attribute
     }
 
@@ -18,7 +18,7 @@ schema wiki {
       index: enable-bm25
     }
 
-    field text_token_ids type tensor<float>(d0[256]) {
+    field text_token_ids type tensor<float>(d0[128]) {
       indexing: summary |attribute
     }
 
