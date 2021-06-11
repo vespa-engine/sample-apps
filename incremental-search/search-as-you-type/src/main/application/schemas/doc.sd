@@ -65,6 +65,10 @@ schema doc {
         fields: title, content
     }
 
+    fieldset grams {
+        fields: gram_title, gram_content
+    }
+
     rank-profile weighted_doc_rank inherits default {
         rank-properties {
             $titleWeight: 20.0

@@ -11,21 +11,30 @@ const debounce = (func, timeout = 300) => {
 }
 
 const handleResults = (data) => {
+  const highlightWeight = 10.0;
+
   output.innerHTML = "";
 
   if (data.root.children) {
     const items = data.root.children
-      .map(child => ({
-        title: (
-          child.fields.summaryfeatures["nativeRank(title)"]*10.0 >= child.fields.summaryfeatures["nativeRank(gram_title)"]
-          ? child.fields.title
-          : child.fields.gram_title),
-        content: (
-          child.fields.summaryfeatures["nativeRank(content)"]*10.0 >= child.fields.summaryfeatures["nativeRank(gram_content)"]
-          ? child.fields.content
-          : child.fields.gram_content),
-        path: child.fields.path
-      }));
+      .map(child => {
+        const titleScore = child.fields.summaryfeatures["nativeRank(title)"];
+        const gramTitleScore = child.fields.summaryfeatures["nativeRank(gram_title)"];
+        const contentScore = child.fields.summaryfeatures["nativeRank(content)"];
+        const gramContentScore = child.fields.summaryfeatures["nativeRank(gram_content)"];
+        
+        return {
+          title: (
+            titleScore*highlightWeight >= gramTitleScore
+            ? child.fields.title
+            : child.fields.gram_title),
+          content: (
+            contentScore*highlightWeight >= gramContentScore
+            ? child.fields.content
+            : child.fields.gram_content),
+          path: child.fields.path
+        };
+      });
 
     items.forEach(item => {
       const div = document.createElement("div");
@@ -49,9 +58,24 @@ const handleResults = (data) => {
 
 const handleInput = (e) => {
   if (e.target.value.length > 0) {
-    const searchTerm = escape(e.target.value);
-    const yqlQuery = `select+*+from+doc+where+default+contains+%22${searchTerm}%22+or+gram_title+contains+%22${searchTerm}%22+or+gram_content+contains+%22${searchTerm}%22%3B`;
-    fetch(`/search/?yql=${yqlQuery}&hits=128&ranking=weighted_doc_rank&timeout=5s`)
+    const query = {
+      yql: `
+        select * from doc
+        where ([{"defaultIndex": "default"}]userInput(@input))
+        or ([{"defaultIndex": "grams"}]userInput(@input));`,
+      input: e.target.value,
+      hits: 128,
+      ranking: "weighted_doc_rank",
+      timeout: "5s"
+    };
+
+    fetch("/search/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(query)
+    })
       .then(res => res.json())
       .then(data => handleResults(data))
       .catch(e => console.error(e));
