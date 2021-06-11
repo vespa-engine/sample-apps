@@ -3,7 +3,7 @@
 
     <container id="default" version="1.0">
         <document-processing>
-            <chain id="default" inherits="indexing">
+            <chain id="default">
                 <documentprocessor id="ai.vespa.cloud.docsearch.OutLinksDocumentProcessor" bundle="vespacloud-docsearch"/>
             </chain>
         </document-processing>
