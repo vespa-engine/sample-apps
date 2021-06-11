@@ -34,7 +34,7 @@ for example use of the Query API.
 It is easy to set up your own instance on Vespa Cloud and feed  documents from
 [vespa-engine/documentation](https://github.com/vespa-engine/documentation/):
 
-1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build`.
+1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build -p _plugins-vespafeed`.
 Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins-vespafeed/vespa_index_generator.rb)
 for how the feed file is generated.
 
