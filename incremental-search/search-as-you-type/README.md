@@ -9,7 +9,7 @@
 * `cd ../sample-apps/incremental-search/search-as-you-type/`
 * `mv ../../../documentation/open_index.json ./`
 * `docker pull vespaengine/vespa`
-* `docker run -m 10G --detach --name vespa --hostname vespa-example --publish 8080:8080 --publish 19071:19071 vespaengine/vespa`
+* `docker run -m 6G --detach --name vespa --hostname vespa-example --publish 8080:8080 --publish 19071:19071 vespaengine/vespa`
 * `curl -s --head http://localhost:19071/ApplicationStatus`
 * `mvn clean package`
 * `curl --header Content-Type:application/zip --data-binary @target/application.zip localhost:19071/application/v2/tenant/default/prepareandactivate`
