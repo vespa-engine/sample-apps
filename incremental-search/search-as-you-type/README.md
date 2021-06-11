@@ -23,7 +23,8 @@ $ cd documentation/
 $ bundle exec jekyll build -p _plugins-vespafeed
 $ cd ../sample-apps/incremental-search/search-as-you-type/
 $ mv ../../../documentation/open_index.json ./
-</pre vim_syntax_error="_">
+</pre>
+
 
 **Run docker container**
 
