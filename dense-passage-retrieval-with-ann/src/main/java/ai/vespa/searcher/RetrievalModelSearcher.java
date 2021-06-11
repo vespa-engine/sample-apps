@@ -49,16 +49,14 @@ public class RetrievalModelSearcher extends Searcher {
         if(query.getModel().getQueryString() == null ||
                 query.getModel().getQueryString().length() == 0)
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
-
-        List<Integer> bert_tokens = this.tokenizer.tokenize(queryInput,32,true);
         Tensor.Builder builder = Tensor.Builder.of(queryTokenType);
         int index = 0;
-        for(Integer token: bert_tokens) {
+        for(Integer token : this.tokenizer.tokenize(queryInput,32,true)) {
             builder.cell(TensorAddress.of(index), token);
             index++;
         }
-
         query.getRanking().getFeatures().put(QUERY_TOKEN_IDS_NAME,builder.build());
+
         switch (QuestionAnswering.getRetrivalMethod(query)) {
             case DENSE:
                 Tensor clsEmbedding = getEmbeddingTensor(queryInput, query);
@@ -76,6 +74,7 @@ public class RetrievalModelSearcher extends Searcher {
             query.getRanking().setProfile(query.getRanking().getProfile() + "-retriever");
 
         query.getModel().setRestrict("wiki");
+        query.getRanking().setRerankCount(query.getHits());
         return execution.search(query);
     }
 
@@ -90,14 +89,9 @@ public class RetrievalModelSearcher extends Searcher {
 
     private Item denseRetrieval(Tensor questionEmbedding, Tensor hashEmbedding, Query query) {
         NearestNeighborItem nn = new NearestNeighborItem("hash", "query_hash");
-        nn.setTargetNumHits(1000); //Number we want to retrieve for re-ranking
-
-        if(query.properties().getBoolean("ann.brute-force") )
-            nn.setAllowApproximate(false);
-        else
-            nn.setAllowApproximate(true);
-
-        nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.extra-hits",0));
+        nn.setTargetNumHits(query.properties().getInteger("ann.hits",1000)); //Number we want to retrieve for re-ranking
+        nn.setAllowApproximate(!query.properties().getBoolean("ann.brute-force"));
+        nn.setHnswExploreAdditionalHits(query.properties().getInteger("ann.hits-extra",0));
         query.getRanking().getFeatures().put(QUERY_EMBEDDING_TENSOR_NAME , questionEmbedding);
         query.getRanking().getFeatures().put(QUERY_HASH_TENSOR_NAME,hashEmbedding);
         return nn;
