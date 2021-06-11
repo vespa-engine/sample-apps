@@ -6,7 +6,7 @@
 * `git clone git@github.com:vespa-engine/documentation.git`
 * `cd documentation/`
 * `bundle exec jekyll build -p _plugins-vespafeed`
-* `cd cd ../sample-apps/incremental-search/search-as-you-type/`
+* `cd ../sample-apps/incremental-search/search-as-you-type/`
 * `mv ../../../documentation/open_index.json ./`
 * `docker pull vespaengine/vespa`
 * `docker run -m 10G --detach --name vespa --hostname vespa-example --publish 8080:8080 --publish 19071:19071 vespaengine/vespa`
