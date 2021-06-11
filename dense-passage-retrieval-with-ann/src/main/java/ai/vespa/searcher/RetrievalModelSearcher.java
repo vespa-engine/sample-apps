@@ -28,8 +28,10 @@ import java.util.List;
 public class RetrievalModelSearcher extends Searcher {
 
     private final TensorType queryHashEmbeddingType = TensorType.fromSpec("tensor<int8>(d0[96])");
+    private final TensorType queryTokenType = TensorType.fromSpec("tensor<float>(d0[32])");
     private static String QUERY_EMBEDDING_TENSOR_NAME = "query(query_embedding)";
     private static String QUERY_HASH_TENSOR_NAME = "query(query_hash)";
+    private static String QUERY_TOKEN_IDS_NAME = "query(query_token_ids)";
 
     private final BertTokenizer tokenizer;
 
@@ -48,6 +50,15 @@ public class RetrievalModelSearcher extends Searcher {
                 query.getModel().getQueryString().length() == 0)
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
 
+        List<Integer> bert_tokens = this.tokenizer.tokenize(queryInput,32,true);
+        Tensor.Builder builder = Tensor.Builder.of(queryTokenType);
+        int index = 0;
+        for(Integer token: bert_tokens) {
+            builder.cell(TensorAddress.of(index), token);
+            index++;
+        }
+
+        query.getRanking().getFeatures().put(QUERY_TOKEN_IDS_NAME,builder.build());
         switch (QuestionAnswering.getRetrivalMethod(query)) {
             case DENSE:
                 Tensor clsEmbedding = getEmbeddingTensor(queryInput, query);
