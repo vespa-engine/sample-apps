@@ -14,11 +14,6 @@ hi {
   background-color: #666;
 }
 
-datalist {
-	display: none;
-  background-color: #1a7db6;
-}
-
 
 #wrapper {
   background: #222;
@@ -37,22 +32,6 @@ datalist {
   color: #fff;
   padding: 2em;
 }
-
-.result {
-  margin-bottom: 2em;
-}
-
-.result-title {
-  color: #1a7db6;
-}
-
-.result-content {
-}
-
-.result-path {
-  color: #3c763d;
-}
-
 
 
 

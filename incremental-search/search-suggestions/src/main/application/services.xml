@@ -9,7 +9,7 @@
                         <blocklist>
                             <item>chimpanzee</item> <!--examples of words to block-->
                             <item>gorilla</item>
-                            <item>orangutang</item>
+                            <item>orangutan</item>
                         </blocklist>
                     </config>
                 </documentprocessor> 
