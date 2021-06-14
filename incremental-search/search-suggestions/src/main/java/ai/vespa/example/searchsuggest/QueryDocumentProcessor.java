@@ -43,7 +43,6 @@ public class QueryDocumentProcessor extends DocumentProcessor {
     public QueryDocumentProcessor(){
         //default constructor typically used for tests
         this.blockWords = new ArrayList<>();
-        this.asyncSession = acc.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
     }
 
     @Override
