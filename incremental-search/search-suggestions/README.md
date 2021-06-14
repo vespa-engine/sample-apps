@@ -30,7 +30,8 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 **Build and deploy the application**
 <pre data-test="exec">
 $ mvn clean package
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip localhost:19071/application/v2/tenant/default/prepareandactivate
+$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+  localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
 **Check if application is ready**
@@ -62,4 +63,3 @@ Streaming search is slower than indexed search, therefore streaming search is mo
 ### The sample application
 
 In this sample application streaming search is used to implement search suggestions based on users' previous queries. By storing user-input as documents you can get some queries that are not suitable for suggestion. A way to combat this is by filtering out user queries that contain terms that are added to a block list. In this sample application a [document processor](https://docs.vespa.ai/en/document-processing.html) is used to filter out sutch qeries under document feeding. 
-
