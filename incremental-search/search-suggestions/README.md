@@ -38,7 +38,8 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 **Feed the example documents to the application**
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \ https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
+  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
 $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file example_query_log.json --endpoint http://localhost:8080
 </pre>
 
@@ -59,6 +60,5 @@ Streaming search is slower than indexed search, therefore streaming search is mo
 ### The sample application
 
 In this sample application streaming search is used to implement search suggestions based on users' previous queries. By storing user-input as documents you can get some queries that are not suitable for suggestion. A way to combat this is by filtering out user queries that contain terms that are added to a block list. In this sample application a [document processor](https://docs.vespa.ai/en/document-processing.html) is used to filter out sutch qeries under document feeding. 
-
 
 
