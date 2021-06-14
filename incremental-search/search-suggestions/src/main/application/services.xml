@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services version="1.0" xmlns:deploy="vespa">
+
+    <container id="default" version="1.0">
+        <document-processing>
+            <chain id="default" inherits="indexing">
+                <documentprocessor id="ai.vespa.example.searchsuggest.QueryDocumentProcessor" bundle="search-suggestion">
+                    <config name="ai.vespa.example.searchsuggest.blocklist">
+                        <blocklist>
+                            <item>chimpanzee</item> <!--examples of words to block-->
+                            <item>gorilla</item>
+                            <item>orangutang</item>
+                        </blocklist>
+                    </config>
+                </documentprocessor> 
+            </chain>
+        </document-processing>
+        <search/>
+        <document-api/>
+        <handler id="ai.vespa.example.searchsuggest.SiteHandler" bundle="search-suggestion"> <!--front end-->
+            <binding>http://*/site/*</binding>
+            <binding>http://*/site</binding>
+            <config name="ai.vespa.example.searchsuggest.site-handler">
+                <vespaHostName>localhost</vespaHostName>
+                <vespaHostPort>8080</vespaHostPort>
+            </config>
+        </handler>
+        <nodes>
+            <node hostalias="node1" />
+        </nodes>
+    </container>
+
+    <content id="documentation" version="1.0">
+        <redundancy>2</redundancy>
+        <documents>
+            <document mode="index" type="doc"/>
+            <document mode="streaming" type="query"/>
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+
+</services>

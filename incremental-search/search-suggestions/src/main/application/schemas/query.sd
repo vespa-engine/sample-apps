@@ -1,0 +1,16 @@
+schema query{
+    document query{
+        field input type string {
+            indexing: summary | index
+            match   : prefix 
+        } 
+        field time type double {
+            indexing: summary | attribute
+        }
+    } 
+
+    fieldset default {
+        fields: input
+    }
+
+}
