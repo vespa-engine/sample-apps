@@ -29,5 +29,7 @@
         <module>transformers</module>
         <module>news/app-6-recommendation-with-searchers</module>
         <module>news/app-7-parent-child</module>
+        <module>incremental-search/search-as-you-type</module>
+        <module>incremental-search/search-suggestions</module>
     </modules>
 </project>
