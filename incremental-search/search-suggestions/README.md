@@ -16,8 +16,8 @@ $ cd sample-apps/incremental-search/search-suggestions
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run -m 6G --detach --name vespa --hostname vespa-example \
-   --publish 8080:8080 --publish 19071:19071 \
-   vespaengine/vespa
+  --publish 8080:8080 --publish 19071:19071 \
+  vespaengine/vespa
 </pre>
 
 **Wait for response** 
