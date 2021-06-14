@@ -23,17 +23,6 @@ public class QueryDocumentProcessor extends DocumentProcessor {
 
 
 
-    class RespHandler implements ResponseHandler {
-        @Override
-        public void handleResponse(Response response) {
-            /*
-            if (response.isSuccess()) {
-                logger.info("Success!");
-            }
-            logger.info("In handleResponse: " + response.getTextMessage());
-             */
-        }
-    }
 
     @Inject
     public QueryDocumentProcessor(BlocklistConfig config){
