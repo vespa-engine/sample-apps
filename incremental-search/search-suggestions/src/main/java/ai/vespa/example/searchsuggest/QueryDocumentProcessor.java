@@ -76,6 +76,5 @@ public class QueryDocumentProcessor extends DocumentProcessor {
     @Override
     public void deconstruct() {
         super.deconstruct();
-        asyncSession.destroy();
     }
 }
