@@ -56,7 +56,7 @@ Open http://localhost:8080/site/ in a browser.
 
  [Streaming search](https://docs.vespa.ai/documentation/streaming-search.html) matches documents to queries by streaming through them, similar to grep and does not create precomputed indices. With streaming search only raw data of the documents are stored and and term stemming is not supported.
 
- Streaming search searches through a documnet collection with a given groupname, so it is important to set a groupname in the id of the documents you intend to use with streaming search.
+ Streaming search searches through a document collection with a given groupname, so it is important to set a groupname in the id of the documents you intend to use with streaming search.
 
 Streaming search is slower than indexed search, therefore streaming search is most suitable in situations where the document set is relatively small and the documents themself are short.
 
