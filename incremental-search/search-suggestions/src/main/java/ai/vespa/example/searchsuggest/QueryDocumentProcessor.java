@@ -40,7 +40,7 @@ public class QueryDocumentProcessor extends DocumentProcessor {
         this.blockWords = config.blocklist();
     }
 
-    public QueryDocumentProcessor(DocumentAccess acc){
+    public QueryDocumentProcessor(){
         //default constructor typically used for tests
         this.blockWords = new ArrayList<>();
         this.asyncSession = acc.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
