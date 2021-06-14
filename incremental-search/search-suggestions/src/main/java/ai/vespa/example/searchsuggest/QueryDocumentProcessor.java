@@ -13,6 +13,8 @@ import com.yahoo.documentapi.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class QueryDocumentProcessor extends DocumentProcessor {
@@ -63,11 +65,14 @@ public class QueryDocumentProcessor extends DocumentProcessor {
         logger.info("  Searching through document");
         FieldValue inputValue = doc.getFieldValue("input");
         String query = inputValue.toString().toLowerCase();
+        String[] terms = query.split("\\s+");
         for (String blockWord : blockWords){
-            //goes through and checks if query contains any of the blockWords
-            if (query.contains(blockWord.toLowerCase())){
-                logger.info("  found blocking word");
-                return true;
+            for (String term : terms){
+                //goes through and checks if query contains any of the blockWords
+                if (Objects.equals(blockWord.toLowerCase(), term)){
+                    logger.info("  found blocking word");
+                    return true;
+                }
             }
         }
         return false;
