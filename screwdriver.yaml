@@ -57,6 +57,8 @@ jobs:
           python3 -m pip install -qqq -r test/requirements.txt --user
           yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
           yum install -y docker-ce docker-ce-cli containerd.io openssl yum-utils
+          yum -y install --setopt=skip_missing_names_on_install=False rh-ruby27 rh-ruby27-rubygems-devel
+          source /opt/rh/rh-ruby27/enable
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
