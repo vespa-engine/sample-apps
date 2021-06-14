@@ -35,9 +35,6 @@ search:
         - url: http://localhost:8080/
           indexes:
               - open_index.json
-        - url: http://localhost:8080/
-          indexes:
-              - open_index.json
 
 # Build settings
 markdown: kramdown
