@@ -15,7 +15,9 @@ $ cd sample-apps/incremental-search/search-suggestions
 **Set up and docker container**
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run -m 6G --detach --name vespa --hostname vespa-example --publish 8080:8080 --publish 19071:19071 vespaengine/vespa
+$ docker run -m 6G --detach --name vespa --hostname vespa-example \
+   --publish 8080:8080 --publish 19071:19071 \
+   vespaengine/vespa
 </pre>
 
 **Wait for response** 
@@ -60,5 +62,4 @@ Streaming search is slower than indexed search, therefore streaming search is mo
 ### The sample application
 
 In this sample application streaming search is used to implement search suggestions based on users' previous queries. By storing user-input as documents you can get some queries that are not suitable for suggestion. A way to combat this is by filtering out user queries that contain terms that are added to a block list. In this sample application a [document processor](https://docs.vespa.ai/en/document-processing.html) is used to filter out sutch qeries under document feeding. 
-
 
