@@ -11,6 +11,7 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
     #
     # TBD:
     # - basic-search-on-docker-swarm
