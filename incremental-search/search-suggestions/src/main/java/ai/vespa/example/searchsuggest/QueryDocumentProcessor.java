@@ -21,7 +21,6 @@ public class QueryDocumentProcessor extends DocumentProcessor {
     private static final String QUERY_DOCUMENT_TYPE  = "query";
     private final List<String> blockWords;
 
-    private final AsyncSession asyncSession;
 
 
     class RespHandler implements ResponseHandler {
