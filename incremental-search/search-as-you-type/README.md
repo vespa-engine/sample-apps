@@ -20,6 +20,7 @@ $ git clone --depth 1 https://github.com/vespa-engine/documentation.git
 Generate _open\_index.json_ in the documentation repository and move this file to the directory for the _search-as-you-type_ application.
 <pre data-test="exec">
 $ cd documentation/
+$ bundle install
 $ bundle exec jekyll build -p _plugins-vespafeed
 $ cd ../sample-apps/incremental-search/search-as-you-type/
 $ mv ../../../documentation/open_index.json ./
@@ -30,7 +31,9 @@ $ mv ../../../documentation/open_index.json ./
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run -m 6G --detach --name vespa --hostname vespa-example --publish 8080:8080 --publish 19071:19071 vespaengine/vespa
+$ docker run -m 6G --detach --name vespa --hostname vespa-example \
+  --publish 8080:8080 --publish 19071:19071 \
+  vespaengine/vespa
 </pre>
 
 
@@ -45,7 +48,8 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 
 <pre data-test="exec">
 $ mvn clean package
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip localhost:19071/application/v2/tenant/default/prepareandactivate
+$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+  localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
 
