@@ -38,7 +38,6 @@ public class QueryDocumentProcessor extends DocumentProcessor {
     @Inject
     public QueryDocumentProcessor(BlocklistConfig config){
         this.blockWords = config.blocklist();
-        this.asyncSession = acc.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
     }
 
     public QueryDocumentProcessor(DocumentAccess acc){
