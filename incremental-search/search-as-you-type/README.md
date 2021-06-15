@@ -72,7 +72,7 @@ $ python3 feed_to_vespa.py
 Open <http://localhost:8080/site/> in a browser.
 To validate the site is up:
 <pre data-test="exec" data-test-assert-contains="search as you type">
-$ curl -s http://localhost:8080/
+$ curl -s http://localhost:8080/site/
 </pre>
 
 
