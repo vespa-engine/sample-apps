@@ -1,7 +1,6 @@
 const input = document.getElementById("input-field");
 const output = document.getElementById("output-wrapper");
 
-
 const dropdown = document.getElementById("results");
 const termDropdown = document.getElementById("termResults");
 
@@ -14,22 +13,38 @@ const debounce = (func, timeout = 300) => {
   };
 }
 
-const handleResults = (data) => {
-  console.log(data);
+const hideDropdown = () => {
   output.innerHTML = "";
+  dropdown.classList.remove("show");
+  dropdown.classList.add("hide");
+  termDropdown.classList.remove("show");
+  termDropdown.classList.add("hide");
+};
+
+const handleSuggestClick = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  input.value = e.target.innerHTML;
+};
+
+const handleUnfocus = (e) => hideDropdown();
+
+const handleResults = (data) => {
+  output.innerHTML = "";
+  const small = document.createElement("small");
+  small.innerHTML = "Query log queries";
+  dropdown.appendChild(small);
 
   if (data.root.children[0].children) {
     const items = data.root.children[0].children[0].children
       .map(child => ({
         value: (child.value)
       }));
-  
-    console.log(items);
 
     items.map(item => {
       const p = document.createElement("p");
       p.innerHTML = item.value;
-      p.addEventListener("click",(e) => input.value=e.target.innerHTML);
+      p.addEventListener("mousedown", handleSuggestClick);
       dropdown.appendChild(p)
     });
     
@@ -39,6 +54,9 @@ const handleResults = (data) => {
 const handleTermResults = (data) => {
   termDropdown.innerHTML = "";
   termDropdown.appendChild(document.createElement("hr"));
+  const small = document.createElement("small");
+  small.innerHTML = "Bootstrapped search terms";
+  termDropdown.appendChild(small);
 
   if (data.root.children) {
     const items = data.root.children
@@ -49,7 +67,7 @@ const handleTermResults = (data) => {
     items.forEach(item => {
       const p = document.createElement("p");
       p.innerHTML = item.term;
-      p.addEventListener("click", (e) => input.value = e.target.innerHTML);
+      p.addEventListener("mousedown", handleSuggestClick);
       termDropdown.appendChild(p)
     });
   }
@@ -103,12 +121,9 @@ const handleInput = (e) => {
       .catch(e => console.error(e));
     
   } else {
-    output.innerHTML = "";
-    dropdown.classList.remove("show");
-    dropdown.classList.add("hide");
-    termDropdown.classList.remove("show");
-    termDropdown.classList.add("hide");
+    hideDropdown();
   }
 };
 
 input.addEventListener("input", debounce(handleInput));
+input.addEventListener("focusout", handleUnfocus);
