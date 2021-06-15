@@ -39,7 +39,7 @@ $ docker run -m 6G --detach --name vespa --hostname vespa-example \
 
 **Wait for the configserver to start**
 
-<pre data-test="exec">
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
@@ -55,7 +55,7 @@ $ curl --header Content-Type:application/zip --data-binary @target/application.z
 
 **Wait for the application to start**
 
-<pre data-test="exec">
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
