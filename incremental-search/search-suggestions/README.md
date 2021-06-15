@@ -23,7 +23,7 @@ $ docker run -m 6G --detach --name vespa --hostname vespa-example \
 **Wait for response** 
 
 Check respons with:
-<pre data-test="exec">
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
@@ -35,7 +35,7 @@ $ curl --header Content-Type:application/zip --data-binary @target/application.z
 </pre>
 
 **Check if application is ready**
-<pre data-test="exec">
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
@@ -66,6 +66,10 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_te
 **Check the website and write queries and view suggestions**
 
 Open http://localhost:8080/site/ in a browser.
+To validate the site is up:
+<pre data-test="exec" data-test-assert-contains="search suggestions">
+$ curl -s http://localhost:8080/site/
+</pre>
 
 ## General
 
