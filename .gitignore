@@ -8,8 +8,10 @@ target/
 .settings/
 .classpath
 vespaapps_index.json
+open_index.json
 _site/
 *.pem
 Gemfile.lock
 test/__pycache__
+_work/
 
