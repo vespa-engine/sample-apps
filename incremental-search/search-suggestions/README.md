@@ -46,6 +46,23 @@ $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
 $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file example_query_log.json --endpoint http://localhost:8080
 </pre>
 
+**Generating bootstrapped search terms**
+<pre data-test="exec">
+$ cd ../../../
+$ git clone --depth 1 https://github.com/vespa-engine/documentation.git
+$ cd documentation/
+$ bundle install
+$ bundle exec jekyll build -p _plugins-vespafeed
+$ cd ../sample-apps/incremental-search/search-suggestions
+$ cp ../../../documentation/open_index.json ./
+$ python3 count_terms.py open_index.json feed_terms.json 2 top100en.txt
+</pre>
+
+**Feeding bootstrapped search terms**
+<pre data-test="exec">
+$ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_terms.json --endpoint http://localhost:8080
+</pre>
+
 **Check the website and write queries and view suggestions**
 
 Open http://localhost:8080/site/ in a browser.

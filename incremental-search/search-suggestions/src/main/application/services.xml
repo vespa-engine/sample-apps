@@ -35,6 +35,7 @@
         <redundancy>2</redundancy>
         <documents>
             <document mode="streaming" type="query"/>
+            <document mode="streaming" type="term"/>
         </documents>
         <nodes>
             <node hostalias="node1" distribution-key="0" />

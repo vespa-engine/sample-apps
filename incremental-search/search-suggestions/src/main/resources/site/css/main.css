@@ -43,27 +43,28 @@ hi {
 }
 
 
-#results {
+.result {
   background-color: rgb(255, 255, 255);
   min-width: 160px;
   border: 1px solid rgb(255, 254, 254);
   z-index: 1;
 }
 
-#results p {
+.result p {
   background: rgb(255, 254, 254);
   color: rgb(0, 0, 0);
   padding: 5px 4px;
   text-decoration: none;
   display: block;
   user-select: none;
+  margin: 0;
 }
 
-#results p:hover {
+.result p:hover {
   background: #ddd;
 }
 
-#results p:active {
+.result p:active {
   background: rgb(158, 182, 248);
 }
 
