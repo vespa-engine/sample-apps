@@ -35,6 +35,7 @@
         <documents>
             <document mode="index" type="doc"/>
             <document mode="streaming" type="query"/>
+            <document mode="streaming" type="term"/>
         </documents>
         <nodes>
             <node hostalias="node1" distribution-key="0" />
