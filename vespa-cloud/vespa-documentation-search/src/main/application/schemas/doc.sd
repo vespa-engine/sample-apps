@@ -3,6 +3,24 @@ schema doc {
     field language type string {
         indexing: "en" | set_language
     }
+    
+    field gram_title type string {
+        indexing: input title | index | summary
+        match {
+            gram
+            gram-size: 3
+        }
+        summary: dynamic
+    }
+
+    field gram_content type string {
+        indexing: input content | index | summary
+        match {
+            gram
+            gram-size: 3
+        }
+        summary: dynamic
+    }
 
     document doc {
 
@@ -50,6 +68,10 @@ schema doc {
         fields: title, content
     }
 
+    fieldset grams {
+        fields: gram_title, gram_content
+    }
+
     rank-profile documentation inherits default {
         rank-properties {
             $titleWeight: 2.0
@@ -69,6 +91,30 @@ schema doc {
             fieldLength(content)
             bm25(title)
             bm25(content)
+        }
+    }
+
+    rank-profile weighted_doc_rank inherits default {
+        rank-properties {
+            $titleWeight: 20.0
+            $contentWeight: 10.0
+            $gramTitleWeight: 2.0
+            $gramContentWeight: 1.0
+        }
+        first-phase {
+            expression {
+                query(titleWeight) * nativeRank(title)
+                + query(contentWeight) * nativeRank(content)
+                + query(gramTitleWeight) * nativeRank(gram_title)
+                + query(gramContentWeight) * nativeRank(gram_content)
+            }
+        }
+        summary-features {
+            attribute(namespace)
+            nativeRank(title)
+            nativeRank(content)
+            nativeRank(gram_title)
+            nativeRank(gram_content)
         }
     }
 
