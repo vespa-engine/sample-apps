@@ -71,6 +71,13 @@ To validate the site is up:
 $ curl -s http://localhost:8080/site/
 </pre>
 
+**Shutdown and remove the Docker container**
+
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
+
+
 ## General
 
  ### Streaming search
