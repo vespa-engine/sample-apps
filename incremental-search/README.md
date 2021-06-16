@@ -10,12 +10,12 @@ These two applications are different examples of how you can use vespa for incre
 
 search-as-you-type is a sample application wich uses n-gram search to match and rank documents while the user is typing out the query. The highest ranking documents are retrived and the matching portions of the documents are highlighted.
 
-![n-gram search](n-gram-search.png)
+![n-gram search](img/search-as-you-type.png)
 
 ### search-suggestions
 
 search-suggestions is a sample application wich uses streaming search to match and rank documents from a query log, and gives query suggestions based on previously written queries while the user is typing.
 
-![query suggestions](streaming-search.png)
+![query suggestions](img/search-suggestions.png)
 
 

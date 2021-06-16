@@ -8,7 +8,6 @@ schema doc {
             gram-size: 3
         }
         summary: dynamic
-        stemming: best
     }
 
     field gram_content type string {
@@ -18,7 +17,6 @@ schema doc {
             gram-size: 3
         }
         summary: dynamic
-        stemming: best
     }
 
     document doc {
