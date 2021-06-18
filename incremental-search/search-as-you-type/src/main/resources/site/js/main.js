@@ -44,7 +44,7 @@ const handleResults = (data) => {
       title.innerHTML = item.title;
       const content = document.createElement("p");
       content.className = "result-content";
-      content.innerHTML = `... ${item.content} ...`;
+      content.innerHTML = item.content.replaceAll("<sep />", " ... ");
       const path = document.createElement("small");
       path.className = "result-path";
       path.innerHTML = `Documentation: ${item.path}`;
