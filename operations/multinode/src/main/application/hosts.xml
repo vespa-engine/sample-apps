@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-
-<!--
-  Lists the hosts that are to run this application. The hosts are referenced from services.xml.
-
-  See
-   - https://docs.vespa.ai/en/reference/hosts.html
--->
-
 <hosts>
   <host name="node0.vespa_net">
     <alias>node0</alias>
@@ -19,4 +10,3 @@
     <alias>node2</alias>
   </host>
 </hosts>
-
