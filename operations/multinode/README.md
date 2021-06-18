@@ -1,10 +1,7 @@
----
-# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-title: "Multinode"
----
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+## Multinode testing and observablity
 
 This is a guide into how a multi-node Vespa cluster works.
-
 It uses three nodes, all configured equally.
 <!-- ToDo: explain the adminserver, what goes there -->
 
@@ -15,9 +12,22 @@ Prerequisites:
 
 <pre>
 $ docker info | grep "Total Memory"
+ Total Memory: 15.64GiB
+
 $ cd sample-apps/operations/multinode
 $ docker network create --driver bridge vespa_net
 </pre>
+
+Ports are mapped out of Docker containers for ease of use / inspect interfaces in this guide:
+<img src="img/multinode-testing.svg" width="330" height="auto" />
+
+Use Docker for Mac dashboard to see output / status:
+![Docker dashboard](img/docker-dashboard-1.png)
+
+Refer to https://github.com/vespa-engine/docker-image/blob/master/Dockerfile, start script in
+https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh
+
+
 
 ### Start 3 nodes
 <pre>
@@ -39,13 +49,8 @@ $ docker run --detach --name node2 --hostname node2.vespa_net \
 </pre>
 
 Notes:
-* Fully qualified hostnames.
+* Use fully qualified hostnames.
 * VESPA_CONFIGSERVERS lists all nodes using exactly the same names
-
-Use Docker for Mac dashboard to see output / status:
-![Docker dashboard](img/docker-dashboard-1.png)
-
-Ports are mapped out of Docker containers for ease of use / inspect interfaces in this guide.
 
 Wait for last config server to start:
 <pre>
@@ -57,26 +62,21 @@ Content-Type: application/json
 Content-Length: 12732
 </pre>
 
-
-Note config server start in Docker image if matches hostname - see  
-https://github.com/vespa-engine/docker-image/blob/master/Dockerfile , start script in
-https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh
-
 Make sure all ports are listed before continuing:
 <pre>
 $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
-tcp46      0      0  *.19050                *.*                    LISTEN     
-tcp46      0      0  *.19051                *.*                    LISTEN     
-tcp46      0      0  *.19052                *.*                    LISTEN     
-tcp46      0      0  *.19071                *.*                    LISTEN     
-tcp46      0      0  *.19072                *.*                    LISTEN     
-tcp46      0      0  *.19073                *.*                    LISTEN     
-tcp46      0      0  *.19092                *.*                    LISTEN     
-tcp46      0      0  *.19093                *.*                    LISTEN     
-tcp46      0      0  *.19094                *.*                    LISTEN     
-tcp46      0      0  *.8080                 *.*                    LISTEN     
-tcp46      0      0  *.8081                 *.*                    LISTEN     
-tcp46      0      0  *.8082                 *.*                    LISTEN   
+tcp46      0      0  *.19050                *.*                    LISTEN
+tcp46      0      0  *.19051                *.*                    LISTEN
+tcp46      0      0  *.19052                *.*                    LISTEN
+tcp46      0      0  *.19071                *.*                    LISTEN
+tcp46      0      0  *.19072                *.*                    LISTEN
+tcp46      0      0  *.19073                *.*                    LISTEN
+tcp46      0      0  *.19092                *.*                    LISTEN
+tcp46      0      0  *.19093                *.*                    LISTEN
+tcp46      0      0  *.19094                *.*                    LISTEN
+tcp46      0      0  *.8080                 *.*                    LISTEN
+tcp46      0      0  *.8081                 *.*                    LISTEN
+tcp46      0      0  *.8082                 *.*                    LISTEN
 </pre>
 
 
@@ -100,7 +100,7 @@ $ curl -s --head http://localhost:8082/ApplicationStatus
 
 
 ### Inspect clustercontroller status pages
-check that this works:
+Check that this works:
 <pre>
 $ curl http://localhost:19050/clustercontroller-status/v1/music
 </pre>
@@ -120,7 +120,7 @@ Then open these in a browser:
 $ docker stop node2
 </pre>
 
-observe in http://localhost:19050/clustercontroller-status/v1/music that 
+Observe in http://localhost:19050/clustercontroller-status/v1/music that
 storage and distributor on node2 go to state down
 
 <pre>
@@ -139,7 +139,7 @@ $ docker stop node0
 
 http://localhost:19050/clustercontroller-status/v1/music now goes blank as node0 is stopped
 
-observe in http://localhost:19051/clustercontroller-status/v1/music that
+Observe in http://localhost:19051/clustercontroller-status/v1/music that
 storage and distributor on node0 go to state down.
 Also see in "Master state" further down that this goes to primary after 60 seconds
 
@@ -147,7 +147,7 @@ Also see in "Master state" further down that this goes to primary after 60 secon
 $ docker start node0
 </pre>
 
-observe 0 is master again
+Observe 0 is master again
 
 
 ### Stop two clustercontrollers
@@ -158,8 +158,7 @@ $ docker stop node0 node1
 http://localhost:19050/clustercontroller-status/v1/music and http://localhost:19050/clustercontroller-status/v1/music
 now goes blank as node0 and node1 are stopped
 
-observe in http://localhost:19052/clustercontroller-status/v1/music that
-this never becomes master!
+Observe in http://localhost:19052/clustercontroller-status/v1/music that this never becomes master!
 To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper-remain-highly-available-if-one-of-three-nodes-fails :
 
 > in a 3 node cluster, if 2 of the nodes die, the third one will not be serving requests.
@@ -171,7 +170,8 @@ To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper
 $ docker start node0 node1
 </pre>
 
-observe 0 is master again
+Observe 0 is master again
+
 
 
 ### Feed data, check distribution
@@ -201,6 +201,7 @@ $ for port in 19092 19093 19094;
 </pre>
 
 
+
 ### Run queries while stopping nodes
 Query any of 8080, 8081 and 8082:
 <pre>
@@ -222,7 +223,7 @@ $ sleep 5
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
-(we now see that the cluster controller is still up, with one)
+(We now see that the cluster controller is still up, with one)
 
 <pre>
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
@@ -284,4 +285,3 @@ the cluster state is not updated, and partial query results is expected.
 
 Pro tip: look at "SSV" which is "cluster state version" in the table -
 this shows the view the content node has of the cluster.
-
