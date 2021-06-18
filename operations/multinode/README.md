@@ -92,6 +92,11 @@ $ (cd src/main/application && zip -r - .) | \
 Using Docker for Mac, we see each Docker container use 2.9G memory, just as part of bootstrap -
 This increases little with use, hence the 16G Docker requirement.
 
+Wait for services to start:
+<pre>
+$ curl -s --head http://localhost:8082/ApplicationStatus
+</pre>
+
 
 
 ### Inspect clustercontroller status pages
@@ -224,4 +229,59 @@ $ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
 ...
 "onlineDocs", "5"
 </pre>
+
+![clustercontroller 1-3](img/clustercontroller-1-3.png)
+
+<pre>
+[2021-06-18 07:57:52.246] WARNING : container-clustercontroller Container.com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler	Fleetcontroller 0: Failed to connect to ZooKeeper at node0.vespa_net:2181,node1.vespa_net:2181,node2.vespa_net:2181 with session timeout 30000: java.lang.NullPointerException
+at org.apache.zookeeper.ClientCnxnSocketNetty.onClosing(ClientCnxnSocketNetty.java:247)
+at org.apache.zookeeper.ClientCnxn$SendThread.close(ClientCnxn.java:1465)
+at org.apache.zookeeper.ClientCnxn.disconnect(ClientCnxn.java:1508)
+at org.apache.zookeeper.ClientCnxn.close(ClientCnxn.java:1537)
+at org.apache.zookeeper.ZooKeeper.close(ZooKeeper.java:1614)
+at com.yahoo.vespa.clustercontroller.core.database.ZooKeeperDatabase.<init>(ZooKeeperDatabase.java:120)
+at com.yahoo.vespa.clustercontroller.core.database.ZooKeeperDatabaseFactory.create(ZooKeeperDatabaseFactory.java:8)
+at com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler.connect(DatabaseHandler.java:197)
+at com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler.doNextZooKeeperTask(DatabaseHandler.java:252)
+at com.yahoo.vespa.clustercontroller.core.FleetController.tick(FleetController.java:604)
+at com.yahoo.vespa.clustercontroller.core.FleetController.run(FleetController.java:1127)
+at java.base/java.lang.Thread.run(Thread.java:829)
+</pre>
+
+
+
+### Single-node clustercontroller
+It is possible to set up clusters with only one clustercontroller - changes:
+<pre>
+&lt;host name="node3.vespa_net"&gt;
+    &lt;alias&gt;node3&lt;/alias&gt;
+&lt;/host&gt;
+
+&lt;admin version='2.0'&gt;
+    &lt;adminserver hostalias="node3" /&gt;
+    &lt;configservers&gt;
+        &lt;configserver hostalias="node0" /&gt;
+        &lt;configserver hostalias="node1" /&gt;
+        &lt;configserver hostalias="node2" /&gt;
+    &lt;/configservers&gt;
+    &lt;cluster-controllers standalone-zookeeper="true"&gt;
+        &lt;cluster-controller hostalias="node3" /&gt;
+    &lt;/cluster-controllers&gt;
+&lt;/admin&gt;
+
+$ docker run --detach --name node3 --hostname node3.vespa_net \
+    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    --network vespa_net \
+    --publish 8083:8080 --publish 19074:19071 --publish 19053:19050 --publish 19095:19092 \
+    vespaengine/vespa services
+</pre>
+
+Here, two content nodes, like node0 and node1, can go down while node2 serves the full data set in queries.
+
+The cluster controller can also go down with no impact to query serving, assuming all content nodes do not change state.
+I.e. if the single clustercontroller is down, and one content node goes down thereafter,
+the cluster state is not updated, and partial query results is expected.
+
+Pro tip: look at "SSV" which is "cluster state version" in the table -
+this shows the view the content node has of the cluster.
 
