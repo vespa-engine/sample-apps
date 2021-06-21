@@ -170,7 +170,11 @@ schema doc {
 
     rank-profile term_count_similarity {
         first-phase {
-            expression: 1 - fabs( attribute(term_count) - query(q_term_count) ) / (1 + attribute(term_count) + query(q_term_count))
+            expression {
+                1 -
+                fabs(    attribute(term_count) - query(q_term_count) ) /
+                    (1 + attribute(term_count) + query(q_term_count) )
+            }
         }
         summary-features {
             attribute(term_count)
