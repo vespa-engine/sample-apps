@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa">
+
+    <container id="default" version="1.0">
+        <document-processing>
+            <chain id="default" >
+                <documentprocessor id="ai.vespa.example.searchsuggest.QueryDocumentProcessor" bundle="search-suggestion">
+                    <config name="ai.vespa.example.searchsuggest.blocklist">
+                        <blocklist>
+                            <item>chimpanzee</item> <!--examples of words to block-->
+                            <item>gorilla</item>
+                            <item>orangutan</item>
+                        </blocklist>
+                    </config>
+                </documentprocessor> 
+            </chain>
+        </document-processing>
+        <search/>
+        <document-api/>
+        <handler id="ai.vespa.example.searchsuggest.SiteHandler" bundle="search-suggestion"> <!--front end-->
+            <binding>http://*/site/*</binding>
+            <binding>http://*/site</binding>
+            <config name="ai.vespa.example.searchsuggest.site-handler">
+                <vespaHostName>localhost</vespaHostName>
+                <vespaHostPort>8080</vespaHostPort>
+            </config>
+        </handler>
+        <nodes count="[2,3]">
+            <resources vcpu="2.0" memory="8Gb" disk="50Gb"/>
+        </nodes>
+    </container>
+
+    <content id="documentation" version="1.0">
+        <redundancy>2</redundancy>
+        <documents>
+            <document mode="streaming" type="query"/>
+            <document mode="streaming" type="term"/>
+        </documents>
+        <nodes count="[2,3]">
+            <resources vcpu="2.0" memory="8Gb" disk="50Gb"/>
+        </nodes>
+    </content>
+
+</services>
