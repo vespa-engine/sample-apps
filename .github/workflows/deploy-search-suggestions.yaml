@@ -11,7 +11,7 @@ on:
     paths: ['incremental-search/search-suggestions/**']
 
 env:
-  VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY: ${{ secrets.VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY }}
+  VESPA_TEAM_SEARCH_SUGGESTION_API_KEY: ${{ secrets.VESPA_TEAM_SEARCH_SUGGESTION_API_KEY }}
 
 jobs:
   deploy:
@@ -30,7 +30,7 @@ jobs:
     # Find Vespa version of current production deployment
     - name: Find compile version
       working-directory: ./incremental-search/search-suggestions
-      run: mvn -B clean vespa:compileVersion -DapiKey="${VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY}"
+      run: mvn -B clean vespa:compileVersion -DapiKey="${VESPA_TEAM_SEARCH_SUGGESTION_API_KEY}"
     
     # Build the application package and the tester bundle
     - name: Build with Maven
@@ -47,4 +47,4 @@ jobs:
            -Dcommit="$(git rev-parse HEAD)" \
            -DauthorEmail="$(git log -1 --format=%aE)" \
            -DsourceUrl=$(git config --get remote.origin.url) \
-           -DapiKey="${VESPA_TEAM_VESPACLOUD_DOCSEARCH_API_KEY}"
+           -DapiKey="${VESPA_TEAM_SEARCH_SUGGESTION_API_KEY}"
