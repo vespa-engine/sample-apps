@@ -31,7 +31,7 @@ $ mv ../../../documentation/open_index.json ./
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run -m 6G --detach --name vespa --hostname vespa-example \
+$ docker run --detach --name vespa --hostname vespa-example \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
