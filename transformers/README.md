@@ -3,7 +3,7 @@
 # Vespa sample application - Transformers
 
 This sample application is a small example of using Transformers for ranking
-using a small sample from the MS MARCO data set.
+using a small sample from the MS MARCO data set. See also the more comprehensive [MS Marco Ranking sample app](../msmarco-ranking/).
 
 
 **Clone the sample:**
