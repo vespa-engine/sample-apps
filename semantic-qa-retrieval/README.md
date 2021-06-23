@@ -5,6 +5,8 @@
 This sample application contains code, document schema and dependencies for running 
 examples from https://docs.vespa.ai/en/semantic-qa-retrieval.html.
 
+See also the more comprehensive [question answering sample app](../dense-passage-retrieval-with-ann/).
+
 The sample application uses Vespa's
 [Approximate Nearest Neighbor Search](https://docs.vespa.ai/en/approximate-nn-hnsw.html) support.
  
