@@ -9,7 +9,7 @@
 
 ## [News search and recommendation tutorial](news)
 
-This is the sample application used in the [Vespa tutorial](https://docs.vespa.ai/en/tutorials/news-1-getting-started.html). Please follow the tutorial. This application demonstrates basic search functionality. It also demonstrates how to build a recommendation system where approximate nearest neighbor search in a shared user/item embedding space is used to retrieve recommended content for a user.This sample app also demonstrate using parent-child relationships. 
+This is the sample application used in the [Vespa tutorial](https://docs.vespa.ai/en/tutorials/news-1-getting-started.html). Please follow the tutorial. This application demonstrates basic search functionality. It also demonstrates how to build a recommendation system where approximate nearest neighbor search in a shared user/item embedding space is used to retrieve recommended content for a user. This sample app also demonstrates use of parent-child relationships. 
 
 ### [Basic album-recommendation](album-recommendation-selfhosted)
 
@@ -28,11 +28,11 @@ The document ranking part of the sample app uses a trained LTR (Learning to rank
 
 ## [Next generation E-Commerce Search](use-case-shopping)
 
-Create an end-to-end E-Commerce shopping engine using [use-case-shopping](use-case-shopping). This use case also bundles front-end application. It uses the  [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links.html). It demonstrates building next generation E-commerce Search using Vespa. 
+Create an end-to-end E-Commerce shopping engine using [use-case-shopping](use-case-shopping). This use case also bundles a frontend application. It uses the  [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links.html). It demonstrates building next generation E-commerce Search using Vespa. 
 
 ## [State of the art Question Answering](dense-passage-retrieval-with-ann)
 
-This sample application demonstrate end to end question answering using Faceboook's DPR models (Dense passage Retriever for Question Answering). It using Vespa's approximate nearest neighbor search to efficiently retrieve text passages from a Wikipedia based collection of 21M passages.  A BERT based reader components reads the top ranking passages and produces the textual answer to the question.  See also [Efficient Open Domain Question Answering with Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/) and [Scaling Question Answering with Vespa](https://blog.vespa.ai/from-research-to-production-scaling-a-state-of-the-art-machine-learning-system/).
+This sample application demonstrates end to end question answering using Faceboook's DPR models (Dense passage Retriever for Question Answering). It is using Vespa's approximate nearest neighbor search to efficiently retrieve text passages from a Wikipedia based collection of 21M passages. A BERT based reader component reads the top ranking passages and produces the textual answer to the question.  See also [Efficient Open Domain Question Answering with Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/) and [Scaling Question Answering with Vespa](https://blog.vespa.ai/from-research-to-production-scaling-a-state-of-the-art-machine-learning-system/).
 
 ## [Question Answering with Vector Search](semantic-qa-retrieval)
 
@@ -40,7 +40,7 @@ This sample application focus on retrieval for question answering but without th
 
 ## [Search as you type and search suggest](incremental-search)
 
-This sample application demonstrates search as you type where for each key stroke of the user we retrieve the best matching documents. It also demonstrate search suggestions (query autocompletion). 
+This sample application demonstrates search-as-you-type where for each keystroke of the user, we retrieve the best matching documents. It also demonstrates search suggestions (query autocompletion). 
 
 # Sample applications
 
@@ -48,16 +48,16 @@ These sample application demonstrates various Vespa features and capabilities.
 
 ## [Vespa as ML inference server (model-evaluation)](model-evaluation)
 
-A sample Vespa application which demonstrates using Vespa as a stateless ML model inference server where Vespa takes care of distributing ML models to multiple serving containers offering horisontal scaling and safe deployment. Model versioning and feature processing pipeline. Stateless ML model serving can also be used in state-of-the-art retrieval and ranking pipelines. For example query classification and encoding text queries to dense vector representation for efficient retrieval using Vespa's approximate nearest neighbor search. 
+A sample Vespa application which demonstrates using Vespa as a stateless ML model inference server where Vespa takes care of distributing ML models to multiple serving containers offering horisontal scaling and safe deployment. Model versioning and feature processing pipeline. Stateless ML model serving can also be used in state-of-the-art retrieval and ranking pipelines, e.g. query classification and encoding text queries to dense vector representation for efficient retrieval using Vespa's approximate nearest neighbor search. 
 
 ## [Vespa grouping and facets for organizing results ](part-purchases-demo)
 
-A sample application which demonstrate Vespa grouping and faceting for query time result analytics. [Vespa grouping documentation](https://docs.vespa.ai/en/grouping.html)
+A sample application demonstrating Vespa grouping and faceting for query time result analytics. [Vespa grouping documentation](https://docs.vespa.ai/en/grouping.html)
 
 ## [Vespa predicate fields](boolean-search)
 
 A sample app which demonstrates how to use Vespa's **predicate** field type to implement indexing of boolean expressions.
-Boolean document side constraints allows the document to specifiy which type of queries it can be retrieved for. For example this allows expressing logic like _"this document should only be visible in search for readers in age range 20 to 30"_ or "This product should only be visible in search during campaign hours". 
+Boolean document side constraints allows the document to specifiy which type of queries it can be retrieved for. This allows expressing logic like _"this document should only be visible in search for readers in age range 20 to 30"_ or "This product should only be visible in search during campaign hours". 
 
 # Self-hosted Deployments
 
@@ -67,7 +67,7 @@ This sample application demonstrates deploying a simple Vespa application on Kub
 
 ## [Vespa on Docker Swarm](basic-search-on-docker-swarm)
 
-This sample application demonstrates deploying a simple Vespa application using Docker Swarm
+This sample application demonstrates deploying a simple Vespa application using Docker Swarm.
 
 ## [Vespa metrics and monitoring](album-recommendation-monitoring)
 
@@ -77,7 +77,7 @@ This sample app demonstrates how to integrate Vespa with **Prometheus and Grafan
 
 ## [Vespa custom linguistics Integration](vespa-chinese-linguistics)
 
-This application demonstrates integrating custom linguistic processing. In this case a Chinese tokenizer ([Jieba](https://github.com/fxsjy/jieba)).
+This application demonstrates integrating custom linguistic processing, in this case a Chinese tokenizer ([Jieba](https://github.com/fxsjy/jieba)).
 
 ## [Vespa custom HTTP api using request handlers and processors](http-api-using-request-handlers-and-processors)
 
