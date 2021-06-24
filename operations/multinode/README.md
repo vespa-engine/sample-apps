@@ -80,33 +80,33 @@ Wait for last config server to start:
 $ curl -s --head http://localhost:19073/ApplicationStatus
 </pre>
 
-> HTTP/1.1 200 OK
-> Date: Thu, 17 Jun 2021 11:26:19 GMT
-> Content-Type: application/json
-> Content-Length: 12732
+    HTTP/1.1 200 OK
+    Date: Thu, 17 Jun 2021 11:26:19 GMT
+    Content-Type: application/json
+    Content-Length: 12732
 
 Make sure all ports are listed before continuing:
 <pre data-test="exec">
 $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
 </pre>
 
-> tcp46      0      0  *.19050                *.*                    LISTEN
-> tcp46      0      0  *.19051                *.*                    LISTEN
-> tcp46      0      0  *.19052                *.*                    LISTEN
-> tcp46      0      0  *.19071                *.*                    LISTEN
-> tcp46      0      0  *.19072                *.*                    LISTEN
-> tcp46      0      0  *.19073                *.*                    LISTEN
-> tcp46      0      0  *.19092                *.*                    LISTEN
-> tcp46      0      0  *.19093                *.*                    LISTEN
-> tcp46      0      0  *.19094                *.*                    LISTEN
-> tcp46      0      0  *.8080                 *.*                    LISTEN
-> tcp46      0      0  *.8081                 *.*                    LISTEN
-> tcp46      0      0  *.8082                 *.*                    LISTEN
+    tcp46      0      0  *.19050                *.*                    LISTEN
+    tcp46      0      0  *.19051                *.*                    LISTEN
+    tcp46      0      0  *.19052                *.*                    LISTEN
+    tcp46      0      0  *.19071                *.*                    LISTEN
+    tcp46      0      0  *.19072                *.*                    LISTEN
+    tcp46      0      0  *.19073                *.*                    LISTEN
+    tcp46      0      0  *.19092                *.*                    LISTEN
+    tcp46      0      0  *.19093                *.*                    LISTEN
+    tcp46      0      0  *.19094                *.*                    LISTEN
+    tcp46      0      0  *.8080                 *.*                    LISTEN
+    tcp46      0      0  *.8081                 *.*                    LISTEN
+    tcp46      0      0  *.8082                 *.*                    LISTEN
 
 
 
 ## Deploy a 3-node Vespa application
-<pre>
+<pre data-test-assert-contains="prepared and activated.">
 $ (cd src/main/application && zip -r - .) | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
@@ -115,7 +115,7 @@ $ (cd src/main/application && zip -r - .) | \
 Using Docker for Mac, observe each Docker container uses 2.9G memory, just as part of bootstrap -
 This increases little with use, hence the 16G Docker requirement in this guide.
 Wait for services to start:
-<pre>
+<pre data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8082/ApplicationStatus
 </pre>
 
@@ -123,7 +123,7 @@ $ curl -s --head http://localhost:8082/ApplicationStatus
 
 ## Clustercontroller status pages
 Check that this works:
-<pre>
+<pre data-test-assert-contains="Status Page">
 $ curl http://localhost:19050/clustercontroller-status/v1/music
 </pre>
 Then open these in a browser:
@@ -221,7 +221,7 @@ Observe 0 is master again.
 
 ## Feed data, check distribution
 Make sure the three nodes are started and up - then feed 5 documents:
-<pre>
+<pre data-test-assert-contains="id:mynamespace:music::4">
 $ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources);
     do curl -H Content-Type:application/json -d @../../album-recommendation-selfhosted/src/test/resources/$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
@@ -230,14 +230,14 @@ $ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources)
 </pre>
 
 Use [vespa-visit](https://docs.vespa.ai/en/content/visiting.html) to validate all documents are fed:
-<pre>
+<pre data-test-assert-contains="id:mynamespace:music::4">
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 </pre>
 
 The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
 i.e. one replica per node.
 Using [Vespa metrics](https://docs.vespa.ai/en/reference/metrics.html), expect 5 documents per node:
-<pre>
+<pre data-test-assert-contains="content.proton.documentdb.documents.total.last">
 $ for port in 19092 19093 19094;
     do curl -s http://localhost:$port/metrics/v1/values | \
     jq '.services[] | select (.name=="vespa.searchnode") | .metrics[].values' | \
@@ -249,7 +249,7 @@ $ for port in 19092 19093 19094;
 
 ## Run queries while stopping nodes
 Query any of the nodes using 8080, 8081 or 8082 - this query selects _all_ documents:
-<pre>
+<pre data-test-assert-contains='{"totalCount":5}'>
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
@@ -260,7 +260,7 @@ $ sleep 5
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
-See _"{"totalCount":5}"_. Then stop node1:
+See _{"totalCount":5}_. Then stop node1:
 <pre>
 $ docker stop node1
 $ sleep 5
