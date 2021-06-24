@@ -29,9 +29,11 @@ by the Vespa clustercontrollers. Summary:
 ## Example cluster setup
 Prerequisites:
 * Docker with 16G Memory
+* Git
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/operations/multinode
 $ docker network create --driver bridge vespa_net
 </pre>
