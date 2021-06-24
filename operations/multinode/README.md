@@ -30,10 +30,8 @@ by the Vespa clustercontrollers. Summary:
 Prerequisites:
 * Docker with 16G Memory
 
-<pre>
+<pre data-test="exec">
 $ docker info | grep "Total Memory"
- Total Memory: 15.64GiB
-
 $ cd sample-apps/operations/multinode
 $ docker network create --driver bridge vespa_net
 </pre>
@@ -53,7 +51,7 @@ to understand how Vespa is started in a Docker container using the _vespaengine/
 
 
 ## Start 3 nodes
-<pre>
+<pre data-test="exec">
 $ docker run --detach --name node0 --hostname node0.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
@@ -76,32 +74,32 @@ Notes:
 * VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](src/main/application/hosts.xml)
 
 Wait for last config server to start:
-<pre>
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:19073/ApplicationStatus
-
-HTTP/1.1 200 OK
-Date: Thu, 17 Jun 2021 11:26:19 GMT
-Content-Type: application/json
-Content-Length: 12732
 </pre>
+
+> HTTP/1.1 200 OK
+> Date: Thu, 17 Jun 2021 11:26:19 GMT
+> Content-Type: application/json
+> Content-Length: 12732
 
 Make sure all ports are listed before continuing:
-<pre>
+<pre data-test="exec">
 $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
-
-tcp46      0      0  *.19050                *.*                    LISTEN
-tcp46      0      0  *.19051                *.*                    LISTEN
-tcp46      0      0  *.19052                *.*                    LISTEN
-tcp46      0      0  *.19071                *.*                    LISTEN
-tcp46      0      0  *.19072                *.*                    LISTEN
-tcp46      0      0  *.19073                *.*                    LISTEN
-tcp46      0      0  *.19092                *.*                    LISTEN
-tcp46      0      0  *.19093                *.*                    LISTEN
-tcp46      0      0  *.19094                *.*                    LISTEN
-tcp46      0      0  *.8080                 *.*                    LISTEN
-tcp46      0      0  *.8081                 *.*                    LISTEN
-tcp46      0      0  *.8082                 *.*                    LISTEN
 </pre>
+
+> tcp46      0      0  *.19050                *.*                    LISTEN
+> tcp46      0      0  *.19051                *.*                    LISTEN
+> tcp46      0      0  *.19052                *.*                    LISTEN
+> tcp46      0      0  *.19071                *.*                    LISTEN
+> tcp46      0      0  *.19072                *.*                    LISTEN
+> tcp46      0      0  *.19073                *.*                    LISTEN
+> tcp46      0      0  *.19092                *.*                    LISTEN
+> tcp46      0      0  *.19093                *.*                    LISTEN
+> tcp46      0      0  *.19094                *.*                    LISTEN
+> tcp46      0      0  *.8080                 *.*                    LISTEN
+> tcp46      0      0  *.8081                 *.*                    LISTEN
+> tcp46      0      0  *.8082                 *.*                    LISTEN
 
 
 
@@ -321,3 +319,11 @@ Here, two content nodes, like node0 and node1, can go down while node2 serves th
 The clustercontroller can also go down with no impact to query serving, assuming all content nodes do not change state.
 I.e. if the single clustercontroller is down, and one content node goes down thereafter,
 the cluster state is not updated, and partial query results is expected.
+
+
+
+## Clean up after testing
+<pre data-test="after">
+$ docker rm -f node0 node1 node2
+$ docker network rm vespa_net
+</pre>
