@@ -80,28 +80,28 @@ Wait for last config server to start:
 $ curl -s --head http://localhost:19073/ApplicationStatus
 </pre>
 
-> HTTP/1.1 200 OK
-> Date: Thu, 17 Jun 2021 11:26:19 GMT
-> Content-Type: application/json
-> Content-Length: 12732
+    HTTP/1.1 200 OK
+    Date: Thu, 17 Jun 2021 11:26:19 GMT
+    Content-Type: application/json
+    Content-Length: 12732
 
 Make sure all ports are listed before continuing:
 <pre data-test="exec">
 $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
 </pre>
 
-> tcp46      0      0  *.19050                *.*                    LISTEN
-> tcp46      0      0  *.19051                *.*                    LISTEN
-> tcp46      0      0  *.19052                *.*                    LISTEN
-> tcp46      0      0  *.19071                *.*                    LISTEN
-> tcp46      0      0  *.19072                *.*                    LISTEN
-> tcp46      0      0  *.19073                *.*                    LISTEN
-> tcp46      0      0  *.19092                *.*                    LISTEN
-> tcp46      0      0  *.19093                *.*                    LISTEN
-> tcp46      0      0  *.19094                *.*                    LISTEN
-> tcp46      0      0  *.8080                 *.*                    LISTEN
-> tcp46      0      0  *.8081                 *.*                    LISTEN
-> tcp46      0      0  *.8082                 *.*                    LISTEN
+    tcp46      0      0  *.19050                *.*                    LISTEN
+    tcp46      0      0  *.19051                *.*                    LISTEN
+    tcp46      0      0  *.19052                *.*                    LISTEN
+    tcp46      0      0  *.19071                *.*                    LISTEN
+    tcp46      0      0  *.19072                *.*                    LISTEN
+    tcp46      0      0  *.19073                *.*                    LISTEN
+    tcp46      0      0  *.19092                *.*                    LISTEN
+    tcp46      0      0  *.19093                *.*                    LISTEN
+    tcp46      0      0  *.19094                *.*                    LISTEN
+    tcp46      0      0  *.8080                 *.*                    LISTEN
+    tcp46      0      0  *.8081                 *.*                    LISTEN
+    tcp46      0      0  *.8082                 *.*                    LISTEN
 
 
 
