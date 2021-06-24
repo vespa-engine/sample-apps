@@ -2,7 +2,7 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-# Multinode testing and observablity
+# Multinode testing and observability
 
 This is a guide into some aspects of how a multi-node Vespa cluster works.
 This example uses three nodes, all configured equally.
