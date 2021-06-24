@@ -185,7 +185,7 @@ By default, clustercontrollers use a ZooKeeper cluster running on the config ser
 
 <img src="img/multinode-zk.svg" width="295" height="auto" />
 
-With config servier on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
+With config server on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
 the clustercontrollers will not update the cluster state.
 This can be observed on node2's clustercontroller status page,
 where the current cluster state lags what node2's clustercontroller is observing
