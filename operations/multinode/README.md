@@ -1,12 +1,29 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 ## Multinode testing and observablity
 
-This is a guide into how a multi-node Vespa cluster works.
-It uses three nodes, all configured equally.
-<!-- ToDo: explain the adminserver, what goes there -->
+This is a guide into some aspects of how a multi-node Vespa cluster works.
+This example uses three nodes, all configured equally.
+Note that this is not the setup one normally will use,
+Config servers are most often run on separate nodes,
+this guide will help understand why, and alternatives.
 
-The nodes communicate over a Docker network
+The guide goes through the use of [Apache ZooKeeper](https://zookeeper.apache.org/)
+by the Vespa clustercontrollers. Summary:
 
+* Clustercontrollers manage content node states
+* Clustercontrollers use ZooKeeper to coordinate and save the _cluster state_
+* By default, the ZooKeeper cluster runs on config servers
+* As the ZooKeeper quorum requires minimum two nodes up,
+  content node state changes will not be distributed in case of only one config server up
+* When content nodes do not get cluster state updates,
+  replicas are [not activated](https://docs.vespa.ai/en/proton.html#sub-databases) for queries,
+  causing partial query results.
+  In order to avoid duplicates, only _one_ bucket of documents are _active_ -
+  the other replicas are _not active_ for queries.
+
+
+
+### Example cluster setup
 Prerequisites:
 * Docker with 16G Memory
 
@@ -18,14 +35,17 @@ $ cd sample-apps/operations/multinode
 $ docker network create --driver bridge vespa_net
 </pre>
 
-Ports are mapped out of Docker containers for ease of use / inspect interfaces in this guide:
+The nodes communicate over a Docker network, this guide stops docker containers to simulate node stops.
+Ports are mapped out of Docker containers for ease of use / inspect interfaces:
+
 <img src="img/multinode-testing.svg" width="330" height="auto" />
 
 Use Docker for Mac dashboard to see output / status:
 ![Docker dashboard](img/docker-dashboard-1.png)
 
-Refer to https://github.com/vespa-engine/docker-image/blob/master/Dockerfile, start script in
-https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh
+Also refer to https://github.com/vespa-engine/docker-image/blob/master/Dockerfile, start script in
+https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh,
+to understand how Vespa is started in a Docker container using the _vespaengine/vespa_ image.
 
 
 
@@ -50,7 +70,7 @@ $ docker run --detach --name node2 --hostname node2.vespa_net \
 
 Notes:
 * Use fully qualified hostnames.
-* VESPA_CONFIGSERVERS lists all nodes using exactly the same names
+* VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](src/main/application/hosts.xml)
 
 Wait for last config server to start:
 <pre>
@@ -82,16 +102,14 @@ tcp46      0      0  *.8082                 *.*                    LISTEN
 
 
 ### Deploy a 3-node Vespa application
-
 <pre>
 $ (cd src/main/application && zip -r - .) | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-Using Docker for Mac, we see each Docker container use 2.9G memory, just as part of bootstrap -
-This increases little with use, hence the 16G Docker requirement.
-
+Using Docker for Mac, observe each Docker container use 2.9G memory, just as part of bootstrap -
+This increases little with use, hence the 16G Docker requirement in this guide.
 Wait for services to start:
 <pre>
 $ curl -s --head http://localhost:8082/ApplicationStatus
@@ -99,7 +117,7 @@ $ curl -s --head http://localhost:8082/ApplicationStatus
 
 
 
-### Inspect clustercontroller status pages
+### Clustercontroller status pages
 Check that this works:
 <pre>
 $ curl http://localhost:19050/clustercontroller-status/v1/music
@@ -109,7 +127,7 @@ Then open these in a browser:
 * http://localhost:19051/clustercontroller-status/v1/music 
 * http://localhost:19052/clustercontroller-status/v1/music 
 
-0 is normally master, 1 is next (and hence has a table), 2 is cold
+0 is normally master, 1 is next (and hence has an overview table), 2 is cold
 
 ![clustercontroller](img/clustercontroller-1.png)
 
@@ -119,15 +137,13 @@ Then open these in a browser:
 <pre>
 $ docker stop node2
 </pre>
-
-Observe in http://localhost:19050/clustercontroller-status/v1/music that
-storage and distributor on node2 go to state down
-
+Observe at http://localhost:19050/clustercontroller-status/v1/music that
+storage and distributor on node2 go to state down, then start is again:
 <pre>
 $ docker start node2
 </pre>
 
-Then observe in http://localhost:19050/clustercontroller-status/v1/music that
+Observe at http://localhost:19050/clustercontroller-status/v1/music that
 storage and distributor nodes go to state up again (this can take a minute or two on slower HW).
 
 
@@ -136,29 +152,27 @@ storage and distributor nodes go to state up again (this can take a minute or tw
 <pre>
 $ docker stop node0
 </pre>
+http://localhost:19050/clustercontroller-status/v1/music now goes blank as node0 is stopped.
 
-http://localhost:19050/clustercontroller-status/v1/music now goes blank as node0 is stopped
-
-Observe in http://localhost:19051/clustercontroller-status/v1/music that
+Observe at http://localhost:19051/clustercontroller-status/v1/music that
 storage and distributor on node0 go to state down.
-Also see in "Master state" further down that this goes to primary after 60 seconds
+Also see in "Master state" further down that this goes to primary after 60 seconds.
 
 <pre>
 $ docker start node0
 </pre>
-
 Observe 0 is master again
+
 
 
 ### Stop two clustercontrollers
 <pre>
 $ docker stop node0 node1
 </pre>
-
 http://localhost:19050/clustercontroller-status/v1/music and http://localhost:19050/clustercontroller-status/v1/music
-now goes blank as node0 and node1 are stopped
+now goes blank as node0 and node1 are stopped.
 
-Observe in http://localhost:19052/clustercontroller-status/v1/music that this never becomes master!
+Observe at http://localhost:19052/clustercontroller-status/v1/music that node2 never becomes master!
 To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper-remain-highly-available-if-one-of-three-nodes-fails :
 
 > in a 3 node cluster, if 2 of the nodes die, the third one will not be serving requests.
@@ -166,72 +180,15 @@ To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper
 > or if it has been partitioned off from others.
 > Continuing to serve request at that point could cause a split brain scenario and violate the core ZooKeeper guarantee.
 
-<pre>
-$ docker start node0 node1
-</pre>
+By default, clustercontrollers use a ZooKeeper cluster running on the config servers:
 
-Observe 0 is master again
+<img src="img/multinode-zk.svg" width="295" height="auto" />
 
-
-
-### Feed data, check distribution
-Make sure the three nodes are started and up - then feed 5 documents:
-<pre>
-$ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources);
-    do curl -H Content-Type:application/json -d @../../album-recommendation-selfhosted/src/test/resources/$doc \
-    http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
-    i=$(($i + 1)); echo;
-    done
-</pre>
-The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
-i.e. one replica per node.
-
-List document IDs:
-<pre>
-$ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
-</pre>
-
-[vespa-visit](https://docs.vespa.ai/en/content/visiting.html) uses all nodes -
-with redundancy=3, expect 5 documents per node:
-<pre>
-$ for port in 19092 19093 19094;
-    do curl -s http://localhost:$port/metrics/v1/values | \
-    jq '.services[] | select (.name=="vespa.searchnode") | .metrics[].values' | grep content.proton.documentdb.documents.total.last;
-    done
-</pre>
-
-
-
-### Run queries while stopping nodes
-Query any of 8080, 8081 and 8082:
-<pre>
-$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
-</pre>
-
-Check http://localhost:19050/clustercontroller-status/v1/music, set node2 down:
-<pre>
-$ docker stop node2
-$ sleep 5
-$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
-</pre>
-
-See "{"totalCount":5}". Then stop node1:
-
-<pre>
-$ docker stop node1
-$ sleep 5
-$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
-</pre>
-
-(We now see that the cluster controller is still up, with one)
-
-<pre>
-$ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
-...
-"onlineDocs", "5"
-</pre>
-
-![clustercontroller 1-3](img/clustercontroller-1-3.png)
+With node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken,
+so the clustercontrollers will not update the cluster state.
+This can be observed on node2's clustercontroller status page,
+where to current cluster state lags what node2's clustercontroller is observing
+(but cannot write to ZooKeeper):
 
 <pre>
 [2021-06-18 07:57:52.246] WARNING : container-clustercontroller Container.com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler	Fleetcontroller 0: Failed to connect to ZooKeeper at node0.vespa_net:2181,node1.vespa_net:2181,node2.vespa_net:2181 with session timeout 30000: java.lang.NullPointerException
@@ -248,6 +205,77 @@ at com.yahoo.vespa.clustercontroller.core.FleetController.tick(FleetController.j
 at com.yahoo.vespa.clustercontroller.core.FleetController.run(FleetController.java:1127)
 at java.base/java.lang.Thread.run(Thread.java:829)
 </pre>
+
+<pre>
+$ docker start node0 node1
+</pre>
+Observe 0 is master again.
+
+
+
+### Feed data, check distribution
+Make sure the three nodes are started and up - then feed 5 documents:
+<pre>
+$ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources);
+    do curl -H Content-Type:application/json -d @../../album-recommendation-selfhosted/src/test/resources/$doc \
+    http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
+    i=$(($i + 1)); echo;
+    done
+</pre>
+The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
+i.e. one replica per node. List document IDs:
+<pre>
+$ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
+</pre>
+
+[vespa-visit](https://docs.vespa.ai/en/content/visiting.html) uses all nodes -
+with redundancy=3, expect 5 documents per node:
+<pre>
+$ for port in 19092 19093 19094;
+    do curl -s http://localhost:$port/metrics/v1/values | \
+    jq '.services[] | select (.name=="vespa.searchnode") | .metrics[].values' | \
+    grep content.proton.documentdb.documents.total.last;
+    done
+</pre>
+
+
+
+### Run queries while stopping nodes
+Query any of 8080, 8081 and 8082 - this query selects _all_ documents:
+<pre>
+$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+</pre>
+
+Check http://localhost:19050/clustercontroller-status/v1/music, set node2 down:
+<pre>
+$ docker stop node2
+$ sleep 5
+$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+</pre>
+
+See "{"totalCount":5}". Then stop node1:
+<pre>
+$ docker stop node1
+$ sleep 5
+$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+</pre>
+
+We now see that the last clustercontroller is still up.
+Count documents on the content node:
+<pre>
+$ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
+...
+"onlineDocs", "5"
+</pre>
+
+However, query results are partial, 5 documents are **not** returned.
+Look at "SSV" which is "cluster state version" in the table -
+this shows the view the content node has of the cluster:
+
+![clustercontroller 1-3](img/clustercontroller-1-3.png)
+
+Compare this with the state changes in the table below, find a higher state number,
+which is not yet published due to missing quorum.
 
 
 
@@ -279,9 +307,6 @@ $ docker run --detach --name node3 --hostname node3.vespa_net \
 
 Here, two content nodes, like node0 and node1, can go down while node2 serves the full data set in queries.
 
-The cluster controller can also go down with no impact to query serving, assuming all content nodes do not change state.
+The clustercontroller can also go down with no impact to query serving, assuming all content nodes do not change state.
 I.e. if the single clustercontroller is down, and one content node goes down thereafter,
 the cluster state is not updated, and partial query results is expected.
-
-Pro tip: look at "SSV" which is "cluster state version" in the table -
-this shows the view the content node has of the cluster.
