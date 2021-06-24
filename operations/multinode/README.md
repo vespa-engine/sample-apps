@@ -2,7 +2,7 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-## Multinode testing and observablity
+# Multinode testing and observablity
 
 This is a guide into some aspects of how a multi-node Vespa cluster works.
 This example uses three nodes, all configured equally.
@@ -26,7 +26,7 @@ by the Vespa clustercontrollers. Summary:
 
 
 
-### Example cluster setup
+## Example cluster setup
 Prerequisites:
 * Docker with 16G Memory
 
@@ -52,7 +52,7 @@ to understand how Vespa is started in a Docker container using the _vespaengine/
 
 
 
-### Start 3 nodes
+## Start 3 nodes
 <pre>
 $ docker run --detach --name node0 --hostname node0.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
@@ -105,7 +105,7 @@ tcp46      0      0  *.8082                 *.*                    LISTEN
 
 
 
-### Deploy a 3-node Vespa application
+## Deploy a 3-node Vespa application
 <pre>
 $ (cd src/main/application && zip -r - .) | \
   curl --header Content-Type:application/zip --data-binary @- \
@@ -121,7 +121,7 @@ $ curl -s --head http://localhost:8082/ApplicationStatus
 
 
 
-### Clustercontroller status pages
+## Clustercontroller status pages
 Check that this works:
 <pre>
 $ curl http://localhost:19050/clustercontroller-status/v1/music
@@ -137,7 +137,7 @@ Then open these in a browser:
 
 
 
-### Do a node stop / start and observe changes to cluster state
+## Do a node stop / start and observe changes to cluster state
 <pre>
 $ docker stop node2
 </pre>
@@ -152,7 +152,7 @@ storage and distributor go to state up again (this can take a minute or two).
 
 
 
-### Stop / start primary clustercontroller
+## Stop / start primary clustercontroller
 <pre>
 $ docker stop node0
 </pre>
@@ -169,7 +169,7 @@ Observe 0 is master again
 
 
 
-### Stop two clustercontrollers
+## Stop two clustercontrollers
 <pre>
 $ docker stop node0 node1
 </pre>
@@ -219,7 +219,7 @@ Observe 0 is master again.
 
 
 
-### Feed data, check distribution
+## Feed data, check distribution
 Make sure the three nodes are started and up - then feed 5 documents:
 <pre>
 $ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources);
@@ -247,7 +247,7 @@ $ for port in 19092 19093 19094;
 
 
 
-### Run queries while stopping nodes
+## Run queries while stopping nodes
 Query any of the nodes using 8080, 8081 or 8082 - this query selects _all_ documents:
 <pre>
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
@@ -290,7 +290,7 @@ due to missing ZooKeeper quorum.
 
 
 
-### Single-node clustercontroller
+## Single-node clustercontroller
 It is possible to set up clusters with only one clustercontroller - changes:
 <pre>
 &lt;host name="node3.vespa_net"&gt;
