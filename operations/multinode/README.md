@@ -4,17 +4,17 @@
 This is a guide into some aspects of how a multi-node Vespa cluster works.
 This example uses three nodes, all configured equally.
 Note that this is not the setup one normally will use,
-Config servers are most often run on separate nodes,
+config servers are most often run on separate nodes,
 this guide will help understand why, and alternatives.
 
 The guide goes through the use of [Apache ZooKeeper](https://zookeeper.apache.org/)
 by the Vespa clustercontrollers. Summary:
 
-* Clustercontrollers manage content node states
-* Clustercontrollers use ZooKeeper to coordinate and save the _cluster state_
-* By default, the ZooKeeper cluster runs on config servers
+* Clustercontrollers manage content node states.
+* Clustercontrollers use ZooKeeper to coordinate and save the _cluster state_.
+* By default, the ZooKeeper cluster runs on config servers.
 * As the ZooKeeper quorum requires minimum two nodes up,
-  content node state changes will not be distributed in case of only one config server up
+  content node state changes will not be distributed in case of only one config server up.
 * When content nodes do not get cluster state updates,
   replicas are [not activated](https://docs.vespa.ai/en/proton.html#sub-databases) for queries,
   causing partial query results.
@@ -85,6 +85,7 @@ Content-Length: 12732
 Make sure all ports are listed before continuing:
 <pre>
 $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
+
 tcp46      0      0  *.19050                *.*                    LISTEN
 tcp46      0      0  *.19051                *.*                    LISTEN
 tcp46      0      0  *.19052                *.*                    LISTEN
@@ -108,7 +109,7 @@ $ (cd src/main/application && zip -r - .) | \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-Using Docker for Mac, observe each Docker container use 2.9G memory, just as part of bootstrap -
+Using Docker for Mac, observe each Docker container uses 2.9G memory, just as part of bootstrap -
 This increases little with use, hence the 16G Docker requirement in this guide.
 Wait for services to start:
 <pre>
@@ -127,13 +128,13 @@ Then open these in a browser:
 * http://localhost:19051/clustercontroller-status/v1/music 
 * http://localhost:19052/clustercontroller-status/v1/music 
 
-0 is normally master, 1 is next (and hence has an overview table), 2 is cold
+0 is normally master, 1 is next (and hence has an overview table), 2 is cold.
 
 ![clustercontroller](img/clustercontroller-1.png)
 
 
 
-### Do a node stop / start and observe changes to system state
+### Do a node stop / start and observe changes to cluster state
 <pre>
 $ docker stop node2
 </pre>
@@ -144,11 +145,11 @@ $ docker start node2
 </pre>
 
 Observe at http://localhost:19050/clustercontroller-status/v1/music that
-storage and distributor nodes go to state up again (this can take a minute or two on slower HW).
+storage and distributor go to state up again (this can take a minute or two).
 
 
 
-### Stop/start primary clustercontroller
+### Stop / start primary clustercontroller
 <pre>
 $ docker stop node0
 </pre>
@@ -170,9 +171,9 @@ Observe 0 is master again
 $ docker stop node0 node1
 </pre>
 http://localhost:19050/clustercontroller-status/v1/music and http://localhost:19050/clustercontroller-status/v1/music
-now goes blank as node0 and node1 are stopped.
+now go blank as node0 and node1 are stopped.
 
-Observe at http://localhost:19052/clustercontroller-status/v1/music that node2 never becomes master!
+Find at http://localhost:19052/clustercontroller-status/v1/music that node2 never becomes master!
 To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper-remain-highly-available-if-one-of-three-nodes-fails :
 
 > in a 3 node cluster, if 2 of the nodes die, the third one will not be serving requests.
@@ -184,14 +185,16 @@ By default, clustercontrollers use a ZooKeeper cluster running on the config ser
 
 <img src="img/multinode-zk.svg" width="295" height="auto" />
 
-With node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken,
-so the clustercontrollers will not update the cluster state.
+With config servier on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
+the clustercontrollers will not update the cluster state.
 This can be observed on node2's clustercontroller status page,
-where to current cluster state lags what node2's clustercontroller is observing
+where the current cluster state lags what node2's clustercontroller is observing
 (but cannot write to ZooKeeper):
 
 <pre>
-[2021-06-18 07:57:52.246] WARNING : container-clustercontroller Container.com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler	Fleetcontroller 0: Failed to connect to ZooKeeper at node0.vespa_net:2181,node1.vespa_net:2181,node2.vespa_net:2181 with session timeout 30000: java.lang.NullPointerException
+[2021-06-18 07:57:52.246] WARNING : container-clustercontroller Container.com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler
+  Fleetcontroller 0: Failed to connect to ZooKeeper at node0.vespa_net:2181,node1.vespa_net:2181,node2.vespa_net:2181
+  with session timeout 30000: java.lang.NullPointerException
 at org.apache.zookeeper.ClientCnxnSocketNetty.onClosing(ClientCnxnSocketNetty.java:247)
 at org.apache.zookeeper.ClientCnxn$SendThread.close(ClientCnxn.java:1465)
 at org.apache.zookeeper.ClientCnxn.disconnect(ClientCnxn.java:1508)
@@ -222,14 +225,15 @@ $ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources)
     i=$(($i + 1)); echo;
     done
 </pre>
-The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
-i.e. one replica per node. List document IDs:
+
+Use [vespa-visit](https://docs.vespa.ai/en/content/visiting.html) to validate all documents are fed:
 <pre>
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 </pre>
 
-[vespa-visit](https://docs.vespa.ai/en/content/visiting.html) uses all nodes -
-with redundancy=3, expect 5 documents per node:
+The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
+i.e. one replica per node.
+Using [Vespa metrics](https://docs.vespa.ai/en/reference/metrics.html), expect 5 documents per node:
 <pre>
 $ for port in 19092 19093 19094;
     do curl -s http://localhost:$port/metrics/v1/values | \
@@ -241,26 +245,26 @@ $ for port in 19092 19093 19094;
 
 
 ### Run queries while stopping nodes
-Query any of 8080, 8081 and 8082 - this query selects _all_ documents:
+Query any of the nodes using 8080, 8081 or 8082 - this query selects _all_ documents:
 <pre>
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
-Check http://localhost:19050/clustercontroller-status/v1/music, set node2 down:
+Check http://localhost:19050/clustercontroller-status/v1/music, then set node2 down:
 <pre>
 $ docker stop node2
 $ sleep 5
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
-See "{"totalCount":5}". Then stop node1:
+See _"{"totalCount":5}"_. Then stop node1:
 <pre>
 $ docker stop node1
 $ sleep 5
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
-We now see that the last clustercontroller is still up.
+We see that the last clustercontroller is still up.
 Count documents on the content node:
 <pre>
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
@@ -268,7 +272,8 @@ $ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
 "onlineDocs", "5"
 </pre>
 
-However, query results are partial, 5 documents are **not** returned.
+However, query results are partial, 5 documents are **not** returned - check _"{"totalCount": }"_.
+
 Look at "SSV" which is "cluster state version" in the table -
 this shows the view the content node has of the cluster:
 
@@ -276,6 +281,9 @@ this shows the view the content node has of the cluster:
 
 Compare this with the state changes in the table below, find a higher state number,
 which is not yet published due to missing quorum.
+
+The replica activation is missing on node0, as the cluster state with two nodes down was never made
+due to missing ZooKeeper quorum.
 
 
 
