@@ -69,7 +69,7 @@ It also demonstrates search suggestions (query autocompletion).
 
 
 
-## Sample applications
+## Sample Applications
 These sample application demonstrates various Vespa features and capabilities. 
 
 ### [Vespa as ML inference server (model-evaluation)](model-evaluation)
