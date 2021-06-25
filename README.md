@@ -95,6 +95,12 @@ or "This product should only be visible in search during campaign hours".
 
 ## Self-hosted Deployments
 
+### [Multinode](operations/multinode)
+Set up a three-node application and experiment with node start/stop.
+Use status and metrics pages to inspect the system.
+Whenever deploying and facing issues, please refer to this application for how to get useful debugging information
+for support follow-up - i.e. run this application first.
+
 ### [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke)
 This sample application demonstrates deploying a simple Vespa application on Kubernetes.  
 
