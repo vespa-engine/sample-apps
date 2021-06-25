@@ -3,13 +3,6 @@
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
 # Vespa sample applications
-[![Vespa Sampleapps Search Feed](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml)
-
-[![sample-apps link checker](https://cd.screwdriver.cd/pipelines/7038/link-checker-sample-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
-
-[![sample-apps build](https://cd.screwdriver.cd/pipelines/7038/build-apps/badge)](href="https://cd.screwdriver.cd/pipelines/7038/)
-
-[![sample-apps verify-guides](https://cd.screwdriver.cd/pipelines/7038/verify-guides/badge)](href="https://cd.screwdriver.cd/pipelines/7038/)
 
 
 
@@ -113,3 +106,11 @@ Note: Applications with _pom.xml_ are Java/Maven projects and must be built befo
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md) to the Vespa sample applications.
 
 ----
+
+[![Vespa Sampleapps Search Feed](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml)
+
+[![sample-apps link checker](https://cd.screwdriver.cd/pipelines/7038/link-checker-sample-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
+
+[![sample-apps build](https://cd.screwdriver.cd/pipelines/7038/build-apps/badge)](href="https://cd.screwdriver.cd/pipelines/7038/)
+
+[![sample-apps verify-guides](https://cd.screwdriver.cd/pipelines/7038/verify-guides/badge)](href="https://cd.screwdriver.cd/pipelines/7038/)
