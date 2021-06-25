@@ -148,6 +148,6 @@ Refer to the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html) fo
 
 [![sample-apps link checker](https://cd.screwdriver.cd/pipelines/7038/link-checker-sample-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
 
-[![sample-apps build](https://cd.screwdriver.cd/pipelines/7038/build-apps/badge)](href="https://cd.screwdriver.cd/pipelines/7038/)
+[![sample-apps build](https://cd.screwdriver.cd/pipelines/7038/build-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
 
-[![sample-apps verify-guides](https://cd.screwdriver.cd/pipelines/7038/verify-guides/badge)](href="https://cd.screwdriver.cd/pipelines/7038/)
+[![sample-apps verify-guides](https://cd.screwdriver.cd/pipelines/7038/verify-guides/badge)](https://cd.screwdriver.cd/pipelines/7038/)
