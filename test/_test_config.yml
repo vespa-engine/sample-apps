@@ -1,7 +1,6 @@
 # Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/boolean-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
@@ -18,6 +17,10 @@ urls:
     # TBD:
     # - basic-search-on-docker-swarm
     # - basic-search-on-gke
+    #
+    #
+    # Does start the containers, most likely insufficient memory for many containers
+    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
     #
     #
     # Disable for now - downloads large models
