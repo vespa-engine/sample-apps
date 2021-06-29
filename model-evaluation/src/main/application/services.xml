@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2018 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version="1.0">
 
-  <container id="container" version="1.0">
-
-    <model-evaluation />
-
-    <handler id="ai.vespa.example.MyHandler" bundle="ai.vespa.example.model-evaluation">
-        <binding>http://*/models/*</binding>
-    </handler>
-
+  <container id="mycontainer" version="1.0">
     <nodes>
       <node hostalias="node1" />
     </nodes>
 
+    <!-- Enable model evaluation - both for REST API and in Java -->
+    <model-evaluation />
+
+    <!-- Add a handler for evaluating models without search -->
+    <handler id="ai.vespa.example.MyHandler" bundle="ai.vespa.example.model-evaluation">
+        <binding>http://*/models/*</binding>
+    </handler>
+
+    <!-- Add searchers using model evaluation to the search chain -->
+    <search>
+      <chain id='mychain' inherits='vespa'>
+        <searcher id='ai.vespa.example.MySearcher' bundle="ai.vespa.example.model-evaluation" />
+        <searcher id='ai.vespa.example.MyPostProcessingSearcher' bundle="ai.vespa.example.model-evaluation" />
+      </chain>
+    </search>
+
+    <!-- Add a document processor using model evaluation to preprocess document fields -->
+    <document-processing>
+      <chain id="default" >
+        <documentprocessor id="ai.vespa.example.MyDocumentProcessor" bundle="ai.vespa.example.model-evaluation"/>
+      </chain>
+    </document-processing>
+    <document-api />
+
   </container>
+
+  <!-- Add a content cluster to searchers and document processors -->
+  <content id="mycluster" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="mydoc" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
 
 </services>
 

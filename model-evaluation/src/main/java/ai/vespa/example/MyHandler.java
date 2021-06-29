@@ -1,3 +1,5 @@
+// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
 package ai.vespa.example;
 
 import ai.vespa.models.evaluation.ModelsEvaluator;
@@ -11,7 +13,6 @@ import com.yahoo.tensor.serialization.JsonFormat;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 
 
 public class MyHandler extends LoggingRequestHandler {
@@ -25,28 +26,35 @@ public class MyHandler extends LoggingRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
+        Tensor result = Tensor.from(0.0);
+
+        // Determine which model to evaluate
         String model = request.getProperty("model");
-        String function = request.getProperty("function");
-
-        // Create evaluator
-        FunctionEvaluator evaluator = modelsEvaluator.evaluatorOf(model, function);
-
-        // Bind input arguments
-        String argumentName = request.getProperty("argumentName");
-        String argumentValue = request.getProperty("argumentValue");
-        if (argumentName != null && argumentValue != null) {
-            for (Map.Entry<String, TensorType> argumentType : evaluator.function().argumentTypes().entrySet()) {
-                if (argumentName.equals(argumentType.getKey())) {
-                    evaluator.bind(argumentName, Tensor.from(argumentType.getValue(), argumentValue));
-                }
-            }
+        if (model.equalsIgnoreCase("transformer")) {
+            result = evaluateTransformerModel(request);
         }
 
-        // Evaluate model
-        Tensor result = evaluator.evaluate();
-
-        // Return result
+        // Return result as JSON
         return new RawResponse(JsonFormat.encode(result));
+    }
+
+    private Tensor evaluateTransformerModel(HttpRequest request) {
+        // Create evaluator
+        FunctionEvaluator evaluator = modelsEvaluator.evaluatorOf("transformer");
+
+        // Get the input - this model only has one input
+        String inputString = request.getProperty("input");
+
+        // Convert to a Vespa tensor
+        Tensor input = Tensor.from(TensorType.fromSpec("tensor<int8>(x[])"), inputString);
+
+        // Here, do any processing of the input - e.g. tokenize or whatever you'd like
+        input = Util.renameDimension(input, "x", "d1");
+        input = Util.addDimension(input, "d0");
+
+        // Evaluate model
+        Tensor result = evaluator.bind("input", input).evaluate();
+        return result;
     }
 
     private static class RawResponse extends HttpResponse {
