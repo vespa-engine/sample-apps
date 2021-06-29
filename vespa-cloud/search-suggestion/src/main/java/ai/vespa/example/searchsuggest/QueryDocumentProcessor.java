@@ -8,32 +8,33 @@ import com.yahoo.document.Document;
 import com.yahoo.document.DocumentOperation;
 import com.yahoo.document.DocumentPut;
 import com.yahoo.document.datatypes.FieldValue;
-import com.yahoo.documentapi.*;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class QueryDocumentProcessor extends DocumentProcessor {
     private static final Logger logger = Logger.getLogger(QueryDocumentProcessor.class.getName());
 
     private static final String QUERY_DOCUMENT_TYPE  = "query";
+    private static final String filePath = "files/accepted_words.txt";
     private final List<String> blockWords;
-
+    private final HashSet<String> acceptedWords;
 
 
 
     @Inject
     public QueryDocumentProcessor(BlocklistConfig config){
         this.blockWords = config.blocklist();
+        this.acceptedWords = getAcceptedWords();
     }
 
     public QueryDocumentProcessor(){
         //default constructor typically used for tests
         this.blockWords = new ArrayList<>();
+        this.acceptedWords = getAcceptedWords();
     }
 
     @Override
@@ -48,7 +49,9 @@ public class QueryDocumentProcessor extends DocumentProcessor {
                 if (document.getDataType().isA(QUERY_DOCUMENT_TYPE)){
                     //checking if query contains anny of the blocked words
                     boolean containsBlockWords = checkForBlockWords(document);
-                    if (containsBlockWords){
+                    boolean allWordsAccepted = checkAllWordsAccepted(document);
+                    if (containsBlockWords || !allWordsAccepted){
+                        logger.info("not all words are accepted");
                         processing.getDocumentOperations().clear();
                         return Progress.DONE;
                     }
@@ -76,6 +79,45 @@ public class QueryDocumentProcessor extends DocumentProcessor {
             }
         }
         return false;
+    }
+
+    private Boolean checkAllWordsAccepted(Document doc){
+        logger.info("  Checking if all words are accepted");
+        if (!acceptedWords.isEmpty()){
+            FieldValue inputValue = doc.getFieldValue("input");
+            String query = inputValue.toString().toLowerCase();
+            String[] terms = query.split("\\s+");
+            for (String term : terms) {
+                if (!acceptedWords.contains(term)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private HashSet<String> getAcceptedWords(){
+        logger.info("getting set of accepted words");
+        HashSet<String> acceptedWords = new HashSet<String>();
+        if (resourceExists()){
+            try{
+                ClassLoader cl = getClass().getClassLoader();
+                InputStream is = cl.getResourceAsStream(filePath);
+                InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(isr);
+                String term;
+                while ((term = br.readLine()) != null){
+                    acceptedWords.add(term);
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        return acceptedWords;
+    }
+
+    private boolean resourceExists() {
+        return getClass().getClassLoader().getResource(QueryDocumentProcessor.filePath) != null;
     }
 
     @Override
