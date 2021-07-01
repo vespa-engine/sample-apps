@@ -4,48 +4,49 @@ const https = require("https");
 const ZstdCodec = require("zstd-codec").ZstdCodec;
 const TextDecoder = require("text-encoding").TextDecoder;
 
-const vespaHostname =
-  "my-instance.search-suggestion.chunnoo.aws-us-east-1c.dev.z.vespa-app.cloud";
+const vespaEndpoint =
+    "vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud";
 
 const publicCert = `-----BEGIN CERTIFICATE-----
-MIIEuDCCAqACCQDuqW9lydTQNDANBgkqhkiG9w0BAQsFADAeMRwwGgYDVQQDDBNj
-bG91ZC52ZXNwYS5leGFtcGxlMB4XDTIxMDYyNDA3MDY0NFoXDTIxMDcwODA3MDY0
-NFowHjEcMBoGA1UEAwwTY2xvdWQudmVzcGEuZXhhbXBsZTCCAiIwDQYJKoZIhvcN
-AQEBBQADggIPADCCAgoCggIBAOi27q1XwY+s+caS2tTcPqIscOY1DQmJmqwMY0U8
-W4JFNllQkgMZr8xELveM3B+UfKvaBOGrtIL6MRUVWzbG6HtzRNGJkQbQGFtD5utx
-5HY8GD5YrYzOmir5E+RUYoHsqkZNs9dUAaaajF3KMOTNx0DjRwdxxgrRAJPdMi+7
-lMgAkm+WZG1IGqDjN344M4YdZzS08lR92pyLIInJZpPIVaJphW5Wu9cRN5R0q5uo
-BlbobE+RF+6SBXuQRUctmVUgiOA98EfsXvQiiYF6GLuQTP3dPLl7RiQ0VHUNpVJ+
-NU62nE0/Z9VP+ZDmsq/LPwBT93h2iRPPxNu/5dy1hJttdA3SjVe16xGuJA3S4FeG
-2PxDfGOiYTpIgaA7k8coXSLcSDSY19LUqkTHMG80y/Pf2gfVpX/wGKuJ3Mpc/seY
-Odkcg+VO06yWhJE9g7OXCQx/BXc2+RF0cwHdXEHknLrderfS/h6okMOiIYIum+fP
-hCPZuobQ6Sa93wjema6Qsf0Y5fiZMc0bwNjMVJTgfLjrRqc7qDU91dyn4ot+IaUR
-3wOkSU4m56YiHJYFCraozrDlU43G+hlW6hxeoypZGXPlxVyUri8EU4FRR78DEG8A
-N56fLx4GHr2pfzelKcH+FlrwhW5lDeHnPiYvZV+AwPZOUCx6yIXaeBKQdIqACcyq
-p2XNAgMBAAEwDQYJKoZIhvcNAQELBQADggIBAL1/wwxJPJrl21Af4SDTcQYeY5aE
-FulYb2av8QYEzGF9jk62669SwXgSMuoMXr+ZMU2YqSkYH/9jz2pFFiUzcysuR1VU
-4+HqNj+T5P6TgzeAOyYILZMI7ho7PkzyexOVzE5QzYwGR/gh9/uCkLV++tr0r7kC
-vij6lTgixZDbExmj/W9mFDswoXKnm22FceES/T213wYeZUwaDek1exRHh/UUaSgh
-g5QMPX0sw4gtgx/x3duQbzFygG7Xd7JCFHnY48ZgQ4UQHzGJuBCA/1KOHVJ3TrqY
-P9ln5Rb082tXKtN8odStS290ODB4WfXSPPLsMYL6BHd2oMzgg/LpHjWeHUGK0gr5
-Q1ccNxXCcCtl3GJk34ntkZy+10VKzup1awh1x/JltQeo1UdM0HoQLEc01fyJE6TK
-ZTcXRERWFVoujKZB1D/NPkL6E3Mxj6yPFFIWTCr6BeHgHEyeU+geotIHofUCbMvT
-xdRGQznua7WCPno4nVDiUQkXCUU0GO/AI9DvT/9UrQCwyg7n56JUM4taSWyyGWLk
-SeD9CFJni7e7sYCfxU3F8JVcpSEY8JGWifrXKBkn1gdDh9VydUZ8bPKJR37nUmKa
-XG68ibZCW9B6m9rQlMcMaVUSNTGH6qpJ0KI3G63FX7d6qSRIZNpI2G8oWZCHidBM
-KvReil2oZAclH+d0
+MIIEuDCCAqACCQCfUmlZ/6aw0DANBgkqhkiG9w0BAQsFADAeMRwwGgYDVQQDDBNj
+bG91ZC52ZXNwYS5leGFtcGxlMB4XDTIwMTIyMjEwMTgwOFoXDTIxMTExNzEwMTgw
+OFowHjEcMBoGA1UEAwwTY2xvdWQudmVzcGEuZXhhbXBsZTCCAiIwDQYJKoZIhvcN
+AQEBBQADggIPADCCAgoCggIBALCFctSOlo1N442FlgikySsabEpX8854V1m1u02v
+kMn8ZwijD1eOsPa7g1cs8hd7PN1SD+4MkIDxZZMovtQ1GxIwwCCkH1WM2RsE6rjs
+i2lefMep35IeFORyq8ymn9S5GI4q/tWNwRu/n67sFvYzie1IzJuSre7azyL1uSC/
+4pxVVU1ZqJIpMks3pRPITUIUpTUSfSkRuXgEPyYc8aJ8k1+1y07W7RvgnAkQlDNU
+aBo97GlidQngp97vRn93628vLz0pbcgd9BzKKLIpr9TtGUxa9fh8gK112dgQR0fN
+jm2uCbm2RfkLN+FNC4b3I+tQDdKLJDVv9tzrV1YvvC9+rb1+fkE3QIT5UF+gTeWT
+RNknNkFws9lQjEaabIQvV7OvNUolpm3hYt5R8VqZMjZ2QUKMHiDFLIlcQ5T/25in
+rZszJHMicxQshIHY9nyXErSmIK6VlSoTcSiLv/XeeyPMYCdqtUSu9/R7a7tVid4E
+l1VvMPt/c1FWxRKG8Rmmnpa+7qo56VJRTZJHRWCq8bJ/fzxIIB3Ns4YnpoqFAjPP
+75J+y0qwYd5cxSPUVfVtEYQcI0XV8GjSHmwq/FcUCtMGND/3r9MynALVpD6umoyV
+HPJu5JYzvd1InLiWbA0RMoZKhLvkadddPfEka9/CwQV4UCvhYBp7F9tMPUsdCTSR
+Z5ELAgMBAAEwDQYJKoZIhvcNAQELBQADggIBAImXTQfIw6MqyhU5+v4Dzfbl8fHU
+U/DcDyen8U1nxLbQTPmyGqHVFwbdg6zfl6323jFTTuyDIGpyx07uX0Lyy8XtW9hG
+L9QxkGs1FUFFFx0nSlSC5P0VjaB9YWOQ7/ZLyUXt5iD/n9FnWw/9kB69xrPvjcdQ
+8YwvYwN0x2OiGDZf88RLvo+YMRDY7KvQI92Lilo0kP/5iOO2siAIe5ZkFEKfjADL
+NtYcTD8Aa0nNnKE67CbXZP2ElpLNLeaU6fK4BiQGvULCJCSMrppjLh80jFRx4uDi
+P49LpZ/xdDz8sJLeuN1aWjy3wwLIeze7cnJVfrkcWOjz/iM1nDH6ALPidKevP9Pq
+5tnyv6O8a85jSM8UcBp/X1jk24sLY8WPOUjE1GpeNk7N7S5HJo+HuvcPZdZ1jm9/
+UCkn6eGj+b+cOq2qDGqKbnKFS4DBWJzBV+a76n25UY61UQYhL4xvUxWFw4nmXCBI
+TDTygNEUu58Y0fNsFr1tUSxAQg13y9pKZlsvLXwzmHmiiuYZrX9h2/m28Kb7DUq7
+goB2RsikIOJxqHAuAgsqkol8oQyMBsApBx67smC80AWHvY93jJBzs4cSSNux9CI+
+oIG8gdW9c+u6k8vqXfZ365Bv7kUlpIgGtfkzHIu0gbyoyKT7sPCrQfyiLHKOb7b6
+bmRoTkkHVoUFYFt6
 -----END CERTIFICATE-----`;
 
-const getObjectData = ({ Bucket, Key }) => {
-  console.log(`Getting object with key ${Key} from bucket ${Bucket}`);
+const getObjectData = ({ Bucket, Key, RequestPayer }) => {
+  console.log(`Getting object with key ${Key} from bucket ${Bucket} with RequestPayer ${RequestPayer}`);
   return s3
-    .getObject({ Bucket, Key })
+    .getObject({ Bucket, Key, RequestPayer })
     .promise()
     .then((res) => res.Body);
 };
 
 const decompress = (buffer) =>
   new Promise((resolve, reject) => {
+    console.log(`Decompressing data`);
     ZstdCodec.run((zstd) => {
       try {
         const simple = new zstd.Simple();
@@ -76,6 +77,7 @@ const formatQueries = (logFile) =>
 
 const getSSMParameter = (parameter) => {
   const ssm = new aws.SSM();
+  console.log(`Getting parameter ${parameter}`);
   return new Promise((resolve, reject) =>
     ssm.getParameter(
       {
@@ -88,13 +90,13 @@ const getSSMParameter = (parameter) => {
 };
 
 const feedQuery = (query, privateKey) => {
-  console.log("Feeding query to Vespa");
-  const queryPath = "/document/v1/query/query/group/0/";
+  //console.log("Feeding data to Vespa Cloud");
+  const queryPath = "/document/v1/query/query/docid/";
   const data = JSON.stringify(query);
 
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: vespaHostname,
+      hostname: vespaEndpoint,
       port: 443,
       path: queryPath + query.fields.time,
       method: "POST",
@@ -128,7 +130,7 @@ const feedQuery = (query, privateKey) => {
 };
 
 const feedQueries = (queries) =>
-  getSSMParameter("AccessLogPrivateKey").then((parameter) =>
+  getSSMParameter("VESPA_TEAM_DATA_PLANE_PRIVATE_KEY").then((parameter) =>
     Promise.all(
       queries.map((query) => feedQuery(query, parameter.Parameter.Value))
     )
@@ -138,6 +140,7 @@ exports.handler = async (event, context) => {
   const options = {
     Bucket: event.Records[0].s3.bucket.name,
     Key: decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " ")),
+    RequestPayer: "requester"
   };
 
   return getObjectData(options)
