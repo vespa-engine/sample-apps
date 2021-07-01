@@ -61,7 +61,7 @@
       <document-processing cluster="default" chain="bert-tensorizer" />
     </documents>
     <nodes count="[2,4]">
-      <resources memory="8Gb" vcpu="4" disk="50Gb" storage-type="local" />
+      <resources memory="8Gb" vcpu="4" disk="100Gb" storage-type="local" />
     </nodes>
   </content>
 </services>
