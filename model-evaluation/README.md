@@ -9,8 +9,14 @@ Please refer to
 for more information.
 
 The directory `src/main/application/models` contains two ONNX model files generated
-by the PyTorch scripts in the same directory. 
+by the PyTorch scripts in the same directory. These two models are used to show 
+various ways stateless model evaluation can be used in Vespa:
 
+- Vespa can automatically make models available through a REST API.
+- In a [request handler](https://docs.vespa.ai/en/jdisc/developing-request-handlers.html) providing the capability of
+  executing custom code before evaluating a model.
+- In searchers and document processors.
+- In a post-processing searcher to run a model in batch with the result from the content node.
 
 ### Executable example
 
@@ -79,12 +85,12 @@ the model.
 
 Feed in a few documents by first downloading the `vespa-http-client` Java client:
 
-```
+<pre data-test="exec">
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
   https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
 $ java -jar vespa-http-client-jar-with-dependencies.jar \
   --verbose --file feed.json --endpoint http://localhost:8080
-```
+</pre>
 
 The document processor uses the `transformer` model to generate embeddings that are stored in the content cluster.
 
