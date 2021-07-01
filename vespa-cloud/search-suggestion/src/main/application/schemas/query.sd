@@ -1,9 +1,10 @@
 schema query{
     document query{
         field input type string {
-            indexing: summary | index
-            match   : prefix 
-        } 
+            indexing: summary | attribute
+            attribute: fast-search 
+        }
+        
         field time type double {
             indexing: summary | attribute
         }

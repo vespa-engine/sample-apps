@@ -34,8 +34,8 @@
     <content id="documentation" version="1.0">
         <redundancy>2</redundancy>
         <documents>
-            <document mode="streaming" type="query"/>
-            <document mode="streaming" type="term"/>
+            <document mode="index" type="query"/>
+            <document mode="index" type="term"/>
         </documents>
         <nodes count="[2,3]">
             <resources vcpu="2.0" memory="8Gb" disk="50Gb"/>

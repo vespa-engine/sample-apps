@@ -3,8 +3,8 @@ schema term {
     document term {
 
         field term type string {
-            indexing: summary | index
-            match   : prefix 
+            indexing: summary | attribute
+            attribute: fast-search
         } 
 
         field count type int {
