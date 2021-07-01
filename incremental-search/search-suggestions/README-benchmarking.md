@@ -1,6 +1,10 @@
 # Benchmarcking results
 
-This is a comparison of the benchmarking results for indexed prefix search with fast-search and streaming prefix search. The benchmark tests were run with one query and a variable number of clients. Both benchmarkings used the same corpus containing 80 000 documents, with the documents being one to two terms long. The benchmarking was run with a duration of 60 seconds.
+This is a comparison of the benchmarking results for indexed prefix search with fast-search and streaming prefix search.
+The benchmark tests were run with one query and a variable number of clients.
+Both benchmarking runs used the same corpus containing 80 000 documents,
+with the documents being one to two terms long.
+The benchmarking was run with a duration of 60 seconds.
 
 ## Indexed prefix search with fast-search
 time = 60s \
