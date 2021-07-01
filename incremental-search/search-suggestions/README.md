@@ -43,7 +43,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 <pre data-test="exec">
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
   https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
-$ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file example_query_log.json --endpoint http://localhost:8080
+$ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file example_feed.json --endpoint http://localhost:8080
 </pre>
 
 **Generating bootstrapped search terms**
@@ -61,6 +61,22 @@ $ python3 count_terms.py open_index.json feed_terms.json 2 top100en.txt
 **Feeding bootstrapped search terms**
 <pre data-test="exec">
 $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_terms.json --endpoint http://localhost:8080
+</pre>
+
+
+**Generate terms from query log**
+
+Access logs are assumed to be in *logs/*.
+<pre>
+$ unzstd -c -r logs/ | grep '"uri":"/search/' | grep 'jsoncallback' \
+  | jq '{ term: .uri | scan("(?<=input=)[^&]*") | ascii_downcase | sub("(%..|[^a-z0-9]| )+"; " "; "g") | sub("^ | $"; ""; "g"), hits: .search.hits }' \
+  | jq '{update: ("id:term:term:g=0:" + (.term | sub(" "; "/"; "g"))), create: true, fields: { term: { assign: .term }, query_count: { increment: 1 }, query_hits: { assign: .hits } } }' > feed_queries.json
+</pre>
+
+
+**Feed terms from query log**
+<pre>
+$ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_queries.json --endpoint http://localhost:8080
 </pre>
 
 **Check the website and write queries and view suggestions**
