@@ -106,7 +106,7 @@ $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
 
 
 ## Deploy a 3-node Vespa application
-<pre data-test-assert-contains="prepared and activated.">
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ (cd src/main/application && zip -r - .) | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
@@ -115,7 +115,7 @@ $ (cd src/main/application && zip -r - .) | \
 Using Docker for Mac, observe each Docker container uses 2.9G memory, just as part of bootstrap -
 This increases little with use, hence the 16G Docker requirement in this guide.
 Wait for services to start:
-<pre data-test-wait-for="200 OK">
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8082/ApplicationStatus
 </pre>
 
@@ -123,7 +123,7 @@ $ curl -s --head http://localhost:8082/ApplicationStatus
 
 ## Clustercontroller status pages
 Check that this works:
-<pre data-test-assert-contains="Status Page">
+<pre data-test="exec" data-test-assert-contains="Status Page">
 $ curl http://localhost:19050/clustercontroller-status/v1/music
 </pre>
 Then open these in a browser:
@@ -221,35 +221,36 @@ Observe 0 is master again.
 
 ## Feed data, check distribution
 Make sure the three nodes are started and up - then feed 5 documents:
-<pre data-test-assert-contains="id:mynamespace:music::4">
-$ i=0; for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources);
+<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::4">
+$ i=0; (for doc in $(ls ../../album-recommendation-selfhosted/src/test/resources); \
     do curl -H Content-Type:application/json -d @../../album-recommendation-selfhosted/src/test/resources/$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
-    i=$(($i + 1)); echo;
-    done
+    i=$(($i + 1)); echo; \
+    done)
 </pre>
+<!-- Wrap for-loop in ( ) for test framework, as it expects single-line using \ -->
 
 Use [vespa-visit](https://docs.vespa.ai/en/content/visiting.html) to validate all documents are fed:
-<pre data-test-assert-contains="id:mynamespace:music::4">
+<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::4">
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 </pre>
 
 The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
 i.e. one replica per node.
 Using [Vespa metrics](https://docs.vespa.ai/en/reference/metrics.html), expect 5 documents per node:
-<pre data-test-assert-contains="content.proton.documentdb.documents.total.last">
-$ for port in 19092 19093 19094;
+<pre data-test="exec" data-test-assert-contains="content.proton.documentdb.documents.total.last">
+$ (for port in 19092 19093 19094; \
     do curl -s http://localhost:$port/metrics/v1/values | \
     jq '.services[] | select (.name=="vespa.searchnode") | .metrics[].values' | \
-    grep content.proton.documentdb.documents.total.last;
-    done
+    grep content.proton.documentdb.documents.total.last; \
+    done)
 </pre>
-
+<!-- Wrap for-loop in ( ) for test framework, as it expects single-line using \ -->
 
 
 ## Run queries while stopping nodes
 Query any of the nodes using 8080, 8081 or 8082 - this query selects _all_ documents:
-<pre data-test-assert-contains='{"totalCount":5}'>
+<pre data-test="exec" data-test-assert-contains='{"totalCount":5}'>
 $ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
 </pre>
 
