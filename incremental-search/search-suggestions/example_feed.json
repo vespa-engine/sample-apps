@@ -1,0 +1,326 @@
+[
+  {
+    "update": "id:term:term:g=0:grouping",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "grouping"
+      },
+      "corpus_count": {
+        "assign": 181
+      },
+      "document_count": {
+        "assign": 40
+      }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:docker",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "docker"
+      },
+      "corpus_count": {
+        "assign": 165
+      },
+      "document_count": {
+        "assign": 30
+      }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:document/processing",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "document processing"
+      },
+      "corpus_count": {
+        "assign": 94
+      },
+      "document_count": {
+        "assign": 27
+      }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:grouped/cluster",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "grouped cluster"
+      },
+      "corpus_count": {
+        "assign": 1
+      },
+      "document_count": {
+        "assign": 1
+      }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:processing/chains",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "processing chains"
+      },
+      "corpus_count": {
+        "assign": 3
+      },
+      "document_count": {
+        "assign": 3
+      }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:distributor/node",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "distributor node"
+      },
+      "corpus_count": {
+        "assign": 2
+      },
+      "document_count": {
+        "assign": 2
+      }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:gorilla",
+    "create": true,
+    "fields": {
+      "term": { "assign": "gorilla" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:chimpanzee",
+    "create": true,
+    "fields": {
+      "term": { "assign": "chimpanzee" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:gibbon",
+    "create": true,
+    "fields": {
+      "term": { "assign": "gibbon" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:not/gibbon",
+    "create": true,
+    "fields": {
+      "term": { "assign": "not gibbon" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:not/gorilla",
+    "create": true,
+    "fields": {
+      "term": { "assign": "not gorilla" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:orangutan",
+    "create": true,
+    "fields": {
+      "term": { "assign": "orangutan" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:grouping",
+    "create": true,
+    "fields": {
+      "term": { "assign": "grouping" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:bm25",
+    "create": true,
+    "fields": {
+      "term": { "assign": "bm25" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:add/document",
+    "create": true,
+    "fields": {
+      "term": { "assign": "add document" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:document/processing",
+    "create": true,
+    "fields": {
+      "term": { "assign": "document processing" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:docker",
+    "create": true,
+    "fields": {
+      "term": { "assign": "docker" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:document/api",
+    "create": true,
+    "fields": {
+      "term": { "assign": "document api" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:term weight",
+    "create": true,
+    "fields": {
+      "term": { "assign": "term weight" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:term weight",
+    "create": true,
+    "fields": {
+      "term": { "assign": "term weight" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:filter",
+    "create": true,
+    "fields": {
+      "term": { "assign": "filter" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:vespa/cluster",
+    "create": true,
+    "fields": {
+      "term": { "assign": "vespa cluster" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:restart/vespa",
+    "create": true,
+    "fields": {
+      "term": { "assign": "restart vespa" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:restart",
+    "create": true,
+    "fields": {
+      "term": { "assign": "restart" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:streaming/search",
+    "create": true,
+    "fields": {
+      "term": { "assign": "streaming search" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:streaming",
+    "create": true,
+    "fields": {
+      "term": { "assign": "streaming" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:nearest/neighbour",
+    "create": true,
+    "fields": {
+      "term": { "assign": "nearest neighbour" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:feed/rate",
+    "create": true,
+    "fields": {
+      "term": { "assign": "feed rate" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:searcher",
+    "create": true,
+    "fields": {
+      "term": { "assign": "searcher" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:query/tracing",
+    "create": true,
+    "fields": {
+      "term": { "assign": "query tracing" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:ranking",
+    "create": true,
+    "fields": {
+      "term": { "assign": "ranking" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  },
+  {
+    "update": "id:term:term:g=0:term",
+    "create": true,
+    "fields": {
+      "term": { "assign": "term" },
+      "query_count": { "increment": 1 },
+      "query_hits": { "assign": 10 }
+    }
+  }
+]
