@@ -7,11 +7,19 @@ schema term {
             match   : prefix 
         } 
 
-        field count type int {
+        field query_count type int {
             indexing: summary | attribute
         }
 
-        field docs type int {
+        field query_hits type int {
+            indexing: summary | attribute
+        }
+
+        field corpus_count type int {
+            indexing: summary | attribute
+        }
+
+        field document_count type int {
             indexing: summary | attribute
         }
         
@@ -24,7 +32,8 @@ schema term {
     rank-profile term_rank inherits default {
         first-phase {
             expression {
-              attribute(count)
+              10*max(0, attribute(query_count))
+              + max(0, attribute(corpus_count))
             }
         }
     }

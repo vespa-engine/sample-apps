@@ -34,7 +34,6 @@
     <content id="documentation" version="1.0">
         <redundancy>2</redundancy>
         <documents>
-            <document mode="streaming" type="query"/>
             <document mode="streaming" type="term"/>
         </documents>
         <nodes>
