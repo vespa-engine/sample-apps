@@ -16,6 +16,8 @@
         <redundancy>2</redundancy>
         <documents>
             <document mode="index" type="doc"/>
+            <document mode="index" type="query"/>
+            <document mode="index" type="term"/>
         </documents>
         <nodes count="2"/>
     </content>

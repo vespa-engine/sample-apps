@@ -1,0 +1,30 @@
+schema term {
+    document term {
+
+        field term type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field count type int {
+            indexing: summary | attribute
+        }
+
+        field docs type int {
+            indexing: summary | attribute
+        }
+
+    }
+
+    fieldset default {
+        fields: term
+    }
+
+    rank-profile term_rank inherits default {
+        first-phase {
+            expression {
+              attribute(count)
+            }
+        }
+    }
+}
