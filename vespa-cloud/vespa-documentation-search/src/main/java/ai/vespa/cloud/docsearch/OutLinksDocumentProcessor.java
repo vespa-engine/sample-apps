@@ -92,35 +92,36 @@ public class OutLinksDocumentProcessor extends DocumentProcessor {
             }
             else if (op instanceof DocumentUpdate) {
                 DocumentUpdate update = (DocumentUpdate) op;
+                if (update.getType().isA(DOC_DOCUMENT_TYPE)) {
+                     /*
+                      There are two kinds of updates:
+                      * a create-if-nonexistent update for a new document - if it has a PATH_FIELD_NAME
+                      * updating fields in documents
 
-                /*
-                  There are two kinds of updates:
-                  * a create-if-nonexistent update for a new document - if it has a PATH_FIELD_NAME
-                  * updating fields in documents
+                      The first needs the processing below - the second does not need processing, just send the update as-is
+                     */
 
-                  The first needs the processing below - the second does not need processing, just send the update as-is
-                 */
+                    FieldUpdate fieldUpdate = update.getFieldUpdate(PATH_FIELD_NAME);
+                    if (fieldUpdate == null) { return Progress.DONE;}  // no extra processing
 
-                FieldUpdate fieldUpdate = update.getFieldUpdate(PATH_FIELD_NAME);
-                if (fieldUpdate == null) { return Progress.DONE;}  // no extra processing
+                    ValueUpdate<StringFieldValue> valueUpdate = fieldUpdate.getValueUpdate(0);
+                    String myPath = valueUpdate.getValue().getString();
 
-                ValueUpdate<StringFieldValue> valueUpdate = fieldUpdate.getValueUpdate(0);
-                String myPath = valueUpdate.getValue().getString();
+                    Set<String> docsLinkedFromMe = canonicalizeLinks(Path.of(myPath),
+                            onlyFileLinks(removeLinkFragment(getUniqueOutLinks(update))));
 
-                Set<String> docsLinkedFromMe = canonicalizeLinks(Path.of(myPath),
-                        onlyFileLinks(removeLinkFragment(getUniqueOutLinks(update))));
+                    Array<StringFieldValue> sanitizedLinks = new Array<>(DataType.getArray(DataType.STRING));
+                    for (String link : docsLinkedFromMe) {
+                        sanitizedLinks.add(new StringFieldValue(link));
+                    }
 
-                Array<StringFieldValue> sanitizedLinks = new Array<>(DataType.getArray(DataType.STRING));
-                for (String link : docsLinkedFromMe) {
-                    sanitizedLinks.add(new StringFieldValue(link));
-                }
+                    update.removeFieldUpdate(OUTLINKS_FIELD_NAME); // remove the update with un-sanitized links
+                    FieldUpdate sanitizedLinksUpdate = FieldUpdate.createAssign(update.getDocumentType().getField(OUTLINKS_FIELD_NAME), sanitizedLinks);
+                    update.addFieldUpdate(sanitizedLinksUpdate);   // ... and add an update with the clean links instead
 
-                update.removeFieldUpdate(OUTLINKS_FIELD_NAME); // remove the update with un-sanitized links
-                FieldUpdate sanitizedLinksUpdate = FieldUpdate.createAssign(update.getDocumentType().getField(OUTLINKS_FIELD_NAME), sanitizedLinks);
-                update.addFieldUpdate(sanitizedLinksUpdate);   // ... and add an update with the clean links instead
-
-                if (docsLinkedFromMe.size() > 0) {
-                    addInLinkToOtherDocs(docsLinkedFromMe, myPath, update.getDocumentType());
+                    if (docsLinkedFromMe.size() > 0) {
+                        addInLinkToOtherDocs(docsLinkedFromMe, myPath, update.getDocumentType());
+                    }
                 }
             }
         }
