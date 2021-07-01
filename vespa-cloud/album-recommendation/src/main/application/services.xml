@@ -62,7 +62,7 @@
             <document type="music" mode="index" />
         </documents>
         <nodes count="2">
-            <resources vcpu="2.0" memory="8Gb" disk="50Gb"/>
+            <resources vcpu="2.0" memory="8Gb" disk="50Gb" storage-type="local" />
         </nodes>
     </content>
 

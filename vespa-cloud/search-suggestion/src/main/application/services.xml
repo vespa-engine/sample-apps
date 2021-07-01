@@ -38,7 +38,7 @@
             <document mode="streaming" type="term"/>
         </documents>
         <nodes count="[2,3]">
-            <resources vcpu="2.0" memory="8Gb" disk="50Gb"/>
+            <resources vcpu="2.0" memory="8Gb" disk="50Gb" storage-type="local" />
         </nodes>
     </content>
 
