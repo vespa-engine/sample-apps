@@ -1,0 +1,3 @@
+<query-profile-type id="root" inherits="native">
+  <field name="ranking.features.query(embedding)" type="tensor&lt;float&gt;(x[16])" />
+</query-profile-type>

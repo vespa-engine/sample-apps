@@ -1,0 +1,21 @@
+# Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema mydoc {
+    document mydoc {
+        field id type string {
+            indexing: index | summary
+        }
+        field tokens type tensor<int8>(tokens[10]) {
+            indexing: attribute | summary
+        }
+        field embedding type tensor<float>(x[16]) {
+            indexing: attribute | summary
+        }
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: sum(query(embedding) * attribute(embedding))
+        }
+    }
+}
