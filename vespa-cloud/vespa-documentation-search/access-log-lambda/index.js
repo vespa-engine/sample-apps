@@ -48,14 +48,15 @@ const listPrefixedKeys = ({ Bucket, Prefix, MaxKeys, RequestPayer }) => {
     );
 };
 
-const objectIsFromYesterday = ({ Bucket, Key }) => {
+const getYesterdayFilter = () => {
   const yesterdayDateString = new Date(Date.now() - 86400000)
     .toISOString()
     .replace(/^(\d{4})-(\d{2})-(\d{2})T[^Z]+Z/, "$1$2$3");
   const re = new RegExp(
     `vespa-team\/vespacloud-docsearch\/default\/[^\/]+\/logs\/access\/JsonAccessLog\.default\.${yesterdayDateString}\\d+\.zst`
   );
-  return re.test(Key);
+
+  return ({ Key }) => re.test(Key);
 };
 
 const getObjectData = ({ Bucket, Key, RequestPayer }) => {
@@ -167,7 +168,7 @@ exports.handler = async (event, context) => {
   const RequestPayer = "requester";
 
   return listPrefixedKeys({ Bucket, Prefix, MaxKeys, RequestPayer })
-    .then((objs) => objs.filter(objectIsFromYesterday))
+    .then((objs) => objs.filter(getYesterdayFilter()))
     .then((objs) => Promise.all(objs.map(getObjectData)))
     .then((buffes) => Promise.all(buffes.map(decompress)))
     .then((logFiles) =>
