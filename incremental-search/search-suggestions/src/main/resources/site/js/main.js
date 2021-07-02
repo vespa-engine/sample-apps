@@ -31,13 +31,10 @@ const handleUnfocus = (e) => hideDropdown();
 const handleResults = (data) => {
   dropdown.innerHTML = "";
 
-  console.log("ser i root");
   if (data.root.children) {
-    console.log("er i root.childern")
     const items = data.root.children.map((child) => ({
       term: child.fields.term,
     }));
-    console.log(items)
     items.forEach((item) => {
       const p = document.createElement("p");
       p.innerHTML = item.term;
