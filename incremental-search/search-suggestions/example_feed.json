@@ -1,6 +1,6 @@
 [
   {
-    "update": "id:term:term:g=0:grouping",
+    "update": "id:term:term::grouping",
     "create": true,
     "fields": {
       "term": {
@@ -15,7 +15,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:docker",
+    "update": "id:term:term::docker",
     "create": true,
     "fields": {
       "term": {
@@ -30,7 +30,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:document/processing",
+    "update": "id:term:term::document/processing",
     "create": true,
     "fields": {
       "term": {
@@ -45,7 +45,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:grouped/cluster",
+    "update": "id:term:term::grouped/cluster",
     "create": true,
     "fields": {
       "term": {
@@ -60,7 +60,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:processing/chains",
+    "update": "id:term:term::processing/chains",
     "create": true,
     "fields": {
       "term": {
@@ -75,7 +75,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:distributor/node",
+    "update": "id:term:term::distributor/node",
     "create": true,
     "fields": {
       "term": {
@@ -90,7 +90,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:gorilla",
+    "update": "id:term:term::gorilla",
     "create": true,
     "fields": {
       "term": { "assign": "gorilla" },
@@ -99,7 +99,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:chimpanzee",
+    "update": "id:term:term::chimpanzee",
     "create": true,
     "fields": {
       "term": { "assign": "chimpanzee" },
@@ -108,7 +108,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:gibbon",
+    "update": "id:term:term::gibbon",
     "create": true,
     "fields": {
       "term": { "assign": "gibbon" },
@@ -117,7 +117,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:not/gibbon",
+    "update": "id:term:term::not/gibbon",
     "create": true,
     "fields": {
       "term": { "assign": "not gibbon" },
@@ -126,7 +126,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:not/gorilla",
+    "update": "id:term:term::not/gorilla",
     "create": true,
     "fields": {
       "term": { "assign": "not gorilla" },
@@ -135,7 +135,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:orangutan",
+    "update": "id:term:term::orangutan",
     "create": true,
     "fields": {
       "term": { "assign": "orangutan" },
@@ -144,7 +144,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:grouping",
+    "update": "id:term:term::grouping",
     "create": true,
     "fields": {
       "term": { "assign": "grouping" },
@@ -153,7 +153,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:bm25",
+    "update": "id:term:term::bm25",
     "create": true,
     "fields": {
       "term": { "assign": "bm25" },
@@ -162,7 +162,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:add/document",
+    "update": "id:term:term::add/document",
     "create": true,
     "fields": {
       "term": { "assign": "add document" },
@@ -171,7 +171,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:document/processing",
+    "update": "id:term:term::document/processing",
     "create": true,
     "fields": {
       "term": { "assign": "document processing" },
@@ -180,7 +180,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:docker",
+    "update": "id:term:term::docker",
     "create": true,
     "fields": {
       "term": { "assign": "docker" },
@@ -189,7 +189,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:document/api",
+    "update": "id:term:term::document/api",
     "create": true,
     "fields": {
       "term": { "assign": "document api" },
@@ -198,7 +198,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:term weight",
+    "update": "id:term:term::term weight",
     "create": true,
     "fields": {
       "term": { "assign": "term weight" },
@@ -207,7 +207,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:term weight",
+    "update": "id:term:term::term weight",
     "create": true,
     "fields": {
       "term": { "assign": "term weight" },
@@ -216,7 +216,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:filter",
+    "update": "id:term:term::filter",
     "create": true,
     "fields": {
       "term": { "assign": "filter" },
@@ -225,7 +225,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:vespa/cluster",
+    "update": "id:term:term::vespa/cluster",
     "create": true,
     "fields": {
       "term": { "assign": "vespa cluster" },
@@ -234,7 +234,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:restart/vespa",
+    "update": "id:term:term::restart/vespa",
     "create": true,
     "fields": {
       "term": { "assign": "restart vespa" },
@@ -243,7 +243,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:restart",
+    "update": "id:term:term::restart",
     "create": true,
     "fields": {
       "term": { "assign": "restart" },
@@ -252,7 +252,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:streaming/search",
+    "update": "id:term:term::streaming/search",
     "create": true,
     "fields": {
       "term": { "assign": "streaming search" },
@@ -261,7 +261,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:streaming",
+    "update": "id:term:term::streaming",
     "create": true,
     "fields": {
       "term": { "assign": "streaming" },
@@ -270,7 +270,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:nearest/neighbour",
+    "update": "id:term:term::nearest/neighbour",
     "create": true,
     "fields": {
       "term": { "assign": "nearest neighbour" },
@@ -279,7 +279,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:feed/rate",
+    "update": "id:term:term::feed/rate",
     "create": true,
     "fields": {
       "term": { "assign": "feed rate" },
@@ -288,7 +288,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:searcher",
+    "update": "id:term:term::searcher",
     "create": true,
     "fields": {
       "term": { "assign": "searcher" },
@@ -297,7 +297,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:query/tracing",
+    "update": "id:term:term::query/tracing",
     "create": true,
     "fields": {
       "term": { "assign": "query tracing" },
@@ -306,7 +306,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:ranking",
+    "update": "id:term:term::ranking",
     "create": true,
     "fields": {
       "term": { "assign": "ranking" },
@@ -315,7 +315,7 @@
     }
   },
   {
-    "update": "id:term:term:g=0:term",
+    "update": "id:term:term::term",
     "create": true,
     "fields": {
       "term": { "assign": "term" },
