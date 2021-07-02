@@ -35,7 +35,6 @@ const handleResults = (data) => {
     const items = data.root.children.map((child) => ({
       term: child.fields.term,
     }));
-
     items.forEach((item) => {
       const p = document.createElement("p");
       p.innerHTML = item.term;
@@ -54,11 +53,9 @@ const handleInput = (e) => {
     const query = {
       yql: `
         select * from term
-        where ([{"defaultIndex": "default"}]userInput(@input));`,
+        where default contains ([{"prefix":true}] "${e.target.value.replaceAll(/[^a-zA-Z0-9 ]/g, "")}");`,
       ranking: "term_rank",
-      "streaming.groupname": 0,
       hits: 10,
-      input: e.target.value,
       timeout: "5s",
     };
 
