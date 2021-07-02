@@ -65,7 +65,7 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_te
 
 **Generate set of accepted terms**
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ python3 acceptedWords.py open_index.json top100en.txt
+$ python3 accepted_words.py open_index.json top100en.txt
 </pre>
 
 
