@@ -70,7 +70,7 @@ Access logs are assumed to be in *logs/*.
 <pre>
 $ unzstd -c -r logs/ | grep '"uri":"/search/' | grep 'jsoncallback' \
   | jq '{ term: .uri | scan("(?<=input=)[^&]*") | ascii_downcase | sub("(%..|[^a-z0-9]| )+"; " "; "g") | sub("^ | $"; ""; "g"), hits: .search.hits }' \
-  | jq '{update: ("id:term:term:g=0:" + (.term | sub(" "; "/"; "g"))), create: true, fields: { term: { assign: .term }, query_count: { increment: 1 }, query_hits: { assign: .hits } } }' > feed_queries.json
+  | jq '{update: ("id:term:term::" + (.term | sub(" "; "/"; "g"))), create: true, fields: { term: { assign: .term }, query_count: { increment: 1 }, query_hits: { assign: .hits } } }' > feed_queries.json
 </pre>
 
 

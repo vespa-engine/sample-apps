@@ -13,7 +13,7 @@ def read_json_file(file_path):
 def write_json_file(terms, file_path):
     feed_list = [
         {
-            "update": f'id:term:term:g=0:{re.sub(r" ", "/", term)}',
+            "update": f'id:term:term::{re.sub(r" ", "/", term)}',
             "create": True,
             "fields": {
                 "term": {"assign": data["term"]},
