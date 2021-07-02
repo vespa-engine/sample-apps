@@ -30,9 +30,8 @@ Refer to <https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_creat
 for how to set up relevant keys.
 
 
-### Set endpoint and public certificate
-In [index.js](index.js), set **vespaEndpoint** to the endpoint of the Vespa application where queries should be fed
-and set *publicCert* to the public certificate of the same Vespa application.
+### Set endpoint, public certificate and bucket name
+In [index.js](index.js), set **vespaEndpoint** to the endpoint of the Vespa application where queries should be fed, set *publicCert* to the public certificate of the same Vespa application and set *Bucket* to the name of the bucket where the access logs are stored.
 
 
 ### Create lambda function
@@ -45,8 +44,8 @@ Also see https://console.vespa.oath.cloud/tenant/vespa-team/archive for more pol
 
 
 ### Setup trigger
-Setup a trigger on the S3 Bucket with access logs with the event type **ObjectCreatedByPut**.
-Alternatively, trigger time-based - info TBD.
+~~Setup a trigger on the S3 Bucket with access logs with the event type **ObjectCreatedByPut**.~~
+Trigger once a day - info TBD.
 
 
 ### Configure lambda
