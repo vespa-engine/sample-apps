@@ -34,7 +34,7 @@
     <content id="documentation" version="1.0">
         <redundancy>2</redundancy>
         <documents>
-            <document mode="streaming" type="term"/>
+            <document mode="index" type="term"/>
         </documents>
         <nodes>
             <node hostalias="node1" distribution-key="0" />
