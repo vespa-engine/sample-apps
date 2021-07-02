@@ -1,85 +1,68 @@
 # access-log-lambda
 
-## Steps
-
-**Clone repository**
-
-<pre>
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/vespa-cloud/vespa-documentation-search/access-log-lambda/
-</pre>
+This lambda function reads access log files from Vespa Documentation Search,
+processes log lines into search suggestions by extracting query terms
+and feeds the suggestions to the `query` schema.
 
 
-**Dependencies**
+### Clone repository
 
-<pre>
-$ brew install awscli
-$ brew install nvm
-$ nvm install 14
-$ nvm use 14
-$ npm install
-</pre>
+    $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+    $ cd sample-apps/vespa-cloud/vespa-documentation-search/access-log-lambda/
 
 
-**Configure AWS**
+### Install dependencies
 
-<pre>
-$ aws configure
-</pre>
-See <https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html>
-for description of how to set up relevant keys.
+    $ brew install nvm
+    $ nvm install 14
+    $ nvm use 14
+    $ npm install
 
 
-**Create parameter for vespa private key**
+### Vespa private key for dataplane access
 
 In AWS System Manager - Parameter Store, find a parameter named **VESPA_TEAM_DATA_PLANE_PRIVATE_KEY**
 with the value of the private key to the Vespa Cloud application where queries should be fed.
-
 Note that this secret is encrypted with a custom key -
 this key must grant this lambda access for use.
 
+Refer to <https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html>
+for how to set up relevant keys.
 
-**Set endpoint and public certificate**
 
+### Set endpoint and public certificate
 In [index.js](index.js), set **vespaEndpoint** to the endpoint of the Vespa application where queries should be fed
 and set *publicCert* to the public certificate of the same Vespa application.
 
 
-**Create lambda function**
-
+### Create lambda function
 Create a lambda function named **access-log-lambda**
 
 
-**Role permissions**
-
+### Update role permissions
 Give the lambda functions role the permissions **AmazonS3ReadOnlyAccess** and **AmazonSSMReadOnlyAccess**.
 Also see https://console.vespa.oath.cloud/tenant/vespa-team/archive for more policies.
 
 
-**Setup trigger**
-
+### Setup trigger
 Setup a trigger on the S3 Bucket with access logs with the event type **ObjectCreatedByPut**.
-Alternatively, trigger time-based
+Alternatively, trigger time-based - info TBD.
 
 
-**Configure lambda**
-
+### Configure lambda
 For running the lambda with the example access log,
 the lambda should be configured to use 256MB of memory and have an execution time of 30 seconds.
 The execution time should probably be increased when running on more log files.
 
 
-**Zip**
+### Build Zip archive
 
-<pre>
-$ zip -r function.zip index.js node_modules/
-</pre>
+    $ zip -r function.zip index.js node_modules/
 
 
-**Deploy**
+### Deploy lambda
+Upload the .zip-file from the AWS Lambda console - alternatively, deploy using `awscli`:
 
-<pre>
-$ aws lambda update-function-code --function-name access-log-lambda --zip-file fileb://function.zip
-</pre>
-
-Alternatively upload manually from the AWS Console.
+    $ brew install awscli
+    $ aws configure
+    $ aws lambda update-function-code --function-name access-log-lambda --zip-file fileb://function.zip
