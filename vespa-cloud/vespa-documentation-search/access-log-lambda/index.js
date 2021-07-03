@@ -5,7 +5,7 @@ const ZstdCodec = require("zstd-codec").ZstdCodec;
 const TextDecoder = require("text-encoding").TextDecoder;
 
 const vespaEndpoint =
-    "vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud";
+  "vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud";
 
 const publicCert = `-----BEGIN CERTIFICATE-----
 MIIEuDCCAqACCQCfUmlZ/6aw0DANBgkqhkiG9w0BAQsFADAeMRwwGgYDVQQDDBNj
@@ -36,8 +36,33 @@ oIG8gdW9c+u6k8vqXfZ365Bv7kUlpIgGtfkzHIu0gbyoyKT7sPCrQfyiLHKOb7b6
 bmRoTkkHVoUFYFt6
 -----END CERTIFICATE-----`;
 
+const listPrefixedKeys = ({ Bucket, Prefix, MaxKeys, RequestPayer }) => {
+  console.log(
+    `Listing keys with prefix ${Prefix} in bucket ${Bucket} with RequestPyer ${RequestPayer}. limited to ${MaxKeys} keys`
+  );
+  return s3
+    .listObjectsV2({ Bucket, Prefix, MaxKeys, RequestPayer })
+    .promise()
+    .then(({ Contents }) =>
+      Contents.map((content) => ({ Bucket, Key: content.Key, RequestPayer }))
+    );
+};
+
+const getYesterdayFilter = () => {
+  const yesterdayDateString = new Date(Date.now() - 86400000)
+    .toISOString()
+    .replace(/^(\d{4})-(\d{2})-(\d{2})T[^Z]+Z/, "$1$2$3");
+  const re = new RegExp(
+    `vespa-team\/vespacloud-docsearch\/default\/[^\/]+\/logs\/access\/JsonAccessLog\.default\.${yesterdayDateString}\\d+\.zst`
+  );
+
+  return ({ Key }) => re.test(Key);
+};
+
 const getObjectData = ({ Bucket, Key, RequestPayer }) => {
-  console.log(`Getting object with key ${Key} from bucket ${Bucket} with RequestPayer ${RequestPayer}`);
+  console.log(
+    `Getting object with key ${Key} from bucket ${Bucket} with RequestPayer ${RequestPayer}`
+  );
   return s3
     .getObject({ Bucket, Key, RequestPayer })
     .promise()
@@ -137,15 +162,20 @@ const feedQueries = (queries) =>
   );
 
 exports.handler = async (event, context) => {
-  const options = {
-    Bucket: event.Records[0].s3.bucket.name,
-    Key: decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " ")),
-    RequestPayer: "requester"
-  };
+  const Bucket = "vespa-cloud-data-prod.aws-us-east-1c-9eb633";
+  const Prefix = "vespa-team/vespacloud-docsearch/default/";
+  const MaxKeys = 15000;
+  const RequestPayer = "requester";
 
-  return getObjectData(options)
-    .then(decompress)
-    .then((logFile) => feedQueries(formatQueries(logFile)))
+  return listPrefixedKeys({ Bucket, Prefix, MaxKeys, RequestPayer })
+    .then((objs) => objs.filter(getYesterdayFilter()))
+    .then((objs) => Promise.all(objs.map(getObjectData)))
+    .then((buffes) => Promise.all(buffes.map(decompress)))
+    .then((logFiles) =>
+      Promise.all(
+        logFiles.map((logFile) => feedQueries(formatQueries(logFile)))
+      )
+    )
     .then((res) => {
       return { statusCode: 200 };
     })
