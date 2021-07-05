@@ -78,7 +78,7 @@ const decompress = ({ Bucket, Key, Body }) =>
         const data = new TextDecoder().decode(simple.decompress(Body));
         resolve(data);
       } catch (err) {
-        console.warn(
+        console.error(
           `Unable to decompress object with Key ${Key} in Bucket ${Bucket}`
         );
         reject(Error(err));
@@ -175,7 +175,12 @@ exports.handler = async (event, context) => {
       objects.filter(getDateFilter(new Date(Date.now() - 86400000)))
     )
     .then((objects) => Promise.all(objects.map(getObjectData)))
-    .then((objects) => Promise.all(objects.map(decompress)))
+    .then((objects) => Promise.allSettled(objects.map(decompress)))
+    .then((promises) =>
+      promises
+        .filter((promise) => promise.status === "fulfilled")
+        .map((promise) => promise.value)
+    )
     .then((logFiles) => logFiles.map(formatQueries).flat())
     .then(feedQueries)
     .then((res) => {
