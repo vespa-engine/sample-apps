@@ -171,8 +171,10 @@ exports.handler = async (event, context) => {
   const RequestPayer = "requester";
 
   return listPrefixedKeys({ Bucket, Prefix, MaxKeys, RequestPayer })
-    .then((objects) =>
-      objects.filter(getDateFilter(new Date(Date.now() - 86400000)))
+    .then(
+      (objects) =>
+        objects.filter(getDateFilter(new Date(Date.now() - 86400000)))
+      // objects.filter(getDateFilter(new Date(2021, 3, 6))) // For testing
     )
     .then((objects) => Promise.all(objects.map(getObjectData)))
     .then((objects) => Promise.allSettled(objects.map(decompress)))
