@@ -22,7 +22,7 @@ and the matching portions of the documents are highlighted.
 ### search-suggestions
 
 [search-suggestions](search-suggestions) is a sample application
-which uses streaming search to match and rank documents from a query log,
+which uses indexed prefix search to match and rank documents from a query log,
 and gives query suggestions based on previously written queries while the user is typing.
 
 ![query suggestions](img/search-suggestions.png)
