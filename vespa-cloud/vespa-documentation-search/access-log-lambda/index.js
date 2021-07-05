@@ -48,8 +48,8 @@ const listPrefixedKeys = ({ Bucket, Prefix, MaxKeys, RequestPayer }) => {
     );
 };
 
-const getYesterdayFilter = () => {
-  const yesterdayDateString = new Date(Date.now() - 86400000)
+const getDateFilter = (date) => {
+  const yesterdayDateString = date
     .toISOString()
     .replace(/^(\d{4})-(\d{2})-(\d{2})T[^Z]+Z/, "$1$2$3");
   const re = new RegExp(
@@ -66,18 +66,21 @@ const getObjectData = ({ Bucket, Key, RequestPayer }) => {
   return s3
     .getObject({ Bucket, Key, RequestPayer })
     .promise()
-    .then((res) => res.Body);
+    .then((res) => ({ Bucket, Key, Body: res.Body }));
 };
 
-const decompress = (buffer) =>
+const decompress = ({ Bucket, Key, Body }) =>
   new Promise((resolve, reject) => {
-    console.log(`Decompressing data`);
+    console.log(`Decompressing buffer`);
     ZstdCodec.run((zstd) => {
       try {
         const simple = new zstd.Simple();
-        const data = new TextDecoder().decode(simple.decompress(buffer));
+        const data = new TextDecoder().decode(simple.decompress(Body));
         resolve(data);
       } catch (err) {
+        console.warn(
+          `Unable to decompress object with Key ${Key} in Bucket ${Bucket}`
+        );
         reject(Error(err));
       }
     });
@@ -101,8 +104,8 @@ const formatQueries = (logFile) =>
     .map((obj) => ({ fields: obj }));
 
 const getSSMParameter = (parameter) => {
-  const ssm = new aws.SSM();
   console.log(`Getting parameter ${parameter}`);
+  const ssm = new aws.SSM();
   return new Promise((resolve, reject) =>
     ssm.getParameter(
       {
@@ -168,14 +171,13 @@ exports.handler = async (event, context) => {
   const RequestPayer = "requester";
 
   return listPrefixedKeys({ Bucket, Prefix, MaxKeys, RequestPayer })
-    .then((objs) => objs.filter(getYesterdayFilter()))
-    .then((objs) => Promise.all(objs.map(getObjectData)))
-    .then((buffes) => Promise.all(buffes.map(decompress)))
-    .then((logFiles) =>
-      Promise.all(
-        logFiles.map((logFile) => feedQueries(formatQueries(logFile)))
-      )
+    .then((objects) =>
+      objects.filter(getDateFilter(new Date(Date.now() - 86400000)))
     )
+    .then((objects) => Promise.all(objects.map(getObjectData)))
+    .then((objects) => Promise.all(objects.map(decompress)))
+    .then((logFiles) => logFiles.map(formatQueries).flat())
+    .then(feedQueries)
     .then((res) => {
       return { statusCode: 200 };
     })
