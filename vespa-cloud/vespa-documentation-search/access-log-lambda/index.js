@@ -74,7 +74,7 @@ const decompress = ({ Bucket, Key, Body }) =>
     console.log(`Decompressing buffer`);
     ZstdCodec.run((zstd) => {
       try {
-        const simple = new zstd.Simple();
+        const simple = new zstd.Streaming();
         const data = new TextDecoder().decode(simple.decompress(Body));
         resolve(data);
       } catch (err) {
