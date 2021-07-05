@@ -49,11 +49,11 @@ const listPrefixedKeys = ({ Bucket, Prefix, MaxKeys, RequestPayer }) => {
 };
 
 const getDateFilter = (date) => {
-  const yesterdayDateString = date
+  const dateString = date
     .toISOString()
     .replace(/^(\d{4})-(\d{2})-(\d{2})T[^Z]+Z/, "$1$2$3");
   const re = new RegExp(
-    `vespa-team\/vespacloud-docsearch\/default\/[^\/]+\/logs\/access\/JsonAccessLog\.default\.${yesterdayDateString}\\d+\.zst`
+    `vespa-team\/vespacloud-docsearch\/default\/[^\/]+\/logs\/access\/JsonAccessLog\.default\.${dateString}\\d+\.zst`
   );
 
   return ({ Key }) => re.test(Key);
