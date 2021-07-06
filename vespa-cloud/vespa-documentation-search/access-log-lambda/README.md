@@ -51,7 +51,8 @@ Trigger once a day - info TBD.
 ### Configure lambda
 For running the lambda with the example access log,
 the lambda should be configured to use 256MB of memory and have an execution time of 30 seconds.
-The execution time should probably be increased when running on more log files.
+When running on all acces logs from one day,
+the lambda should be configured to use 4096MB of memory and have an execution time of 30 seconds.
 
 
 ### Build Zip archive
