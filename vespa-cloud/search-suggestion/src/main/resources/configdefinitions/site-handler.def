@@ -1,4 +1,0 @@
-package=ai.vespa.example.searchsuggest
-
-vespaHostName string
-vespaHostPort int
