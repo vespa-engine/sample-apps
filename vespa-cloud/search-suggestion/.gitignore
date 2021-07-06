@@ -1,6 +1,0 @@
-target/
-.idea
-*.iml
-./*.pem
-*.pem
-!clients.pem
