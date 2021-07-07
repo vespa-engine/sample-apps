@@ -21,14 +21,13 @@ $ docker run --detach --name vespa --hostname vespa-example \
 </pre>
 
 **Wait for response** 
-
-Check respons with:
+Check response with:
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
 **Build and deploy the application**
-<pre data-test="exec">
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ mvn clean package
 $ curl --header Content-Type:application/zip --data-binary @target/application.zip \
   localhost:19071/application/v2/tenant/default/prepareandactivate
@@ -64,17 +63,16 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_te
 </pre>
 
 **Generate set of accepted terms**
-<pre data-test="exec" data-test-wait-for="200 OK">
+<pre data-test="exec">
 $ python3 accepted_words.py open_index.json top100en.txt
 </pre>
 
 
 **Generate terms from query log**
-
 Access logs are assumed to be in *logs/*.
 <pre>
 $ unzstd -c -r logs/ | grep '"uri":"/search/' | grep 'jsoncallback' \
-  | jq '{ term: .uri | scan("(?<=input=)[^&]*") | ascii_downcase | sub("(%..|[^a-z0-9]| )+"; " "; "g") | sub("^ | $"; ""; "g"), hits: .search.hits }' \
+  | jq '{ term: .uri | scan("(?&lt;=input=)[^&]*") | ascii_downcase | sub("(%..|[^a-z0-9]| )+"; " "; "g") | sub("^ | $"; ""; "g"), hits: .search.hits }' \
   | jq '{update: ("id:term:term::" + (.term | sub(" "; "/"; "g"))), create: true, fields: { term: { assign: .term }, query_count: { increment: 1 }, query_hits: { assign: .hits } } }' > feed_queries.json
 </pre>
 
@@ -85,7 +83,6 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_qu
 </pre>
 
 **Check the website and write queries and view suggestions**
-
 Open http://localhost:8080/site/ in a browser.
 To validate the site is up:
 <pre data-test="exec" data-test-assert-contains="search suggestions">
@@ -93,7 +90,6 @@ $ curl -s http://localhost:8080/site/
 </pre>
 
 **Shutdown and remove the docker container**
-
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
