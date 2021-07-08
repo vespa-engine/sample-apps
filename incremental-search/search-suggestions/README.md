@@ -26,9 +26,13 @@ Check response with:
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
-**Build and deploy the application**
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
+**Build the application**
+<pre data-test="exec">
 $ mvn clean package
+</pre>
+
+**Deploy the application**
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ curl --header Content-Type:application/zip --data-binary @target/application.zip \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
