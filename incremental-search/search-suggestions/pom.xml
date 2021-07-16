@@ -18,7 +18,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vespa_version>7.434.10</vespa_version>
+        <vespa_version>7.435.15</vespa_version>
         <tenant>vespa-team</tenant>
         <application>search-suggestion</application>
         <dataPlaneKeyFile>data-plane-private-key.pem</dataPlaneKeyFile>
