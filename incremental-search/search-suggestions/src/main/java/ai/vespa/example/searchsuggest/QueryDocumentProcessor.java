@@ -1,6 +1,5 @@
 package ai.vespa.example.searchsuggest;
 
-
 import com.google.inject.Inject;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
@@ -11,15 +10,16 @@ import com.yahoo.document.DocumentUpdate;
 import com.yahoo.document.datatypes.FieldValue;
 import com.yahoo.document.update.FieldUpdate;
 import com.yahoo.document.update.ValueUpdate;
-import com.yahoo.documentapi.*;
-
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class QueryDocumentProcessor extends DocumentProcessor {
