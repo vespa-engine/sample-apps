@@ -123,6 +123,31 @@ Creating a System Test is also a great way to develop a Vespa application:
 
 
 
+## Generate and feed search suggestions
+Use the script in [search-suggestions](../../incremental-search/search-suggestions/) to generate suggestions
+(generate open_index.json first):
+
+    $ python3 ../../incremental-search/search-suggestions/count_terms.py \
+      ../../../documentation/open_index.json feed_terms.json
+    $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
+      https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+    $ java -jar vespa-http-client-jar-with-dependencies.jar \
+      --file feed_terms.json \
+      --useTls --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
+      --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
+
+<!--
+    $ curl -L -o vespa-feed-client-cli.zip \
+      https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.444.18/vespa-feed-client-cli-7.444.18-zip.zip && \
+      unzip vespa-feed-client-cli.zip
+    $ vespa-feed-client-cli/vespa-feed-client \
+      --file feed_terms.json \
+      --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
+      --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
+-->
+
+
+
 ## Status
 [![Deploy vespa-documentation-search to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20vespa-documentation-search%20to%20Vespa%20Cloud/badge.svg?branch=master)](https://github.com/vespa-engine/sample-apps/actions?query=workflow%3A%22Deploy+vespa-documentation-search+to+Vespa+Cloud%22)
 
