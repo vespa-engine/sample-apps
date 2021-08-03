@@ -5,7 +5,6 @@
         <document-processing>
             <chain id="default">
                 <documentprocessor id="ai.vespa.cloud.docsearch.OutLinksDocumentProcessor" bundle="vespacloud-docsearch"/>
-                <documentprocessor id="ai.vespa.cloud.docsearch.QueryDocumentProcessor" bundle="vespacloud-docsearch"/>
             </chain>
         </document-processing>
         <search/>
