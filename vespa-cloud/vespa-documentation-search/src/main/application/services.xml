@@ -8,7 +8,11 @@
                 <documentprocessor id="ai.vespa.cloud.docsearch.QueryDocumentProcessor" bundle="vespacloud-docsearch"/>
             </chain>
         </document-processing>
-        <search/>
+        <search>
+            <chain id="default" inherits="vespa">
+                <searcher id="ai.vespa.cloud.docsearch.DocumentationSearcher" bundle="vespacloud-docsearch"/>
+            </chain>
+        </search>
         <document-api/>
         <nodes count="2" exclusive="true"/>
     </container>
