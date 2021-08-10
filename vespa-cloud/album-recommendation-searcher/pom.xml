@@ -27,4 +27,8 @@
         <tenant>vespa-team</tenant>                                 <!-- Name from the web console -->
         <application>album-rec-searcher</application>                   <!-- Name from the web console -->
     </properties>
+
+    <!-- To change build settings, e.g. allow builds with warnings,
+         copy the <build> section from https://github.com/vespa-engine/vespa/blob/master/hosted-tenant-base/pom.xml
+         and override configuration here -->
 </project>

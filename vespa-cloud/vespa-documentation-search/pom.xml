@@ -22,4 +22,8 @@
         <dataPlaneKeyFile>data-plane-private-key.pem</dataPlaneKeyFile>
         <dataPlaneCertificateFile>data-plane-public-cert.pem</dataPlaneCertificateFile>
     </properties>
+
+    <!-- To change build settings, e.g. allow builds with warnings,
+         copy the <build> section from https://github.com/vespa-engine/vespa/blob/master/hosted-tenant-base/pom.xml
+         and override configuration here -->
 </project>

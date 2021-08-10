@@ -24,4 +24,7 @@
         <application>cord-19</application>                   <!-- Name from the web console -->
     </properties>
 
+    <!-- To change build settings, e.g. allow builds with warnings,
+         copy the <build> section from https://github.com/vespa-engine/vespa/blob/master/hosted-tenant-base/pom.xml
+         and override configuration here -->
 </project>
