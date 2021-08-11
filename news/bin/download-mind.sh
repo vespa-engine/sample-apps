@@ -10,8 +10,8 @@ mkdir -p $DEV_DIR
 
 if [ $DATASET = "demo" ]
 then
-  curl -L -o $DIR/train.zip https://recodatasets.blob.core.windows.net/newsrec/MINDdemo_train.zip
-  curl -L -o $DIR/dev.zip https://recodatasets.blob.core.windows.net/newsrec/MINDdemo_dev.zip
+  curl -L -o $DIR/train.zip https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_train.zip
+  curl -L -o $DIR/dev.zip https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_dev.zip
 
 elif [ $DATASET = "small" ]
 then
