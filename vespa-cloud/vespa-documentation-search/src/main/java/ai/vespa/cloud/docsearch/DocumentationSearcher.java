@@ -37,13 +37,13 @@ public class DocumentationSearcher extends Searcher {
                 String[] topHitStringArray = getTopHitStringArray(hitList);
                 docQuery.setHits(20);
                 for (String term: topHitStringArray){
-                    WordItem wordItem = new WordItem(term);
+                    WordItem wordItem = new WordItem(term, true);
                     weakAndItem.addItem(wordItem);
                 }
             } else {
                 docQuery.setHits(10);
                 for (String term: searchTerms.split(" ")){
-                    WordItem wordItem = new WordItem(term);
+                    WordItem wordItem = new WordItem(term, true);
                     weakAndItem.addItem(wordItem);
                 }
             }
