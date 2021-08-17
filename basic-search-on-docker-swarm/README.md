@@ -14,6 +14,11 @@ Swarm, hit the green start button, click on the wrench in the top left and choos
 The example below needs to be executed on one of the master nodes.
 
 ### Executable example
+
+**Validate environment, Docker containers shoould have minimum 6G:**
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
 **Check-out the example repository:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git

@@ -7,6 +7,13 @@ Uses N-grams to simulate substring search.
 
 ## Steps
 
+**Validate environment, should be minimum 6G:**
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
+
 **Clone sample apps and documentation**
 
 <pre data-test="exec">

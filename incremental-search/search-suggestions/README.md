@@ -7,6 +7,12 @@ Uses indexed prefix search for document matching.
 
 ## Quick start
 
+**Validate environment, should be minimum 6G:**
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 
 **Clone sample-apps and go to search-suggestions**
 

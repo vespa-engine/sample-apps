@@ -42,7 +42,14 @@ Requirements:
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
-First, we retrieve the sample app:
+
+Validate environment, should be minimum 10G:
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
+Get the sample app:
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
