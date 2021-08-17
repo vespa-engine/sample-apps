@@ -168,6 +168,13 @@ Requirements:
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
+
+Validate environment, should be minimum 10G:
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 Clone the sample app 
 
 <pre data-test="exec">

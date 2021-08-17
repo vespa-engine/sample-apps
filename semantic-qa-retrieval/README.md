@@ -63,6 +63,12 @@ See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.ht
 This setup is slightly different then the official quick start guide
 as we build a custom docker image  with the tensorflow dependencies.
 
+**Validate environment, should be minimum 6G:**
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 
 **Checkout the sample-apps repository**
 

@@ -20,6 +20,12 @@ various ways stateless model evaluation can be used in Vespa:
 
 ### Executable example
 
+**Validate environment, should be minimum 6G:**
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 **Check-out, compile and run:**
 
 <pre data-test="exec">
