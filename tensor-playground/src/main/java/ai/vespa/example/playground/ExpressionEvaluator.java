@@ -59,8 +59,13 @@ public class ExpressionEvaluator {
                         value = new DoubleValue(argument.get("value").asDouble());
                     } else if ("boolean".equalsIgnoreCase(type)) {
                         value = new BooleanValue(argument.get("value").asBoolean());
-                    } else if (type.toLowerCase().startsWith("tensor(")) {
-                        value = new TensorValue(Tensor.from(type + ":" + argument.get("value").asText()));
+                    } else if (type.toLowerCase().startsWith("tensor")) {
+                        String valueText = argument.get("value").asText();
+                        if (valueText.toLowerCase().startsWith("tensor")) {
+                            value = new TensorValue(Tensor.from(valueText));
+                        } else {
+                            value = new TensorValue(Tensor.from(type + ":" + valueText));
+                        }
                     } else {
                         return error("Unknown argument type: " + type);
                     }
