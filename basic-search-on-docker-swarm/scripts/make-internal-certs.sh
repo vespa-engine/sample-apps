@@ -38,7 +38,7 @@ echo "DNS.$(($# + 1)) = localhost" >> cert-exts.cnf
 
 
 # Self-signed CA
-openssl ecparam -name prime256v1 -genkey -noout -out ca-internal.key
+openssl genrsa -out ca-internal.key 2048
 
 openssl req -x509 -new \
     -key ca-internal.key \
@@ -50,7 +50,7 @@ openssl req -x509 -new \
     -days 10000
 
 # Create private key, CSR and certificate for host. Certificate has DNS SANs for all provided hostnames
-openssl ecparam -name prime256v1 -genkey -noout -out host.key
+openssl genrsa -out host.key 2048
 
 openssl req -new -key host.key -out host.csr \
     -subj '/C=US/L=California/O=ACME Inc/OU=Vespa Sample Apps' \
@@ -65,4 +65,4 @@ openssl x509 -req -in host.csr \
     -extensions host_exts \
     -days 10000 \
     -sha256
-    
+
