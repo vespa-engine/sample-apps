@@ -30,6 +30,12 @@ EOF
 for (( i=1; i <= "$#"; i++ )); do
   echo "DNS.${i} = ${!i}" >> cert-exts.cnf
 done
+for (( i=1; i <= 8; i++ )); do
+  echo "IP.${i} = 10.0.10.1${i}" >> cert-exts.cnf
+done
+echo "IP.9 = 127.0.0.1" >> cert-exts.cnf
+echo "DNS.$(($# + 1)) = localhost" >> cert-exts.cnf
+
 
 # Self-signed CA
 openssl ecparam -name prime256v1 -genkey -noout -out ca-internal.key

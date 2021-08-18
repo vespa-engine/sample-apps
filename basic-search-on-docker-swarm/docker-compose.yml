@@ -3,16 +3,20 @@ version: '3.7'
 services:
   config0:
     image: vespaengine/vespa
-    hostname: "config0.vespa_net"
+    hostname: "config0-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
+      - target: 5005
+        published: 5005
+        mode: host
       - target: 19071
         published: 19071
         mode: host
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.10
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -22,12 +26,13 @@ services:
 
   config1:
     image: vespaengine/vespa
-    hostname: "config1.vespa_net"
+    hostname: "config1-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
-      - net
+      net:
+       ipv4_address: 10.0.10.11
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -37,12 +42,13 @@ services:
 
   config2:
     image: vespaengine/vespa
-    hostname: "config2.vespa_net"
+    hostname: "config2-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.12
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -53,16 +59,17 @@ services:
   container0:
     image: vespaengine/vespa
     command: services
-    hostname: "container0.vespa_net"
+    hostname: "container0-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
       - target: 8080
         published: 8080
         mode: host
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.13
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -73,16 +80,17 @@ services:
   container1:
     image: vespaengine/vespa
     command: services
-    hostname: "container1.vespa_net"
+    hostname: "container1-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
       - target: 8080
         published: 8081
         mode: host
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.14
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -93,16 +101,17 @@ services:
   container2:
     image: vespaengine/vespa
     command: services
-    hostname: "container2.vespa_net"
+    hostname: "container2-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
       - target: 8080
         published: 8082
         mode: host
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.15
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -113,12 +122,13 @@ services:
   content0:
     image: vespaengine/vespa
     command: services
-    hostname: "content0.vespa_net"
+    hostname: "content0-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.16
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -129,12 +139,13 @@ services:
   content1:
     image: vespaengine/vespa
     command: services
-    hostname: "content1.vespa_net"
+    hostname: "content1-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.17
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -145,12 +156,13 @@ services:
   content2:
     image: vespaengine/vespa
     command: services
-    hostname: "content2.vespa_net"
+    hostname: "content2-vespa-net"
     environment:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
+      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
-      - net
+      net:
+        ipv4_address: 10.0.10.18
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
@@ -171,3 +183,7 @@ networks:
   net:
     driver: overlay
     attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.10.0/24
