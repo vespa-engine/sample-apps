@@ -1,0 +1,8 @@
+{
+    "disable-hostname-validation": true,
+    "files": {
+      "private-key": "/var/tls/host.key",
+      "ca-certificates": "/var/tls/ca-internal.pem",
+      "certificates": "/var/tls/host.pem"
+    }
+}

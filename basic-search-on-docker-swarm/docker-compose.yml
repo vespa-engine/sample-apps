@@ -5,6 +5,7 @@ services:
     image: vespaengine/vespa
     hostname: "config0.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
       - target: 19071
@@ -15,34 +16,46 @@ services:
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   config1:
     image: vespaengine/vespa
     hostname: "config1.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   config2:
     image: vespaengine/vespa
     hostname: "config2.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   container0:
     image: vespaengine/vespa
     command: services
     hostname: "container0.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
       - target: 8080
@@ -53,12 +66,16 @@ services:
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   container1:
     image: vespaengine/vespa
     command: services
     hostname: "container1.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
       - target: 8080
@@ -69,12 +86,16 @@ services:
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   container2:
     image: vespaengine/vespa
     command: services
     hostname: "container2.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     ports:
       - target: 8080
@@ -85,42 +106,57 @@ services:
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   content0:
     image: vespaengine/vespa
     command: services
     hostname: "content0.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   content1:
     image: vespaengine/vespa
     command: services
     hostname: "content1.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
   content2:
     image: vespaengine/vespa
     command: services
     hostname: "content2.vespa_net"
     environment:
+      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0.vespa_net,config1.vespa_net,config2.vespa_net
     networks:
       - net
     volumes:
       - data:/opt/vespa/var
       - logs:/opt/vespa/logs
+      - type: bind
+        source: ./tls
+        target: /var/tls
 
 volumes:
   data:
@@ -130,7 +166,7 @@ volumes:
   logs:
     external: true
     name: '{{.Service.Name}}-{{.Task.Slot}}-logs'
-
+  
 networks:
   net:
     driver: overlay
