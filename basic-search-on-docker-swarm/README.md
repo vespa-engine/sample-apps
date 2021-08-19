@@ -19,6 +19,10 @@ The example below needs to be executed on one of the master nodes.
 $ git clone https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
 </pre>
+**Generate keys and certificate chains:**
+<pre data-test="exec">
+$ $VESPA_SAMPLE_APP/scripts/generate-cert-chains.sh
+</pre>
 **Deploy the Vespa stack:**
 <pre data-test="exec">
 $ docker stack deploy --orchestrator swarm --compose-file $VESPA_SAMPLE_APP/docker-compose.yml vespa
@@ -33,7 +37,7 @@ $ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/ma
 </pre>
 **Wait for the configuration server to start (should return 200 OK):**
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head $(hostname):19071/ApplicationStatus
+$ $VESPA_SAMPLE_APP/scripts/vespa-curl.sh -s --head https://localhost:19071/ApplicationStatus
 </pre>
 **Deploy the application:**
 <pre data-test="exec">
