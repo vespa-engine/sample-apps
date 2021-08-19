@@ -1,2 +1,5 @@
-#!/bin/bash
-curl --key $(dirname $0)/../pki/vespa/host.key --cert $(dirname $0)/../pki/vespa/host.pem --cacert $(dirname $0)/../pki/vespa/ca-internal.pem "$@"
+#!/usr/bin/env bash
+set -e
+
+SAMPLE_APP_ROOT=$(dirname $0)/..
+curl --key ${SAMPLE_APP_ROOT}/pki/vespa/host.key --cert ${SAMPLE_APP_ROOT}/pki/vespa/host.pem --cacert ${SAMPLE_APP_ROOT}/pki/vespa/ca-vespa.pem "$@"

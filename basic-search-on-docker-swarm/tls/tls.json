@@ -2,7 +2,7 @@
     "disable-hostname-validation": false,
     "files": {
       "private-key": "/var/tls/host.key",
-      "ca-certificates": "/var/tls/ca-internal.pem",
+      "ca-certificates": "/var/tls/ca-vespa.pem",
       "certificates": "/var/tls/host.pem"
     }
 }
