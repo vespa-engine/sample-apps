@@ -6,7 +6,7 @@ set -x
 readonly MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $MYDIR
 
-readonly SID=$(tar -C ../src/main/application -cf - . | gzip | curl -s -L --header "Content-Type: application/x-gzip" --data-binary @- "$(hostname):19071/application/v2/tenant/default/session" | python -c "import sys,json; print(json.load(sys.stdin)['session-id']);")
-curl -s -L -X PUT "$(hostname):19071/application/v2/tenant/default/session/$SID/prepared" | python -mjson.tool
-curl -s -L -X PUT "$(hostname):19071/application/v2/tenant/default/session/$SID/active" | python -mjson.tool
+readonly SID=$(tar -C ../src/main/application -cf - . | gzip | $MYDIR/vespa-curl.sh -s -L --header "Content-Type: application/x-gzip" --data-binary @- "https://localhost:19071/application/v2/tenant/default/session" | python -c "import sys,json; print(json.load(sys.stdin)['session-id']);")
+$MYDIR/vespa-curl.sh -s -L -X PUT "https://localhost:19071/application/v2/tenant/default/session/$SID/prepared" | python -mjson.tool
+$MYDIR/vespa-curl.sh -s -L -X PUT "https://localhost:19071/application/v2/tenant/default/session/$SID/active" | python -mjson.tool
 

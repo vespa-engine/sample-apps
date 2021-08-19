@@ -67,6 +67,9 @@ services:
       - target: 8080
         published: 8080
         mode: host
+      - target: 8443
+        published: 8443
+        mode: host
     networks:
       net:
         ipv4_address: 10.0.10.13

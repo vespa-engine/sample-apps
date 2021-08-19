@@ -41,7 +41,7 @@ $ $VESPA_SAMPLE_APP/scripts/deploy.sh
 </pre>
 **Wait for the application to start (should return 200 OK):**
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://$(hostname):8080/ApplicationStatus
+$ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s --head https://localhost:8443/ApplicationStatus
 </pre>
 **Feed data to the application:**
 <pre data-test="exec">
@@ -49,10 +49,10 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 </pre>
 **Do a search:**
 <pre data-test="exec">
-$ curl -s "http://$(hostname):8080/search/?query=michael" | python -m json.tool
+$ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s "https://localhost:8443/search/?query=michael" | python -m json.tool
 </pre>
 **Congratulations. You have now deployed and tested a Vespa application on a multinode cluster.**
-**After you have finished testing the Vespa appplication excute the following step to delete the services:**
+**After you have finished testing the Vespa application excute the following step to delete the services:**
 <pre data-test="after">
 $ docker stack rm vespa
 </pre>
