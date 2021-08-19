@@ -15,7 +15,7 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
     #
     # TBD:
-    # - basic-search-on-docker-swarm
+    # - secure-vespa-with-mtls
     # - basic-search-on-gke
     #
     #

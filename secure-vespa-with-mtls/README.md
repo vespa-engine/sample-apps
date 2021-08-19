@@ -1,5 +1,5 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa basic search example on Docker Swarm
+# Secure Vespa with mutually authenticated TLS
 
 Please refer to
 [Vespa quick start using Docker](https://docs.vespa.ai/en/vespa-quick-start.html)
@@ -55,7 +55,7 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 <pre data-test="exec">
 $ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s "https://localhost:8443/search/?query=michael" | python -m json.tool
 </pre>
-**Congratulations. You have now deployed and tested a Vespa application on a multinode cluster.**
+**Congratulations. You have now deployed and tested a secure Vespa installation.**
 **After you have finished testing the Vespa application excute the following step to delete the services:**
 <pre data-test="after">
 $ docker stack rm vespa
