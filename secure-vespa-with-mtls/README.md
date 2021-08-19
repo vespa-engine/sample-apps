@@ -17,7 +17,7 @@ The example below needs to be executed on one of the master nodes.
 **Check-out the example repository:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
+$ VESPA_SAMPLE_APP=`pwd`/sample-apps/secure-vespa-with-mtls
 </pre>
 **Generate keys and certificate chains:**
 <pre data-test="exec">
