@@ -8,9 +8,6 @@ services:
       - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
       - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
-      - target: 5005
-        published: 5005
-        mode: host
       - target: 19071
         published: 19071
         mode: host
@@ -91,6 +88,9 @@ services:
       - target: 8080
         published: 8081
         mode: host
+      - target: 8443
+        published: 8444
+        mode: host
     networks:
       net:
         ipv4_address: 10.0.10.14
@@ -111,6 +111,9 @@ services:
     ports:
       - target: 8080
         published: 8082
+        mode: host
+      - target: 8443
+        published: 8445
         mode: host
     networks:
       net:
