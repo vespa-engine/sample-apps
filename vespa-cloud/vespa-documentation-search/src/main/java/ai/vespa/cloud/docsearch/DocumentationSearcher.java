@@ -59,7 +59,7 @@ public class DocumentationSearcher extends Searcher {
     private Result getSuggestions(String searchTerms, Execution execution) {
         Query query = new Query();
         query.getModel().setRestrict("term");
-        query.getModel().getQueryTree().setRoot(new PrefixItem(searchTerms, "term"));
+        query.getModel().getQueryTree().setRoot(new PrefixItem(searchTerms, "default"));
         query.getRanking().setProfile("term_rank");
         query.setHits(10);
         Result suggestionResult = execution.search(query);
