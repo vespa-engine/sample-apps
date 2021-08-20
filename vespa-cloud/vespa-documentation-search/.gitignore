@@ -3,3 +3,5 @@ target/
 *.iml
 ./*.pem
 *.pem
+feed_terms.json
+vespa-http-client-jar-with-dependencies.jar
