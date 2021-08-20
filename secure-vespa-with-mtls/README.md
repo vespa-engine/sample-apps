@@ -1,5 +1,5 @@
 <!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-# Vespa basic search example on Docker Swarm
+# Secure Vespa with mutually authenticated TLS
 
 Please refer to
 [Vespa quick start using Docker](https://docs.vespa.ai/en/vespa-quick-start.html)
@@ -17,7 +17,11 @@ The example below needs to be executed on one of the master nodes.
 **Check-out the example repository:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ VESPA_SAMPLE_APP=`pwd`/sample-apps/basic-search-on-docker-swarm
+$ VESPA_SAMPLE_APP=`pwd`/sample-apps/secure-vespa-with-mtls
+</pre>
+**Generate keys and certificate chains:**
+<pre data-test="exec">
+$ $VESPA_SAMPLE_APP/scripts/generate-cert-chains.sh
 </pre>
 **Deploy the Vespa stack:**
 <pre data-test="exec">
@@ -33,7 +37,7 @@ $ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/ma
 </pre>
 **Wait for the configuration server to start (should return 200 OK):**
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head $(hostname):19071/ApplicationStatus
+$ $VESPA_SAMPLE_APP/scripts/vespa-curl.sh -s --head https://localhost:19071/ApplicationStatus
 </pre>
 **Deploy the application:**
 <pre data-test="exec">
@@ -41,7 +45,7 @@ $ $VESPA_SAMPLE_APP/scripts/deploy.sh
 </pre>
 **Wait for the application to start (should return 200 OK):**
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://$(hostname):8080/ApplicationStatus
+$ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s --head https://localhost:8443/ApplicationStatus
 </pre>
 **Feed data to the application:**
 <pre data-test="exec">
@@ -49,10 +53,10 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 </pre>
 **Do a search:**
 <pre data-test="exec">
-$ curl -s "http://$(hostname):8080/search/?query=michael" | python -m json.tool
+$ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s "https://localhost:8443/search/?query=michael" | python -m json.tool
 </pre>
-**Congratulations. You have now deployed and tested a Vespa application on a multinode cluster.**
-**After you have finished testing the Vespa appplication excute the following step to delete the services:**
+**Congratulations. You have now deployed and tested a secure Vespa installation.**
+**After you have finished testing the Vespa application excute the following step to delete the services:**
 <pre data-test="after">
 $ docker stack rm vespa
 </pre>

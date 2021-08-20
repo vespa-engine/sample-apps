@@ -104,8 +104,8 @@ for support follow-up - i.e. run this application first.
 ### [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke)
 This sample application demonstrates deploying a simple Vespa application on Kubernetes.  
 
-### [Vespa on Docker Swarm](basic-search-on-docker-swarm)
-This sample application demonstrates deploying a simple Vespa application using Docker Swarm.
+### [Secure Vespa with mTLS](secure-vespa-with-mtls)
+This sample demonstrates configuring Vespa with mTLS.
 
 ### [Vespa metrics and monitoring](album-recommendation-monitoring)
 This sample app demonstrates how to integrate Vespa with **Prometheus and Grafana**.
