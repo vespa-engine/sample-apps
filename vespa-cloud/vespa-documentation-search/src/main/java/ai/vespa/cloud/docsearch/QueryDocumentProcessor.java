@@ -52,10 +52,12 @@ public class QueryDocumentProcessor extends DocumentProcessor {
                 DocumentUpdate update = (DocumentUpdate) op;
                 if (update.getDocumentType().isA(TERM_DOCUMENT_TYPE)) {
                     FieldUpdate fieldUpdate = update.getFieldUpdate("term");
-                    for (ValueUpdate<?> valueUpdate : fieldUpdate.getValueUpdates()) {
-                        if (!containsOnlyAcceptedWords(valueUpdate.getValue())) {
-                            processing.getDocumentOperations().clear();
-                            return Progress.DONE;
+                    if (fieldUpdate != null) {
+                        for (ValueUpdate<?> valueUpdate : fieldUpdate.getValueUpdates()) {
+                            if (!containsOnlyAcceptedWords(valueUpdate.getValue())) {
+                                processing.getDocumentOperations().clear();
+                                return Progress.DONE;
+                            }
                         }
                     }
                 }
