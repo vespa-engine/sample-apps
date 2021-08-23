@@ -23,10 +23,15 @@ schema term {
             indexing: summary | attribute
         }
         
+        field term_array type array<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+        
     } 
 
     fieldset default {
-        fields: term
+        fields: term, term_array
     }
 
     rank-profile term_rank inherits default {

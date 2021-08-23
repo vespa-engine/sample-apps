@@ -1,0 +1,17 @@
+[
+  {
+    "update": "id:term:term::learning/to/rank",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "learning to rank"
+      },
+      "corpus_count": {
+        "assign": 10
+      },
+      "document_count": {
+        "assign": 0
+      }
+    }
+  }
+]

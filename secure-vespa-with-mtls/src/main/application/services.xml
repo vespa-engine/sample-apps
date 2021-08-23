@@ -18,6 +18,17 @@
     <nodes jvmargs="-Xms512m -Xmx512m">
       <node hostalias="container0" />
     </nodes>
+    <http>
+      <server id="default" port="8080" />
+      <server id="ingress" port="8443">
+        <ssl>
+          <private-key-file>/var/tls/host.key</private-key-file>
+          <certificate-file>/var/tls/host.pem</certificate-file>
+          <ca-certificates-file>/var/tls/ca-client.pem</ca-certificates-file>
+          <client-authentication>need</client-authentication>
+        </ssl>
+      </server>
+    </http>
   </container>
 
   <content id="music" version="1.0">

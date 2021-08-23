@@ -1,0 +1,20 @@
+[
+  {
+    "update": "id:term:term::learning/to/rank",
+    "create": true,
+    "fields": {
+      "term": {
+        "assign": "learning to rank"
+      },
+      "term_array": {
+        "assign": ["learning to rank", "to rank", "rank"]
+      },
+      "corpus_count": {
+        "assign": 100
+      },
+      "document_count": {
+        "assign": 0
+      }
+    }
+  }
+]

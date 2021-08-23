@@ -21,6 +21,13 @@ Example queries:
 * https://doc-search.vespa.oath.cloud/document/v1/open/doc/docid/open%2Fen%2Freference%2Fquery-api-reference.html
 * https://doc-search.vespa.oath.cloud/search/?yql=select+*+from+doc+where+userInput(@input)%3B&input=vespa+ranking+is+great
 
+<pre data-test="exec" data-test-assert-contains="namespace">
+$ curl "https://doc-search.vespa.oath.cloud/document/v1/open/doc/docid/open%2Fen%2Freference%2Fquery-api-reference.html"
+</pre>
+<pre data-test="exec" data-test-assert-contains="the-great-search-engine-debate">
+$ curl "https://doc-search.vespa.oath.cloud/search/?yql=select+*+from+doc+where+userInput(@input)%3B&input=vespa+ranking+is+great"
+</pre>
+
 Using these endpoints is a good way to get started with Vespa -
 see the [github deploy action](https://github.com/vespa-engine/sample-apps/blob/master/.github/workflows/deploy-vespa-documentation-search.yaml)
 (use `vespa:deploy` to deploy to a dev instance or the [quick-start](https://docs.vespa.ai/en/vespa-quick-start.html))
@@ -125,10 +132,10 @@ Creating a System Test is also a great way to develop a Vespa application:
 
 ## Generate and feed search suggestions
 Use the script in [search-suggestions](../../incremental-search/search-suggestions/) to generate suggestions
-(generate open_index.json first):
+(generate ../../../documentation/open_index.json first):
 
     $ python3 ../../incremental-search/search-suggestions/count_terms.py \
-      ../../../documentation/open_index.json feed_terms.json
+      ../../../documentation/open_index.json feed_terms.json 2 ../../incremental-search/search-suggestions/top100en.txt
     $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
       https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
     $ java -jar vespa-http-client-jar-with-dependencies.jar \
@@ -146,7 +153,14 @@ Use the script in [search-suggestions](../../incremental-search/search-suggestio
       --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
 -->
 
+The above feeds single terms and phrases of 2, with stop-word removal from top100en.txt.
+Suggestions with 3 terms creates a lot of noise -
+work around by adding to this file and feed it:
 
+    $ java -jar vespa-http-client-jar-with-dependencies.jar \
+      --file extra_suggestions.json \
+      --useTls --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
+      --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
 
 ## Status
 [![Deploy vespa-documentation-search to Vespa Cloud](https://github.com/vespa-engine/sample-apps/workflows/Deploy%20vespa-documentation-search%20to%20Vespa%20Cloud/badge.svg?branch=master)](https://github.com/vespa-engine/sample-apps/actions?query=workflow%3A%22Deploy+vespa-documentation-search+to+Vespa+Cloud%22)

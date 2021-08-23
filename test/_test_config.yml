@@ -13,9 +13,11 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/vespa-documentation-search/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/README.md"
     #
     # TBD:
-    # - basic-search-on-docker-swarm
+    # - secure-vespa-with-mtls
     # - basic-search-on-gke
     #
     #

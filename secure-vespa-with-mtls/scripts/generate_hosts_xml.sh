@@ -11,7 +11,7 @@ echo '<hosts>'
 for h in $(get_hosts|sort); do
   h="${h%.[0-9]*}"
   h="${h#*_}"
-  echo "  <host name='${h}.vespa_net'><alias>${h}</alias></host>"
+  echo "  <host name='${h}-vespa-net'><alias>${h}</alias></host>"
 done
 echo '</hosts>'
 
