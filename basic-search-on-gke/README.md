@@ -6,6 +6,8 @@ Please refer to
 for more information on the basic single container example.
 Also see [Vespa quick start using Kubernetes](https://docs.vespa.ai/en/vespa-quick-start-kubernetes.html).
 
+Containers running Vespa should have minimum 6B memory available.
+
 This example assumes that a you already created a Google project, you have the gcloud command line and kubectl installed.
 If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/quickstart).
 

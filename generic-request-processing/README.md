@@ -9,6 +9,12 @@ Refer to [getting started](https://docs.vespa.ai/en/getting-started.html) for mo
 
 
 ### Executable example
+
+**Validate environment, should be minimum 6G:**
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 **Check-out, compile and run:**
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git

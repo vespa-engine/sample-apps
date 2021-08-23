@@ -328,7 +328,14 @@ Requirements:
 * zstd: `brew install zstd`
 * Operating system: macOS or Linux, Architecture: x86_64
 
-First, we clone the sample apps :
+
+Validate environment, should be minimum 10G:
+
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
+Clone the sample apps :
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git

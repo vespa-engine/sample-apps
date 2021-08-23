@@ -12,6 +12,11 @@ above and use the scripts to convert.
 
 ### How to run
 
+**Validate environment, should be minimum 6G:**
+<pre>
+$ docker info | grep "Total Memory"
+</pre>
+
 **Check-out, compile and run:**
 
 <pre data-test="exec">
