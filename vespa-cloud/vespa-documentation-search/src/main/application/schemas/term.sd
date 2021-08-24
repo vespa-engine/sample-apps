@@ -27,11 +27,16 @@ schema term {
             indexing: summary | attribute
             attribute: fast-search
         }
+
+        field terms type array<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
         
     } 
 
     fieldset default {
-        fields: term, term_array
+        fields: term, term_array, terms
     }
 
     rank-profile term_rank inherits default {
