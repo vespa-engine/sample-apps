@@ -9,6 +9,17 @@ def read_json_file(file_path):
         data = json.load(f)
     return data
 
+def get_phrases(terms):
+    # from "learning to rank" to ['learning to rank', 'to rank', 'rank']
+    phrases = []
+    phrases.append(terms)
+    end = terms.find(' ')
+    while end != -1:
+        start = end+1
+        remainder = terms[start:]
+        phrases.append(remainder)
+        end = terms.find(' ', start)
+    return phrases
 
 def write_json_file(terms, file_path):
     feed_list = [
@@ -17,6 +28,7 @@ def write_json_file(terms, file_path):
             "create": True,
             "fields": {
                 "term": {"assign": data["term"]},
+                "terms": {"assign": get_phrases(data["term"])},
                 "corpus_count": {"assign": data["count"]},
                 "document_count": {"assign": data["docs"]},
             },
