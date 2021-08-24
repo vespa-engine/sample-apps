@@ -42,6 +42,7 @@ module Jekyll
             end
             doc = Nokogiri::HTML(input)
             doc.search('th,td').each{ |e| e.after "\n" }
+            doc.search('style').each{ |e| e.remove }
             content = doc.xpath("//text()").to_s
             page_text = content.gsub("\r"," ").gsub("\n"," ")
         end
