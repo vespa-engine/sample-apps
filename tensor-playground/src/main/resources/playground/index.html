@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <html>
 
 <head>
@@ -8,67 +8,49 @@
 
     <link rel="stylesheet" type="text/css" href="/playground/css/playground.css"/>
 
-    <!-- check these for legality of including them here -->
     <script src="/playground/js/playground.js" defer></script>
-    <script src="/playground/js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/playground/js/d3.min.js" charset="utf-8"></script>
     <script src="/playground/js/lz-string.min.js" language="javascript"></script>
-
     <script src="https://cdn.rawgit.com/showdownjs/showdown/1.7.1/dist/showdown.min.js" language="javascript"></script>
-
 </head>
 
 <body onload="main();">
 
 <div id="header">
     <div id="header-global-commands">
-        <div class="block">
-            <button onclick="clear_all();">Reset</button>
+        <div class="block title">
+            Tensor Playground
         </div>
 
-        <div class="block right">
-            <label>Setup</label>
-            <input id="setup-input" size="30" value="#setup" onclick="this.select();" onchange="on_setup_input_change();" />
-            <button onclick="toggle_show_setup();">View</button>
-        </div>
-
-    </div>
-    <hr />
-    <div id="header-cell-commands">
-        <div class="block left">
-            <span id="frame-label"></span>
-            <button onclick="move_selected_up();" id="up-button">Up</button>
-            <button onclick="move_selected_down();" id="down-button">Down</button>
-            <button onclick="remove_selected();" id="remove-button">Remove</button>
-            <button onclick="edit_selected();" id="edit-button">Edit</button>
-        </div>
-
-        <div class="block">
-            <button onclick="execute_selected();" id="execute-button">Execute</button>
-        </div>
-
-        <div class="block right" id="setup_new_operation">
+        <div class="block right commands">
+            <a href="#" id="view-setup-cmd">View setup</a>
+            <a href="#" id="clear-cmd">Clear</a>
+            <a href="#" id="copy-url-cmd">Copy url</a>
         </div>
 
     </div>
+
 </div>
 
 <div id="content">
 
     <div class="hidden" id="setup-container">
         <textarea id="setup-content" cols="120" rows="30"></textarea>
-        <div>
-            <button onclick="apply_setup();">Apply</button>
-            <button onclick="toggle_show_setup();">Close</button>
-        </div>
+        <a href="#" id="apply-setup-cmd">Apply</a>
+        <a href="#" id="close-setup-cmd">Close</a>
     </div>
 
     <div id="frames">
     </div>
 
+    <div id="add_frames">
+        <a href="#" id="new-comment-cmd">New comment</a>
+        <a href="#" id="new-expression-cmd">New expression</a>
+    </div>
+
 </div>
 
 <div id="footer">
-    <h4>Rank expression playground</h4>
     <table style="margin:auto">
         <tr>
             <td class="header">Command</td>
@@ -91,15 +73,19 @@
             <td>Move frame down</td>
         </tr>
         <tr>
-            <td>Enter</td>
+            <td>Enter / e</td>
             <td>Edit selected frame</td>
+        </tr>
+        <tr>
+            <td>Ctrl + Enter</td>
+            <td>Save and execute frame</td>
         </tr>
         <tr>
             <td>Esc</td>
             <td>Cancel editing of frame</td>
         </tr>
         <tr>
-            <td>Backspace / x</td>
+            <td>Backspace / x / d then d</td>
             <td>Remove selected frame</td>
         </tr>
         <tr>
@@ -111,16 +97,8 @@
             <td>Add new comment below selected frame</td>
         </tr>
         <tr>
-            <td>n then v</td>
-            <td>Add new variable below selected frame</td>
-        </tr>
-        <tr>
             <td>n then e</td>
             <td>Add new expression below selected frame</td>
-        </tr>
-        <tr>
-            <td>a</td>
-            <td>Add new frame of type selected in add dropdown box below selected frame</td>
         </tr>
     </table>
 </div>
