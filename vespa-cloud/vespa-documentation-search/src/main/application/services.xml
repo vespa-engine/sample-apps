@@ -17,6 +17,13 @@
         <nodes count="2" exclusive="true"/>
     </container>
 
+    <container id="playground" version="1.0">
+        <handler id="ai.vespa.cloud.playground.TensorPlaygroundHandler" bundle="vespacloud-docsearch">
+            <binding>http://*/playground/*</binding>
+        </handler>
+        <nodes count="2"/>
+    </container>
+
     <content id="documentation" version="1.0">
         <redundancy>2</redundancy>
         <documents>
