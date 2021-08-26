@@ -3,7 +3,7 @@
 
 <services version="1.0">
     <container id="container" version="1.0">
-        <nodes jvmargs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998">
+        <nodes jvmargs="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8998">
             <node hostalias="node1"/>
         </nodes>
         <handler id="ai.vespa.example.playground.TensorPlaygroundHandler" bundle="tensor-playground">

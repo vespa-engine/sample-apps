@@ -1,25 +1,26 @@
-/* Copyright 2017 Yahoo Holdings. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.*/
+/* Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.*/
 
 html, body {
-    font: 1em monospace;
+    font: 10pt "Avenir Next", "Arial";
     width: 100%;
     margin: 0;
     padding: 0;
 }
 
 body {
-    padding-top: 110px;
+    padding-top: 50px;
     background: #fff;
 }
 
 #header {
     width: 100%;
-    height: 100px;
+    height: 40px;
     position: fixed;
     top: 0;
-    background: #eee;
-    border-bottom: 1px solid #aaa;
-    box-shadow: 5px 5px 5px #eee;
+    background: #3f9dd8;  /* #eee; */
+    border-bottom: 1px solid #7b7b92;  /* #aaa */
+    box-shadow: 5px 5px 5px #dedede;  /* eee */
+    color: #fff;
 }
 
 #header-global-commands {
@@ -29,29 +30,26 @@ body {
     padding: 10px;
 }
 
-#header-cell-commands {
-    display: block;
-    margin: auto;
-    padding: 10px;
-    width: 1000px;
-    text-align: center;
+#header-global-commands > .title  {
+    font-size: 12pt;
+    font-weight: 700;
 }
 
+.commands > a {
+    color: #fff;
+    font-size: 11pt;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 25px;
+}
 
 #content {
-    /*
-    display: block;
-    margin: auto;
-    padding: 10px;
-    padding-top: 100px;
-    width: 900px;
-    padding-top: 110px;
-    */
     background: #fff;
 }
 
 #footer {
     margin-top: 50px;
+    padding-top: 25px;
     text-align: center;
     border-top: 1px solid #aaa;
 }
@@ -95,10 +93,11 @@ body {
     border-top-right-radius: 4px;
     border-bottom: 1px solid #aaa;
     margin: 0px;
-    background: #eee;
+    background: #f5f8fe;
     text-align: left;
     font-size: 0.9em;
     padding: 2px 10px;
+    height: 20px;
 }
 
 .frame > .frame-content {
@@ -111,7 +110,7 @@ body {
 
 .selected {
     border: 1px solid blue;
-    box-shadow: 5px 5px 5px #eee;
+    box-shadow: 5px 5px 5px #dedede;
 }
 
 .error {
@@ -127,9 +126,12 @@ p {
 }
 
 input {
-    font: 0.75em courier;
+    font: 1em monospace;
 }
 
+.header-text {
+    padding: 3px 0px 0px 0px;
+}
 
 button {
     background-color: #fff;
@@ -151,7 +153,7 @@ button:disabled {
 }
 
 textarea {
-    font: 0.75em courier;
+    font: 1em monospace;
     white-space: pre;
     overflow-wrap: normal;
     overflow-x: scroll;
@@ -162,14 +164,29 @@ table {
     /*font-size: 12px;*/
 }
 
+th {
+    text-align: center;
+}
+
 td {
-    padding: 5px;
-    vertical-align: middle;
+    padding: 3px 5px;
+    vertical-align: top;
     text-align: left;
 }
 
 td.header {
     border-bottom: 1px solid #aaa;
+    font-weight: 600;
+}
+
+td.label {
+    text-align: right;
+}
+
+td.code {
+    font: 1.0em monospace;
+    padding-top: 4px;
+    width: 800px;
 }
 
 td.actions {
@@ -182,8 +199,38 @@ td.actions {
 td.data {
     padding: 5px;
     border: 1px solid black;
+    font-size: 0.9em;
 }
 
 .hidden {
     display: none;
+}
+
+#add_frames {
+    text-align: center;
+    padding-top: 40px;
+}
+
+#add_frames > a {
+    margin: 0px 40px;
+}
+
+#setup-container > a {
+    margin: 0px 20px;
+}
+
+a {
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+a > svg {
+    position: relative;
+    top: 6px;
+}
+
+a.header > svg {
+    position: relative;
+    top: 0px;
 }
