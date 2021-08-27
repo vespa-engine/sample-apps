@@ -44,7 +44,6 @@ jobs:
     image: vespaengine/vespa-pipeline
     environment:
       USER_SHELL_BIN: bash
-      DOCKER_HOST: 'localhost:2375'
     annotations:
       screwdriver.cd/dockerEnabled: true
       screwdriver.cd/dockerCpu: TURBO
