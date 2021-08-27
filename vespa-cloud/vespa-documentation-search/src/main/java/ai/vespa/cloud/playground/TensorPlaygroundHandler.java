@@ -2,6 +2,8 @@
 
 package ai.vespa.cloud.playground;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yahoo.container.jdisc.HttpRequest;
 import com.yahoo.container.jdisc.HttpResponse;
 import com.yahoo.container.jdisc.ThreadedHttpRequestHandler;
@@ -11,6 +13,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.concurrent.Executor;
+
+import static com.yahoo.jdisc.http.HttpRequest.Method.GET;
+import static com.yahoo.jdisc.http.HttpRequest.Method.POST;
 
 public class TensorPlaygroundHandler extends ThreadedHttpRequestHandler {
 
@@ -84,7 +89,21 @@ public class TensorPlaygroundHandler extends ThreadedHttpRequestHandler {
     }
 
     private String getParam(HttpRequest httpRequest, String param) {
-        return httpRequest.getProperty(param);
+        if (httpRequest.getMethod() == GET) {
+            return httpRequest.getProperty(param);
+        }
+        else if (httpRequest.getMethod() == POST) {
+            try {
+                ObjectMapper m = new ObjectMapper();
+                JsonNode root = m.readTree(httpRequest.getData().readAllBytes());
+                if (root.has(param)) {
+                    return root.get(param).toString();
+                }
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Unable to parse JSON in POST body", e);
+            }
+        }
+        return null;
     }
 
 }
