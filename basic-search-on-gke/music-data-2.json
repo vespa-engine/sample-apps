@@ -1,4 +1,5 @@
 {
+    "put": "id:mynamespace:music::recovery",
     "fields": {
         "album": "Recovery",
         "artist": "Eminem",

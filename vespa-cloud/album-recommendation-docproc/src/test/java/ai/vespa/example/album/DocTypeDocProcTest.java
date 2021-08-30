@@ -39,9 +39,9 @@ public class DocTypeDocProcTest {
         DocumentType docType = createMusicDocumentType();
         DocumentTypeManager typeMgr = new DocumentTypeManager(new DocumentmanagerConfig.Builder().build());
         typeMgr.registerDocumentType(docType);
-        DocumentOperation op = docProc.createDocFromJson(typeMgr,"id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::1");
+        DocumentOperation op = docProc.createDocFromJson(typeMgr,"id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::a-head-full-of-dreams");
 
-        assertEquals("put of document id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::1", op.toString());
+        assertEquals("put of document id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::a-head-full-of-dreams", op.toString());
     }
 
     /**
@@ -59,7 +59,7 @@ public class DocTypeDocProcTest {
 
         Processing processing = new Processing();
         Document doc = new Document(container.documentProcessing().getDocumentTypes().get(MUSIC_DOCUMENT_TYPE),
-                "id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::1");
+                "id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::a-head-full-of-dreams");
         processing.addDocumentOperation(new DocumentPut(doc));
         container.documentProcessing().processOnce(ComponentSpecification.fromString("myChain"), processing);
 

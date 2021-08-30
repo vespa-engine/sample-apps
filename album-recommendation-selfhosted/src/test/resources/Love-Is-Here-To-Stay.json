@@ -1,4 +1,5 @@
 {
+    "put": "id:mynamespace:music::love-id-here-to-stay",
     "fields": {
         "album": "Love Is Here To Stay",
         "artist": "Diana Krall",

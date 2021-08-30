@@ -11,7 +11,7 @@ public class MetalProductionTest {
 
     @Test
     void dummyTest() {
-        assertEquals("Prod is all right!","Prod is all right!");
+        assertEquals("Prod is all right!", "Prod is all right!");
     }
 
 }
