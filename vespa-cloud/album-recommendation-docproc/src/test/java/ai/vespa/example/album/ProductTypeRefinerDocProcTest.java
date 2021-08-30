@@ -48,7 +48,7 @@ class ProductTypeRefinerDocProcTest {
 
     @Test
     public void testRefinement() {
-        Document doc = new Document(createMusicType(), "id:mynamespace:music::1");
+        Document doc = new Document(createMusicType(), "id:mynamespace:music::a-head-full-of-dreams");
         doc.setFieldValue(PRODUCT_TYPE_FIELD_NAME,
                 new StringFieldValue("Media > Music & Sound Recordings > Music Cassette Tapes"));
 

@@ -1,4 +1,5 @@
 {
+    "put": "id:mynamespace:music::bad",
     "fields": {
          "album": "Bad",
          "artist": "Michael Jackson",

@@ -29,7 +29,7 @@ class FeedAndSearchSystemTest {
 
     @Test
     void feedAndSearch() throws IOException {
-        String documentPath = "/document/v1/mynamespace/music/docid/Got-to-be-there";
+        String documentPath = "/document/v1/mynamespace/music/docid/got-to-be-there";
         String document = "{\n" +
                           "    \"fields\": {\n" +
                           "         \"album\": \"Got to be there\"\n" +
@@ -42,8 +42,9 @@ class FeedAndSearchSystemTest {
         assertEquals(200, deleteResult.statusCode());
 
         // the first query needs a higher timeout than the default 500ms, to warm up the code
-        HttpResponse<String> emptyResult = endpoint.send(endpoint.request("/search/", Map.of("yql", yql,
-                                                                            "timeout", "5s")));
+        HttpResponse<String> emptyResult = endpoint.send(endpoint.request("/search/",
+                                                                          Map.of("yql", yql,
+                                                                                 "timeout", "5s")));
         assertEquals(200, emptyResult.statusCode());
         assertEquals(0, new ObjectMapper().readTree(emptyResult.body())
                 .get("root").get("fields").get("totalCount").asLong());
@@ -52,7 +53,8 @@ class FeedAndSearchSystemTest {
                                                .POST(ofString(document)));
         assertEquals(200, feedResult.statusCode());
 
-        HttpResponse<String> searchResult = endpoint.send(endpoint.request("/search/", Map.of("yql", yql)));
+        HttpResponse<String> searchResult = endpoint.send(endpoint.request("/search/",
+                                                                           Map.of("yql", yql)));
         assertEquals(200, searchResult.statusCode());
         assertEquals(1, new ObjectMapper().readTree(searchResult.body())
                 .get("root").get("fields").get("totalCount").asLong());

@@ -60,7 +60,6 @@ class MetalSearcherTest {
 
     @Test
     void testAddedOrTerm1() {
-
         MetalNamesConfig.Builder builder = new MetalNamesConfig.Builder();
         builder.metalWords(Arrays.asList("hetfield", "metallica", "pantera"));
         MetalNamesConfig config = new MetalNamesConfig(builder);
@@ -75,10 +74,8 @@ class MetalSearcherTest {
         assertAddedOrTerm(metalQuery.getModel().getQueryTree().getRoot());
     }
 
-
     @Test
     void testAddedOrTerm2() {
-
         try (Application app = Application.fromApplicationPackage(
                 FileSystems.getDefault().getPath("src/main/application"),
                 Networking.disable)) {
@@ -90,10 +87,8 @@ class MetalSearcherTest {
         }
     }
 
-
     @Test
     void testWithMockBackendProducingHits() {
-
         DocumentSourceSearcher docSource = new DocumentSourceSearcher();
         Query testQuery = new Query();
         testQuery.setTraceLevel(6);

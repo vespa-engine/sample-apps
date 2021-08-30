@@ -1,4 +1,5 @@
 {
+    "put": "id:mynamespace:music::hardwired-to-self-destruct",
     "fields": {
         "album": "Hardwired...To Self-Destruct",
         "artist": "Metallica",
