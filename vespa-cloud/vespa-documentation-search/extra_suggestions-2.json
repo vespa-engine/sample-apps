@@ -6,7 +6,7 @@
       "term": {
         "assign": "learning to rank"
       },
-      "term_array": {
+      "terms": {
         "assign": ["learning to rank", "to rank", "rank"]
       },
       "corpus_count": {
