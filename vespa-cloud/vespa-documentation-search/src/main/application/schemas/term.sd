@@ -22,11 +22,6 @@ schema term {
         field document_count type int {
             indexing: summary | attribute
         }
-        
-        field term_array type array<string> {
-            indexing: summary | attribute
-            attribute: fast-search
-        }
 
         field terms type array<string> {
             indexing: summary | attribute
@@ -36,7 +31,7 @@ schema term {
     } 
 
     fieldset default {
-        fields: term, term_array, terms
+        fields: term, terms
     }
 
     rank-profile term_rank inherits default {
