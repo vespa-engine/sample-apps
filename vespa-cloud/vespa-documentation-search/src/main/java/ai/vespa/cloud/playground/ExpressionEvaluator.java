@@ -94,14 +94,12 @@ public class ExpressionEvaluator {
         }
     }
 
-
     public static Value evaluate(String expressionString, Context context) throws ParseException {
         return new RankingExpression(expressionString).evaluate(context);
     }
 
-
     private static String error(String msg) {
-        return "{ \"error\": \"" + msg + "\" }";
+        return "{ \"error\": \"" + msg.replace("\"", "\\\"") + "\" }";
     }
 
     private static String valueType(Value value) {
