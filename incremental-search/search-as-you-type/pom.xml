@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vespa_version>7.460.23</vespa_version>
+        <vespa_version>7.462.20</vespa_version>
         <tenant>vespa-team</tenant>
         <application>vespaexample-typesearch</application>
     </properties>
