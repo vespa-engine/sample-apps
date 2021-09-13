@@ -39,7 +39,7 @@ public class TensorPlaygroundHandler extends ThreadedHttpRequestHandler {
         return new HttpResponse(200) {
             @Override
             public void render(OutputStream stream) throws IOException {
-                String result = ExpressionEvaluator.evaluate(json);
+                String result = ProtonExpressionEvaluator.evaluate(json);
                 try (PrintWriter writer = new PrintWriter(stream)) {
                     writer.print(result);
                 }
