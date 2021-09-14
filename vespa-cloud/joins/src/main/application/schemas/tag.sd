@@ -12,6 +12,17 @@ schema tag {
         }
 
     }
+    document-summary attribute-only {
+        summary id type string {
+              source: id
+        }
+        summary start type long {
+            source:start
+        }
+        summary end type long {
+            source:end
+        }
+    }
 
     rank-profile default inherits default {
         first-phase {

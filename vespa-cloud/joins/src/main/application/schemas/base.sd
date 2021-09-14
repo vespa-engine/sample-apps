@@ -5,16 +5,20 @@ schema base {
 
         field id type string {
             indexing: summary | attribute
+            rank:filter
+            attribute:fast-search
         }
 
         field start type long {
             indexing: summary | attribute
+            rank:filter
+            attribute:fast-search
         }
 
         field end type long {
             indexing: summary | attribute
+            rank:filter
+            attribute:fast-search
         }
-
     }
-
 }
