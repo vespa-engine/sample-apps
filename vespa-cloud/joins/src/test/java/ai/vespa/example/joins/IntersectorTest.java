@@ -125,8 +125,8 @@ class IntersectorTest {
                                           new MyInterval("AB", 5, 5),
                                           new MyInterval("AB", 5, 5),
                                           new MyInterval("ABCD", 5, 18),
-                                          new MyInterval("ABCDE", 5, 27),
-                                          new MyInterval("ABCDE", 31, 32));
+                                          new MyInterval("ABCDEF", 5, 27),
+                                          new MyInterval("X", 31, 32));
 
         List<Intersection<MyInterval, MyInterval>> intersections = Intersector.intersectX(first, second);
 
