@@ -54,7 +54,7 @@ public class JoinSearcher extends Searcher {
         List<Hit> joinedHits = new ArrayList<>();
         for (Hit bHit : bResult.hits()) {
             Hit joinedHit = aHit.clone();
-            joinedHit.setField("tagId", bHit.getField("tagId"));
+            joinedHit.setField("tagid", bHit.getField("tagid"));
             joinedHit.setField("tagStart", bHit.getField("start"));
             joinedHit.setField("tagEnd", bHit.getField("end"));
             joinedHits.add(joinedHit);
@@ -98,10 +98,8 @@ public class JoinSearcher extends Searcher {
         }
 
         public Query addInterval(long start, long end, Query query) {
-            NotItem interval = new NotItem();
-            interval.addPositiveItem(new RangeItem(Limit.NEGATIVE_INFINITY, new Limit(end, true), "start"));
-            interval.addNegativeItem(new RangeItem(Limit.POSITIVE_INFINITY, new Limit(start, true), "end"));
-            query.getModel().getQueryTree().and(interval);
+            query.getModel().getQueryTree().and(new RangeItem(Limit.NEGATIVE_INFINITY, new Limit(end, true), "start"));
+            query.getModel().getQueryTree().and(new RangeItem(new Limit(start, true), Limit.POSITIVE_INFINITY, "end"));
             return query;
         }
 

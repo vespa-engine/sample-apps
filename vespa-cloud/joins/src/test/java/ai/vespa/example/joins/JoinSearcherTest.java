@@ -24,7 +24,7 @@ public class JoinSearcherTest {
         query.properties().set("a.field", "text");
         query.properties().set("a.value", "text1");
         query.properties().set("b.type", "tag");
-        query.properties().set("b.field", "tagId");
+        query.properties().set("b.field", "tagid");
         query.properties().set("b.value", "1");
         MockBackend backend = new MockBackend();
         Result result = execute(query, new JoinSearcher(), backend);
@@ -37,7 +37,7 @@ public class JoinSearcherTest {
     private void assertHit(String id, String text, String tagId, long start, long end, long tagStart, long tagEnd, Hit hit) {
         assertEquals(id,       hit.getField("id"));
         assertEquals(text,     hit.getField("text"));
-        assertEquals(tagId,    hit.getField("tagId"));
+        assertEquals(tagId,    hit.getField("tagid"));
         assertEquals(start,    hit.getField("start"));
         assertEquals(end,      hit.getField("end"));
         assertEquals(tagStart, hit.getField("tagStart"));
@@ -67,7 +67,7 @@ public class JoinSearcherTest {
 
         private Result handleAQuery(Query query) {
             assertEquals(Set.of("title"), query.getModel().getSources());
-            assertEquals("+(AND start:[;1000] text:text1) -end:[;500]", query.getModel().getQueryTree().getRoot().toString());
+            assertEquals("AND text:text1 start:[;1000] end:[500;]", query.getModel().getQueryTree().getRoot().toString());
             Result result = new Result(query);
             result.hits().add(createAHit("title1", "id1", "text1", 200,  600));
             result.hits().add(createAHit("title2", "id2", "text1", 700,  800));
@@ -79,13 +79,13 @@ public class JoinSearcherTest {
             assertEquals(Set.of("tag"), query.getModel().getSources());
 
             if (bQueryCount == 1) {
-                assertEquals("+(AND start:[;600] (AND tagId:1 id:id1)) -end:[;200]", query.getModel().getQueryTree().getRoot().toString());
+                assertEquals("AND tagid:1 id:id1 start:[;600] end:[200;]", query.getModel().getQueryTree().getRoot().toString());
                 Result result = new Result(query);
                 result.hits().add(createBHit("tag1", "id1", "1", 300, 400));
                 return result;
             }
             else if (bQueryCount == 2) {
-                assertEquals("+(AND start:[;800] (AND tagId:1 id:id2)) -end:[;700]", query.getModel().getQueryTree().getRoot().toString());
+                assertEquals("AND tagid:1 id:id2 start:[;800] end:[700;]", query.getModel().getQueryTree().getRoot().toString());
                 Result result = new Result(query);
                 result.hits().add(createBHit("tag2", "id2", "1", 700, 900));
                 result.hits().add(createBHit("tag3", "id2", "1", 950, 970));
@@ -109,7 +109,7 @@ public class JoinSearcherTest {
         private Hit createBHit(String hitId, String id, String tagId, long start, long end) {
             Hit hit = new Hit(hitId);
             hit.setField("id", id);
-            hit.setField("tagId", tagId);
+            hit.setField("tagid", tagId);
             hit.setField("start", start);
             hit.setField("end", end);
             return hit;
