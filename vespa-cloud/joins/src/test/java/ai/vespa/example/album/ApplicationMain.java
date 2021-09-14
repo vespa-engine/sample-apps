@@ -1,4 +1,4 @@
-// Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
 import com.yahoo.application.Application;
@@ -6,7 +6,6 @@ import com.yahoo.application.Networking;
 
 import java.nio.file.FileSystems;
 import java.util.Objects;
-
 
 /**
  * This uses the Application class to set up a container instance of this application

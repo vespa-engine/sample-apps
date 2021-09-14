@@ -1,0 +1,6 @@
+{
+    "put": "id:joins:title::Title2",
+    "fields": {
+        "text": "Generic title 2"
+    }
+}

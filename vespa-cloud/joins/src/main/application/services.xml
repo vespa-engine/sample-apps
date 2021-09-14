@@ -6,7 +6,7 @@
 
         <document-api/>
         <search>
-            <chain id="metalchain" inherits="vespa">
+            <chain id="default" inherits="vespa">
                 <searcher id="ai.vespa.example.join.JoinSearcher" bundle="joins"/>
             </chain>
         </search>

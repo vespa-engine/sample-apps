@@ -1,4 +1,4 @@
-// Copyright 2020 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
 import ai.vespa.hosted.cd.StagingTest;
@@ -32,7 +32,7 @@ class StagingVerificationTest {
                 assertEquals(200, documentResponse.statusCode());
                 JsonNode retrieved = mapper.readTree(documentResponse.body()).get("fields");
                 JsonNode expected = mapper.readTree(document).get("fields");
-                for (String name : List.of("artist", "album", "year"))
+                for (String name : List.of("text"))
                     assertEquals(expected.get(name), retrieved.get(name));
             }
             catch (IOException e) {
