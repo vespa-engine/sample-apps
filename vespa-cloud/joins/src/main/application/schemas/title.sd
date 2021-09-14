@@ -1,0 +1,18 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+schema title {
+
+    document title inherits base {
+
+        field text type string {
+            indexing: summary | index
+        }
+
+    }
+
+    rank-profile default inherits default {
+        first-phase {
+            expression: nativeRank
+        }
+    }
+
+}

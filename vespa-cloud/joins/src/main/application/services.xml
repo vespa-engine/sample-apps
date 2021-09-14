@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+    <container id="default" version="1.0">
+
+        <document-api/>
+        <search>
+            <chain id="default" inherits="vespa">
+                <searcher id="ai.vespa.example.joins.JoinSearcher" bundle="joins"/>
+            </chain>
+        </search>
+
+        <nodes count="2" />
+    </container>
+
+    <content id="content" version="1.0">
+        <redundancy>2</redundancy>
+        <documents>
+            <document type="base" mode="index" />
+            <document type="title" mode="index" />
+            <document type="tag" mode="index" />
+        </documents>
+        <nodes count="2" />
+    </content>
+
+</services>
