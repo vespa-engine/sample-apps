@@ -1,5 +1,5 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package ai.vespa.example.album;
+package ai.vespa.example.joins;
 
 import com.yahoo.prelude.query.CompositeItem;
 import com.yahoo.prelude.query.EquivItem;
