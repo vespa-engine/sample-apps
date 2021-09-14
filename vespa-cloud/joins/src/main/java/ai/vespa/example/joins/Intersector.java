@@ -56,27 +56,24 @@ public class Intersector {
         if ( ! sit.hasNext() || ! tit.hasNext())
             return intersections;
 
-        // Intervals from "first" that we ar currently inside.
-        Set<S> open;
-
         PriorityQueue<S> ses = new PriorityQueue<>(Comparator.comparingLong(Interval::end));
         PriorityQueue<T> tes = new PriorityQueue<>(Comparator.comparingLong(Interval::end));
 
         S s = sit.next();
         T t = tit.next();
         while (s != null || t != null) {
-            // Figure out what to do: add a new interval, or close and open one, and in any case, from which set?
+            // Figure out what to do: add a new interval, or close an open one; and in any case, from which set?
             long end = Math.min(ses.isEmpty() ? Long.MAX_VALUE : ses.peek().end(),
                                 tes.isEmpty() ? Long.MAX_VALUE : tes.peek().end());
             long start = Math.min(s == null ? Long.MAX_VALUE : s.start(),
                                   t == null ? Long.MAX_VALUE : t.start());
 
-            // The next thing to process is the closing of an open interval.
+            // Remove any done interval from the sets of open intervals ...
             if (end < start) {
                 if ( ! ses.isEmpty() && ses.peek().end() == end) ses.poll();
                 if ( ! tes.isEmpty() && tes.peek().end() == end) tes.poll();
             }
-            // The next thing to process is the opening of a new interval.
+            // ... or add a new interval to these sets, and add intersection with open intervals from the other iterator.
             else {
                 if (s != null && s.start() == start) {
                     ses.add(s);
