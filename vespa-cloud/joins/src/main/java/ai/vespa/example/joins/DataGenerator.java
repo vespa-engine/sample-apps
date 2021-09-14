@@ -67,7 +67,7 @@ public class DataGenerator {
 
         String asJson() {
             return "{\n" +
-                   "  \"id\": \"" + docId() + "\"\n" +
+                   "  \"id\": \"" + docId() + "\",\n" +
                    "  \"fields\": {\n" +
                    fields().entrySet().stream()
                            .map(field -> json(field.getKey()) + ": " + json(field.getValue()))
