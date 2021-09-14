@@ -101,7 +101,7 @@ public class DataGenerator {
         @Override
         Map<String, Object> fields() {
             Map<String, Object> fields = super.fields();
-            fields.put("tag", tag);
+            fields.put("tagid", tag);
             fields.put("score", score);
             return fields;
         }
