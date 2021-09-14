@@ -16,7 +16,6 @@ import com.yahoo.yolean.chain.After;
 import java.util.List;
 import java.util.Map;
 
-@After("MinimalQueryInserter")
 public class JoinSearcher extends Searcher {
 
     @Override

@@ -1,4 +1,4 @@
-// Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
 import ai.vespa.hosted.cd.Endpoint;
@@ -29,14 +29,14 @@ class FeedAndSearchSystemTest {
 
     @Test
     void feedAndSearch() throws IOException {
-        String documentPath = "/document/v1/mynamespace/music/docid/got-to-be-there";
+        String documentPath = "/document/v1/joins/title/docid/test1";
         String document = "{\n" +
                           "    \"fields\": {\n" +
-                          "         \"album\": \"Got to be there\"\n" +
+                          "         \"text\": \"Sample text\"\n" +
                           "    }\n" +
                           "}\n";
 
-        String yql = "SELECT * FROM SOURCES * WHERE album CONTAINS \"Got to be there\";";
+        String yql = "SELECT * FROM SOURCES * WHERE title CONTAINS 'text';";
 
         HttpResponse<String> deleteResult = endpoint.send(endpoint.request(documentPath).DELETE());
         assertEquals(200, deleteResult.statusCode());

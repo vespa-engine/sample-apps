@@ -1,0 +1,6 @@
+{
+    "put": "id:joins:title::Title3",
+    "fields": {
+        "text": "A more specific title"
+    }
+}
