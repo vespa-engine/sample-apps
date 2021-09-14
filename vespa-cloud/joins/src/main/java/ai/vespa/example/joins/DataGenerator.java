@@ -25,11 +25,11 @@ public class DataGenerator {
         for (int i = 0; i < ids; i++) {
             for (int j = 0; j < tags; j++) {
                 for (int k = 0; k < intervals; k++) {
-                    double t1 = (long) ((k + Math.random()) * 1000),
-                            t2 = (long) ((k + Math.random()) * 1000);
+                    long t1 = (long) ((k + Math.random()) * 1000),
+                         t2 = (long) ((k + Math.random()) * 1000);
                     System.out.println(new TagDoc(Integer.toString(i),
-                                                  (long) Math.min(t1, t2),
-                                                  (long) Math.max(t1, t2),
+                                                  Math.min(t1, t2),
+                                                  Math.max(t1, t2),
                                                   j,
                                                   (int) (Math.random() * 1000))
                                                .asJson());
