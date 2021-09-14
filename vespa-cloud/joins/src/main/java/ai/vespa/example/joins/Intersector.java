@@ -2,8 +2,12 @@
 package ai.vespa.example.joins;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 public class Intersector {
 
@@ -41,6 +45,56 @@ public class Intersector {
     }
 
 
+    /**
+     * Iterates through the given intervals, returning the set of intersections between them.
+     * The given intervals may be overlapping within each iterator, but must be sorted by increasing time.
+     */
+    public static <S extends Interval, T extends Interval> List<Intersection<S, T>> intersectX(Iterable<S> first, Iterable<T> second) {
+        Iterator<S> sit = first.iterator();
+        Iterator<T> tit = second.iterator();
+        List<Intersection<S, T>> intersections = new ArrayList<>();
+        if ( ! sit.hasNext() || ! tit.hasNext())
+            return intersections;
+
+        // Intervals from "first" that we ar currently inside.
+        Set<S> open;
+
+        PriorityQueue<S> ses = new PriorityQueue<>(Comparator.comparingLong(Interval::end));
+        PriorityQueue<T> tes = new PriorityQueue<>(Comparator.comparingLong(Interval::end));
+
+        S s = sit.next();
+        T t = tit.next();
+        while (s != null || t != null) {
+            // Figure out what to do: add a new interval, or close and open one, and in any case, from which set?
+            long end = Math.min(ses.isEmpty() ? Long.MAX_VALUE : ses.peek().end(),
+                                tes.isEmpty() ? Long.MAX_VALUE : tes.peek().end());
+            long start = Math.min(s == null ? Long.MAX_VALUE : s.start(),
+                                  t == null ? Long.MAX_VALUE : t.start());
+
+            // The next thing to process is the closing of an open interval.
+            if (end < start) {
+                if ( ! ses.isEmpty() && ses.peek().end() == end) ses.poll();
+                if ( ! tes.isEmpty() && tes.peek().end() == end) tes.poll();
+            }
+            // The next thing to process is the opening of a new interval.
+            else {
+                if (s != null && s.start() == start) {
+                    ses.add(s);
+                    for (T ot : tes) intersections.add(new Intersection<>(start, Math.min(s.end(), ot.end()), s, ot));
+                    s = sit.hasNext() ? sit.next() : null;
+                }
+                else if (t != null) {
+                    tes.add(t);
+                    for (S os : ses) intersections.add(new Intersection<>(start, Math.min(os.end(), t.end()), os, t));
+                    t = tit.hasNext() ? tit.next() : null;
+                }
+                else throw new IllegalStateException("Should not happen");
+            }
+        }
+        return intersections;
+    }
+
+
     public interface Interval {
 
         long start();
@@ -57,10 +111,17 @@ public class Intersector {
         private final T second;
 
         public Intersection(long start, long end, S first, T second) {
+            if (start > end)
+                throw new IllegalArgumentException("Non-intersecting intervals: " + first + ", " + second);
+
             this.start = start;
             this.end = end;
             this.first = first;
             this.second = second;
+        }
+
+        public Intersection(S first, T second) {
+            this(Math.max(first.start(), second.start()), Math.min(first.end(), second.end()), first, second);
         }
 
         @Override
@@ -76,6 +137,19 @@ public class Intersector {
         public S first() { return first; }
 
         public T second() { return second; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Intersection<?, ?> that = (Intersection<?, ?>) o;
+            return start == that.start && end == that.end && first.equals(that.first) && second.equals(that.second);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(start, end, first, second);
+        }
 
         @Override
         public String toString() {
