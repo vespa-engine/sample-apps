@@ -47,7 +47,7 @@ public class Intersector {
 
     /**
      * Iterates through the given intervals, returning the set of intersections between them.
-     * The given intervals may be overlapping within each iterator, but must be sorted by increasing time.
+     * The given intervals may be overlapping within each iterator, but must be sorted by increasing start time.
      */
     public static <S extends Interval, T extends Interval> List<Intersection<S, T>> intersectX(Iterable<S> first, Iterable<T> second) {
         Iterator<S> sit = first.iterator();
