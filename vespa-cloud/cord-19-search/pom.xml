@@ -22,6 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tenant>vespa-team</tenant>                          <!-- Name from the web console -->
         <application>cord-19</application>                   <!-- Name from the web console -->
+        <instance>default</instance>
     </properties>
 
     <!-- To change build settings, e.g. allow builds with warnings,
