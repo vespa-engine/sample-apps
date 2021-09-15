@@ -26,6 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tenant>MYTENANT</tenant>                                 <!-- Name from the web console -->
         <application>MYAPP</application>                          <!-- Name from the web console -->
+        <instance>default</instance>
     </properties>
 
     <!-- To change build settings, e.g. allow builds with warnings,
