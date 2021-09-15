@@ -13,8 +13,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vespa_version>7.465.17</vespa_version>
-        <tenant>vespa-team</tenant>
-        <application>vespaexample-typesearch</application>
     </properties>
 
     <dependencies>
