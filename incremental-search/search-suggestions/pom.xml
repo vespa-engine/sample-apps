@@ -10,19 +10,9 @@
     <packaging>container-plugin</packaging>
     <version>1.0.0</version>
 
-    <parent>
-        <groupId>com.yahoo.vespa</groupId>
-        <artifactId>cloud-tenant-base</artifactId>
-        <version>[7,999)</version>
-    </parent>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vespa_version>7.465.17</vespa_version>
-        <tenant>vespa-team</tenant>
-        <application>search-suggestion</application>
-        <dataPlaneKeyFile>data-plane-private-key.pem</dataPlaneKeyFile>
-        <dataPlaneCertificateFile>data-plane-public-cert.pem</dataPlaneCertificateFile>
     </properties>
 
     <!--for website-->
@@ -40,4 +30,81 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <optimize>true</optimize>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <jdkToolchain>
+                        <version>11</version>
+                    </jdkToolchain>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <isMavenSurefirePlugin>true</isMavenSurefirePlugin>
+                    </systemPropertyVariables>
+                    <redirectTestOutputToFile>${test.hide}</redirectTestOutputToFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.yahoo.vespa</groupId>
+                <artifactId>vespa-application-maven-plugin</artifactId>  <!-- Zip the application package -->
+                <version>${vespa_version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>packageApplication</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.yahoo.vespa</groupId>
+                <artifactId>bundle-plugin</artifactId>
+                <version>${vespa_version}</version>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <allowMajorUpdates>false</allowMajorUpdates>
+                    <generateBackupPoms>false</generateBackupPoms>
+                    <includeProperties>vespa_version</includeProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- For debugging only -->
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo>[Vespa version: ] ${vespa_version}</echo>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

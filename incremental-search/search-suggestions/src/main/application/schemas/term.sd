@@ -22,6 +22,11 @@ schema term {
         field document_count type int {
             indexing: summary | attribute
         }
+
+        field terms type array<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
         
     } 
 
