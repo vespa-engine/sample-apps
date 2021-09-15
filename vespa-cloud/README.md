@@ -30,7 +30,7 @@ both for regular PUT operations but also for UPDATE with _create-if-nonexistent_
 
 These applications are written for [Vespa Cloud](http://cloud.vespa.ai).
 To deploy to a self-hosted, like a Docker container on developer computer, follow steps below -
-refer to [album-recommendation-selfhosted](../album-recommendation-selfhosted) for a working example
+refer to [album-recommendation](../album-recommendation) for a working example
 
 1.  Modify _nodes_ element in services.xml, replace _count_ with _node_ elements:
     ```

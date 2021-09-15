@@ -39,6 +39,6 @@ fi
 
 python3.6 /usr/local/bin/wait-for-and-launch.py http://vespa:19071/ApplicationStatus
 
-/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/album-recommendation-selfhosted/src/main/application/ && /opt/vespa/bin/vespa-deploy activate
+/opt/vespa/bin/vespa-deploy prepare /vespa-sample-apps/album-recommendation/src/main/application/ && /opt/vespa/bin/vespa-deploy activate
 
 tail -f /dev/null

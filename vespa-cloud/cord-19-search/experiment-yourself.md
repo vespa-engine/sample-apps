@@ -54,9 +54,9 @@ $ cd sample-apps/vespa-cloud/cord-19-search
     <p><strong>Build the application:</strong></p>
     <p>Change the &lt;nodes&gt;-element in two places in
     <a href="src/main/application/services.xml">src/main/application/services.xml</a>
-    - use <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation-selfhosted/src/main/application/services.xml">services.xml</a>
+    - use <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation/src/main/application/services.xml">services.xml</a>
     as reference.
-    Copy <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation-selfhosted/src/main/application/hosts.xml">hosts.xml</a>
+    Copy <a href="https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation/src/main/application/hosts.xml">hosts.xml</a>
     into same location.
     Then build the application:
     </p>
