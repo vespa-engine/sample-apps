@@ -45,11 +45,11 @@ schema msmarco {
         }
 
         function token_type_ids() {
-          expression: tokenTypeIds(128, query(input), attribute(tokens))
+            expression: tokenTypeIds(128, query(input), attribute(tokens))
         }
 
         function attention_mask() {
-          expression: tokenAttentionMask(128, query(input), attribute(tokens))
+            expression: tokenAttentionMask(128, query(input), attribute(tokens))
         }
 
         # Use BM25 as a first phase
