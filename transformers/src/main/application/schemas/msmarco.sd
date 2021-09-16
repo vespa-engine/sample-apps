@@ -40,57 +40,16 @@ schema msmarco {
 
     rank-profile transformer {
 
-        constants {
-            TOKEN_NONE: 0
-            TOKEN_CLS: 101
-            TOKEN_SEP: 102
-        }
-
-        # Find length of input - with the assumption that the
-        # input sequence is padded with zeroes.
-        function input_length() {
-            expression: sum(map(query(input), f(a)(a > 0)))
-        }
-
-        # Likewise, find length of the document
-        function document_length() {
-            expression: sum(map(attribute(tokens), f(a)(a > 0)))
-        }
-
-        # Create input sequence: CLS + query + SEP + document + SEP + 0's
         function input_ids() {
-            expression {
-                tensor<float>(d0[1],d1[128])(
-                    if (d1 == 0,
-                        TOKEN_CLS,  # 101
-                    if (d1 < input_length + 1,
-                        query(input){d0:(d1-1)},
-                    if (d1 == input_length + 1,
-                        TOKEN_SEP,  # 102
-                    if (document_length + input_length > 126,
-                        if (d1 < 127,
-                            attribute(tokens){d0:(d1-input_length-2)},
-                            TOKEN_SEP  # 102
-                        ),
-                        if (d1 < document_length + input_length + 2,
-                            attribute(tokens){d0:(d1-input_length-2)},
-                            if (d1 == document_length + input_length + 2,
-                                TOKEN_SEP,  # 102
-                                TOKEN_NONE  # 0
-                            )
-                        )
-                )))))
-            }
+            expression: tokenInputIds(128, query(input), attribute(tokens))
         }
 
-        # The token type input has 0's for query and 1's for document
         function token_type_ids() {
-            expression: tensor<float>(d0[1],d1[128])(if(d1 < input_length + 2, 0, 1))
+            expression: tokenTypeIds(128, query(input), attribute(tokens))
         }
 
-        # The attention mask has 1's for every token that is set
         function attention_mask() {
-            expression: map(input_ids, f(a)(a > 0))
+            expression: tokenAttentionMask(128, query(input), attribute(tokens))
         }
 
         # Use BM25 as a first phase
