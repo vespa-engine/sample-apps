@@ -39,9 +39,13 @@ model due to the increased input sequence length (query + passage). This method 
 - [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html) combining efficient retrieval (WAND or ANN) with re-ranking stages.
 - Custom [searcher plugins](https://docs.vespa.ai/en/searcher-development.html) to build the application serving logic. It also features 
 [custom document processors](https://docs.vespa.ai/en/document-processing.html) .
-- Accelerated [Stateless ML model evaluation](https://blog.vespa.ai/stateless-model-evaluation/) for query encodings and re-ranking. 
+- Accelerated [Stateless ML model evaluation](https://blog.vespa.ai/stateless-model-evaluation/) for transformer based query encoding and final ranking phase
+using transformer batch re-ranking. 
 
 
+  
+
+### Transformer Models 
 This sample applicaiton uses pre-trained Transformer models fine-tuned for MS Marco passage ranking from [Huggingface 🤗](https://huggingface.co/)
 
 All three Transformer based models used in this sample application are based on [MiniLM](https://arxiv.org/abs/2002.10957) which
@@ -50,10 +54,9 @@ It uses the same sub word tokenization routine and shares the vocabulary with th
 The MiniLM model has roughly the same accuracy as the more known big brother *bert-base-uncased* on many different tasks, but with
  less parameters which lowers the computational complexity significantly.  
  
-The original MiniLM has 12 layers, this work uses 6 layer versions with only about 22.7M trainable parameters.  
+The original MiniLM has 12 layers, this work uses 6 layer versions with only about 22.7M trainable parameters.
 
-### Transformer Models 
-The sample application uses these three models:
+The sample application uses the following three models:
 
 - Dense retrieval using bi-encoder [sentence-transformers/msmarco-MiniLM-L-6-v3 🤗](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3)
 
@@ -306,12 +309,17 @@ These two encoders are evaluated in parallel and invoked by [QueryEncodingSearch
 ## Scaling and Serving Performance
 
 The following illustrates a scalable deployment using Vespa where the stateless container cluster 
-handles query parsing and query tokenization. The query encoding models are invoked in the stateless container, and the resulting
- tensors are attached to the query which is dispatched to all content nodes. 
- Each content node has a partition of the total document volume and a query retrieves and rank documents as specified in the
- ranking profile in use. In the container one can re-rank the globally top-k documents after obtaining the top global ranking hits. 
- Merging might also include diversifying the result set using [Vespa grouping](https://docs.vespa.ai/en/grouping.html)
+handles query parsing and query tokenization. The query encoding models are also evaluated in the stateless container using model evaluation.
 
+ Each content node index a partition of the total document volume and a single query retrieves and rank documents as specified in the
+ ranking profile which happens locally on each node invoved in the query. 
+ In the container one can re-rank the globally top-k documents after obtaining merging the results from the contentn nodes.  
+ Merging might also include diversifying the result set using [Vespa grouping](https://docs.vespa.ai/en/grouping.html)
+ 
+ Moving the most costly ranking model to the stateless layer allows easier auto-scaling to scale with query traffic and as the input size 
+ to the model is limited (e,g 100 hits) the network does not become a bottleneck. 
+ See [Vespa performance and sizing guide](https://docs.vespa.ai/en/performance/sizing-search.html) for more on sizing and scaling Vespa search. 
+ 
 ![Vespa Serving Overview](img/overview.png)
 
 See [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling.md). 
