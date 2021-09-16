@@ -121,7 +121,7 @@ $ python3 count_terms.py open_index.json feed_terms.json 2 top100en.txt
 
 
 **Feeding bootstrapped search terms**
-
+<!-- It is hard to assert on no failures in the feed, assert later in term lookup query -->
 <pre data-test="exec">
 $ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_terms.json --endpoint http://localhost:8080
 </pre>
@@ -157,6 +157,13 @@ Open http://localhost:8080/site/ in a browser.
 To validate the site is up:
 <pre data-test="exec" data-test-assert-contains="search suggestions">
 $ curl -s http://localhost:8080/site/
+</pre>
+
+
+**Do a term lookup**
+
+<pre data-test="exec" data-test-assert-contains="id:term:term::doc">
+$ curl -s http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20term%20contains%20%22doc%22%3B
 </pre>
 
 
