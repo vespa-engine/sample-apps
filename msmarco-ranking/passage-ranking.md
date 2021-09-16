@@ -93,13 +93,6 @@ Methods in bold are end to end represented using Vespa.
 
 
 ## Vespa Sample application 
-The following illustrates a scalable deployment using Vespa where the stateless container cluster 
-handles query parsing, tokenization, query encodings and dispatching to the content cluster where the passages
-are indexed. Each content node has a local view of the data and a query retrieves and rank documents 
-
-![Vespa Serving Overview](img/overview.png)
-
-
 Vectors or generally tensors are first-class citizens in the Vespa document model. The  
 [passage](src/main/application/schemas/passage.sd) document schema is given below:
 
@@ -312,6 +305,15 @@ These two encoders are evaluated in parallel and invoked by [QueryEncodingSearch
 
 ## Scaling and Serving Performance
 
+The following illustrates a scalable deployment using Vespa where the stateless container cluster 
+handles query parsing and query tokenization. The query encoding models are invoked in the stateless container, and the resulting
+ tensors are attached to the query which is dispatched to all content nodes. 
+ Each content node has a partition of the total document volume and a query retrieves and rank documents as specified in the
+ ranking profile in use. In the container one can re-rank the globally top-k documents after obtaining the top global ranking hits. 
+ Merging might also include diversifying the result set using [Vespa grouping](https://docs.vespa.ai/en/grouping.html)
+
+![Vespa Serving Overview](img/overview.png)
+
 See [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling.md). 
 The [Pretrained Transformer Language Models for Search - part 4](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/)
 also has a section on serving performance. 
@@ -352,52 +354,14 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/msmarco-ranking
 </pre>
 
-
-## Download published quantized ONNX models  
-
-In total there are three ONNX models, please follow the following instructions to download them and 
-place them in the models directory as specified in the section below.  Models are referenced
-in the *passage* document schema and also used by the stateless model evaluation inside the 
-stateless containers.
-
-### The sentence encoder model (bi-encoder)
-
-This model is used for dense retrieval using HNSW indexing. The model uses mean pooling and L2 vector
-normalization. This model is invoked by the stateless container. 
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/models/dense_encoder.onnx \
-    https://data.vespa.oath.cloud/onnx_models/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
-</pre>
-
-### The cross encoder model (classification)
-
-This is the final re-ranking stage using full all to all
-interaction between the query and the passage with a classification head on top of the CLS token
-embedding:
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/models/msmarco_v2.onnx \
-    https://data.vespa.oath.cloud/onnx_models/ms-marco-MiniLM-L-6-v2-quantized.onnx
-</pre>
-
-### The late interaction model 
-This is the ColMiniLM model which uses late contextualized interaction and Vespa MaxSim tensor expression:
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/models/colbert_encoder.onnx \
-    https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-quantized.onnx
-</pre>
-
-With the models downloaded one can build the 
-[Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
+Build the application package. This step also downloads the three ONNX models used in this application package. The download
+script used is found [here](src/main/bash/download_models.sh)
 
 <pre data-test="exec">
 $ mvn clean package -U
 </pre>
 
-Make sure that the used Java version is 11. The above mvn command will build and package the compiled project, including the
-transformer models in a zip file (target/application.zip).
+Make sure that the used Java version is 11. The above mvn command will download models, build and package the vespa app package. 
 
 Pull and start the docker container 
 
