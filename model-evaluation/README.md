@@ -9,7 +9,7 @@ Please refer to
 for more information.
 
 The directory `src/main/application/models` contains two ONNX model files generated
-by the PyTorch scripts in the same directory. These two models are used to show 
+by the PyTorch scripts in the same directory. These two models are used to show
 various ways stateless model evaluation can be used in Vespa:
 
 - Vespa can automatically make models available through a REST API.
@@ -57,19 +57,29 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 **Test the application - REST API**
 
+List the available models:
+
 <pre data-test="exec" data-test-assert-contains="transformer">
 $ curl -s 'http://localhost:8080/model-evaluation/v1/' | python -m json.tool
 </pre>
 
+Details of model the `transformer` model:
+
+<pre data-test="exec" data-test-assert-contains="transformer">
+$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer' | python -m json.tool
+</pre>
+
+Evaluating the model:
+
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%7B%7Bd0%3A0%2Cd1%3A0%7D%3A1%2C%7Bd0%3A0%2Cd1%3A1%7D%3A2%2C%7Bd0%3A0%2Cd1%3A2%7D%3A3%7D' | python -m json.tool
+$ curl -s ''http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format=short' | python -m json.tool
 </pre>
 
 The input here is a URL encoded Vespa tensor in
-[literal form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
+[literal short form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
 
 ```
-    { {d0:0,d1:0}:1, {d0:0,d1:1}:2, {d0:0,d1:2}:3 }
+    [[1,2,3]]
 ```
 
 **Test the application - Java API in a handler**
@@ -78,7 +88,7 @@ The input here is a URL encoded Vespa tensor in
 $ curl -s 'http://localhost:8080/models/?model=transformer&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | python -m json.tool
 </pre>
 
-The input here is 
+The input here is
 
 ```
     { {x:0}:1, {x:1}:2, {x:2}:3 }
