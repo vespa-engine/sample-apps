@@ -1,4 +1,4 @@
-// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
 import ai.vespa.models.evaluation.FunctionEvaluator;
@@ -22,6 +22,7 @@ public class ReRankingSearcher extends Searcher {
 
     private final Model model;
     private static final String MODEL_NAME = "msmarco_v2";
+    private static final String TENSOR_TOKEN_FIELD_NAME = "text_token_ids";
 
 
     protected static class BertModelBatchInput  {
@@ -48,22 +49,24 @@ public class ReRankingSearcher extends Searcher {
         int hits = query.getHits();
         int reRankCount = query.getRanking().getRerankCount();
         query.setHits(reRankCount);
-        query.getPresentation().getSummaryFields().add("text_token_ids");
+        query.getPresentation().getSummaryFields().add(TENSOR_TOKEN_FIELD_NAME);
         Result result = execution.search(query);
-        execution.fill(result, "text_token_ids");
-        Result reRanked = reRank(result);
+        execution.fill(result, TENSOR_TOKEN_FIELD_NAME);
+        Result reRanked = reRank(result,TENSOR_TOKEN_FIELD_NAME);
         reRanked.hits().trim(0,hits);
+        for(Hit h:reRanked.hits())
+            h.removeField(TENSOR_TOKEN_FIELD_NAME);
         return reRanked;
     }
 
-    private Result reRank(Result result) {
+    private Result reRank(Result result,String textField) {
         if(result.getConcreteHitCount() == 0)
             return result;
         List<Integer> queryTokens = QueryTensorInput.getFrom(result.getQuery().properties()).getQueryTokenIds();
         int maxSequenceLength = result.getQuery().properties().getInteger("rerank.sequence-length", 128);
 
         long start = System.currentTimeMillis();
-        BertModelBatchInput input = buildModelInput(queryTokens, result,maxSequenceLength);
+        BertModelBatchInput input = buildModelInput(queryTokens, result,maxSequenceLength,textField);
         if(result.getQuery().isTraceable(1))
             result.getQuery().trace("Prepare batch input took " + (System.currentTimeMillis() - start)  + " ms",1);
 
@@ -75,7 +78,7 @@ public class ReRankingSearcher extends Searcher {
         return result;
     }
 
-    protected static List<Integer> toList(Tensor t) {
+    protected static List<Integer> trimToList(Tensor t) {
         int size = (int)t.size();
         List<Integer> tokens = new ArrayList<>(size);
         for(int i = 0; i < size; i++) {
@@ -87,20 +90,21 @@ public class ReRankingSearcher extends Searcher {
     }
 
 
-    protected static BertModelBatchInput buildModelInput(List<Integer> queryTokens, Result result,int maxSequenceLength) {
+    protected static BertModelBatchInput buildModelInput(List<Integer> queryTokens, Result result,int maxSequenceLength, String tensorField) {
+        if(maxSequenceLength < 3)
+            maxSequenceLength = 3;
 
         List<List<Integer>> batch = new ArrayList<>(result.getHitCount());
         int maxPassageLength = 0;
         for (Hit h: result.hits()) {
-            Tensor text = (Tensor) h.getField("text_token_ids");
-            h.removeField("text_token_ids");
-            List<Integer> textTokens = toList(text);
+            Tensor text = (Tensor) h.getField(tensorField);
+            List<Integer> textTokens = trimToList(text);
             batch.add(textTokens);
             if (textTokens.size() > maxPassageLength)
                 maxPassageLength = textTokens.size();
         }
 
-        int sequenceLength = maxSequenceLength + queryTokens.size() + 3;
+        int sequenceLength = maxPassageLength + queryTokens.size() + 3;
         if(sequenceLength > maxSequenceLength)
             sequenceLength = maxSequenceLength;
 
@@ -109,35 +113,41 @@ public class ReRankingSearcher extends Searcher {
         IndexedTensor.Builder inputIdsBatchBuilder = IndexedTensor.Builder.of(batchType);
         IndexedTensor.Builder attentionMaskBatchBuilder = IndexedTensor.Builder.of(batchType);
         IndexedTensor.Builder tokenTypeIdsBatchBuilder = IndexedTensor.Builder.of(batchType);
-
+        int queryLength = queryTokens.size();
         int batchId = 0;
         for (List<Integer> passage : batch) {
             int[] inputIds = new int[sequenceLength];
             byte[] attentionMask = new byte[sequenceLength];
             byte[] tokenType = new byte[sequenceLength];
+
             inputIds[0] = 101;
             attentionMask[0] = 1;
             tokenType[0] = 0;
+            int index = 1;
 
-            int index = 0;
-            for (; index < queryTokens.size(); index++) {
-                inputIds[index + 1] = queryTokens.get(index);
-                attentionMask[index + 1] = 1;
-                tokenType[index + 1] = 0;
-            }
-            inputIds[index + 1] = 102;
-            attentionMask[index + 1] = 1;
-            tokenType[index + 1] = 0;
-            index++;
-            for (int j = 0; j < passage.size() && index < maxSequenceLength -2; j++) {
-                inputIds[index + 1] = passage.get(j);
-                attentionMask[index + 1] = 1;
-                tokenType[index + 1] = 1;
+            for (int j = 0; j < queryLength;j++) {
+                if(index == sequenceLength -2 )
+                    break;
+                inputIds[index] = queryTokens.get(j);
+                attentionMask[index] = 1;
+                tokenType[index] = 0;
                 index++;
             }
-            inputIds[index + 1] = 102;
-            attentionMask[index + 1] = 1;
-            tokenType[index + 1] = 1;
+            inputIds[index] = 102;
+            attentionMask[index] = 1;
+            tokenType[index] = 0;
+            index++;
+            for (int j = 0; j < passage.size();j++) {
+                if(index == sequenceLength -1)
+                    break;
+                inputIds[index] = passage.get(j);
+                attentionMask[index] = 1;
+                tokenType[index] = 1;
+                index++;
+            }
+            inputIds[index] = 102;
+            attentionMask[index] = 1;
+            tokenType[index] = 1;
 
             for (int k = 0; k < sequenceLength; k++) {
                 inputIdsBatchBuilder.cell(inputIds[k], batchId, k);

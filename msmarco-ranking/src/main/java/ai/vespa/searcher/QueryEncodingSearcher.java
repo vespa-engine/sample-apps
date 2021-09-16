@@ -51,7 +51,7 @@ public class QueryEncodingSearcher  extends Searcher {
         for (FutureResult f : results) {
             Result r = f.get();
             if(r.getTotalHitCount() == 0)
-                throw new RuntimeException("Unexpected 0 hits from encoder, this is an server error");
+                throw new RuntimeException("Unexpected 0 hits from query encoder, this is a server error.");
             Hit hit = r.hits().get(0);
             Tensor tensor = (Tensor)hit.getField("tensor");
             if (hit.getSource().equals("colbert")) {

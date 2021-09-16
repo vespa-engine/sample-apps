@@ -1,9 +1,8 @@
-// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+//Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.yahoo.component.chain.dependencies.Provides;
 import com.yahoo.search.query.Properties;
 import com.yahoo.tensor.IndexedTensor;
 import com.yahoo.tensor.TensorType;
@@ -15,7 +14,7 @@ import com.yahoo.tensor.TensorType;
  * information between searchers</a>
  */
 
-@Provides(QueryTensorInput.NAME)
+
 public class QueryTensorInput {
 
     protected static final String NAME = "QueryTensorInput";
