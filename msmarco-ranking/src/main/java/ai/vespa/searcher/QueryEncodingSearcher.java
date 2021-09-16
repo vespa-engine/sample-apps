@@ -10,7 +10,6 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.search.searchchain.FutureResult;
 import com.yahoo.search.searchchain.SearchChain;
 import com.yahoo.tensor.Tensor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,15 @@ import java.util.List;
  * Searcher which asynchronously invokes the colbert and embedding search chains
  * to compute the colbert query tensor representation and the dense query embedding representation
  */
+
 public class QueryEncodingSearcher  extends Searcher {
+
+    /**
+     * Tensor names which are passed to the content cluster and
+     * which types needs to be known in configuration
+     * See src/main/application/search/query-profiles/types/root.xml for
+     * tensor type definition
+     */
 
     private final String colbertTensorName = "query(qt)";
     private final String embeddingTensorName = "query(query_embedding)";
@@ -43,15 +50,15 @@ public class QueryEncodingSearcher  extends Searcher {
         }
         for (FutureResult f : results) {
             Result r = f.get();
+            if(r.getTotalHitCount() == 0)
+                throw new RuntimeException("Unexpected 0 hits from encoder, this is an server error");
             Hit hit = r.hits().get(0);
             Tensor tensor = (Tensor)hit.getField("tensor");
             if (hit.getSource().equals("colbert")) {
                 query.getRanking().getFeatures().put(colbertTensorName, tensor);
-                query.trace("colbert tensor " + tensor, 3);
             }
             else if(hit.getSource().equals("embedding")) {
                 query.getRanking().getFeatures().put(embeddingTensorName, tensor);
-                query.trace("embedding tensor " + tensor, 3);
             }
         }
     }

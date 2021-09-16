@@ -11,9 +11,9 @@ these blog posts:
 * [Pretrained language models for search - part 3 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/)
 * [Pretrained language models for search - part 4 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/)
 
-With this sample application you can reproduce our 
+With this sample application you can reproduce the submission made by the Vespa team to the
 [MS Marco Passage Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Passage-Ranking-Submissions/leaderboard/) 
-submission which currently ranks #15, above many huge ensemble models using large Transformer models (e.g T5 using 3B parameters).
+submission which currently ranks #15, above many huge ensemble models using large Transformer models.
 
 ![MS Marco Leaderboard](img/leaderboard.png)
 
@@ -23,57 +23,64 @@ submission which currently ranks #15, above many huge ensemble models using larg
 
 *Illustration from [ColBERT paper](https://arxiv.org/abs/2004.12832)*
 
-## Sample application 
 
-In this sample application we demonstrate:
+This sample application demonstrates:
 
-- Simple single stage retrieval accelerated by the [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html) 
+- Simple single stage sparse retrieval accelerated by the [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html) 
 dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.  
 - Dense (vector) search retrieval to replace sparse (BM25) for efficient candidate retrieval using Vespa's support for fast
 [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
- We demonstrate how to also embed the query encoder model which encodes the query text to vector representation. This
+ It demonstrates how to also embed the query encoder model which convert the query text to dense vector representation. This
 model is a representation model. Illustrated in figure **a**. 
-- Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model where we
-also embed the ColBERT query encoder and we use Vespa tensor expressions to calculate the *MaxSim*.  Illustrated in figure **d**. 
-- Re-ranking using all to all cross attention. Illustrated in figure **c**.
-- [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html).
-- Custom [searcher plugins](https://docs.vespa.ai/en/searcher-development.html), 
-[document processors](https://docs.vespa.ai/en/document-processing.html) .
+- Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model where 
+the ColBERT query encoder is also embedded in the Vespa serving stack. A Vespa tensor expressions is used to calculate the *MaxSim*. This method is illustrated in figure **d**. 
+- Re-ranking using all to all cross attention between the query and document. This is the most effective model (ranking accuracy) but also the most computationally complex
+model due to the increased input sequence length (query + passage). This method is illustrated in figure **c**.
+- [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html) combining efficient retrieval (WAND or ANN) with re-ranking stages.
+- Custom [searcher plugins](https://docs.vespa.ai/en/searcher-development.html) to build the application serving logic. It also features 
+[custom document processors](https://docs.vespa.ai/en/document-processing.html) .
+- Accelerated [Stateless ML model evaluation](https://blog.vespa.ai/stateless-model-evaluation/) for query encodings and re-ranking. 
 
 
-In this work we use three pre-trained Transformer models fine-tuned for MS Marco passage ranking from [Huggingface 🤗](https://huggingface.co/)
+This sample applicaiton uses pre-trained Transformer models fine-tuned for MS Marco passage ranking from [Huggingface 🤗](https://huggingface.co/)
 
-All three models are based on [MiniLM](https://arxiv.org/abs/2002.10957) which
-is a distilled BERT model which can be used a drop in replacement for BERT. 
-It uses the same tokenization procedure and vocabulary as BERT base.
-It performs roughly with the same accuracy as the more known big brother *bert-base-uncased* but with
- less parameters which lowers the compute complexiy. 
+All three Transformer based models used in this sample application are based on [MiniLM](https://arxiv.org/abs/2002.10957) which
+is a distilled BERT model which can be used as a drop in replacement for BERT. 
+It uses the same sub word tokenization routine and shares the vocabulary with the original BERT base model.
+The MiniLM model has roughly the same accuracy as the more known big brother *bert-base-uncased* on many different tasks, but with
+ less parameters which lowers the computational complexity significantly.  
  
- The original MiniLM has 12 layers, we use 6 layer versions with about 22.7M trainable parameters.  
+The original MiniLM has 12 layers, this work uses 6 layer versions with only about 22.7M trainable parameters.  
 
-**Transformer Models**
-- Dense retrieval using bi-encoder [🤗 sentence-transformers/msmarco-MiniLM-L-6-v3](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3)
-The original model uses mean pooling over the last layer of the MiniLM model, we also add a L2 normalization to normalize vectors to unit length (1) so that
-we can use innerproduct distance metric instead of angular distance metric. This saves computations during the approximate nearest neighbor search. 
-- Contextualized late interaction [🤗 vespa-engine/col-minilm](https://huggingface.co/vespa-engine/col-minilm)
-- Cross all to all encoder [🤗 cross-encoder/ms-marco-MiniLM-L-6-v2](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
+### Transformer Models 
+The sample application uses these three models:
+
+- Dense retrieval using bi-encoder [sentence-transformers/msmarco-MiniLM-L-6-v3 🤗](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3)
+
+The original model uses mean pooling over the last layer of the MiniLM model. A simple L2 normalization is used to normalize vectors to unit length (1) so that
+one can use innerproduct distance metric instead of angular distance metric. The L2 normalization stage is added to the ONNX execution graph. Using innerproduct saves
+ computations compared to angular distance during the approximate nearest neighbor search. 
+- Contextualized late interaction (COLBert) [vespa-engine/col-minilm 🤗](https://huggingface.co/vespa-engine/col-minilm)
+- Cross all to all encoder [cross-encoder/ms-marco-MiniLM-L-6-v2 🤗](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2). 
+Sometimes also refered to as BERT-mono or BERT-cat in 
+scientific literature. This is a model which take both the query and the passage as input. 
  
-We include code to export these three models to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa.ai. For all
-three we use [quantized](https://onnxruntime.ai/docs/performance/quantization.html) versions to speed up inference on CPU.  
-
-We also publish the ONNX files for raw import if you don't want to export the models yourself. 
+Code to export these models to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa.ai is available 
+in the [model export notebook](src/main/python/model-exporting.ipynb). All three models are 
+[quantized](https://onnxruntime.ai/docs/performance/quantization.html) for accelerated inference on CPU using int8 weights. 
+The quantized model versions are hosted on S3 and are free to download and import into the the sample application.
 
 ## MS Marco Passage Ranking Evaluation 
 
 The official ranking evaluation metric on MS Marco passage leaderboard is [MRR@10](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) 
-and below are the results of our 2 passage ranking submissions on the **eval** and **dev** query set. 
+and below are the results of two passage ranking submissions. The results includes both the **eval** and **dev** query set. 
 
 The MS Marco Passage ranking leaderboard is sorted by the score on the *eval* set. 
 See [MSMarco Passage Ranking Leaderboard](https://microsoft.github.io/msmarco/)
  
-For reference we also include 
-the official baseline using [BM25](https://en.wikipedia.org/wiki/Okapi_BM25) and 
-a tuned BM25 using *Apache Lucene 8* which powers text ranking search for engines like *Apache Solr* and *Elasticsearch*. 
+For reference the official baseline using [BM25](https://en.wikipedia.org/wiki/Okapi_BM25) and 
+a tuned BM25 using *Apache Lucene 8* is included. 
+Apache Lucene powers text ranking search for search engines like *Apache Solr* and *Elasticsearch*. 
 
 | Model                                     | Eval  | Dev   |
 |-------------------------------------------|-------|-------|
@@ -82,14 +89,19 @@ a tuned BM25 using *Apache Lucene 8* which powers text ranking search for engine
 | **BM25 => ColBERT**                       | 0.347 | 0.354 |
 | **dense => ColBERT => Cross all to all**  | 0.393 | 0.403 |
 
-Methods in bold are end to end represented on Vespa.
+Methods in bold are end to end represented using Vespa.
 
-The accuracy as measured by MRR@10 for the re-ranking runs depends on the re-ranking depths (how many documents each phase re-ranks). 
 
-## Vespa document schema 
+## Vespa Sample application 
+The following illustrates a scalable deployment using Vespa where the stateless container cluster 
+handles query parsing, tokenization, query encodings and dispatching to the content cluster where the passages
+are indexed. Each content node has a local view of the data and a query retrieves and rank documents 
 
-Vectors or generally tensors are first-class citizens in the Vespa document model and we use the following 
-Vespa [passage](src/main/application/schemas/passage.sd) document schema with 5 fields:
+![Vespa Serving Overview](img/overview.png)
+
+
+Vectors or generally tensors are first-class citizens in the Vespa document model. The  
+[passage](src/main/application/schemas/passage.sd) document schema is given below:
 
 <pre>
 schema passage {
@@ -103,10 +115,12 @@ schema passage {
     
     field text_token_ids type tensor&lt;float&gt;(d0[128])  {
       indexing: summary | attribute
+      attribute:paged
     }
     
     field dt type tensor&lt;bfloat16&gt;(dt{}, x[32]){
       indexing: summary | attribute
+      attribute:paged
     }
     
     field mini_document_embedding type tensor&lt;float&gt;(d0[384]) {
@@ -128,12 +142,14 @@ schema passage {
 } 
 </pre> 
 
-The *text* field contains the original passage text and the *dt* tensor field stores the contextual term embedding from the col-MiniLM model. *dt* is an example of a mixed tensor
-which mixes sparse ("dt") and dense "x". Using sparse allows us to store several term embeddings without a fixed dense dimensionality as the text is of variable length.
+The *text* field indexes the original passage text and the *dt* tensor field stores the contextual multi-term embedding from the col-MiniLM model. 
+*dt* is an example of a mixed tensor which mixes sparse ("dt") and dense "x". 
+Using mixed sparse/dense allows storing variable length text terms efficiently without having to use a dense,dense representation with fixed length.
 
-We use 32 dimensions for the contextualized term embedding and this is denoted by <em>x[32]</em>. We use bfloat16 (2 bytes) per tensor cell to reduce memory footprint.
+The ColBERT model uses 32 dimensions for the contextualized term embeddings, denoted by <em>x[32]</em>. The tensor cell type 
+is [bfloat16 (2 bytes) per tensor cell](https://docs.vespa.ai/en/tensor-user-guide.html#cell-value-types). This is used
+ to reduce memory footprint and the cell values are casted to float for HW accelerated calculations. 
 
- 
 See [Vespa Tensor Guide](https://docs.vespa.ai/en/tensor-user-guide.html) for an introduction to Vespa tensors. The *id* field is the passage id from the 
 dataset. This id is used to evaluate the ranking accuracy. We also define a *id* document summary which avoids returning the text and the potential large *dt* tensor field. 
 
@@ -141,18 +157,25 @@ The *text_token_ids* contains the BERT token vocabulary ids and is only used by 
 Storing the token ids in the passage document avoids tokenization at query serving time 
 and we can read the tensor from memory during ranking. 
 
-The *mini_document_embedding* field is the dense vector produced by the sentence encoder model. We enable HNSW indexing for efficient fast 
-approximate nearest neighbor search and we use innerproduct distance metric (query and document vectors normalized to unit length). 
+The *text_token_ids* is an example of a [paged tensor attribute](https://docs.vespa.ai/en/attributes.html#paged-attributes). Using paged attribute 
+enables storing more passages per node, at the cost of potentially slower access time, depending on memory pressure and document access locality. As
+thisf field is only used during re-ranking the number of page-ins are limited by the re-ranking depth. 
+
+The *mini_document_embedding* field is the dense vector produced by the sentence encoder model. HNSW indexing is enabled for efficient fast 
+approximate nearest neighbor search. As explained earlier the single representation are L2 normalized so one can use the
+*innerproduct* distance metric.
 
 
 ## Retrieval and Ranking 
-We define several ranking profile in our *passage* document schema. See [Vespa Ranking Documentation](https://docs.vespa.ai/en/ranking.html)
+There are several ranking profiles defined in the *passage* document schema. 
+See [Vespa Ranking Documentation](https://docs.vespa.ai/en/ranking.html)
 for an overview of how to represent ranking in Vespa.
 
 The baseline ranking model is using [bm25](https://docs.vespa.ai/en/reference/bm25.html). BM25 could be
 a good baseline model for many domains where there are no prior training data available. Be it by explicit relevancy judgements 
-like in MS Marco or implicit through user feedback. When there is enough training data available it's possible to train 
-a representation model which significantly outperforms BM25 in-domain. 
+like in MS Marco or implicit through user click feedback which can be used to train a machine learned model. 
+When there is enough training data available it's possible to train 
+a representation model which significantly outperforms BM25 when applied in-domain. 
 
 Below is the the *bm25* ranking profile, defined in the passage document schema:
 
@@ -164,23 +187,27 @@ rank-profile bm25 {
   }
 }
 </pre>
-The bm25 ranking feature has two hyperparameters and we leave them at the default in Vespa (b=0.75, k=1.2). We specify 
-that retrieval and ranking should be using 6 threads per search. Vespa supports using multiple threads to evaluate a query which allows tuning latency
-versus throughput. Not all retrieval and ranking cases needs a lot of throughput but end to end latency needs to meet service latency agreement
-and controlling the number of threads per search query can help. 
+
+The *bm25* ranking feature (above scoped to field text) has two hyperparameters and are left untouched with (b=0.75, k=1.2).
+ 
+The *num-threads-per-search* specifies that retrieval and ranking should be using 6 threads per search. 
+Vespa supports using multiple threads to evaluate a query which allows tuning latency
+versus throughput. 
+Not all retrieval and ranking cases needs a lot of throughput but end to end latency needs to meet service latency agreement
+and controlling the number of threads per search query can help tuning down latency. 
 
 See [Vespa performance and sizing guide](https://docs.vespa.ai/en/performance/sizing-search.html).
 
- 
-We define the *colBERT* reranker with a Vespa ranking profile which uses [phased ranking](https://docs.vespa.ai/en/phased-ranking.html). 
-The first phase is inherited from the *bm25* ranking profile. The way this work is that the top K documents as scored by 
-the bm25(text) ranking feature is re-ranked using the ColBERT MaxSim operator. The re-ranking count or re-ranking depth is configurable 
- and can also be overridden at query time.
+ The *ColBERT* reranker model is expressed using per content node [phased ranking](https://docs.vespa.ai/en/phased-ranking.html). 
+The first phase is inherited from the *bm25* ranking profile. 
+The top-k passages as scored by the first phase bm25 ranking feature are 
+re-ranked using the ColBERT MaxSim operator. 
+
+The re-ranking count or re-ranking depth is configurable and can also be overridden at query time.
  
 The ColBERT MaxSim operator is expressed using Vespa's
 [tensor expression language](https://docs.vespa.ai/en/reference/ranking-expressions.html#tensor-functions). 
 
- 
 <pre> 
 rank-profile bm25-colbert inherits bm25 {
   num-threads-per-search: 6
@@ -201,7 +228,7 @@ rank-profile bm25-colbert inherits bm25 {
 }
 </pre>
 
-The *query(qt)* represent the ColBERT query tensor which is computed online first before retrieving and ranking passages.  
+The *query(qt)* represent the ColBERT query tensor which is computed online per query before retrieving and ranking passages.  
  The query tensor hold the per term contextual embeddings. 
  *attribute(dt)* reads the document tensor which stores the per term contextual embedding. Tensor attribute fields in Vespa are in-memory.  
 The **cell_cast** is used to cast from bfloat16 format in memory to float for faster computation on cpu. 
@@ -212,7 +239,7 @@ The query tensor type is defined in the application package in
 &lt;field name="ranking.features.query(qt)" type="tensor&lt;float&gt;(qt{},x[32])"/&gt;
 </pre> 
 
-There are several ranking profiles defined in the passage schema and the best performing model is the following
+There are several ranking profiles defined in the passage schema and the most accurate model
 
 
 <pre>
@@ -264,48 +291,30 @@ There are several ranking profiles defined in the passage schema and the best pe
   }
 </pre>
 
-This ranking model uses the dense nearest neighbor search to compute the top 1K documents, which are
+This ranking model uses the approximate nearest neighbor search to find the initial 1K documents, which are
 re-ranked using the late interaction model and finally the top k from the late interaction model
-is re-ranked once more using the cross all to all interaction model. We also use the ranking
-signals computed by the two previous stages using a linear combination of the 3 signals. The 
-*dense()* and *maxSimNormalized* functions are not re-evaluated in the second phase. Also note that
-that these re-ranking steps are performed per node without crossing the network.  
+are re-ranked once more using the cross all to all interaction model. The final score 
+is a linear combination of all three stages. The 
+*dense()* and *maxSimNormalized* functions are not re-evaluated in the second phase. 
+Also note that that these re-ranking steps are performed per node without crossing the network.  
 
+### Query Encoders 
 
-### Query encoders 
+Both the multi-representation ColBERT model and the single representation sentence-encoder query encoder model are represented in Vespa 
+using Vespa's support for stateless model inference as described 
+in [Accelerating stateless model evaluation on Vespa](https://blog.vespa.ai/stateless-model-evaluation/). The models
+are invoked from custom searchers and their output is used when searching and ranking the passages. 
 
-We represent both the ColBERT and the dense query encoder in Vespa 
-using Vespa's support for inference and [ranking with ONNX](https://docs.vespa.ai/en/onnx.html) models. 
-In this case we don't rank any documents directly with the ONNX model but we use the support to make a single pass through them
-to obtain the embedding vector for nearest neighbor search and the ColBERT query tensor representation for re-ranking. 
- 
-We plug the model into the Vespa serving architecture 
-using a *query* document type which is empty as it's only used to represent the query encoder models
+- Single representation model [QueryEmbeddingSearcher](src/main/java/ai/vespa/searcher/QueryEmbeddingSearcher.java)
+- ColBERT representation model [ColBERTSearcher](src/main/java/ai/vespa/searcher/colbert/ColBERTSearcher.java)
 
-<pre> 
-schema query {
-  document query {
-  }
-  onnx-model colbert_encoder {
-    file: files/vespa-colMiniLM-L-6-quantized.onnx
-    input input_ids: query(input_ids)
-    input attention_mask: query(attention_mask)
-    output contextual:contextual 
-  }
-    
-  onnx-model query_embedding {
-    file: files/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
-    input input_ids: query(input_ids)
-    input attention_mask: query(attention_mask)
-    output output_0: embedding
-  }
-}
-</pre>
-
+These two encoders are evaluated in parallel and invoked by [QueryEncodingSearcher](src/main/java/ai/vespa/searcher/QueryEncodingSearcher.java) 
 
 ## Scaling and Serving Performance
 
-See [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling.md)
+See [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling.md). 
+The [Pretrained Transformer Language Models for Search - part 4](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/)
+also has a section on serving performance. 
 
 
 # Reproducing this work 
@@ -315,9 +324,10 @@ before downloading the dataset. Note that the terms and conditions does not perm
 ## Quick start
 
 The following is a quick start recipe on how to get started with a tiny set of sample data.
-The sample data only contains the first 1000 documents of the full MS Marco passage ranking dataset. We use pre-computed document ColBERT tensors.
+The sample data only contains the first 1000 documents of the full MS Marco passage ranking dataset
+and pre-computed ColBERT document tensors
 
-This should be able to run on for instance a laptop. For the full dataset to reproduce our submission to the MS Marco Passage ranking leaderboard see 
+This should be able to run on for instance a laptop. For the full dataset to reproduce the submission to the MS Marco Passage ranking leaderboard see 
 [full evaluation](#full-evaluation).
 
 Requirements:
@@ -342,67 +352,54 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/msmarco-ranking
 </pre>
 
-Install python dependencies. There are no run time python dependencies in Vespa, but this sample app uses:
+
+## Download published quantized ONNX models  
+
+In total there are three ONNX models, please follow the following instructions to download them and 
+place them in the models directory as specified in the section below.  Models are referenced
+in the *passage* document schema and also used by the stateless model evaluation inside the 
+stateless containers.
+
+### The sentence encoder model (bi-encoder)
+
+This model is used for dense retrieval using HNSW indexing. The model uses mean pooling and L2 vector
+normalization. This model is invoked by the stateless container. 
 
 <pre data-test="exec">
-$ pip3 install torch numpy ir_datasets requests tqdm transformers onnx onnxruntime
-</pre>
-
-Download ONNX models which have been exported by us and made available for this sample app. 
-
-We place these models into the files directory of the Vespa application package:
-
-<pre data-test="exec">
-$ mkdir -p src/main/application/files/
-</pre>
-
-In total we use three ONNX models, please follow the instructions to download them and 
-place them in the files directory with the correct file name. The mode files are referenced
-in the *passage* and *query* vespa doucment schemas.
-
-## The sentence encoder model (bi-encoder)
-
-This model is used for dense retrieval using HNSW indexing. The model uses mean pooling 
-and we add an L2 normalization on top so we can use innerproduct distance metric instead
-of angular. The mean pooling and normalization is part of the onnx model generation. 
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/files/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx \
+$ curl -L -o src/main/application/models/dense_encoder.onnx \
     https://data.vespa.oath.cloud/onnx_models/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
 </pre>
 
-## The cross encoder model (classification)
+### The cross encoder model (classification)
 
 This is the final re-ranking stage using full all to all
 interaction between the query and the passage with a classification head on top of the CLS token
 embedding:
 
 <pre data-test="exec">
-$ curl -L -o src/main/application/files/ms-marco-MiniLM-L-6-v2-quantized.onnx \
+$ curl -L -o src/main/application/models/msmarco_v2.onnx \
     https://data.vespa.oath.cloud/onnx_models/ms-marco-MiniLM-L-6-v2-quantized.onnx
 </pre>
 
-## The late interaction model 
+### The late interaction model 
 This is the ColMiniLM model which uses late contextualized interaction and Vespa MaxSim tensor expression:
 
 <pre data-test="exec">
-$ curl -L -o src/main/application/files/vespa-colMiniLM-L-6-quantized.onnx \
+$ curl -L -o src/main/application/models/colbert_encoder.onnx \
     https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-quantized.onnx
 </pre>
 
-To see how we exported these models to onnx format see the [model export notebook](src/main/python/model-exporting.ipynb). We have
-also released the models so you don't need to export them. 
-
-Once we have downloaded the models, 
-we use maven to create the
+With the models downloaded one can build the 
 [Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
 
 <pre data-test="exec">
 $ mvn clean package -U
 </pre>
 
-If you run into issues running mvn package please check  mvn -v and that the Java version is 11. 
-Now, we are ready to start the vespeengine/vespa docker container - pull the latest version and run it by
+Make sure that the used Java version is 11. The above mvn command will build and package the compiled project, including the
+transformer models in a zip file (target/application.zip).
+
+Pull and start the docker container 
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
@@ -417,17 +414,14 @@ Wait for configuration service to start, the command below should return a 200 O
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
-Deploy the application package:
+Deploy the application package built by the mvn step above:
 
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ curl --max-time 300 --header Content-Type:application/zip --data-binary @target/application.zip \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-The vespa configuration will translate the high level application package and distribute 
-models and configuration to all the vespa sub-services, potentially running over thousands of machines. 
-
-Now, wait for the application to start, the command below should return a 200 OK
+Wait for the application to start, the command below should return a 200 OK
 
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
@@ -439,7 +433,7 @@ Feed the sample documents using the [Vespa http feeder client](https://docs.vesp
 
 <pre data-test="exec">
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.466.3/vespa-http-client-7.466.3-jar-with-dependencies.jar
 </pre>
 
 Download the sample data:
@@ -457,14 +451,8 @@ $ zstdcat sample-feed/colmini-passage-feed-sample.jsonl.zst | \
      --endpoint http://localhost:8080
 </pre>
 
-Feed the query document which enables the query encoding 
 
-<pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-    --file sample-feed/sample_query_feed.jsonl --endpoint http://localhost:8080
-</pre>
-
-Now all the data is indexed and one can play around with the search interface. Note, only searching 1K passages.
+Now all the data is indexed and one can play around with the search interface. Note, only searching 1K demo passages.
 
 For example do a query for *what was the Manhattan Project*: 
 
@@ -484,7 +472,7 @@ $ curl -s -H Content-Type:application/json --data @sample-feed/query.json \
     http://localhost:8080/search/ |python3 -m json.tool
 </pre>
 
-It is also possible to view the result in a browser using HTTP GET
+It is also possible to view the search result in a browser using HTTP GET
 
 ![Colbert example](img/colbert_sample_query.png)
 
@@ -497,20 +485,26 @@ See query profile definitions in [src/main/application/search/query-profiles](sr
 
 Examples of retrieval and ranking methods demonstrated with this sample application:
 
-| **Retrieval method** | **Ranking model**           | **Query example link**                                                                                           |
-|------------------|----------------------|--------------------------------------------------------------------------------------------------------------|
-| sparse (wand)    | bm25                          | [sparse-bm25](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-bm25) |
-| sparse (wand)    | bm25 => col-MiniLM            | [sparse-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-colbert) |
-| dense (ann)      | dense 1K                      | [dense](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense) |
-| dense (ann)      | dense 10                      | [dense](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense&ann.hits=10) |
-| dense (ann)      | dense => col-MiniLM           | [dense-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert) |
-| dense (ann)      | dense => col-MiniLM => MiniLM | [dense-colbert-cross](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-cross) |
+| **Retrieval method** | **Ranking model**                      | **Query example link**                                                                                           |
+|------------------|--------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| sparse (wand)    | bm25                                       | [sparse-bm25](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-bm25) |
+| sparse (wand)    | bm25 => col-MiniLM                         | [sparse-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-colbert) |
+| dense (ann)      | dense                                      | [dense](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense) |
+| dense (ann)      | dense => col-MiniLM                        | [dense-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert) |
+| dense (ann)      | dense => col-MiniLM => MiniLM              | [dense-colbert-cross](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-cross&rerank-count=24) |
+| dense (ann)      | dense => col-MiniLM => Container re-ranking| [dense-colbert-cross-container](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-container-rerank&rerank-count=24) |
 
-It's possible to control approximate nearest neighbor search (ANN) and WAND parameters by  
+The last retrieval and ranking method fetches the title_token_ids tensor of the top-k globally ranked documents.  
+In this case the re-ranking using the cross attention model happens
+in the stateless container layer. This enables separating the cpu intensive re-ranking step from the content nodes (storage) which with enables faster auto-scaling
+as one can scale the number of containers of the stateless container serving cluster more easily than content node auto scaling. 
+
+It's possible to control approximate nearest neighbor search (ANN) and WAND top-k parameters. Also re-rank count 
+could be overridden by the query parameter rerank-count. 
 
 * *&ann.hits=x* sets the targetNumber of hits that should be retrieved by the dense retriever and exposed to the first-phase ranking expression
 * *&wand.hits=x* sets the targetNumber of hits that should be retrieved by the sparse wand retriever and exposed to the first-phase ranking expression
-
+* $rerank-count 
 
 ## Shutdown and remove the Docker container:
 
@@ -521,7 +515,8 @@ $ docker rm -f vespa
 ## Full Evaluation
 
 Full evaluation requires the content node to run on an instance with at least 128GB of memory. For optimal serving performance
-a cpu with avx512 and VNNI instruction support is recommended. In our experiments we have used 2 x Xeon Gold 6263CY 2.60GHz (48, 96 threads).
+a cpu with avx512 support is recommended. In our experiments we have used 2 x Xeon Gold 6263CY 2.60GHz (48, 96 threads) and 256GB of Memory. 
+SSD persistent drive is recommended for faster 
  
 ### Download all passages 
 
@@ -560,40 +555,49 @@ Indexing everything on a single node using real time indexing takes a few hours,
 With the [evaluate_passage_run.py](src/main/python/evaluate_passage_run.py) we can run retrieval and ranking using the methods
 demonstrated in this sample application
 
+Install python dependencies. There are no run time python dependencies in Vespa, but this sample app uses:
+
+<pre>
+$ pip3 install torch numpy ir_datasets requests tqdm transformers onnx onnxruntime
+</pre>
+
+Note that the ir_datasets utility will download MS Marco query evaluation data so the first run
+will take some time to complete. 
 
 **BM25(WAND) Single phase sparse retrieval**
 <pre>
-$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse \
-  --rank_profile bm25 --wand_hits 100 --hits 10 --run_file run.dev.txt --endpoint \
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile sparse-bm25 --endpoint \
   http://localhost:8080/search/
 </pre>
 
 **BM25(WAND) + ColMiniLM re-ranking**
 <pre>
-$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever sparse \
-  --rank_profile bm25-colbert --wand_hits 1000 --rerank_hits 1000 --hits 10 --run_file run.dev.txt --endpoint \
-  http://localhost:8080/search/
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile sparse-colbert --endpoint \
+    http://localhost:8080/search/
 </pre>
 
 **dense(ANN) Single phase dense retrieval**
 <pre>
-$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
-  --rank_profile dense --ann_hits 10 --hits 10 --run_file run.dev.txt --endpoint \
-  http://localhost:8080/search/
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense --endpoint \
+    http://localhost:8080/search/
 </pre>
 
 **dense(ANN) + ColMiniLM re-ranking**
 <pre>
-$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
-  --rank_profile dense-colbert --ann_hits 1000 --rerank_hits 1000 --hits 10 --run_file run.dev.txt --endpoint \
-  http://localhost:8080/search/
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense-colbert --endpoint \
+   http://localhost:8080/search/
 </pre>
 
 **dense(ANN) + ColMiniLM re-ranking + CrossMiniLm**
 <pre>
-$ ./src/main/python/evaluate_passage_run.py --query_split dev --retriever dense \
-  --rank_profile dense-colbert-mini-lm --ann_hits 1000 --rerank_hits 24 --hits 10 --run_file run.dev.txt --endpoint \
-  http://localhost:8080/search/
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense-colbert-cross --endpoint \
+    http://localhost:8080/search/
+</pre>
+
+**dense(ANN) + ColMiniLM re-ranking + Container CrossMiniLm**
+<pre>
+$ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense-colbert-container-rerank --endpoint \
+    http://localhost:8080/search/
 </pre>
 
 To evaluate ranking accuracy download the official MS Marco evaluation script
@@ -626,9 +630,9 @@ Model training and offline text to tensor processing
 
 * The *ColBERT* model is trained the instructions from the [ColBERT repository](https://github.com/stanford-futuredata/ColBERT) 
 using the MS Marco Passage training set. The *bert-base-uncased* is replaced with the *MiniLM-L6*. 
-We use cosine similarity (innerproduct as the vectors are unit length normalized).
-* The dimensionality of the token tensor is reduced from 384 (hidden dim) to 32 dimensions by a linear layer
-* GPU powered indexing routine in the mentioned *ColBERT repository* to obtain the document tensor representation
+The model was trained using cosine similarity (innerproduct as the vectors are unit length normalized).
+* The dimensionality of the token tensor is reduced from 384 (hidden dim) to 32 dimensions by a linear layer.
+* GPU powered indexing routine in the mentioned *ColBERT repository* to obtain the document tensor representation. 
 
 
 -------------------

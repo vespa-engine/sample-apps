@@ -24,10 +24,11 @@ import java.util.List;
 public class RetrievalModelSearcher extends Searcher {
 
     private static final String QUERY_TENSOR_NAME = "query(query_token_ids)";
+    private static final int MAX_QUERY_LENGTH = 32;
 
     private final Linguistics linguistics;
     private final BertTokenizer tokenizer;
-    private final TensorType questionInputTensorType = TensorType.fromSpec("tensor<float>(d0[32])");
+
 
     public enum RetrievalMethod {
         SPARSE,
@@ -47,10 +48,14 @@ public class RetrievalModelSearcher extends Searcher {
         if (query.getModel().getQueryString() == null || query.getModel().getQueryString().length() == 0)
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
 
-        Tensor questionTokenIds = getQueryTokenIds(queryInput, questionInputTensorType.sizeOfDimension("d0").get().intValue());
-        query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, questionTokenIds);
+        List<Integer> bertTokenIds = this.tokenizer.tokenize(queryInput,MAX_QUERY_LENGTH,false);
+        QueryTensorInput queryTensorInput = new QueryTensorInput(bertTokenIds);
+        QueryTensorInput.setTo(query.properties(),queryTensorInput);
 
-        query.getRanking().setRerankCount(query.properties().getInteger("phase.count", 24));
+        Tensor queryTensor = queryTensorInput.getTensorRepresentation(
+                queryTensorInput.getQueryTokenIdsPadded(MAX_QUERY_LENGTH,0),"d0");
+        query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, queryTensor);
+        query.getRanking().setRerankCount(query.properties().getInteger("rerank-count", 1000));
 
         switch(getMethod(query))  {
             case SPARSE:
@@ -81,6 +86,14 @@ public class RetrievalModelSearcher extends Searcher {
         return queryTokens;
     }
 
+    /**
+     * Create a WeakAnd query from the query representation
+     * @param queryInput The string query
+     * @param field The field to run weakAnd over, can be both a regular field and a fieldset
+     * @param hits The target hits
+     * @return The WeakAndItem
+     */
+
     private WeakAndItem sparseRetrieval(String queryInput, String field, int hits) {
         WeakAndItem wand = new WeakAndItem();
         wand.setN(hits);
@@ -90,6 +103,16 @@ public class RetrievalModelSearcher extends Searcher {
         return wand;
     }
 
+    /**
+     * Create the NN query operator
+     * @param annHits target number of hits to return to ranking phases
+     * @param annExtraHits extra hits to improve ANN recall as compared with brute force NN
+     * @param field The dense vector field to search with the NN
+     * @param queryTensorName The name of the dense query tensor
+     * @param approximate Allow approximate search
+     * @return The NN operator
+     */
+
     private NearestNeighborItem denseRetrieval(int annHits, int annExtraHits, String field, String queryTensorName, boolean approximate) {
         NearestNeighborItem nn = new NearestNeighborItem(field, queryTensorName);
         nn.setAllowApproximate(!approximate);
@@ -98,7 +121,12 @@ public class RetrievalModelSearcher extends Searcher {
         return nn;
     }
 
-    public static RetrievalMethod getMethod(Query query) {
+    /**
+     * Determine what retriever to be be used
+     * @param query query to read properties from
+     * @return The Retrieval Method
+     */
+    private static RetrievalMethod getMethod(Query query) {
         String method = query.properties().getString("retriever", "sparse");
         switch (method) {
             case "sparse": return RetrievalMethod.SPARSE;
@@ -112,14 +140,4 @@ public class RetrievalModelSearcher extends Searcher {
         RetrievalMethod method = getMethod(query);
         return (method == RetrievalMethod.DENSE || method == RetrievalMethod.RANK);
     }
-
-    private Tensor getQueryTokenIds(String queryInput, int maxLength) {
-        List<Integer> tokensIds = tokenizer.tokenize(queryInput, maxLength, true);
-        Tensor.Builder builder = Tensor.Builder.of(questionInputTensorType);
-        int i = 0;
-        for (Integer tokenId : tokensIds)
-            builder.cell(tokenId, i++);
-        return builder.build();
-    }
-
 }

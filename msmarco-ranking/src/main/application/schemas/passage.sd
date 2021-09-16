@@ -11,6 +11,7 @@ schema passage {
 
     field text_token_ids type tensor<float>(d0[128])  {
       indexing: summary | attribute
+      attribute: paged
     }
 
     field dt type tensor<bfloat16>(dt{}, x[32]){
@@ -44,12 +45,19 @@ schema passage {
     }
   }
 
+  document-summary text_token_ids {
+    summary text_token_ids type tensor<float>(d0[128]) {
+      source:text_token_ids
+    }
+  }
+
+
   fieldset default {
     fields: text
   }
 
   onnx-model minilmranker {
-    file: files/ms-marco-MiniLM-L-6-v2-quantized.onnx
+    file: models/msmarco_v2.onnx
     input input_ids: input_ids
     input attention_mask: attention_mask
     input token_type_ids: token_type_ids
@@ -81,14 +89,14 @@ schema passage {
   }
 
   rank-profile dense {
-    num-threads-per-search: 6
+    num-threads-per-search: 1
     first-phase {
         expression: closeness(field, mini_document_embedding)
     }
   }
 
   rank-profile dense-colbert {
-    num-threads-per-search: 6
+    num-threads-per-search: 1
     first-phase {
       expression: closeness(field, mini_document_embedding)
     }
