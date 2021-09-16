@@ -59,7 +59,7 @@ we can use innerproduct distance metric instead of angular distance metric. This
 - Cross all to all encoder [🤗 cross-encoder/ms-marco-MiniLM-L-6-v2](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
  
 We include code to export these three models to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa.ai. For all
-three we use [quantized](https://www.onnxruntime.ai/docs/how-to/quantization.html) versions to speed up inference on CPU.  
+three we use [quantized](https://onnxruntime.ai/docs/performance/quantization.html) versions to speed up inference on CPU.  
 
 We also publish the ONNX files for raw import if you don't want to export the models yourself. 
 
