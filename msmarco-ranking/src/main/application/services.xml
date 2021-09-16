@@ -11,7 +11,7 @@
     <component id="ai.vespa.tokenizer.BertTokenizer" bundle="msmarco">
       <config name="ai.vespa.tokenizer.bert-model">
         <max_input>512</max_input>
-        <vocabulary>models/bert-base-uncased-vocab.txt</vocabulary>
+        <vocabulary>files/bert-base-uncased-vocab.txt</vocabulary>
       </config>
     </component>
 
@@ -21,38 +21,45 @@
       </chain>
     </document-processing>
 
+    <!-- Enable model evaluation -->
+    <model-evaluation/>
+    <!-- Search chains -->
     <search>
       <chain id="docranking" inherits="vespa">
         <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
       </chain>
 
       <chain id="passageranking" inherits="vespa">
-        <searcher id="ai.vespa.searcher.QueryEncodingSearcher" bundle="msmarco"/>
         <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.searcher.QueryEncodingSearcher" bundle="msmarco"/>
+      </chain>
+
+      <chain id="passagereranking" inherits="vespa">
+        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.searcher.QueryEncodingSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.searcher.ReRankingSearcher" bundle="msmarco"/>
       </chain>
 
       <chain id="passagerankingsimple" inherits="vespa">
         <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
       </chain>
 
+      <!-- Sub-chain invoked by QueryEncodingSearcher -->
       <chain id="embedding" inherits="vespa">
         <searcher id="ai.vespa.searcher.QueryEmbeddingSearcher" bundle="msmarco"/>
       </chain>
 
+      <!-- Sub-chain invoked by QueryEncodingSearcher -->
       <chain id="colbert" inherits="vespa">
         <searcher id="ai.vespa.searcher.colbert.ColBERTSearcher" bundle="msmarco">
           <config name="ai.vespa.colbert.colbert">
             <max_query_length>32</max_query_length>
             <dim>32</dim>
-            <rank_profile>colbert_query_encoder</rank_profile>
-            <output_name>onnxModel(colbert_encoder).contextual</output_name>
           </config>
         </searcher>
       </chain>
     </search>
-
     <document-api/>
-
   </container>
 
   <content id='msmarco' version='1.0'>
@@ -60,10 +67,10 @@
     <documents>
       <document mode='index' type='doc'/>
       <document mode='index' type='passage'/>
-      <document mode='index' type='query'/>
       <document-processing cluster="default" chain="bert-tensorizer"/>
     </documents>
     <nodes>
+      <!-- Multi node scaling -->
       <node hostalias="node1" distribution-key="0"/>
     </nodes>
     <engine>
@@ -71,8 +78,7 @@
         <tuning>
           <searchnode>
             <requestthreads>
-              <persearch>48</persearch>
-              <summary>36</summary>
+              <persearch>24</persearch>
             </requestthreads>
             <feeding>
               <concurrency>1.0</concurrency>

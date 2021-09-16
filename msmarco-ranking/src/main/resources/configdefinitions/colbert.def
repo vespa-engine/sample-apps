@@ -3,6 +3,4 @@
 package=ai.vespa.colbert
 
 max_query_length int
-dim int 
-rank_profile string
-output_name string
+dim int
