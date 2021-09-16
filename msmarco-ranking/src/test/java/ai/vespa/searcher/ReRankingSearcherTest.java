@@ -1,4 +1,4 @@
-// Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+// Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
 import ai.vespa.models.evaluation.ModelsEvaluator;
@@ -11,6 +11,7 @@ import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.IndexedTensor;
 import com.yahoo.tensor.Tensor;
+import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
 import com.yahoo.tensor.functions.Reduce;
 import com.yahoo.vespa.model.container.ml.ModelsEvaluatorTester;
@@ -71,7 +72,7 @@ public class ReRankingSearcherTest {
         Result result = mock.search(new Query("?query=what+was+the+manhattan+project"), null);
         result.hits().trim(0,1);
         List<Integer> queryTokens = new ArrayList<>(Arrays.asList(2054, 2001, 1996, 7128, 262));
-        ReRankingSearcher.BertModelBatchInput batchInput = ReRankingSearcher.buildModelInput(queryTokens,result,24);
+        ReRankingSearcher.BertModelBatchInput batchInput = ReRankingSearcher.buildModelInput(queryTokens,result,24,"text_token_ids");
         assertEquals(1,batchInput.inputIds.dimensionSizes().size(0));
         assertEquals(24,batchInput.inputIds.dimensionSizes().size(1));
         Tensor inputIds = batchInput.inputIds.reduce(Reduce.Aggregator.min,"d0");
@@ -85,6 +86,36 @@ public class ReRankingSearcherTest {
 
         assertEquals("tensor<float>(d1[24]):[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0," +
                 " 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",tokenTypeIds.toString());
+    }
+
+
+    @Test
+    public void testModelInputTrim() {
+        Result result = new Result(new Query());
+        for(int i = 0; i < 2; i++) {
+            TensorType type = new TensorType.Builder(TensorType.Value.FLOAT).
+                    indexed("d0", i+1).build();
+            IndexedTensor.Builder builder = IndexedTensor.Builder.of(type);
+            for(int j = 0; j < i+1; j++)
+                builder.cell(TensorAddress.of(j),99);
+            Hit h = new Hit("test+"+i);
+            h.setField("text_token_ids",builder.build());
+            result.hits().add(h);
+        }
+        List<Integer> queryTokens = new ArrayList<>(Arrays.asList(66));
+        ReRankingSearcher.BertModelBatchInput batchInput = ReRankingSearcher.buildModelInput(
+                queryTokens,result,12,"text_token_ids");
+        //Truncated to sequence length 6 instead of padded to max sequence length for improved inference
+        assertEquals("tensor<float>(d0[2],d1[6]):[[101.0, 66.0, 102.0, 99.0, 102.0, 0.0], [101.0, 66.0, 102.0, 99.0, 99.0, 102.0]]",
+                batchInput.inputIds.toString());
+
+        queryTokens = new ArrayList<>(Arrays.asList(1,2,3,4,5,6));
+        batchInput = ReRankingSearcher.buildModelInput(queryTokens,result,3,"text_token_ids");
+        assertEquals("tensor<float>(d0[2],d1[3]):[[101.0, 102.0, 102.0], [101.0, 102.0, 102.0]]",batchInput.inputIds.toString());
+
+        queryTokens = new ArrayList<>(Arrays.asList(1,2,3,4,5,6));
+        batchInput = ReRankingSearcher.buildModelInput(queryTokens,result,2,"text_token_ids");
+        assertEquals("tensor<float>(d0[2],d1[3]):[[101.0, 102.0, 102.0], [101.0, 102.0, 102.0]]",batchInput.inputIds.toString());
     }
 
 
