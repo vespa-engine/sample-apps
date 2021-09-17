@@ -82,7 +82,8 @@ Note that we don't perform any type of stopword removal which impacts the number
 and the exhaustive OR. 
 
 We also evaluate the latency of the 6,980 queries in the *dev* set. In this case we only fetch 10 documents since that is what 
-we intend to return to the end user, this to not let the time it takes transfering and rendering a large result set to the client dominate the latency benchmark.
+we intend to return to the end user, this to not let the time it takes transfering and rendering 
+a large result set to the client dominate the latency benchmark.
  
 
 | Search        |  Recall@1000| Average latency(ms)| 90P latency (ms) | 99P Latency  (ms)          |99.9P Latency (ms)  |
@@ -94,13 +95,13 @@ As we can see we have as significant cost saving without any impact on Recall@k 
 For a deployed system we would need about 7x more resources with the exhaustive version to match the latency/cost of using the WAND retriever. 
 
 
-# End to end benchmark 
+# End to end benchmark with ColBERT
 
 The following experiments are end to end with WAND K = 1000 for 6980 queries from the *dev* query set and re-ranking 1K using
 the ColBERT MaxSim tensor. End to end also includes query encoding via BERT. 
 
 Latency and throughput is measured end to end including https. In this benchmark we use a quantized (int8) version
-of the query encoder, this reduces the MRR@10 from 0.354 to 0.342 but is significantly faster to encode the query.
+of the query encoder, this reduces the MRR@10 from 0.354 to 0.342 but it is significantly faster to encode the query.
 
 
 | MRR@10  |  Average Latency | 90P Latency| 99P Latency | QPS     | Clients | Re-rank depth| Quantized BERT|
@@ -124,11 +125,7 @@ of a single content node with this type of cpu.
 There are three main components which can be scaled independently:
 
 * The stateless container nodes powering the http api. Stateless container nodes can be scaled horizontally to increase total overall throughput 
-* The passage or document types where the retrieval and ranking is performed can be scaled horizontally to handle a large document volume.  
-
-To scale query encoding throughput across more nodes using Vespa.ai
-one should use a [grouped content cluster](https://docs.vespa.ai/en/performance/sizing-search.html) for the query document type, 
-this allows linear query encoding throughput scaling. 
+* The passage or document types where the retrieval and ranking is performed can be scaled horizontally to handle a larger document volume.  
 
 
 
