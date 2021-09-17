@@ -32,6 +32,6 @@ urls:
     #
     # Disable for now: Downloading torch-1.8.1-cp36-cp36m-manylinux1_x86_64.whl (804.1 MB) fails on Screwdriver.cd
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
-    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
     #
