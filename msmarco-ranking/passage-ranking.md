@@ -427,9 +427,9 @@ Now all the data is indexed and one can play around with the search interface. N
 
 For example do a query for *what was the Manhattan Project*: 
 
-In this case using dense retrieval and colbert re-ranking 
+In this case using dense retrieval and ColBERT re-ranking: 
 
-<pre data-test="exec">
+<pre>
 $ cat sample-feed/query.json
 {
   "query": "what was the manhattan project?",
