@@ -72,7 +72,7 @@ $ curl -s 'http://localhost:8080/model-evaluation/v1/transformer' | python -m js
 Evaluating the model:
 
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s ''http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format=short' | python -m json.tool
+$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format=short' | python -m json.tool
 </pre>
 
 The input here is a URL encoded Vespa tensor in
