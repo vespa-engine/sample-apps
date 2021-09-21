@@ -82,3 +82,16 @@ class PseudoTerminal:
             raise RuntimeError("Timeout in execution of {}".format(command))
         raise RuntimeError("Unexpected state")
 
+    def run_expect(self, command, expect, timeout, verbose):
+        self._log.reset_log(verbose)
+        self._pty.sendline(command)
+
+        index = self._pty.expect([expect, pexpect.EOF, pexpect.TIMEOUT], timeout=int(timeout))
+        if index == 0:
+            return 0, self._log.get_log()
+        if index == 1:
+            raise RuntimeError("Unexpected EOF in pseudo-terminal")
+        if index == 2:
+            raise RuntimeError("Timeout in execution of {}".format(command))
+        raise RuntimeError("Unexpected state")
+
