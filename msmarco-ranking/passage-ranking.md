@@ -438,8 +438,8 @@ $ cat sample-feed/query.json
 }
 </pre>
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s -H Content-Type:application/json --data @sample-feed/query.json \
+<pre data-test="exec" data-test-assert-contains="29.545">
+$ curl -H Content-Type:application/json --data @sample-feed/query.json \
     http://localhost:8080/search/ |python3 -m json.tool
 </pre>
 
