@@ -365,7 +365,7 @@ $ cd sample-apps/msmarco-ranking
 Build the application package. This step also downloads the three ONNX models used in this application package. The download
 script used is found [here](src/main/bash/download_models.sh). 
 
-<pre data-test="exec">
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="120">
 $ mvn clean package -U
 </pre>
 
