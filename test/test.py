@@ -85,6 +85,19 @@ def exec_file(cmd, pty):
     print("Wrote " + str(len(cmd["content"])) + " chars to " + path)
 
 
+def exec_expect(cmd, pty):
+    command = cmd["$"]
+    expect = cmd["expect"]
+    timeout = cmd["timeout"]
+    print_cmd_header(command, "Expecting '{0}'".format(expect))
+
+    exit_code, output = pty.run_expect(command, expect, timeout, verbose)
+    if exit_code != 0:
+        if not verbose:
+            print(output)
+        raise RuntimeError("Command '{0}' returned code {1}".format(command, exit_code))
+
+
 def exec_default(cmd, pty):
     command = cmd["$"]
     print_cmd_header(command)
@@ -145,6 +158,8 @@ def parse_cmd(cmd, attrs):
         return { "$" : cmd, "type":"wait", "wait-for":attrs["data-test-wait-for"] }
     if "data-test-assert-contains" in attrs:
         return { "$" : cmd, "type":"assert", "contains":attrs["data-test-assert-contains"] }
+    if "data-test-expect" in attrs:
+        return { "$" : cmd, "type":"expect", "expect":attrs["data-test-expect"], "timeout":attrs["data-test-timeout"] }
     return { "$" : cmd, "type":"default" }
 
 
