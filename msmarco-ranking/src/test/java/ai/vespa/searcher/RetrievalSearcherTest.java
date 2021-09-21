@@ -2,6 +2,10 @@
 package ai.vespa.searcher;
 
 import com.yahoo.component.chain.Chain;
+import com.yahoo.language.detect.Detection;
+import com.yahoo.language.detect.Detector;
+import com.yahoo.language.detect.Hint;
+import com.yahoo.language.opennlp.OpenNlpLinguistics;
 import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.NearestNeighborItem;
@@ -40,6 +44,7 @@ public class RetrievalSearcherTest {
                         "WEAKAND(10) default:with default:some default:not", searcher);
         test_query_tree("a number+:123  ?",
                         "WEAKAND(10) default:a default:number default:123", searcher);
+
     }
 
     @Test
@@ -50,6 +55,19 @@ public class RetrievalSearcherTest {
         assertEquals("WEAKAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
     }
 
+    @Test
+    public void test_language() {
+        OpenNlpLinguistics linguistics = new OpenNlpLinguistics();
+        Detector detect = linguistics.getDetector();
+        String queryString = "Kosten für endlose Pools/Schwimmbad";
+        Detection detection = detect.detect(queryString, Hint.newCountryHint("en"));
+        assertEquals("de", detection.getLanguage().languageCode());
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), TokenizerFactory.getTokenizer());
+        Query query = new Query("?query=" + URLEncoder.encode(queryString, StandardCharsets.UTF_8)
+                + "&wand.field=foo&wand.hits=10&language=" + detection.getLanguage().languageCode());
+        Result result = execute(query, searcher);
+        assertEquals("WEAKAND(10) foo:kosten foo:fur foo:endlose foo:pools foo:schwimmbad", result.getQuery().getModel().getQueryTree().toString());
+    }
 
     @Test
     public void test_dense_params() {

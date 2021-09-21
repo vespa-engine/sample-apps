@@ -61,7 +61,8 @@ public class RetrievalModelSearcher extends Searcher {
             case SPARSE:
                 String wandField = query.properties().getString("wand.field", "default");
                 int wandHits = query.properties().getInteger("wand.hits", query.getHits());
-                query.getModel().getQueryTree().setRoot(sparseRetrieval(queryInput, wandField, wandHits));
+                query.getModel().getQueryTree().setRoot(sparseRetrieval(queryInput,
+                        query.getModel().getLanguage(),wandField, wandHits));
                 break;
             case DENSE:
                 String annField = query.properties().getString("ann.field", "mini_document_embedding");
@@ -76,8 +77,17 @@ public class RetrievalModelSearcher extends Searcher {
         return execution.search(query);
     }
 
-    private List<String> tokenize(String query) {
-        Iterable<Token> tokens = this.linguistics.getTokenizer().tokenize(query, Language.ENGLISH, StemMode.NONE, true);
+    /**
+     * Tokenize the input queryString. Stemming is not performed as that is handled by downstream
+     * content cluster searcher (StemmingSearcher).
+     *
+     * @param queryString the input query string
+     * @param language the language to use when tokenization
+     * @return List of strings
+     */
+
+    private List<String> tokenize(String queryString, Language language) {
+        Iterable<Token> tokens = this.linguistics.getTokenizer().tokenize(queryString, language, StemMode.NONE, true);
         List<String> queryTokens = new ArrayList<>();
         for (Token t : tokens) {
             if (t.isIndexable())
@@ -90,14 +100,17 @@ public class RetrievalModelSearcher extends Searcher {
      * Create a WeakAnd query from the query representation
      * @param queryInput The string query
      * @param field The field to run weakAnd over, can be both a regular field and a fieldset
+     * @param language from the query
      * @param hits The target hits
      * @return The WeakAndItem
      */
 
-    private WeakAndItem sparseRetrieval(String queryInput, String field, int hits) {
+    private WeakAndItem sparseRetrieval(String queryInput,  Language language, String field, int hits) {
         WeakAndItem wand = new WeakAndItem();
         wand.setN(hits);
-        for (String t : tokenize(queryInput)) {
+        for (String t : tokenize(queryInput,language)) {
+            //Note that isFromQuery=true allows the term to be stemmed by StemmingSearcher invoked in the
+            //content cluster specific chain. Use &tracelevel=3 to trace requests
             wand.addItem(new WordItem(t, field, true));
         }
         return wand;
