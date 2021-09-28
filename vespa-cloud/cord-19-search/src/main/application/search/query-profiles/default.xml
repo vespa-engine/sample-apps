@@ -3,4 +3,6 @@
  <field name="maxHits">1000</field>
  <field name="maxOffset">1000</field> 
  <field name="timeout">2s</field>
+ <field name="presentation.timing">true</field>
+ <field name="weakAnd.replace">true</field>
 </query-profile>
