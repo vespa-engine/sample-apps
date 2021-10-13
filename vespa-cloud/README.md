@@ -3,14 +3,8 @@
 
 ### album-recommendation
 This is the intro application to Vespa.
-* Learn how to configure the schema for simple recommendation and search use cases in [album-recommendation](album-recommendation).
-* [album-recommendation-searcher](album-recommendation-searcher)
-  is an introduction for how to integrate Java code to process queries.
-  This is a good first app for writing Vespa plugins,
-  see the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html).
-* [album-recommendation-docproc](album-recommendation-docproc)
-  is an introduction to asynchronous document processing
-  using the Java [Document API](https://docs.vespa.ai/en/document-api-guide.html).
+* A simple, complete application doing search and recommendation in music data: [album-recommendation](album-recommendation).
+* The same application, with support for building Java components added: [album-recommendation-java](album-recommendation-java).
 
 ### cord-19-search
 [cord19.vespa.ai](https://cord19.vespa.ai/) is a is a full-featured application - see
@@ -25,6 +19,14 @@ as it has system, staging and production test examples.
 It uses the [Document API](https://docs.vespa.ai/en/document-api-guide.html)
 both for regular PUT operations but also for UPDATE with _create-if-nonexistent_.
 
+### document-processing
+[document-processing](document-processing) builds on album-recommendation to show
+some of the possibilities for doing custom document processing in Java.
+
+### joins
+[joins](joins) shows possibilties for doing joins of data across nodes with
+customer components. This is for use cases where parent-child is not sufficient,
+and latency budgets are a bit higher.
 
 ----
 

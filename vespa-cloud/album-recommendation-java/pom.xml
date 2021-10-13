@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -9,10 +9,7 @@
     <artifactId>albums</artifactId>  <!-- Note: When changing this, also change bundle names in services.xml -->
     <version>1.0.0</version>
 
-    <!--
-        container-plugin is Vespa's way of signaling we should build this project as a
-        deployable Vespa application.
-    -->
+    <!-- The Java code in this module should be built as an OSGi bundle deployable to Vespa container clusters -->
     <packaging>container-plugin</packaging>
 
     <parent>
@@ -25,7 +22,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tenant>vespa-team</tenant>                                 <!-- Name from the web console -->
-        <application>album-rec-searcher</application>               <!-- Name from the web console -->
+        <application>album-recommendation-java</application>        <!-- Name from the web console -->
         <instance>default</instance>
     </properties>
 
