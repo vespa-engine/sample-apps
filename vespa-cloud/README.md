@@ -23,8 +23,8 @@ both for regular PUT operations but also for UPDATE with _create-if-nonexistent_
 [document-processing](document-processing) builds on album-recommendation to show
 some of the possibilities for doing custom document processing in Java.
 
-### join
-[join](join) shows possibilties for doing joins of data across nodes with
+### joins
+[joins](joins) shows possibilties for doing joins of data across nodes with
 customer components. This is for use cases where parent-child is not sufficient,
 and latency budgets are a bit higher.
 
