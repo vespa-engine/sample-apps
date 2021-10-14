@@ -21,8 +21,24 @@
       </chain>
     </document-processing>
 
-    <!-- Enable model evaluation -->
-    <model-evaluation/>
+    <!-- Stateless model evaluation -->
+    <model-evaluation>
+
+      <!-- Stateless model evaluation options - latency versus cost/cpu usage --> 
+      <onnx>
+        <models>
+          <model name="msmarco_v2">
+            <intraop-threads>8</intraop-threads>
+          </model>
+          <model name="dense_encoder">
+            <intraop-threads>2</intraop-threads>
+          </model>
+          <model name="colbert_encoder">
+            <intraop-threads>2</intraop-threads>
+          </model>
+        </models>
+      </onnx>
+    </model-evaluation>
     <!-- Search chains -->
     <search>
       <chain id="docranking" inherits="vespa">
