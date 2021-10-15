@@ -2,7 +2,7 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-# Vespa sample applications - album recommendations docproc
+# Vespa sample applications - document processing
 
 Data written to Vespa pass through document processing,
 where [indexing](https://docs.vespa.ai/en/indexing.html) is one example.
@@ -32,7 +32,7 @@ Flow:
 **Create a Vespa Cloud application:**
 
 Use _Create application_ at [console.vespa.ai](http://console.vespa.ai),
-choose a name like _album-rec-docproc_.
+choose a name like _document-processing_.
 This requires a Google or GitHub account,
 and will start your free trial if you don't already have a Vespa Cloud tenant.
 
@@ -41,7 +41,7 @@ and will start your free trial if you don't already have a Vespa Cloud tenant.
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/vespa-cloud/album-recommendation-docproc
+$ cd sample-apps/vespa-cloud/document-processing
 </pre>
 
 
@@ -90,7 +90,7 @@ The endpoint URL is output above "Installation succeeded!" in the deployment log
 Put this in an environment variable and verify it
 (You can also [do this in a browser](https://cloud.vespa.ai/en/security-model#using-a-browser)):
 <pre data-test="exec">
-$ ENDPOINT=https://my-processing-cluster.my-instance.album-rec-docproc.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
+$ ENDPOINT=https://my-processing-cluster.my-instance.document-processing.vespa-team.aws-us-east-1c.dev.public.vespa.oath.cloud
 $ curl --cert ./data-plane-public-cert.pem --key ./data-plane-private-key.pem $ENDPOINT
 </pre>
 
