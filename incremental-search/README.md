@@ -22,8 +22,8 @@ and the matching portions of the documents are highlighted.
 ### search-suggestions
 
 [search-suggestions](search-suggestions) is a sample application
-which uses indexed prefix search to match and rank documents from a query log,
-and gives query suggestions based on previously written queries while the user is typing.
+which uses indexed prefix search to match and rank documents from a query log / terms extracted from document corpus.
+and gives query suggestions (autocomplete) based on previously written queries while the user is typing.
 
 ![query suggestions](img/search-suggestions.png)
 
