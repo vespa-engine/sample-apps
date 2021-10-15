@@ -6,7 +6,7 @@
         <document-api />
         <document-processing>
             <chain id="my-processing-chain" inherits="indexing">
-                <documentprocessor id="ai.vespa.example.album.LyricsDocumentProcessor" bundle="albums-docproc"/>
+                <documentprocessor id="ai.vespa.example.album.LyricsDocumentProcessor" bundle="document-processing"/>
             </chain>
         </document-processing>
         <search/>
