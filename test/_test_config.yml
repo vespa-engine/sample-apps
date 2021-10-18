@@ -15,6 +15,7 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/vespa-documentation-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
     #
     # TBD:
     # - secure-vespa-with-mtls
@@ -26,7 +27,6 @@ urls:
     #
     #
     # Disable for now - downloads large models
-    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/semantic-qa-retrieval/README.md"
     #
     #
