@@ -18,4 +18,4 @@ output_file = sys.argv[1]
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
 onnx_convert.convert_pytorch(pipeline, opset=11, output=Path(output_file), use_external_format=False)
-#onnx_convert.quantize(Path(output_file))
+onnx_convert.quantize(Path(output_file))

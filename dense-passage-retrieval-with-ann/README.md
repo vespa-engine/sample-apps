@@ -7,41 +7,39 @@ retrieval-based question-answering **serving** system using Vespa.  This
 application implements the [Dense Passage Retriever](https://github.com/facebookresearch/DPR)
 system, and demonstrates:
 
-* Term-based (sparse) retrieval using BM25.
-* Semantic similarity (dense) using fast approximate nearest-neighbors search based on HNSW indexes.
-* BERT-based models for text encoding and answer extraction.
-* Custom Java components for glue all the parts together.
+* Term-based (sparse) retrieval using [BM25](https://docs.vespa.ai/en/reference/bm25.html), accelerated by [WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html)
+* Semantic similarity (dense) retrieval, accelerated by Vespa's [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html) 
+* Transformer (BERT) Inference for query text to vector encoding and answer extraction
+* Custom [Searcher components](https://docs.vespa.ai/en/searcher-development.html)
 
 For more details, refer to the companion blog post:
 [Efficient open-domain question-answering on Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/).
+
 This README contains the following:
 
 - [A quick start](#quick-start) on how to test the sample application on a small data set
 - Instructions on [how to feed the entire Wikipedia dataset](#how-to-feed-the-entire-dataset)
 - [Experiments](#experiments) and [results](#results)
-- [Implementation details](#implementation-details)
 
 <figure>
 <p align="center"><img src="img/retriever-reader.png" /></p>
 </figure>
-
 
 ## Quick start
 
 The following is a recipe on how to get started with a tiny set of sample data.
 The sample data only contains the first 100 passages of the full dataset, but
 this should be able to run on for instance a laptop. For the full dataset to
-recreate the results in the DPR paper, see the next section.
+recreate the results in the DPR paper, see the [next section](#how-to-feed-the-entire-dataset).
 
 Requirements:
 
 * [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
 * Git client to checkout the sample application repository
-* Java 11, Maven and python3 installed
+* Java 11, Maven and python3.7+ installed. Using Python runtime environments (e.g. using [Conda](https://conda.io/projects/conda/en/latest/index.html)) is highly recommended.
 * Operating system: macOS or Linux, Architecture: x86_64
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
-
 
 Validate environment, should be minimum 10G:
 
@@ -57,12 +55,15 @@ $ cd sample-apps/dense-passage-retrieval-with-ann
 </pre>
 
 Download and setup the Transformer models, and build the application package.
-This can take some time as the BERT-based models are around 400Mb each.
+This can take some time as the two BERT-based models are around 100Mb each. The quick
+start uses quantized model versions. 
 
 <pre data-test="exec">
 $ pip3 install -r requirements.txt
 $ python3 bin/export-reader-model.py src/main/application/files/reader.onnx
+$ mv src/main/application/files/reader-quantized.onnx src/main/application/files/reader.onnx
 $ python3 bin/export-query-model.py src/main/application/files/question_encoder.onnx
+$ mv src/main/application/files/question_encoder-quantized.onnx src/main/application/files/question_encoder.onnx
 $ mvn clean package
 </pre>
 
@@ -84,7 +85,7 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 Deploy the application package:
 
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+$ curl -m 256 --header Content-Type:application/zip --data-binary @target/application.zip \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
@@ -95,21 +96,26 @@ this could easily take a couple of minutes on a laptop.
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
-Feed sample data. We feed the documents using the [Vespa http feeder
+Feed sample data using the [Vespa http feeder
 client](https://docs.vespa.ai/en/vespa-http-client.html):
 
 <pre data-test="exec">
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.483.19/vespa-http-client-7.483.19-jar-with-dependencies.jar
+</pre>
+
+<pre data-test="exec">
 $ java -jar vespa-http-client-jar-with-dependencies.jar \
   --file sample-feed.jsonl --endpoint http://localhost:8080
 </pre>
 
-Now we can test the application - enter these queries into a browser or from the command line:
+Run a question: 
 
 <pre data-test="exec" data-test-assert-contains='prediction": "2, 700"'>
 $ curl -s "http://localhost:8080/search/?query=what+is+the+population+of+achill+island%3F" | python -m json.tool
 </pre>
+
+Run another question: 
 
 <pre data-test="exec" data-test-assert-contains='prediction": "78. 29'>
 $ curl -s "http://localhost:8080/search/?query=what+is+the+boiling+point+of+ethanol%3F" | python -m json.tool
@@ -124,16 +130,19 @@ $ docker rm -f vespa
 
 ## How to feed the entire dataset
 
-To run the full dataset, you need minimum **128GB** system memory,
-unless you  are running on multiple content nodes, but that is not demonstrated here.
-To recreate the Exact Match score, you also need to increase the size of the input
-token sequence in the [wiki document schema](src/main/application/schemas/wiki.sd#L80) to 380.
+To run the full dataset, minimum **128GB** system memory for the content node is recommended.
 
-We get the evaluation scripts and data from the DPR repository:
+Since the DPR repo depends on a different version of transformers library the following steps needs to 
+be a performed in a different python
+ environment. We recommend using e.g. conda. How to install and configure conda is outside of the scope of this work but the 
+below creates a python3.7 runtime environment named DPR.  This isolates the environment where the DPR dependencies are installed.
 
 <pre>
-$ git clone --depth 1 https://github.com/facebookresearch/DPR.git
-$ cd DPR; pip3 install .
+$ conda create -n DPR python=3.7
+$ conda activate -n DPR
+$ git clone git@github.com:facebookresearch/DPR.git
+$ cd DPR
+$ pip3 install .
 </pre>
 
 Thanks to [Facebook Research](https://opensource.fb.com/) for providing both
@@ -145,15 +154,13 @@ To download the pre-generated Wikipedia snippets and the pre-computed passage
 embeddings use the DPR download utility:
 
 <pre>
-$ python3 data/download_data.py --resource data.wikipedia_split
-$ python3 data/download_data.py --resource data.retriever_results.nq.single.wikipedia_passages
+$ python3 dpr/data/download_data.py --resource data.wikipedia_split
+$ python3 dpr/data/download_data.py --resource data.retriever_results.nq.single.wikipedia_passages
 </pre>
 
-We join this data and create a Vespa feed file with one Vespa put document
-operation per line [Vespa json feed
-format](https://docs.vespa.ai/en/reference/document-json-format.html).
-The scripts reads the entire Wikipedia passage into memory, reads one embedding file at a time
-and emits a join of the textual passage metadata with the precomputed DPR embedding.
+To generate the combined feed file use the *make-vespa-feed.py" script.  
+It reads the entire Wikipedia passage text dataset into memory, reads one embedding file at a time
+and emits a joint Vespa document representation of the textual passage data with the precomputed DPR passage embedding.
 
 <pre>
 $ cd ..
@@ -161,7 +168,7 @@ $ python3 bin/make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv \
     DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
 </pre>
 
-This will create data like the following (newline formatted for readability):
+The script generates the input feed file, sample snippet: 
 
 <pre>
 {
@@ -175,24 +182,17 @@ This will create data like the following (newline formatted for readability):
 }
 </pre>
 
-We are now ready to index the data in our Vespa installation. The feed file is 273G uncompressed.
-Feed the documents as we did above:
+The final feed file is 273G uncompressed.  Adding compression like zstd/zip is highly recommended. Feed the file using the 
+same tool as with the toy sample data:
 
 <pre>
 $ java -jar vespa-http-client-jar-with-dependencies.jar \
     --file feed.jsonl --endpoint http://your-vespa-instance-hostname:8080
 </pre>
 
-Note that this is a large batch of data to feed. To give some idea,
-loading the data to Vespa using a single content node instance with 36 vcpu's takes about 5 hours
-(21M passages, 1350 puts/s sustained, with visibility-delay 1.0 seconds and real time indexing).
-However, note that indexing builds both the inverted indexes for efficient sparse term based retrieval
-and HNSW graph for fast efficient dense embedding retrieval.
-
-
 ## Experiments
 
-With the full dataset indexed in Vespa, we can now run all questions from the
+With the full dataset indexed in Vespa, on can run all questions from the
 Natural Questions (NQ) dev split using the three different retrieval strategies:
 
 <pre>
@@ -205,9 +205,9 @@ $ python3 bin/evaluate_em.py NQ-open.dev.jsonl hybrid http://your-vespa-instance
 
 ## Results
 
-In the following section we describe the experiments we have performed with this setup,
+The following section describe the experiments performed with this setup,
 all experiments are done running queries using the [Vespa query api](https://docs.vespa.ai/en/query-api)
-and checking the predicted answer against the golden reference answer.
+and checking the predicted answer against the golden reference answer(s).
 
 <pre>
 def get_vespa_result(question, retriever_model):
@@ -228,13 +228,13 @@ The following table summarizes the retriever accuracy using the original 3,610
 dev questions in the Natural Questions for Open Domain Question Answering tasks
 ([NQ-open.dev.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.dev.jsonl)).
 
-We use Recall@K as the main evaluation metric for the retriever,
-the final top position passages are re-ranked using the full attention Reader.
+**Recall@K** is used as the main evaluation metric for the retriever.
 
 The obvious goal of the retriever is to have the highest recall possible at the lowest possible position.
-The fewer passages we need to evaluate through the BERT reader,
+The fewer passages one needs to evaluate through the BERT reader,
 the better the run time complexity and performance is.
-We evaluate three different retrieval strategies:
+
+Three different retrieval strategies are evaluated:
 
 * **Dense** Using the DPR embeddings and Vespa's nearest neighbor search operator
 * **Sparse** Using the Vespa's [weakAnd(WAND)](https://docs.vespa.ai/en/using-wand-with-vespa.html)
@@ -249,26 +249,12 @@ We evaluate three different retrieval strategies:
 | hybrid (WAND + nearest neighbor)| 40.61     | 69.25    | 75.96    | 80.44     |
 
 The DPR paper reports Recall@20 79.4,
-so our results are in accordance with the reported results for the dense retrieval method.
-
-The following table summarizes the retriever accuracy using the 1,800 dev questions used in the
-[Efficient Open-Domain Question Answering challenge](https://efficientqa.github.io/)
-([NQ-open.efficientqa.dev.1.1.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.efficientqa.dev.1.1.jsonl)).
-
-| Retrieval Model                 | Recall@1  | Recall@5 | Recall@10| Recall@20 |
-|---------------------------------|-----------|----------|----------|-----------|
-| sparse (WAND bm25)              | 23.94     | 44.67    | 52.67    | 60.78     |
-| dense  (nearest neighbor)       | 41.78     | 66.11    | 73.28    | 77.94     |
-| hybrid (WAND + nearest neighbor)| 36.94     | 66.94    | 74.28    | 78.06     |
-
-To our knowledge there are no Retrieval accuracy reported yet for the
-*NQ-open.efficientqa.dev.1.1.jsonl*.
+so results are in accordance with the reported results for the dense retrieval method.
 
 
 ### Reader Accuracy Summary
 
-We evaluate the Reader accuracy using the Exact Match (EM) metric.
-We report EM metrics for Reader re-ranking using top 5, top 10, and top 100 passages from the retriever phase.
+Reader accuracy is measured using the Exact Match (EM) metric.
 The Exact Match metric measures the percentage of predictions
 that match any one of the ground truth answers **exactly**.
 To get an EM score of 1 for a query,
@@ -285,51 +271,8 @@ it will not  match the golden answers which are *14 December 1972 UTC* or *Decem
 | dense  (nearest neighbor)       | 39.34     | 40.58  |
 | hybrid (WAND + nearest neighbor)| 39.36     | 40.61  |
 
-**EfficientQA Natural Question dev set**
-([NQ-open.efficientqa.dev.1.1.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.efficientqa.dev.1.1.jsonl))
 
-| Retrieval Model                 | EM(@5)   | EM (@10)|
-|---------------------------------|-----------|--------|
-| sparse (WAND bm25               | 21.22     | 24.72  |
-| dense  (nearest neighbor)       | 35.17     | 35.89  |
-| hybrid (WAND + nearest neighbor)| 35.22     | 35.94  |
-
-
-## Implementation details
-
-We take the DPR implementation, which is a set of python tools and models,
-and convert the models to Vespa.ai for online serving,
-while maintaining the same or better accuracy as reported in the DPR paper.
-
-* We index text passages from the English version of the Wikipedia along with
-  their embedding representation produced by the DPR document encoder in a Vespa.ai instance.
-  Representing DPR on Vespa.ai also allows researchers to
-  experiment with different retrieval strategies.
-* We use the pre-trained DPR BERT based query embedding model
-  from [Huggingface](https://huggingface.co/transformers/model_doc/dpr.html)
-  which we export to [ONNX](https://onnx.ai/) format using
-  Huggingface's [Transformer model export support](https://huggingface.co/transformers/serialization.html).
-  We import this ONNX model to Vespa for serving, so that given a textual query input,
-  we can convert it into the embedding representation at user time.
-* The DPR query embedding representation is used as input to Vespa.ai's
-  [fast approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html)
-  which enables fast computing the top-k matching passages in the embedding space.
-* The top-k retrieved passages (Using multiple different retrieval strategies)
-  are re-ranked using Vespa's support for multi-tier retrieval and ranking.
-  This with another BERT based model which scores passages
-  and computes the most likely answer span from the passages.
-* We use Vespa's plugin support to implement a sub-word BERT tokenizer.
-* We reproduce the state-of-the-art retrieval metrics and reader evaluation metrics,
-  as reported in the paper using the Open Domain variant of the Natural Questions.
-
-Using Vespa.ai as serving engine for passage retrieval for question answering
-allows representing both sparse term based and dense embedding retrieval in the same schema,
-which also enables hybrid retrieval using a combination of the two approaches.
-With Vespa's support for running Transformer based models like BERT via Vespa's ONNX Runtime support,
-we are able to deploy the DPR BERT query embedding encoder
-(used for the dense embedding retrieval) in the same serving system.
-The DPR BERT based Reader component is also included in the same serving system,
-which re-scores the retrieved passages and predicts the best answer span.
+## Summary 
 
 <!--
 <figure>
@@ -510,44 +453,20 @@ We can export these Transformer models to [ONNX](https://onnx.ai/) format using 
 * DPR Question encoder model: [bin/export-query-model.py](bin/export-query-model.py)
 * DPR Reader model: [bin/export-reader-model.py](bin/export-reader-model.py)
 
-In the following snippet we export the reader model to ONNX format and serialize it to *reader.onnx*:
-
-<pre>
-import onnx
-import transformers
-import transformers.convert_graph_to_onnx as onnx_convert
-
-from pathlib import Path
-
-tokenizer = transformers.DPRReaderTokenizer.from_pretrained('facebook/dpr-reader-single-nq-base')
-model     = transformers.DPRReader.from_pretrained('facebook/dpr-reader-single-nq-base', return_dict=True)
-pipeline  = transformers.Pipeline(model=model, tokenizer=tokenizer)
-
-onnx_convert.convert_pytorch(pipeline, opset=11, output=Path("files/reader.onnx"), use_external_format=False)
-</pre>
-
-We store these ONNX models in the application package,
-for instance as "files/reader.onnx",
-and we set up the model for use in the `onnx-model` section in the schema.
-We can then reference this model as `onnxModel(reader).relevance_logits` in the ranking expression.
-Vespa distributes the model to the content nodes in the cluster.
-
+The ONNX models are deployed  in the application package and Vespa takes care of distributing the models to the configured nodes.
 
 ### Vespa Container Middleware - putting it all together
 
 The application has 4 custom plugins:
 
-* A BERT Tokenizer component maps text to BERT vocabulary token_ids.
+* A BERT Tokenizer component which maps text to BERT vocabulary token_ids.
   This is a shared component used by both the custom Searcher and Document processor.
-  We store the token_ids of the text and the title in the document,
-  so we don't need to perform any run time tokenization:
-  [BertTokenizer.java](src/main/java/ai/vespa/tokenizer/BertTokenizer.java)
 * A custom Document Processor which does BERT tokenization during indexing:
   [QADocumentProcessor.java](src/main/java/ai/vespa/processor/QADocumentProcessor.java)
-* A custom Searcher which controls the Retrieval logic (Sparse, dense, hybrid)
-  and uses the BERT Tokenizer to convert the question string to a sequence of token_ids:
+* A custom Searcher which controls the Retrieval logic (sparse, dense, hybrid)
+  and uses the BERT Tokenizer to convert the question string to a tensor of token_ids:
   [RetrieveModelSearcher.java](src/main/java/ai/vespa/searcher/RetrieveModelSearcher.java)
-* A custom Searcher which reads the outputs of the reader model for the best ranking hit from the reader phase
+* A custom Searcher which reads the outputs of the reader model for the best ranking hit from the retriever phase
   (Vespa second phase ranking) and maps the best matching answer span
   to an textual answer which is returned as the predicted answer:
   [QASearcher.java](src/main/java/ai/vespa/searcher/QASearcher.java)
