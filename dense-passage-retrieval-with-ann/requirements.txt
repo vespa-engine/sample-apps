@@ -1,4 +1,4 @@
 torch
-transformers
+transformers==4.10.3
 onnx
 onnxruntime
