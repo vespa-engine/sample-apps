@@ -45,6 +45,8 @@ jobs:
     environment:
       USER_SHELL_BIN: bash
     annotations:
+      screwdriver.cd/cpu: HIGH
+      screwdriver.cd/ram: HIGH
       screwdriver.cd/dockerEnabled: true
       screwdriver.cd/dockerCpu: TURBO
       screwdriver.cd/dockerRam: TURBO
