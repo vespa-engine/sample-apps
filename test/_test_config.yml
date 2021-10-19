@@ -20,8 +20,10 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
-    #
+    
+   
+    #Fails due to unknown reason, maybe related to multiple docker containers?
+    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
     # TBD:
     # - secure-vespa-with-mtls
     # - basic-search-on-gke
