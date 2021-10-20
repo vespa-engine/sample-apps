@@ -1,4 +1,4 @@
-<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - a generic request-response processing application
 
 A simple stateless Vespa application demonstrating general composable request-response processing
