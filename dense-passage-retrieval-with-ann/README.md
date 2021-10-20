@@ -158,14 +158,13 @@ $ python3 dpr/data/download_data.py --resource data.wikipedia_split
 $ python3 dpr/data/download_data.py --resource data.retriever_results.nq.single.wikipedia_passages
 </pre>
 
-To generate the combined feed file use the *make-vespa-feed.py" script.  
+To generate the combined feed file use the *make-vespa-feed.py* script.  
 It reads the entire Wikipedia passage text dataset into memory, reads one embedding file at a time
 and emits a joint Vespa document representation of the textual passage data with the precomputed DPR passage embedding.
 
 <pre>
 $ cd ..
-$ python3 bin/make-vespa-feed.py DPR/data/wikipedia_split/psgs_w100.tsv \
-    DPR/data/retriever_results/nq/single/wikipedia_passages_* > feed.jsonl
+$ python3 bin/make-vespa-feed.py DPR/downloads/data/wikipedia_split/psgs_w100.tsv DPR/downloads/data/retriever_results/nq/single/wikipedia_passages_*.pkl > feed.jsonl 
 </pre>
 
 The script generates the input feed file, sample snippet: 
@@ -182,7 +181,7 @@ The script generates the input feed file, sample snippet:
 }
 </pre>
 
-The final feed file is 273G uncompressed.  Adding compression like zstd/zip is highly recommended. Feed the file using the 
+The final feed file is 273G uncompressed. Adding compression like zstd/zip is highly recommended. Feed the file using the 
 same tool as with the toy sample data:
 
 <pre>
