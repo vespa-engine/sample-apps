@@ -173,39 +173,12 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/msmarco-ranking
 </pre>
 
-<pre data-test="exec">
-$ mvn clean package -U
-</pre>
+Build the application package. This step also downloads the three ONNX models used in this application package. The download
+script used is found [here](src/main/bash/download_models.sh). The models mentioned here are only 
+used for the [passage-ranking.md](passage-ranking.md], but since both passage and document ranking
+shares the same application we also need these models to run this step to step guide.
 
-Since we use a shared application package for both [passage](passage-ranking.md) and document ranking 
-we also need download models which are used by the passage ranking part of this sample app.
- 
-Download ONNX models which have been exported by us and made available for this sample app. 
-
-<pre data-test="exec">
-$ mkdir -p src/main/application/files/
-</pre>
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/files/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx \
-    https://data.vespa.oath.cloud/onnx_models/sentence-msmarco-MiniLM-L-6-v3-quantized.onnx
-</pre>
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/files/ms-marco-MiniLM-L-6-v2-quantized.onnx \
-    https://data.vespa.oath.cloud/onnx_models/ms-marco-MiniLM-L-6-v2-quantized.onnx
-</pre>
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/files/vespa-colMiniLM-L-6-quantized.onnx \
-    https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-quantized.onnx
-</pre>
-
-Once we have downloaded the models, 
-we use maven to create the
-[Vespa application package](https://docs.vespa.ai/en/reference/application-packages-reference.html).
-
-<pre data-test="exec">
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="120">
 $ mvn clean package -U
 </pre>
 
