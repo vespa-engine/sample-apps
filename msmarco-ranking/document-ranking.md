@@ -2,19 +2,15 @@
 
 # MS Marco Document Ranking 
 
-This is the baseline model for MS Marco *Document* Ranking. 
-
-This document our first baseline model using traditional lexical matching (sparse) and ranking. 
-
-We use sequence-to-sequence neural network (T5) to perform document expansion. 
+The baseline model for MS Marco *Document* Ranking using sparse lexical matching and a GBDT re-ranking model
+trained using [LightGBM](https://github.com/microsoft/LightGBM). 
+To enhance the first phase retrieval, 
+a sequence-to-sequence neural network (T5) is used to perform document expansion with predicted queries. 
  
 This initial baseline scores a MRR@100 of 0.355 on the **dev** and 0.312 on the **eval** set.
 See [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/).
 
 # Vespa Document Schema 
-
-We index all 3.2M documents from the [MS Marco](https://microsoft.github.io/msmarco/) Document ranking collection  using the 
-following [Vespa schema](src/main/application/schemas/doc.sd): 
 
 <pre>
 schema doc {
@@ -49,27 +45,27 @@ schema doc {
 } 
 </pre> 
 
-We use the original text fields plus an additional field from docTTTTTQuery, see Rodrigo Nogueira and Jimmy Lin paper: 
+The original text fields plus an additional field from docTTTTTQuery is used by the retriever, see Rodrigo Nogueira and Jimmy Lin paper: 
 [From doc2query to docTTTTTquery](https://cs.uwaterloo.ca/~jimmylin/publications/Nogueira_Lin_2019_docTTTTTquery-v2.pdf). 
 The authors have published their pre-generated model and we use their predictions directly as is. The only difference from the original is that
- we we index queries as an array instead of a blob of text. This allows calculating ranking features which takes proximity into account. 
+ suggested expansion queries are indexed as an array instead of a blob of text. 
+This allows calculating ranking features which takes proximity into account. 
 
-# Training 
-We use the MS Marco Train split to scrape features for traditional LTR. This enables us to use a range of features and the we use the training data to 
-learn the optimal combination of these features.  
+# Training (LTR)
+The MS Marco Train split to scrape features for traditional LTR. 
 
-For each positive relevant document we sample 50 negatives from the top-k retrieved, using a simple 
-linear combination of 
-bm25 scores for body text, doc_t5_query, title and url. In total 330,302 queries from the training set is used and 16,845,191 total number of data points. 
-We use the efficient
-[Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html) implementation to retrieve efficiently. 
+For each positive relevant document a sample of 50 negatives (not relevant) is picked from the top-k retrieved documents.  
+In total 330,302 queries from the training set is used and 16,845,191 total number of data points. 
+The efficient
+[Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html) is used to retrieve efficiently without having to score or rank all documents
+matching at least one of the query terms. 
 
-We handpick 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html) which are generally cheap to compute except 
-nativeProximity, but we limit it to the rather short title field. We don't do any type of feature normalization or selection except from what LightGBM does. 
+A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html) which are generally cheap to compute are used 
+nativeProximity, but we limit it to the rather short title field. 
 
-We use LightGBM to train our model since Vespa has great support for GBDT models ([LightGBM](https://docs.vespa.ai/en/lightgbm.html), [XGBoost](https://docs.vespa.ai/en/xgboost.html)). 
-We tune hyper parameters by observing the performance
-on the development set. We end up with the following hyper parameters and we train for up to 1K iterations with early stopping after 50 iterations if the held out dev set performance does not improve:
+LightGBM is used to train the re-ranking model. 
+Vespa has great support for GBDT models and supports both 
+[LightGBM](https://docs.vespa.ai/en/lightgbm.html) and [XGBoost](https://docs.vespa.ai/en/xgboost.html). 
 <pre>
 params = {
     'objective': 'lambdarank',
@@ -83,9 +79,11 @@ params = {
     'feature_fraction':0.8
     }
 </pre>
-We end up with 533 trees, with up to 128 leaves. The training script is [here](src/main/python/train.py). We plan to publish the raw training features but this gives an idea how the model was trained. 
+The model consists of 533 trees, with up to 128 leaves. 
+The training script is [here](src/main/python/train.py). 
 To scrap features one can follow [pyvespa collecting training data](https://pyvespa.readthedocs.io/en/latest/collect-training-data.html).
 
+### Training output
 <pre>
 [LightGBM] [Info] Total Bins 2505
 [LightGBM] [Info] Number of data points in the train set: 16845190, number of used features: 15
@@ -101,8 +99,8 @@ Training until validation scores don't improve for 50 rounds
 [9]     training's ndcg@5: 0.802159     training's ndcg@10: 0.81744     valid_1's ndcg@5: 0.415425      valid_1's ndcg@10: 0.456132
 </pre>
 
-We deploy our serialized LigtGBM model for serving and evaluation using the following profile. We keep the same linear simple first-phase function as described earlier. 
-We re-rank up to 1K top hits from the simple untrained first-phase ranking expression.
+The serialized LigtGBM model is deployed for serving using the following ranking profile. 
+The simple linear first-phase function as described earlier is also used. Re-ranking depth is set to 1K.
 
 <pre>
 rank-profile ltr inherits ltr-scrape {
@@ -119,7 +117,7 @@ See [docranker.json (25MB)](src/main/application/models/docranker.json)
 
 
 # Ranking Evaluation 
-See our entry on the [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/)
+See Vespa on the [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/)
 
   **MS Marco Judgements** 
 
@@ -139,17 +137,11 @@ and in our experiment we use up to 12 threads per query.
 This allows scaling latency per node and make use of multi-core cpu architectures efficiently.
 
 See the top two documents ranked for the question *when was nelson mandela born* below.
-The per hit relevance score is assigned by the GBDT model. We search 3.2M documents on a single node and single partition and the 
-weakAnd retrieves about 23K hits and the top 1K of those are re-ranked using the GBDT function using the features.
 
 ![Vespa Response for when was nelson mandela born](img/screen.png)
 
-# Reproducing this work 
-We use the [IR_datasets](https://github.com/allenai/ir_datasets) python package to obtain the MS Marco Document and Passage ranking dataset.
-
-Make sure to go read and agree to terms and conditions of [MS Marco Team](https://microsoft.github.io/msmarco/) before downloading the dataset by using the *ir_datasets* package. 
-
-We also use the [LightGBM](https://lightgbm.readthedocs.io/en/latest/) library which is a gradient boosting framework that uses tree based learning algorithms. 
+Make sure to read and agree to terms and conditions of the 
+[MS Marco Team](https://microsoft.github.io/msmarco/) before downloading the dataset by using the *ir_datasets* package. 
 
 ## Quick start
 
@@ -168,7 +160,6 @@ Requirements:
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
-
 Validate environment, should be minimum 10G:
 
 <pre>
@@ -183,12 +174,7 @@ $ cd sample-apps/msmarco-ranking
 </pre>
 
 <pre data-test="exec">
-$ python3 -m pip install torch transformers ir_datasets lightgbm numpy pandas requests tqdm
 $ mvn clean package -U
-</pre>
-
-<pre data-test="exec">
-$ pip3 install torch numpy ir_datasets requests tqdm transformers onnx onnxruntime
 </pre>
 
 Since we use a shared application package for both [passage](passage-ranking.md) and document ranking 
@@ -290,7 +276,11 @@ The data set is small, but one gets a feel for how the data and how the document
 Note that negative relevance scores from the GBDT evaluation is normal. 
 
 ## Full Evaluation (Using full dataset, all 3.2M documents)
-First we need to download and index the entire data set and the document to query expansion. 
+Download and index the entire data set, including the document to query expansion. 
+
+<pre>
+$ python3 -m pip install ir_datasets tqdm requests
+</pre>
 
 ### Download all documents 
 <pre>
@@ -337,7 +327,8 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar \
 </pre>
 
 ## Query Evaluation
-The following script will run all queries from the MS Marco document ranking **dev** split. Change the endpoint to point to your Vespa instance. Since MS Marco is using MRR@100 we
+The following script will run all queries from the MS Marco document ranking **dev** split. 
+Change the endpoint to point to your Vespa instance. Since MS Marco is using MRR@100 we
 fetch at most 100 hits.
 
 <pre>
@@ -366,7 +357,6 @@ QueriesRanked: 5193
 </pre>
 
 If you want to alter the application and submit to the leaderboard you can generate a run for the **eval** query split by 
-
 
 <pre>
 $ ./src/main/python/evaluate_document_run.py --retriever sparse --rank_profile ltr \
