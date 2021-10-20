@@ -4,8 +4,8 @@
 
 The baseline model for MS Marco *Document* Ranking using sparse lexical matching and a GBDT re-ranking model
 trained using [LightGBM](https://github.com/microsoft/LightGBM). 
-To enhance the first phase retrieval 
-A sequence-to-sequence neural network (T5) is used to perform document expansion with predicted queries. 
+To enhance the first phase retrieval, 
+a sequence-to-sequence neural network (T5) is used to perform document expansion with predicted queries. 
  
 This initial baseline scores a MRR@100 of 0.355 on the **dev** and 0.312 on the **eval** set.
 See [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/).
@@ -65,7 +65,7 @@ nativeProximity, but we limit it to the rather short title field.
 
 LightGBM is used to train the re-ranking model. 
 Vespa has great support for GBDT models and supports both 
-([LightGBM](https://docs.vespa.ai/en/lightgbm.html), [XGBoost](https://docs.vespa.ai/en/xgboost.html)). 
+[LightGBM](https://docs.vespa.ai/en/lightgbm.html) and [XGBoost](https://docs.vespa.ai/en/xgboost.html). 
 <pre>
 params = {
     'objective': 'lambdarank',
@@ -140,7 +140,7 @@ See the top two documents ranked for the question *when was nelson mandela born*
 
 ![Vespa Response for when was nelson mandela born](img/screen.png)
 
-Make sure to go read and agree to terms and conditions of the 
+Make sure to read and agree to terms and conditions of the 
 [MS Marco Team](https://microsoft.github.io/msmarco/) before downloading the dataset by using the *ir_datasets* package. 
 
 ## Quick start
