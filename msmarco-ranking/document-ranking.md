@@ -60,12 +60,15 @@ The efficient
 [Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html) is used to retrieve efficiently without having to score or rank all documents
 matching at least one of the query terms. 
 
-A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html) which are generally cheap to compute are used 
-nativeProximity, but we limit it to the rather short title field. 
+A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html) which are generally cheap to compute are used by the model, except
+*nativeProximity* which measures the proximity of the query terms in the document text, but its usage is limited to the short title field. 
 
-LightGBM is used to train the re-ranking model. 
+LightGBM is used to train the GBDT re-ranking model. 
 Vespa has great support for GBDT models and supports both 
 [LightGBM](https://docs.vespa.ai/en/lightgbm.html) and [XGBoost](https://docs.vespa.ai/en/xgboost.html). 
+
+**GBDT Hyperparameters **
+
 <pre>
 params = {
     'objective': 'lambdarank',
@@ -79,7 +82,8 @@ params = {
     'feature_fraction':0.8
     }
 </pre>
-The model consists of 533 trees, with up to 128 leaves. 
+
+The final model consists of 533 trees, with up to 128 leaves. 
 The training script is [here](src/main/python/train.py). 
 To scrap features one can follow [pyvespa collecting training data](https://pyvespa.readthedocs.io/en/latest/collect-training-data.html).
 
@@ -101,6 +105,8 @@ Training until validation scores don't improve for 50 rounds
 
 The serialized LigtGBM model is deployed for serving using the following ranking profile. 
 The simple linear first-phase function as described earlier is also used. Re-ranking depth is set to 1K.
+Note that the ranking profile inherits the ranking profile which used for feature scraping, this avoids
+feature calculation drift so that the exact same feature definition is used both for serving and training.
 
 <pre>
 rank-profile ltr inherits ltr-scrape {
@@ -132,18 +138,20 @@ A baseline bm25 model has MRR@100 around 0.161 on the Eval set.
 # Run Time Serving Performance
 Vespa's evaluation of GBDT models is hyper optimized after 20 years of using GBDT at scale 
 so end to end serving time is roughly 20 ms. 
+ 
 Vespa supports using multiple threads per *query* 
 and in our experiment we use up to 12 threads per query. 
+
 This allows scaling latency per node and make use of multi-core cpu architectures efficiently.
 
 See the top two documents ranked for the question *when was nelson mandela born* below.
 
 ![Vespa Response for when was nelson mandela born](img/screen.png)
 
+## Quick start
+
 Make sure to read and agree to terms and conditions of the 
 [MS Marco Team](https://microsoft.github.io/msmarco/) before downloading the dataset by using the *ir_datasets* package. 
-
-## Quick start
 
 The following is a recipe on how to get started with a tiny set of sample data.
 The sample data only contains the first 1000 documents of the full MS Marco dataset, but
