@@ -218,7 +218,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 Feed the sample documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
 <pre data-test="exec">
 $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.485.19/vespa-http-client-7.485.19-jar-with-dependencies.jar
 </pre>
 
 <pre data-test="exec">
@@ -234,14 +234,14 @@ $ java -jar vespa-http-client-jar-with-dependencies.jar \
 Now all the data is in place and one can play around with the query interface (Though only searching 1K documents)
 
 View a sample document 
-<pre>
+<pre data-test="exec" data-test-assert-contains="what is machacado">
 $ curl -s http://localhost:8080/document/v1/msmarco/doc/docid/D1840066 | \
     python -m json.tool
 </pre>
 
 Do a query 
-<pre>
-$ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr" | \
+<pre data-test="exec" data-test-assert-contains="0.153">
+$ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr&restrict=doc" | \
     python -m json.tool
 </pre>
 
@@ -309,7 +309,8 @@ $ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile ltr --quer
   --wand_field default --wand_hits 500 --phase_count 1000 --run_file ltr.run.txt
 </pre>
 
-We can evaluate the run file *ltr.run.txt* by using the [official ms marco eval script](https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py).
+Rvaluate the run file *ltr.run.txt* by using the 
+[official ms marco eval script](https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py).
 
 <pre>
 $ curl -L -o msmarco-docdev-qrels.tsv.gz \
