@@ -1,4 +1,4 @@
-<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - CORD-19 
 
 Vespa application which index the [CORD-19](https://pages.semanticscholar.org/coronavirus-research) dataset.

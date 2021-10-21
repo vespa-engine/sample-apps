@@ -1,7 +1,7 @@
 shared:
   settings:
     email:
-      addresses: [kraune@verizonmedia.com]
+      addresses: [kraune@yahooinc.com]
       statuses: [SUCCESS, FAILURE]
 
 jobs:

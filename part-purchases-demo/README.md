@@ -1,4 +1,4 @@
-<!-- Copyright Verizon Media. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 # Vespa sample applications - Part Purchases Demo
 
 A sample Vespa application to assist with learning how to group according to the
