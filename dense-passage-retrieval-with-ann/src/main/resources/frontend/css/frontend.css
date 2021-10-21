@@ -17,7 +17,7 @@ body {
 }
 
 #input {
-    width: 400px;
+    width: 500px;
     padding: 0 5px;
 }
 
@@ -26,6 +26,11 @@ body {
 }
 
 #answer {
-    margin: 50px 0px;
+    margin: 50px 0;
+}
+
+#logo {
+    text-align: center;
+    margin: 100px 0;
 }
 
