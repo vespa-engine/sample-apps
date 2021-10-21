@@ -27,6 +27,11 @@
       </chain>
     </search>
     <document-api/>
+
+    <handler id="ai.vespa.frontend.FrontendHandler" bundle="question-answering">
+      <binding>http://*/frontend/*</binding>
+    </handler>
+
   </container>
 
   <content id='wikipedia' version='1.0'>
