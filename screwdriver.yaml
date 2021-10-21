@@ -41,7 +41,7 @@ jobs:
     requires: [~commit]
     secrets:
       - VESPA_TEAM_API_KEY
-    image: vespaengine/pipeline
+    image: vespaengine/vespa-pipeline
     environment:
       USER_SHELL_BIN: bash
     annotations:
