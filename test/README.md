@@ -20,6 +20,74 @@ If you want to run a test that is not in the above file, you can add the file
 path or URL as an argument and that test will be run.
 
 
+
+## Test elements
+Use &lt;pre&gt; elements for commands to be tested.
+The script also supports &lt;div&gt; - this is because the code highligher (optional) inserts newlines in some cases.
+
+
+#### Code block
+
+\`\`\`
+
+$ brew install vespa-cli
+
+\`\`\`
+
+&lt;pre&gt;
+
+$ brew install vespa-cli
+
+&lt;/pre&gt;
+
+
+#### Code block with highlighting
+
+\`\`\`sh
+
+$ brew install vespa-cli
+
+\`\`\`
+
+&lt;pre&gt;{% highlight sh %}
+
+$ brew install vespa-cli
+
+{% endhighlight %}&lt;/pre&gt;
+
+
+#### Code block with test
+Use in HTML and markdown files:
+
+&lt;pre data-test="exec"&gt;
+
+$ brew install vespa-cli
+
+&lt;/pre&gt;
+
+
+#### Code block with test and highlighting
+The highlighter will insert a pre,
+but adds newlines in markdown files, use &lt;div&gt; there.
+
+Use in HTML files:
+
+&lt;pre data-test="exec"&gt;{% highlight sh %}
+
+$ brew install vespa-cli
+
+{% endhighlight %}&lt;/pre&gt;
+
+Use in markdown files:
+
+&lt;div data-test="exec"&gt;{% highlight sh %}
+
+$ brew install vespa-cli
+
+{% endhighlight %}&lt;/div&gt;
+
+
+
 ## Troubleshooting
 Dump `vespa.log` - add to guide being tested:
 

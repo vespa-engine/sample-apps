@@ -169,9 +169,11 @@ def parse_cmds(pre, attrs):
     line_continuation = ""
     line_continuation_delimiter = "\\"
 
-    # Remove highlight liquid macros, if present, e.g:
+    # Remove liquid macros, if present, e.g:
     # {% highlight shell %}       {% endhighlight %}
-    sanitized_pre = re.sub(r"{%\s*.*highlight\s.*%}", "", pre)
+    # {% raw %}                   {% endraw %}
+    sanitized     = re.sub(r"{%\s*.*highlight\s*.*%}", "", pre)
+    sanitized_pre = re.sub(r"{%\s*.*raw\s*%}", "", sanitized)
 
     for line in sanitized_pre.split("\n"):
         cmd = "{0} {1}".format(line_continuation, line.strip())
@@ -212,7 +214,7 @@ def parse_page(html):
 
     soup = BeautifulSoup(html, "html.parser")
 
-    for pre in soup.find_all(lambda tag: tag.name == "pre" and tag.has_attr("data-test")):
+    for pre in soup.find_all(lambda tag: (tag.name == "pre" or tag.name == "div") and tag.has_attr("data-test")):
         if pre.attrs["data-test"] == "before":
             script["before"].extend(parse_cmds(pre.string, pre.attrs))
 
