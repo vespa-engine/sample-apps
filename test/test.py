@@ -156,12 +156,12 @@ def parse_cmd(cmd, attrs):
         return None
 
     if "data-test-wait-for" in attrs:
-        return { "$" : cmd, "type":"wait", "wait-for":attrs["data-test-wait-for"] }
+        return {"$": cmd, "type": "wait", "wait-for": attrs["data-test-wait-for"]}
     if "data-test-assert-contains" in attrs:
-        return { "$" : cmd, "type":"assert", "contains":attrs["data-test-assert-contains"] }
+        return {"$": cmd, "type": "assert", "contains": attrs["data-test-assert-contains"]}
     if "data-test-expect" in attrs:
-        return { "$" : cmd, "type":"expect", "expect":attrs["data-test-expect"], "timeout":attrs["data-test-timeout"] }
-    return { "$" : cmd, "type":"default" }
+        return {"$": cmd, "type": "expect", "expect": attrs["data-test-expect"], "timeout": attrs["data-test-timeout"]}
+    return {"$": cmd, "type": "default"}
 
 
 def parse_cmds(pre, attrs):
@@ -169,9 +169,11 @@ def parse_cmds(pre, attrs):
     line_continuation = ""
     line_continuation_delimiter = "\\"
 
-    # Remove highlight liquid macros, if present, e.g:
+    # Remove liquid macros, if present, e.g:
     # {% highlight shell %}       {% endhighlight %}
-    sanitized_pre = re.sub(r"{%\s*.*highlight\s.*%}", "", pre)
+    # {% raw %}                   {% endraw %}
+    sanitized     = re.sub(r"{%\s*.*highlight\s*.*%}", "", pre)
+    sanitized_pre = re.sub(r"{%\s*.*raw\s*%}", "", sanitized)
 
     for line in sanitized_pre.split("\n"):
         cmd = "{0} {1}".format(line_continuation, line.strip())
@@ -200,7 +202,7 @@ def parse_file(pre, attrs):
         else:
             content += str(line)
     content = content[1:] if content[0] == "\n" else content
-    return { "type":"file", "content":content, "path":path }
+    return {"type": "file", "content": content, "path": path}
 
 
 def parse_page(html):
@@ -212,7 +214,7 @@ def parse_page(html):
 
     soup = BeautifulSoup(html, "html.parser")
 
-    for pre in soup.find_all(lambda tag: tag.name == "pre" and tag.has_attr("data-test")):
+    for pre in soup.find_all(lambda tag: (tag.name == "pre" or tag.name == "div") and tag.has_attr("data-test")):
         if pre.attrs["data-test"] == "before":
             script["before"].extend(parse_cmds(pre.string, pre.attrs))
 
@@ -294,14 +296,14 @@ def run_with_arguments():
         sys.exit(2)
 
     for opt, arg in opts:
-        if opt in ("-v"):
+        if opt in "-v":
             verbose = True
-        elif opt in ("-c"):
+        elif opt in "-c":
             config_file = arg
 
-    if(len(config_file)):
+    if len(config_file):
         run_config(config_file)
-    elif (args):
+    elif args:
         run_file(args[0])
     else:
         run_config("_test_config.yml")
