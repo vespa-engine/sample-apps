@@ -139,7 +139,7 @@ below creates a python3.7 runtime environment named DPR.  This isolates the envi
 
 <pre>
 $ conda create -n DPR python=3.7
-$ conda activate -n DPR
+$ conda activate DPR
 $ git clone git@github.com:facebookresearch/DPR.git
 $ cd DPR
 $ pip3 install .
