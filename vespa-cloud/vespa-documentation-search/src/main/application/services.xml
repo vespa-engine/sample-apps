@@ -23,6 +23,7 @@
         </handler>
         <nodes count="2">
             <resources vcpu="0.5" memory="4Gb" disk="10Gb"/>
+            <resources vcpu="0.5" memory="2Gb" disk="10Gb" deploy:environment="prod" deploy:region="aws-ap-northeast-1a"/>
         </nodes>
     </container>
 
