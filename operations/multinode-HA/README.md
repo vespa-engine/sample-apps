@@ -237,7 +237,7 @@ ToDo:
 
 ## Clean up after testing
 <pre data-test="after">
-$ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7 node8
+$ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7
 $ docker network rm vespa_net
 </pre>
 
