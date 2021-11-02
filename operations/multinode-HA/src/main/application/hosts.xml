@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<hosts>
+  <host name="node0.vespa_net">
+    <alias>node0</alias>
+  </host>
+  <host name="node1.vespa_net">
+    <alias>node1</alias>
+  </host>
+  <host name="node2.vespa_net">
+    <alias>node2</alias>
+  </host>
+
+  <host name="node3.vespa_net">
+    <alias>node3</alias>
+  </host>
+
+  <host name="node4.vespa_net">
+    <alias>node4</alias>
+  </host>
+  <host name="node5.vespa_net">
+    <alias>node5</alias>
+  </host>
+
+  <host name="node6.vespa_net">
+    <alias>node6</alias>
+  </host>
+  <host name="node7.vespa_net">
+    <alias>node7</alias>
+  </host>
+</hosts>
