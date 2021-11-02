@@ -1,0 +1,1 @@
+# Vespa sample application - Image retrieval through natural language query
