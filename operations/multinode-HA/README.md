@@ -29,7 +29,7 @@ in this guide:
 * the content cluster that hosts the _stateful_ content nodes on node[6,7].
   See `content` section in services.xml.
 
-See [Process overview](#Process-overview) below for more details,
+See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
 
 This guide is tested with Docker using 20G Memory:
@@ -240,7 +240,7 @@ Notes:
 * [Config servers](https://docs.vespa.ai/en/cloudconfig/configuration-server.html) are normally started first,
   then application deployment - make sure to get this right before troubleshooting other services.
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
-* The [cluster controller](http://localhost:4000/en/content/content-nodes.html#cluster-controller) cluster
+* The [cluster controller](https://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
   manages the system state, and is useful in debugging cluster failures.
 
 
