@@ -107,7 +107,7 @@ $ (cd src/main/application && zip -r - .) | \
 
 As the Docker start script will start both the config server and services,
 we expect to find responses on 19100 (`slobrok`) and 19050 (`cluster-controller`).
-**Important note:** Vespa has a feature to not enable `services` before 50% are up,
+**Important note:** Vespa has a feature to not enable `services` before 50% of the nodes are up,
 see [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
 Meaning, here we have started only 3/8, so `slobrok` and `cluster-controller` are not started yet -
 find log messages like
