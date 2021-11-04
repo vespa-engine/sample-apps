@@ -12,6 +12,7 @@ Also see the smaller and simpler [multinode](../multinode) sample application.
 There are multiple ways of deploying such applications, on multiple platforms.
 This application is a set of basic Docker containers,
 and describes the important elements and integration points.
+Use this app as a reference for how to distribute nodes and how to validate the instance.
 High-level Vespa architecture:
 
 ![Vespa overview](https://docs.vespa.ai/en/img/overview/vespa-overview.svg)
@@ -19,13 +20,17 @@ High-level Vespa architecture:
 See [services.xml](src/main/application/services.xml) for the configuration -
 in this guide:
 
-* the admin/config cluster is built from 3 config server nodes, node[0,1,2]
-  and the admin server node that hosts the log server on node4.
-  Find this in the `admin` section in services.xml.
+* the config cluster is built from 3 config server nodes, node[0,1,2].
+  See the `admin` section in services.xml.
+* the admin server node that hosts the log server is hosted on node4.
+  See the `admin` section in services.xml.
 * the stateless java container cluster that hosts the _stateless_ nodes on node[4,5].
   See `container` section in services.xml.
 * the content cluster that hosts the _stateful_ content nodes on node[6,7].
   See `content` section in services.xml.
+
+See [Process overview](#Process-overview) below for more details,
+why the clusters and services are configured in this way.
 
 This guide is tested with Docker using 20G Memory:
 
@@ -102,7 +107,8 @@ $ (cd src/main/application && zip -r - .) | \
 
 As the Docker start script will start both the config server and services,
 we expect to find responses on 19100 (`slobrok`) and 19050 (`cluster-controller`).
-**Important note:** Vespa has a feature to not enable `services` before 50% are up.
+**Important note:** Vespa has a feature to not enable `services` before 50% of the nodes are up,
+see [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
 Meaning, here we have started only 3/8, so `slobrok` and `cluster-controller` are not started yet -
 find log messages like
 
@@ -226,12 +232,16 @@ $ docker run --detach --name node7 --hostname node7.vespa_net \
 
 
 ## Process overview
-ToDo: 
-* config server - nothing works without (however existing services keep serving, hence HA)
-* slobrok
-* cluster controller
-* why the two in config server cluster (node failures etc)
-* startup sequence - order not strictly needed - in this order to easier understand the flow
+Notes:
+* [Config sentinel](https://docs.vespa.ai/en/config-sentinel.html)
+  is useful to understand processes running,
+  and also the [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
+  Note that in the startup sequence, order not strictly needed as in this sample app.
+* [Config servers](https://docs.vespa.ai/en/cloudconfig/configuration-server.html) are normally started first,
+  then application deployment - make sure to get this right before troubleshooting other services.
+* See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
+* The [cluster controller](http://localhost:4000/en/content/content-nodes.html#cluster-controller) cluster
+  manages the system state, and is useful in debugging cluster failures.
 
 
 
