@@ -240,7 +240,7 @@ Notes:
 * [Config servers](https://docs.vespa.ai/en/cloudconfig/configuration-server.html) are normally started first,
   then application deployment - make sure to get this right before troubleshooting other services.
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
-* The [cluster controller](http://localhost:4000/en/content/content-nodes.html#cluster-controller) cluster
+* The [cluster controller](http://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
   manages the system state, and is useful in debugging cluster failures.
 
 
