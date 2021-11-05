@@ -29,7 +29,7 @@ in this guide:
 * the content cluster that hosts the _stateful_ content nodes on node[6,7].
   See `content` section in services.xml.
 
-See [Process overview](#Process-overview) below for more details,
+See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
 
 This guide is tested with Docker using 20G Memory:
