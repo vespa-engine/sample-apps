@@ -1,0 +1,8 @@
+torch
+torchvision
+ftfy
+regex
+tqdm
+pyvespa
+matplotlib
+git+https://github.com/openai/CLIP.git
