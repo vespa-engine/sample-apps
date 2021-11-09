@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+  <container id="mycontainer" version="1.0">
+    <nodes>
+      <node hostalias="node1" />
+    </nodes>
+
+    <!-- Enable model evaluation - both for REST API and in Java -->
+    <model-evaluation />
+
+    <!-- Add searchers using model evaluation to the search chain -->
+    <search>
+      <chain id='mychain' inherits='vespa'>
+        <searcher id='ai.vespa.example.TextEmbeddingSearcher' bundle="ai.vespa.example.text_image_search" />
+      </chain>
+    </search>
+
+    <!-- Configure the tokenizer -->
+    <component id="ai.vespa.example.BPETokenizer" bundle="ai.vespa.example.text_image_search">
+      <config name="ai.vespa.example.bpe-tokenizer">
+        <contextlength>77</contextlength>
+        <vocabulary>files/bpe_simple_vocab_16e6.txt.gz</vocabulary>
+      </config>
+    </component>
+
+    <document-api />
+  </container>
+
+  <!-- Add a content cluster to searchers and document processors -->
+  <content id="mycluster" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="image_search" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>
+
