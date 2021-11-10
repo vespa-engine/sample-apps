@@ -4,5 +4,6 @@ ftfy
 regex
 tqdm
 pyvespa
+streamlit
 matplotlib
 git+https://github.com/openai/CLIP.git
