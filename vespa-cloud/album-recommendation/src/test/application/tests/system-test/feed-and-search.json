@@ -1,0 +1,35 @@
+{
+    "name": "feed-and-search",
+    "tests": [
+        {
+            "name": "feed-simple",
+            "request": {
+                "cluster": "default",
+                "method": "POST",
+                "uri": "/document/v1/mynamespace/music/docid/a-head-full-of-dreams",
+                "body": "../data/A-Head-Full-of-Dreams.json"
+            },
+            "response": {
+                "code": 200
+            }
+        },
+        {
+            "name": "search-simple",
+            "request": {
+                "cluster": "default",
+                "method": "GET",
+                "uri": "/search/?query=artist:coldplay"
+            },
+            "response": {
+                "code": 200,
+                "body": {
+                    "root": {
+                        "fields": {
+                            "totalCount": 1
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
