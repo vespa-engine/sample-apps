@@ -1,7 +1,6 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
-import com.yahoo.container.StatisticsConfig;
 import com.yahoo.docproc.CallStack;
 import com.yahoo.docproc.DocprocService;
 import com.yahoo.docproc.DocumentProcessor;
@@ -14,7 +13,6 @@ import com.yahoo.document.DocumentPut;
 import com.yahoo.document.DocumentType;
 import com.yahoo.document.datatypes.Array;
 import com.yahoo.document.datatypes.StringFieldValue;
-import com.yahoo.statistics.StatisticsImpl;
 import org.junit.jupiter.api.Test;
 
 import static ai.vespa.example.album.ProductTypeRefinerDocProc.MUSIC_DOCUMENT_TYPE;
@@ -25,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ProductTypeTokenizerDocProcTest {
 
     private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new StatisticsImpl(new StatisticsConfig(new StatisticsConfig.Builder())), new NullMetric());
+        CallStack stack = new CallStack("default", new NullMetric());
         stack.addLast(processor);
         DocprocService service = new DocprocService("default");
         service.setCallStack(stack);

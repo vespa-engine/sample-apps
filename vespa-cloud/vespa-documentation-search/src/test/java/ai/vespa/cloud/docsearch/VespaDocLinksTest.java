@@ -1,7 +1,6 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.cloud.docsearch;
 
-import com.yahoo.container.StatisticsConfig;
 import com.yahoo.docproc.CallStack;
 import com.yahoo.docproc.DocprocService;
 import com.yahoo.docproc.DocumentProcessor;
@@ -18,7 +17,6 @@ import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.update.FieldUpdate;
 import com.yahoo.documentapi.DocumentAccessParams;
 import com.yahoo.documentapi.local.LocalDocumentAccess;
-import com.yahoo.statistics.StatisticsImpl;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -32,15 +30,15 @@ import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.NAMESPACE_FIELD
 import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.OUTLINKS_FIELD_NAME;
 import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.PATH_FIELD_NAME;
 import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.TITLE_FIELD_NAME;
+import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.canonicalizeLinks;
 import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.getUniqueOutLinks;
 import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.removeLinkFragment;
-import static ai.vespa.cloud.docsearch.OutLinksDocumentProcessor.canonicalizeLinks;
 
 
 public class VespaDocLinksTest {
 
     private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new StatisticsImpl(new StatisticsConfig(new StatisticsConfig.Builder())), new NullMetric());
+        CallStack stack = new CallStack("default", new NullMetric());
         stack.addLast(processor);
         DocprocService service = new DocprocService("default");
         service.setCallStack(stack);

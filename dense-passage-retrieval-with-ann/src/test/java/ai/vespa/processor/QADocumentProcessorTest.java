@@ -4,17 +4,20 @@ package ai.vespa.processor;
 
 import ai.vespa.tokenizer.BertModelConfig;
 import ai.vespa.tokenizer.BertTokenizer;
-import com.yahoo.container.StatisticsConfig;
 import com.yahoo.docproc.CallStack;
-import com.yahoo.docproc.Processing;
 import com.yahoo.docproc.DocprocService;
 import com.yahoo.docproc.DocumentProcessor;
+import com.yahoo.docproc.Processing;
 import com.yahoo.docproc.jdisc.metric.NullMetric;
-import com.yahoo.document.*;
+import com.yahoo.document.DataType;
+import com.yahoo.document.Document;
+import com.yahoo.document.DocumentOperation;
+import com.yahoo.document.DocumentPut;
+import com.yahoo.document.DocumentType;
+import com.yahoo.document.TensorDataType;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.datatypes.TensorFieldValue;
 import com.yahoo.language.simple.SimpleLinguistics;
-import com.yahoo.statistics.StatisticsImpl;
 import com.yahoo.tensor.TensorType;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +37,7 @@ public class QADocumentProcessorTest {
 
 
     private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new StatisticsImpl(new StatisticsConfig(new StatisticsConfig.Builder())), new NullMetric());
+        CallStack stack = new CallStack("default", new NullMetric());
         stack.addLast(processor);
         DocprocService service = new DocprocService("default");
         service.setCallStack(stack);
