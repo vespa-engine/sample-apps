@@ -2,6 +2,10 @@
 
 # Vespa sample applications - CLIP
 
+Build a text to image search engine from scratch with Vespa.
+
+![Text-Image Search with Vespa](resources/demo.gif)
+
 ## Compare pre-trained CLIP models for text-image retrieval
 
 Figure below shows the Reciprocal Rank @ 100 for each of the six 
