@@ -1,0 +1,33 @@
+{
+    "name": "feed-and-search",
+    "tests": [
+        {
+            "name": "feed-simple",
+            "feed": {
+                "cluster": "default",
+                "documents": [
+                    "../data/A-Head-Full-of-Dreams.json",
+                    "../data/Hardwired...To-Self-Destruct.json",
+                    "../data/Love-Is-Here-To-Stay.json"
+                ]
+            }
+        },
+        {
+            "name": "search-simple",
+            "search": {
+                "cluster": "default",
+                "query": "search * from sources * where artist=coldplay"
+            },
+            "response": {
+                "code": 200,
+                "body": {
+                    "root": {
+                        "fields": {
+                            "totalCount": 1
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
