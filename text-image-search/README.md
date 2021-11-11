@@ -2,6 +2,16 @@
 
 # Vespa sample applications - CLIP
 
+## Compare pre-trained CLIP models for text-image retrieval
+
+Figure below shows the Reciprocal Rank @ 100 for each of the six 
+available pre-trained CLIP models. Check [this notebook]((https://github.com/vespa-engine/sample-apps/blob/master/text-image-search/src/python/compare-pre-trained-clip-for-text-image-search.ipynb)) to see how 
+to do the end-to-end analysis using [the Vespa python API](https://pyvespa.readthedocs.io/en/latest/index.html).
+
+![alt text](resources/clip-evaluation-boxplot.png)
+
+## Vespa CLI
+
 **Validate environment, should be minimum 6G:**
 
 <pre>
