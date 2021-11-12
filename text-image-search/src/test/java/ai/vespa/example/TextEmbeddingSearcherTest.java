@@ -39,7 +39,7 @@ public class TextEmbeddingSearcherTest {
         Tensor embedding = t.get();
         assertEquals("tensor<float>(x[512])", embedding.type().toString());
 
-        assertEquals(5.4698e-02, embedding.get(TensorAddress.of(0)), 1e-5);
+        assertEquals(4.6018e-03, embedding.get(TensorAddress.of(0)), 1e-5);
     }
 
     private static Result execute(Query query, Searcher... searcher) {

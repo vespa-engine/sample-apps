@@ -2,10 +2,8 @@
 
 package ai.vespa.example;
 
-import ai.vespa.models.evaluation.FunctionEvaluator;
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import com.yahoo.prelude.query.NearestNeighborItem;
-import com.yahoo.prelude.query.WordItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
@@ -41,13 +39,13 @@ public class TextEmbeddingSearcher extends Searcher {
 
         // Set up the nearest neighbor retrieval
         NearestNeighborItem nn = new NearestNeighborItem("vit_b_32_image", "vit_b_32_text");
-        nn.setAllowApproximate(false);
+        nn.setAllowApproximate(true);
         nn.setTargetNumHits(10);
         nn.setHnswExploreAdditionalHits(100);
         query.getModel().getQueryTree().setRoot(nn);
 
         // Set ranking profile
-        query.getRanking().setProfile("vit-b-32-similarity");
+        query.getRanking().setProfile("vit_b_32_similarity");
 
         // Continue processing
         return execution.search(query);

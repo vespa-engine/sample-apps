@@ -66,7 +66,7 @@ class ImageFeedDataset(Dataset):
 
 
 @retry(wait=wait_exponential(multiplier=1), stop=stop_after_attempt(3))
-def send_image_embeddings(app, batch):
+def send_image_embeddings(app, batch, schema=None):
     """
     Send pyvespa-compatible batch to Vespa app.
 
@@ -74,7 +74,7 @@ def send_image_embeddings(app, batch):
     :param batch: pyvespa-compatible list of data points to be updated.
     :return: None
     """
-    responses = app.update_batch(batch=batch)
+    responses = app.update_batch(batch=batch, schema=schema)
     status_code_summary = Counter([x.status_code for x in responses])
     if status_code_summary[200] != len(batch):
         print([response.json for response in responses if response.status_code != 200])
@@ -82,7 +82,7 @@ def send_image_embeddings(app, batch):
     print("Successfully sent {} data points.".format(status_code_summary[200]))
 
 
-def compute_and_send_image_embeddings(app, batch_size, clip_model_names, num_workers=0):
+def compute_and_send_image_embeddings(app, batch_size, clip_model_names, num_workers=0, schema=None):
     """
     Loop through image folder, compute embeddings and send to Vespa app.
 
@@ -110,7 +110,7 @@ def compute_and_send_image_embeddings(app, batch_size, clip_model_names, num_wor
                     model_name, idx, len(dataloader)
                 )
             )
-            send_image_embeddings(app=app, batch=batch)
+            send_image_embeddings(app=app, batch=batch, schema=schema)
 
 
 class TextProcessor(object):

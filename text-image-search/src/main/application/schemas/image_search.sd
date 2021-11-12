@@ -6,7 +6,7 @@ schema image_search {
             indexing: attribute | summary
         }
         field vit_b_32_image type tensor<float>(x[512]) {
-            indexing: attribute | index | summary
+            indexing: attribute | index
             attribute {
                 distance-metric: euclidean
             }
@@ -19,7 +19,7 @@ schema image_search {
         }
     }
 
-    rank-profile vit-b-32-similarity inherits default {
+    rank-profile vit_b_32_similarity inherits default {
         first-phase {
             expression: closeness(vit_b_32_image)
         }

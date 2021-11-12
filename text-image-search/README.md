@@ -1,6 +1,6 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-# Vespa sample applications - CLIP
+# Vespa sample applications - Text/Image search
 
 Build a text to image search engine from scratch with Vespa.
 
@@ -32,7 +32,6 @@ $ cd sample-apps/text-image-search
 **Set up transformer model:**
 <pre data-test="exec">
 $ pip3 -r src/python/requirements.txt
-$ mkdir -p src/main/application/models
 $ python3 src/python/clip_export.py
 </pre>
 
@@ -47,22 +46,33 @@ $ docker run --detach --name vespa --hostname vespa-container \
 **Wait for the configserver to start:**
 
 <pre data-test="exec" data-test-wait-for="is ready">
-$ vespa status deploy --wait 300
+$ vespa status deploy --wait 300 --color never
 </pre>
 
 **Deploy the application and wait for it to start:**
 
 <pre data-test="exec" data-test-wait-for="is ready">
-$ vespa deploy --wait 300
+$ vespa deploy --wait 300 --color never
+</pre>
+
+**Download and extract image data:**
+
+<pre data-test="exec">
+$ ./src/sh/download_flickr8k.sh
+$ export IMG_DIR=data/Flicker8k_Dataset/
 </pre>
 
 **Feed data:**
 
-TBD
+<pre data-test="exec">
+$ python3 src/python/clip_feed.py
+</pre>
 
 **Search:**
 
-TBD
+<pre data-test="exec">
+$ http://localhost:8080/search/?input=two+people
+</pre>
 
 **Shutdown and remove the container:**
 

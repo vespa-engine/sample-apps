@@ -7,16 +7,33 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ai.vespa.example</groupId>
     <artifactId>text_image_search</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.0</version>
     <packaging>container-plugin</packaging>  <!-- Use Vespa packaging -->
+
+    <!-- Deploy to cloud: -->
+    <!--
+    <parent>
+        <groupId>com.yahoo.vespa</groupId>
+        <artifactId>cloud-tenant-base</artifactId>
+        <version>[7,999)</version>
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tenant>vespa-team</tenant>
+        <application>text-image-search</application>
+        <instance>default</instance>
+    </properties>
+    -->
+
+
+    <!-- Deploy locally: -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
-        <vespa_version>7.490.17</vespa_version>
+        <vespa_version>7.496.44</vespa_version>
         <junit.version>5.7.1</junit.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
@@ -49,8 +66,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.8.0</version>
                 <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
                     <optimize>true</optimize>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
@@ -74,7 +95,7 @@
             </plugin>
             <plugin>
                 <groupId>com.yahoo.vespa</groupId>
-                <artifactId>vespa-application-maven-plugin</artifactId>  <!-- Zip the application package -->
+                <artifactId>vespa-application-maven-plugin</artifactId>
                 <version>${vespa_version}</version>
                 <executions>
                     <execution>
@@ -104,7 +125,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- For debugging only -->
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.6</version>
                 <executions>
@@ -123,4 +143,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
