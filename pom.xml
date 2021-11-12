@@ -7,7 +7,8 @@
     <packaging>pom</packaging>
     <version>7.3.19</version>
     <name>sampleapps-parent</name>
-    <description>Parent artifact for all Java Vespa sample apps.</description>
+    <description>Aggregator for all Java Vespa sample apps.
+        Modules must be included here to have their 'vespa_version' property updated automatically.</description>
 
     <modules>
         <module>boolean-search</module>
