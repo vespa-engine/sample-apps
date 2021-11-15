@@ -1,0 +1,27 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema image_search {
+    document image_search {
+        field image_file_name type string {
+            indexing: attribute | summary
+        }
+        field vit_b_32_image type tensor<float>(x[512]) {
+            indexing: attribute | index
+            attribute {
+                distance-metric: euclidean
+            }
+            index {
+                hnsw {
+                    max-links-per-node: 16
+                    neighbors-to-explore-at-insert: 500
+                }
+            }
+        }
+    }
+
+    rank-profile vit_b_32_similarity inherits default {
+        first-phase {
+            expression: closeness(vit_b_32_image)
+        }
+    }
+}
