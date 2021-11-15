@@ -1,14 +1,27 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-# Vespa sample applications - Text/Image search
+# Vespa sample application - Text-Image Search
 
-Build a text to image search engine from scratch with Vespa.
+This sample is an example of a text-to-image search application. Taking a textual query, such as "two
+people bicycling", it will return images containing two people on bikes. This
+application is built using [CLIP (Contrastive Language-Image
+Pre-Training)](https://github.com/openai/CLIP) which enables "zero-shot prediction".
+This means that the system can return sensible results for images it hasn't
+seen during training, allowing it to process and index any image. In this
+use case, we use the [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names)
+dataset, which was not used during training of the CLIP model.
+
+This sample application can be used in two different ways. The first is by using a 
+[Python-based search app](https://github.com/vespa-engine/sample-apps/tree/master/text-image-search/src/python/README.md),
+which is suitable for exploration and analysis. The other is a 
+[stand-alone Vespa application](https://github.com/vespa-engine/sample-apps/blob/master/text-image-search/README.md),
+which is more suitable for production.
 
 ![Text-Image Search with Vespa](resources/demo.gif)
 
 ## Compare pre-trained CLIP models for text-image retrieval
 
-Figure below shows the Reciprocal Rank @ 100 for each of the six 
+This figure below shows the Reciprocal Rank @ 100 for each of the six 
 available pre-trained CLIP models. Check [this notebook]((https://github.com/vespa-engine/sample-apps/blob/master/text-image-search/src/python/compare-pre-trained-clip-for-text-image-search.ipynb)) to see how 
 to do the end-to-end analysis using [the Vespa python API](https://pyvespa.readthedocs.io/en/latest/index.html).
 
