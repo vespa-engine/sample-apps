@@ -23,6 +23,8 @@ $ cd sample-apps/vespa-chinese-linguistics
 $ mvn package
 </pre>
 
+Build package with version 7.301.24 there. Maybe in higher version, there are some changes in the interface [Linguistics](https://github.com/vespa-engine/vespa/blob/master/linguistics/src/main/java/com/yahoo/language/Linguistics.java).
+
 
 ## Use Package
 
@@ -40,15 +42,15 @@ Put the built package to components directory of your service. If there is no co
 
 Because the package will be used by searcher and indexer, it is recommended to define &lt;component&gt; in all &lt;jdisc&gt; sections of services.xml.
 
-```
+```xml
 <container id="mycontainer" version="1.0">
-    <component id="com.qihoo.language.jieba.JiebaLinguistics" bundle="chinese-linguistics" >
-      <config name="com.qihoo.language.jieba.dicts-loc">
-      <dictionaryPath>/opt/vespa/conf/dict</dictionaryPath>
-      <stopwordsPath>/opt/vespa/conf/stopwords</stopwords>
-      </config>
+    <component id="com.qihoo.language.JiebaLinguistics" bundle="chinese-linguistics" >
+        <config name="com.qihoo.language.config.dicts-loc">
+            <dictionaryPath>/opt/vespa/conf/dict</dictionaryPath>
+            <stopwordsPath>/opt/vespa/conf/stopwords</stopwordsPath>
+        </config>
     </component>
-  </container>
+</container>
 ```
 
 
