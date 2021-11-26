@@ -1,7 +1,7 @@
 {
     "fields": {
         "album": {
-            "assign": "In Your Honor"
+            "assign": "Foo Fighters"
         }
     }
 }
