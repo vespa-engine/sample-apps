@@ -1,0 +1,15 @@
+{
+    "name": "Feed without stemming, prior to upgrade",
+    "comment": "Assume current deployment has no stemming on the album field; run this setup",
+    "steps": [
+        {
+            "name": "feed foo",
+            "request": {
+                "cluster": "default",
+                "method": "POST",
+                "uri": "/document/v1/test/music/docid/foo",
+                "body": "../foo.json"
+            }
+        }
+    ]
+}

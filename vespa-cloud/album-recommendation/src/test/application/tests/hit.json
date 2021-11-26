@@ -1,0 +1,16 @@
+{
+    "root": {
+        "fields": {
+            "children": [
+                {
+                    "fields": {
+                        "artist": "Foo Fighters",
+                        "album": "In Your Honor"
+                    }
+
+                }
+            ],
+            "totalCount": 1
+        }
+    }
+}
