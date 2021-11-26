@@ -1,15 +1,15 @@
 {
     "root": {
-        "fields": {
-            "children": [
-                {
-                    "fields": {
-                        "artist": "Foo Fighters",
-                        "album": "In Your Honor"
-                    }
-
+        "children": [
+            {
+                "fields": {
+                    "artist": "Foo Fighters",
+                    "album": "In Your Honor"
                 }
-            ],
+
+            }
+        ],
+        "fields": {
             "totalCount": 1
         }
     }

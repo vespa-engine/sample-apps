@@ -34,18 +34,7 @@
                 "parameters": "../query.json"
             },
             "response": {
-                "body": {
-                    "root": {
-                        "children": [
-                            {
-                                "fields": {
-                                    "artist": "Foo Fighters",
-                                    "album": "In Your Honor"
-                                }
-                            }
-                        ]
-                    }
-                }
+                "body": "../hit.json"
             }
         }
     ]
