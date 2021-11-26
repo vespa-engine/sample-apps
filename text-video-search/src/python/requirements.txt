@@ -1,0 +1,7 @@
+numpy
+imageio
+torch
+torchvision
+pyvespa
+streamlit
+git+https://github.com/openai/CLIP.git
