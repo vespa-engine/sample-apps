@@ -1,0 +1,41 @@
+{
+    "name": "Query before and after album update",
+    "comment": "Assume application was deployed without stemming on the album field, and we want to test adding that",
+    "defaults": {
+        "cluster": "default"
+    },
+    "steps": [
+        {
+            "name": "query before album update",
+            "request": {
+                "parameters": "../query.json"
+            },
+            "response": {
+                "body": {
+                    "root": {
+                        "fields": {
+                            "totalCount": 0
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "update album field",
+            "request": {
+                "method": "PUT",
+                "uri": "/document/v1/test/music/docid/foo",
+                "body": "../update.json"
+            }
+        },
+        {
+            "name": "query after album update",
+            "request": {
+                "parameters": "../query.json"
+            },
+            "response": {
+                "body": "../hit.json"
+            }
+        }
+    ]
+}
