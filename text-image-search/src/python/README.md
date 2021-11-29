@@ -16,7 +16,7 @@ to process, feed and query Vespa. This is suitable for exploration and analysis.
 
 We are going to use the Flickr8k dataset to allow users to follow along from
 their laptop. You can use the script in `../sh/download_flickr8k.sh` to
-download the data, our manually from from [the Kaggle
+download the data, our manually from [the Kaggle
 website](https://www.kaggle.com/ming666/flicker8k-dataset).
 
 After downloading, set the `IMG_DIR` environment variable to the folder containing the PNG files.
@@ -28,10 +28,10 @@ export IMG_DIR=<image-folder>
 ## Compare pre-trained CLIP models for text-image retrieval
 
 You can follow [this Jupyter
-Notebook](https://github.com/vespa-engine/sample-apps/blob/master/text-image-search/src/python/compare-pre-trained-clip-for-text-image-search.ipynb)
-for a full interactive end-to-end example that sets up a Vespa environment,
-processes and feeds image data, and issues queries. It includes an analysis
-over which of the six different pre-trained models in CLIP perform best.
+Notebook](compare-pre-trained-clip-for-text-image-search.ipynb) for a full
+interactive end-to-end example that sets up a Vespa environment, processes and
+feeds image data, and issues queries. It includes an analysis over which of the
+six different pre-trained models in CLIP perform best.
 
 This figure below shows the Reciprocal Rank @ 100 for each of the six
 available pre-trained CLIP models.
