@@ -47,7 +47,7 @@ $ cd sample-apps/text-image-search
 **Set up transformer model:**
 
 <pre data-test="exec">
-$ pip3 -r src/python/requirements.txt
+$ pip3 install -r src/python/requirements.txt
 $ python3 src/python/clip_export.py
 </pre>
 
