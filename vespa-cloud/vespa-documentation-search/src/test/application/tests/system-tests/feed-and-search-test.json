@@ -1,0 +1,58 @@
+{
+  "name": "my docsearch test",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "1.618s"
+    }
+  },
+  "steps": [
+    {
+      "name": "clear existing documents",
+      "request": {
+        "method": "DELETE",
+        "uri": "/document/v1/",
+        "parameters": {
+          "cluster": "documentation",
+          "selection": "true"
+        }
+      }
+    },
+    {
+      "name": "feed documentation%2Faccess-logging.html",
+      "request": {
+        "method": "POST",
+        "body": {
+          "fields": {
+            "path": "/documentation/access-logging.html",
+            "namespace": "open",
+            "title": "Access Logging",
+            "content": "The Vespa access log format allows the logs to be processed..."
+          }
+        },
+        "uri": "/document/v1/open/doc/docid/documentation%2Faccess-logging.html"
+      }
+    },
+    {
+      "name": "query for doc",
+      "request": {
+        "parameters": {
+          "query": "content: access"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "path": "/documentation/access-logging.html"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
