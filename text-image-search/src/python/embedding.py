@@ -1,7 +1,9 @@
 import os
 import glob
 import ntpath
+import uu
 from collections import Counter
+from io import BytesIO
 
 from vespa.package import ApplicationPackage, Field, HNSW, RankProfile, QueryTypeField
 import torch
@@ -66,7 +68,7 @@ class ImageFeedDataset(Dataset):
 
 
 @retry(wait=wait_exponential(multiplier=1), stop=stop_after_attempt(3))
-def send_image_embeddings(app, batch, schema=None):
+def send_data_batch(app, batch, schema=None):
     """
     Send pyvespa-compatible batch to Vespa app.
 
@@ -82,7 +84,35 @@ def send_image_embeddings(app, batch, schema=None):
     print("Successfully sent {} data points.".format(status_code_summary[200]))
 
 
-def compute_and_send_image_embeddings(app, batch_size, clip_model_names, num_workers=0, schema=None):
+def encode_media_to_string(media_file_path):
+    encoded_media_byte_array = BytesIO()
+    uu.encode(media_file_path, encoded_media_byte_array)
+    return encoded_media_byte_array.getvalue().decode("ascii")
+
+
+def encode_and_send_images(app, img_dir, batch_size):
+    image_file_names = glob.glob(os.path.join(img_dir, "*.jpg"))
+    for i in range(0, len(image_file_names), batch_size):
+        images_to_send = image_file_names[i : i + batch_size]
+        batch = []
+        for image_file_name in images_to_send:
+            image_base_name = ntpath.basename(image_file_name)
+            encoded_image = encode_media_to_string(image_file_name)
+            batch.append(
+                {
+                    "id": image_base_name.split(".jpg")[0],
+                    "fields": {
+                        "encoded_image": encoded_image,
+                    },
+                    "create": True,
+                }
+            )
+        send_data_batch(app=app, batch=batch)
+
+
+def compute_and_send_image_embeddings(
+    app, batch_size, clip_model_names, num_workers=0, schema=None
+):
     """
     Loop through image folder, compute embeddings and send to Vespa app.
 
@@ -110,7 +140,7 @@ def compute_and_send_image_embeddings(app, batch_size, clip_model_names, num_wor
                     model_name, idx, len(dataloader)
                 )
             )
-            send_image_embeddings(app=app, batch=batch, schema=schema)
+            send_data_batch(app=app, batch=batch, schema=schema)
 
 
 class TextProcessor(object):
@@ -151,6 +181,7 @@ def create_text_image_app(model_info):
 
     app_package.schema.add_fields(
         Field(name="image_file_name", type="string", indexing=["summary", "attribute"]),
+        Field(name="encoded_image", type="string", indexing=["summary"]),
     )
     for model_name, embedding_size in model_info.items():
         model_name = translate_model_names_to_valid_vespa_field_names(model_name)
