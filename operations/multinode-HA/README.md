@@ -15,7 +15,7 @@ and describes the important elements and integration points.
 Use this app as a reference for how to distribute nodes and how to validate the instance.
 High-level Vespa architecture:
 
-![Vespa overview](https://docs.vespa.ai/en/img/overview/vespa-overview.svg)
+![Vespa overview](https://docs.vespa.ai/assets/img/vespa-overview.svg)
 
 See [services.xml](src/main/application/services.xml) for the configuration -
 in this guide:
