@@ -85,12 +85,39 @@ def send_data_batch(app, batch, schema=None):
 
 
 def encode_media_to_string(media_file_path):
+    """
+    Encode binary data to string
+
+    :param media_file_path: image file path.
+    :return: ascii encoded image.
+    """
     encoded_media_byte_array = BytesIO()
     uu.encode(media_file_path, encoded_media_byte_array)
     return encoded_media_byte_array.getvalue().decode("ascii")
 
 
+def decode_string_to_media(value):
+    """
+    Decode string into binary data
+
+    :param value: encoded string value
+    :return: decoded binary data
+    """
+    bytes_string = BytesIO(value.encode("ascii"))
+    bytes_media = BytesIO()
+    uu.decode(bytes_string, bytes_media)
+    return bytes_media
+
+
 def encode_and_send_images(app, img_dir, batch_size):
+    """
+    Encode and send images to the app using ascii format
+
+    :param app: pyvespa connection to a Vespa instance
+    :param img_dir: Folder containing image files.
+    :param batch_size: Number of images to process per iteration.
+    :return: None
+    """
     image_file_names = glob.glob(os.path.join(img_dir, "*.jpg"))
     for i in range(0, len(image_file_names), batch_size):
         images_to_send = image_file_names[i : i + batch_size]
