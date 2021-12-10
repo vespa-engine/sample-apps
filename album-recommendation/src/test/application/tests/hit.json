@@ -1,0 +1,15 @@
+{
+    "root": {
+        "children": [
+            {
+                "fields": {
+                    "artist": "Foo Fighters",
+                    "album": "Foo Fighters"
+                }
+            }
+        ],
+        "fields": {
+            "totalCount": 1
+        }
+    }
+}

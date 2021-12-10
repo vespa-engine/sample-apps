@@ -1,6 +1,6 @@
 {
     "name": "Verify production metrics",
-    "comment": "Authentication not yet supported for production tests ...",
+    "comment": "Authentication not yet supported for production tests.",
     "steps": [
         {
             "name": "check custom service",
