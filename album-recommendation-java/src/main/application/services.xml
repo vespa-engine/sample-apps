@@ -57,7 +57,7 @@
         to activate autoscaling.
 
         See:
-         - Reference: https://cloud.vespa.ai/en/reference/services.html
+         - Reference: https://docs.vespa.ai/en/reference/services.html
     -->
     <nodes>
       <node hostalias="node1" />
