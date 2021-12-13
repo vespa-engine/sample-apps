@@ -2,80 +2,83 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
 
+  <!--
+      A container cluster handles incoming requests to the application and processes those requests,
+      and their results. The processing to do and the API's to expose can be provides by Vespa
+      or by the application through Java components supplied as part of the application.
+
+      See:
+        - Reference: https://docs.vespa.ai/en/reference/services-container.html
+  -->
+  <container id="default" version="1.0">
     <!--
-        A container cluster handles incoming requests to the application and processes those requests,
-        and their results. The processing to do and the API's to expose can be provides by Vespa
-        or by the application through Java components supplied as part of the application.
+        <document-api> tells the container that it should accept documents for indexing. Through the
+        Document REST API you can PUT new documents, UPDATE existing documents, and DELETE documents
+        already in the cluster.
+
+        Documents sent to the Document REST API will be passed through document processors on the way
+        to the content cluster.
 
         See:
-          - Reference: https://docs.vespa.ai/en/reference/services-container.html
+         - Reference: https://docs.vespa.ai/en/reference/services-container.html#document-api
+         - Operations: https://docs.vespa.ai/en/document-api.html
     -->
-    <container id="default" version="1.0">
-        <!--
-            <document-api> tells the container that it should accept documents for indexing. Through the
-            Document REST API you can PUT new documents, UPDATE existing documents, and DELETE documents
-            already in the cluster.
-
-            Documents sent to the Document REST API will be passed through document processors on the way
-            to the content cluster.
-
-            See:
-             - Reference: https://docs.vespa.ai/en/reference/services-container.html#document-api
-             - Operations: https://docs.vespa.ai/en/document-api.html
-        -->
-        <document-api/>
-
-        <!--
-            <search> tells the container to answers queries and serve results for those queries.
-            Inside the <search /> cluster you can configure chains of "searchers" -
-            Java components processing the query and/or result.
-
-            See:
-             - Reference: https://docs.vespa.ai/en/search-api.html
-             - Searchers: https://docs.vespa.ai/en/searcher-development.html
-        -->
-        <search>
-            <chain id="metalchain" inherits="vespa">
-                <searcher id="ai.vespa.example.album.MetalSearcher" bundle="albums">
-                    <config name="ai.vespa.example.album.metal-names">
-                        <metalWords>
-                            <item>hetfield</item>
-                            <item>metallica</item>
-                            <item>pantera</item>
-                        </metalWords>
-                    </config>
-                </searcher>
-            </chain>
-        </search>
-
-        <!--
-            <nodes> specifies the nodes that should run this cluster, and through the <resources>
-            subtag, the resources on those nodes. You can also specify ranges of nodes and resources
-            to activate autoscaling.
-
-            See:
-             - Reference: https://cloud.vespa.ai/en/reference/services.html
-        -->
-        <nodes>
-            <node hostalias="node1" />
-        </nodes>
-    </container>
+    <document-api/>
 
     <!--
-        <content/> content clusters store application data, maintain indexes and executes the
-        distributed parts of a query.
+        <search> tells the container to answers queries and serve results for those queries.
+        Inside the <search /> cluster you can configure chains of "searchers" -
+        Java components processing the query and/or result.
 
         See:
-          - Reference: https://docs.vespa.ai/en/reference/services-content.html
+         - Reference: https://docs.vespa.ai/en/search-api.html
+         - Searchers: https://docs.vespa.ai/en/searcher-development.html
     -->
-    <content id="music" version="1.0">
-        <redundancy>2</redundancy>
-        <documents>
-            <document type="music" mode="index" />
-        </documents>
-        <nodes>
-            <node hostalias="node1" distribution-key="0" />
-        </nodes>
-    </content>
+    <search>
+      <chain id="default" inherits="vespa">
+        <searcher id="ai.vespa.example.album.SetFilterSearcher" bundle="albums"/>
+      </chain>
+      <chain id="metalchain" inherits="vespa">
+        <searcher id="ai.vespa.example.album.MetalSearcher" bundle="albums">
+          <config name="ai.vespa.example.album.metal-names">
+            <metalWords>
+              <item>hetfield</item>
+              <item>metallica</item>
+              <item>pantera</item>
+            </metalWords>
+          </config>
+        </searcher>
+      </chain>
+    </search>
+
+    <!--
+        <nodes> specifies the nodes that should run this cluster, and through the <resources>
+        subtag, the resources on those nodes. You can also specify ranges of nodes and resources
+        to activate autoscaling.
+
+        See:
+         - Reference: https://cloud.vespa.ai/en/reference/services.html
+    -->
+    <nodes>
+      <node hostalias="node1" />
+    </nodes>
+  </container>
+
+  <!--
+      <content/> content clusters store application data, maintain indexes and executes the
+      distributed parts of a query.
+
+      See:
+        - Reference: https://docs.vespa.ai/en/reference/services-content.html
+  -->
+  <content id="music" version="1.0">
+    <redundancy>2</redundancy>
+    <documents>
+      <document type="music" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
 
 </services>
