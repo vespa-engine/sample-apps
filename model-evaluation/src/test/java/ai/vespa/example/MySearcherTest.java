@@ -4,10 +4,6 @@ package ai.vespa.example;
 
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import com.yahoo.component.chain.Chain;
-import com.yahoo.container.jdisc.HttpRequest;
-import com.yahoo.container.jdisc.HttpResponse;
-import com.yahoo.container.jdisc.LoggingRequestHandler;
-import com.yahoo.jdisc.http.HttpRequest.Method;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
@@ -16,11 +12,6 @@ import com.yahoo.tensor.Tensor;
 import com.yahoo.vespa.model.container.ml.ModelsEvaluatorTester;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
