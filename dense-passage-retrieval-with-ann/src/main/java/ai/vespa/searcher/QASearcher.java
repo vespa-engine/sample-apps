@@ -65,7 +65,7 @@ public class QASearcher extends Searcher {
     }
 
     private Tensor getTensor(Hit hit, String output) {
-        FeatureData featureData = (FeatureData)hit.getField("summaryfeatures");
+        FeatureData featureData = (FeatureData)hit.getField("matchfeatures");
         return featureData.getTensor(output);
     }
 
