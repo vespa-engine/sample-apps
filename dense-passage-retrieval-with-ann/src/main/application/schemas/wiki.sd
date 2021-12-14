@@ -46,7 +46,7 @@ schema wiki {
   }
 
   onnx-model reader {
-    file: files/reader.onnx
+    file: models/reader.onnx
     input  input_ids: input_ids
     input  attention_mask: attention_mask
     output output_0: start_logits
@@ -111,7 +111,7 @@ schema wiki {
       expression: sum(onnxModel(reader).relevance_logits)
     }
 
-    summary-features {
+    match-features {
       onnxModel(reader).start_logits
       onnxModel(reader).end_logits
       input_ids # The input sequence with special tokens (CLS/SEP)

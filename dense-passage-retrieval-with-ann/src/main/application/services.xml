@@ -20,6 +20,7 @@
       </chain>
     </document-processing>
 
+    <model-evaluation/>
     <search>
       <chain id="qa" inherits="vespa">
         <searcher id="ai.vespa.searcher.RetrieveModelSearcher" bundle="question-answering"/>
@@ -41,7 +42,6 @@
     <redundancy>2</redundancy>
     <documents>
       <document mode='index' type='wiki'/>
-      <document mode='index' type='query'/>
       <document-processing cluster="default" chain="bert-tensorizer" />
     </documents>
      <nodes>
