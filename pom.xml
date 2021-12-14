@@ -23,7 +23,6 @@
         <module>multiple-bundles</module>
         <module>news/app-6-recommendation-with-searchers</module>
         <module>news/app-7-parent-child</module>
-        <module>tensor-playground</module>
         <module>transformers</module>
         <module>text-search</module>
         <module>use-case-shopping</module>
