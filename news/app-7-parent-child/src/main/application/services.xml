@@ -6,7 +6,7 @@
   <container id='default' version='1.0'>
     <search>
       <chain id='user' inherits='vespa'>
-        <searcher bundle='news-recommendation' id='ai.vespa.example.UserProfileSearcher' />
+        <searcher bundle='news-recommendation-parent-child' id='ai.vespa.example.UserProfileSearcher' />
       </chain>
     </search>
     <document-api></document-api>
