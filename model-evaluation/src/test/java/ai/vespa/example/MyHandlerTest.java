@@ -5,8 +5,8 @@ package ai.vespa.example;
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import com.yahoo.container.jdisc.HttpRequest;
 import com.yahoo.container.jdisc.HttpResponse;
-import com.yahoo.container.jdisc.ThreadedHttpRequestHandler;
 import com.yahoo.jdisc.http.HttpRequest.Method;
+import com.yahoo.container.jdisc.LoggingRequestHandler;
 import com.yahoo.vespa.model.container.ml.ModelsEvaluatorTester;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ public class MyHandlerTest {
     @Test
     public void testMyHandler() throws IOException {
         ModelsEvaluator modelsEvaluator = ModelsEvaluatorTester.create("src/main/application/models");
-        MyHandler myHandler = new MyHandler(modelsEvaluator, ThreadedHttpRequestHandler.testOnlyContext());
+        MyHandler myHandler = new MyHandler(modelsEvaluator, LoggingRequestHandler.testOnlyContext());
 
         Map<String, String> properties = new HashMap<>();
         properties.put("model", "transformer");
