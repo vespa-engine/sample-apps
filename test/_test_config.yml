@@ -6,8 +6,6 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/multiple-bundles/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/use-case-shopping/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/cloud/master/en/getting-started-docproc.md"
-    - "https://raw.githubusercontent.com/vespa-engine/cloud/master/en/getting-started-java.html"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
