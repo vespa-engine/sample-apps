@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <deployment version="1.0">
   <prod>
-    <region active="true">aws-us-east-1c</region>
+    <region>aws-us-east-1c</region>
   </prod>
 </deployment>
