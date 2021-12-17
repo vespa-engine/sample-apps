@@ -23,7 +23,7 @@ public class MyHandlerTest {
     @Test
     public void testMyHandler() throws IOException {
         ModelsEvaluator modelsEvaluator = ModelsEvaluatorTester.create("src/main/application/models");
-        MyHandler myHandler = new MyHandler(modelsEvaluator, ThreadedHttpRequestHandler.testOnlyContext());
+        MyHandler myHandler = new MyHandler(modelsEvaluator, ThreadedHttpRequestHandler.testContext());
 
         Map<String, String> properties = new HashMap<>();
         properties.put("model", "transformer");
