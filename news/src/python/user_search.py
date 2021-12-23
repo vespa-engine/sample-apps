@@ -33,8 +33,7 @@ def query_news(user_vector, hits, filter):
         "hits": hits,
         "yql": 'select * from sources news where {} {};'.format(nn_search, filter),
         "ranking.features.query(user_embedding)": str(user_vector),
-        "ranking.profile": "recommendation",
-        "tracelevel": 3
+        "ranking.profile": "recommendation"
     }
     req = urllib.request.Request("http://localhost:8080/search/", data=str(data).encode('utf-8'))  # POST
     req.add_header('Content-Type', 'application/json')
