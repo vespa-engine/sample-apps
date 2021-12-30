@@ -6,6 +6,7 @@ import com.yahoo.container.jdisc.HttpRequest;
 import com.yahoo.container.jdisc.HttpResponse;
 import com.yahoo.container.jdisc.ThreadedHttpRequestHandler;
 import com.yahoo.jdisc.handler.ContentChannel;
+import com.yahoo.jdisc.Metric;
 import com.yahoo.processing.handler.ProcessingHandler;
 
 import java.util.concurrent.Executor;
@@ -33,10 +34,12 @@ public class DemoHandler extends ThreadedHttpRequestHandler {
      *            threadpool, provided by the container
      * @param processingHandler
      *            the processing handler, also automatically injected
+     * @param metrics
+     *            interface for metrics. Required by all sub-classes of ThreadedRequestHandler.
      */
     @Inject
-    public DemoHandler(Executor executor, ProcessingHandler processingHandler) {
-        super(executor, null, true);
+    public DemoHandler(Executor executor, ProcessingHandler processingHandler, Metric metrics) {
+        super(executor, metrics, true);
         this.processingHandler = processingHandler;
     }
 
