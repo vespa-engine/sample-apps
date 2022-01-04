@@ -1,7 +1,6 @@
 // Copyright 2020 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
-import ai.vespa.feed.client.DocumentId;
 import ai.vespa.hosted.cd.Endpoint;
 import ai.vespa.hosted.cd.TestRuntime;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,10 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.net.URLEncoder.encode;
@@ -31,8 +27,8 @@ class StagingCommons {
     }
 
     /** Returns the document path of the document with the given name. */
-    static String documentPath(DocumentId documentId) {
-        return String.format("/document/v1/%s/%s/docid/%s", documentId.namespace(), documentId.documentType(), encode(documentId.userSpecific(), UTF_8));
+    static String documentPath(String documentName) {
+        return "/document/v1/staging/music/docid/" + encode(documentName, UTF_8);
     }
 
     /** Reads and returns the contents of the JSON test resource with the given name. */
@@ -45,14 +41,13 @@ class StagingCommons {
         }
     }
 
-    /** Returns static document IDs and document bytes for the three static staging test documents. */
-    static List<String> documents() {
+    /** Returns static document ID paths and document bytes for the three static staging test documents. */
+    static Map<String, byte[]> documentsByPath() {
         return Stream.of("A-Head-Full-of-Dreams",
                          "Hardwired...To-Self-Destruct",
                          "Love-Is-Here-To-Stay")
-                .map(StagingCommons::readDocumentResource)
-                .map(b -> new String(b, UTF_8))
-                .collect(Collectors.toList());
+                     .collect(toUnmodifiableMap(StagingCommons::documentPath,
+                                                StagingCommons::readDocumentResource));
     }
 
     /** Warm-up query matching all "music" documents — high timeout as the fresh container needs to warm up. */
@@ -70,11 +65,10 @@ class StagingCommons {
 
     /** Verifies the static staging documents are searchable, ranked correctly, and render as expected. */
     static void verifyDocumentsAreSearchable() throws IOException {
-        Endpoint container = container();
-        warmup(container);
+        warmup();
 
         // Verify that the cluster filters and ranks documents as expected, prior to upgrade.
-        HttpResponse<String> queryResponse = container.send(container.request("/search/", queryForNewPop()));
+        HttpResponse<String> queryResponse = container().send(container().request("/search/", queryForNewPop()));
         assertEquals(200, queryResponse.statusCode());
         JsonNode root = mapper.readTree(queryResponse.body()).get("root");
         assertEquals(2, root.get("fields").get("totalCount").asLong());
@@ -90,10 +84,10 @@ class StagingCommons {
         assertEquals(2016, hardwired.get("year").asLong());
     }
 
-    private static void warmup(Endpoint container) throws IOException {
+    private static void warmup() throws IOException {
         // Verify that the cluster has the fed documents, and that they are searchable.
         for (int i = 0; i <= 5; i++) {
-            HttpResponse<String> warmUpResponse = container.send(container.request("/search/", warmupQueryForAllDocuments()));
+            HttpResponse<String> warmUpResponse = container().send(container().request("/search/", warmupQueryForAllDocuments()));
             assertEquals(200, warmUpResponse.statusCode());
             assertEquals(3, mapper.readTree(warmUpResponse.body())
                     .get("root").get("fields").get("totalCount").asLong());
