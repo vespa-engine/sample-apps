@@ -1,11 +1,6 @@
 // Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
-import ai.vespa.feed.client.DocumentId;
-import ai.vespa.feed.client.FeedClient;
-import ai.vespa.feed.client.FeedClientBuilder;
-import ai.vespa.feed.client.OperationParameters;
-import ai.vespa.feed.client.Result;
 import ai.vespa.hosted.cd.Endpoint;
 import ai.vespa.hosted.cd.SystemTest;
 import ai.vespa.hosted.cd.TestRuntime;
@@ -16,8 +11,8 @@ import org.junit.jupiter.api.TestReporter;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
+import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,10 +28,8 @@ class FeedAndSearchSystemTest {
     }
 
     @Test
-    void feedAndSearch() throws IOException, ExecutionException, InterruptedException {
-        FeedClient feedClient = FeedClientBuilder.create(endpoint.uri()).build();
-
-        DocumentId documentId = DocumentId.of("mynamespace", "music", "got-to-be-there");
+    void feedAndSearch() throws IOException {
+        String documentPath = "/document/v1/mynamespace/music/docid/got-to-be-there";
         String document = "{\n" +
                           "    \"fields\": {\n" +
                           "         \"album\": \"Got to be there\"\n" +
@@ -45,8 +38,8 @@ class FeedAndSearchSystemTest {
 
         String yql = "SELECT * FROM SOURCES * WHERE album CONTAINS \"Got to be there\";";
 
-        Result deleteResult = feedClient.remove(documentId, OperationParameters.empty()).get();
-        assertEquals(Result.Type.success, deleteResult.type());
+        HttpResponse<String> deleteResult = endpoint.send(endpoint.request(documentPath).DELETE());
+        assertEquals(200, deleteResult.statusCode());
 
         // the first query needs a higher timeout than the default 500ms, to warm up the code
         HttpResponse<String> emptyResult = endpoint.send(endpoint.request("/search/",
@@ -56,8 +49,9 @@ class FeedAndSearchSystemTest {
         assertEquals(0, new ObjectMapper().readTree(emptyResult.body())
                 .get("root").get("fields").get("totalCount").asLong());
 
-        Result putResult = feedClient.put(documentId, document, OperationParameters.empty().createIfNonExistent(true)).get();
-        assertEquals(Result.Type.success, putResult.type());
+        HttpResponse<String> feedResult = endpoint.send(endpoint.request(documentPath)
+                                               .POST(ofString(document)));
+        assertEquals(200, feedResult.statusCode());
 
         HttpResponse<String> searchResult = endpoint.send(endpoint.request("/search/",
                                                                            Map.of("yql", yql)));
