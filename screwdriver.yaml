@@ -53,6 +53,7 @@ jobs:
     steps:
       - install-deps: |
           source /etc/profile.d/jdk-env.sh
+          export PATH="$JAVA_HOME/bin:$PATH"
           yum install -y python36-pip
           python3 -m pip install -qqq --upgrade pip
           python3 -m pip install -qqq -r test/requirements.txt --user
