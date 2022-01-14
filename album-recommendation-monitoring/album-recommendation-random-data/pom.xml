@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
-            <artifactId>vespa-http-client</artifactId>
+            <artifactId>vespa-feed-client</artifactId>
             <version>${vespa_version}</version>
         </dependency>
     </dependencies>
