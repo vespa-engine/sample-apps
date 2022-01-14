@@ -19,6 +19,7 @@ import json.TopLevelPut;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@SuppressWarnings("deprecation")
 public class VespaDataFeeder extends Thread {
 
     private final FeedClient feedClient;
@@ -39,7 +40,7 @@ public class VespaDataFeeder extends Thread {
                         .setDataFormat(FeedParams.DataFormat.JSON_UTF8)
                         .build())
                 .build();
-        this.feedClient = FeedClientFactory.create(sessionParams, new SimpleLoggerResultCallback(this.pending, 100));
+        this.feedClient = FeedClientFactory.create(sessionParams, new SimpleLoggerResultCallback(this.pending, 100, true));
 
         this.queue = queue;
     }
