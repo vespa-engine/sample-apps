@@ -22,7 +22,7 @@ import com.yahoo.tensor.Tensor;
  */
 public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
 
-    private static String tensorSummary = "attributeprefetch";
+    private static final String tensorSummary = "attributeprefetch";
 
     @Override
     protected void addRelatedItem(Integer relatedArticleId, boolean includeAbstract, Execution execution, Query query) {
@@ -55,7 +55,7 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
     }
 
     /**
-     * Adds aterm to the given query to find related articles
+     * Adds a term to the given query to find related articles
      *
      * @param article         the article to fetch related articles for
      * @param includeAbstract whether the vector embedding from the abstract should be used
@@ -110,11 +110,8 @@ public class RelatedArticlesByNNSearcher extends RelatedArticlesSearcher {
             for (Item child : ((CompositeItem) item).items())
                 if (hasTextTerms(child))
                     return true;
-
         }
-        if ((item instanceof TermItem) && !item.isFilter())
-            return true;
-        return false;
+        return (item instanceof TermItem) && !item.isFilter();
     }
 
     private static class Article {

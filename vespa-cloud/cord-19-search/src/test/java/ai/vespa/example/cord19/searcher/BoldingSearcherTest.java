@@ -15,7 +15,7 @@ public class BoldingSearcherTest {
         Query input = new Query("?query=basic+reproduction+numbers+For+covid-19+IN+%22south+korea%22&type=any");
         Result result = execute(input, new BoldingSearcher());
         assertEquals("OR basic reproduction numbers |For (AND covid 19) |IN \"south korea\"",
-                result.getQuery().getModel().getQueryTree().toString());
+                     result.getQuery().getModel().getQueryTree().toString());
 
     }
     @Test
@@ -23,7 +23,7 @@ public class BoldingSearcherTest {
         Query input = new Query("?query=temperature+%22impact+on%22+viral+transmission&type=any");
         Result result = execute(input, new BoldingSearcher());
         assertEquals("OR temperature \"impact on\" viral transmission",
-                result.getQuery().getModel().getQueryTree().toString());
+                     result.getQuery().getModel().getQueryTree().toString());
 
     }
 
@@ -31,4 +31,5 @@ public class BoldingSearcherTest {
         Execution execution = new Execution(new Chain<>(searcher), Execution.Context.createContextStub());
         return execution.search(query);
     }
+
 }

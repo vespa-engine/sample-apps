@@ -1,5 +1,4 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
 package ai.vespa.example.docproc;
 
 import ai.vespa.example.tokenizer.BertTokenizer;
@@ -16,13 +15,11 @@ import com.yahoo.tensor.IndexedTensor;
 import com.yahoo.tensor.TensorType;
 import java.util.List;
 
-
-
 public class BERTProcessor extends DocumentProcessor {
 
-    BertTokenizer tokenizer;
     public static String dimensionName = "d0";
     public static TensorType titleTensorType = new TensorType.Builder(TensorType.Value.FLOAT).indexed(dimensionName, 128).build();
+    private final BertTokenizer tokenizer;
 
     @Inject
     public BERTProcessor(BertTokenizer tokenizer) {
@@ -52,4 +49,5 @@ public class BERTProcessor extends DocumentProcessor {
             token_ids_float_rep[i] = token_ids.get(i).floatValue();
         return new TensorFieldValue(IndexedTensor.Builder.of(type, token_ids_float_rep).build());
     }
+
 }
