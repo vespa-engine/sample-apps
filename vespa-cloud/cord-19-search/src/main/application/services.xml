@@ -64,4 +64,5 @@
       <resources memory="8Gb" vcpu="4" disk="100Gb" storage-type="local" />
     </nodes>
   </content>
+
 </services>

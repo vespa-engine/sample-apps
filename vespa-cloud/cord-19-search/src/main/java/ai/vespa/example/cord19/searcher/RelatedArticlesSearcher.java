@@ -22,9 +22,9 @@ abstract class RelatedArticlesSearcher extends Searcher {
 
     private static final String relatedToField = "related_to";
 
-    private static CompoundName inputId = new CompoundName("id");
-    private static CompoundName useAbstractEmbedding = new CompoundName("use-abstract");
-    private static CompoundName removeArticleFromResult =  new CompoundName("remove-id");
+    private static final CompoundName inputId = new CompoundName("id");
+    private static final CompoundName useAbstractEmbedding = new CompoundName("use-abstract");
+    private static final CompoundName removeArticleFromResult =  new CompoundName("remove-id");
 
     @Override
     public Result search(Query query, Execution execution) {
