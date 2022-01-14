@@ -57,7 +57,7 @@ jobs:
           python3 -m pip install -qqq --upgrade pip
           python3 -m pip install -qqq -r test/requirements.txt --user
           yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-          yum install -y zstd 
+          yum install -y zstd unzip
           yum install -y docker-ce docker-ce-cli containerd.io openssl yum-utils
           yum -y install --setopt=skip_missing_names_on_install=False \
             rh-maven35 libxml2-devel rh-ruby27 rh-ruby27-rubygems-devel rh-ruby27-ruby-devel \
