@@ -11,6 +11,8 @@
         Modules must be included here to have their 'vespa_version' property updated automatically.</description>
 
     <modules>
+        <module>album-recommendation-java</module>
+        <module>album-recommendation-monitoring/album-recommendation-random-data</module>
         <module>boolean-search</module>
         <module>dense-passage-retrieval-with-ann</module>
         <module>generic-request-processing</module>
@@ -23,13 +25,15 @@
         <module>multiple-bundles</module>
         <module>news/app-6-recommendation-with-searchers</module>
         <module>news/app-7-parent-child</module>
-        <module>transformers</module>
+        <module>text-image-search</module>
         <module>text-search</module>
+        <module>transformers</module>
         <module>use-case-shopping</module>
         <module>vespa-chinese-linguistics</module>
         <module>vespa-cloud/album-recommendation-java</module>
-        <module>vespa-cloud/document-processing</module>
+        <module>vespa-cloud/album-recommendation-prod-tests</module>
         <module>vespa-cloud/cord-19-search</module>
+        <module>vespa-cloud/document-processing</module>
         <module>vespa-cloud/joins</module>
         <module>vespa-cloud/vespa-documentation-search</module>
     </modules>

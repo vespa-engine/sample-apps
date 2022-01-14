@@ -10,6 +10,10 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <properties>
+        <vespa_version>7.527.20</vespa_version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.immutables</groupId>
@@ -27,7 +31,7 @@
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
             <artifactId>vespa-http-client</artifactId>
-            <version>7.233.7</version>
+            <version>${vespa_version}</version>
         </dependency>
     </dependencies>
 
