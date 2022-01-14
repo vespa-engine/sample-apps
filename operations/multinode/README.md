@@ -41,7 +41,7 @@ $ docker network create --driver bridge vespa_net
 The nodes communicate over a Docker network, this guide stops docker containers to simulate node stops.
 Ports are mapped out of Docker containers for ease of use / inspect interfaces:
 
-<img src="img/multinode-testing.svg" width="330" height="auto" />
+<img src="img/multinode-testing.svg" width="330" height="auto" alt="3-node cluster"/>
 
 Use Docker for Mac dashboard to see output / status:
 ![Docker dashboard](img/docker-dashboard-1.png)
@@ -186,7 +186,7 @@ To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper
 
 By default, clustercontrollers use a ZooKeeper cluster running on the config servers:
 
-<img src="img/multinode-zk.svg" width="295" height="auto" />
+<img src="img/multinode-zk.svg" width="295" height="auto" alt="Config Servers with a ZooKeeper cluster" />
 
 With config server on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
 the clustercontrollers will not update the cluster state.
@@ -203,7 +203,7 @@ at org.apache.zookeeper.ClientCnxn$SendThread.close(ClientCnxn.java:1465)
 at org.apache.zookeeper.ClientCnxn.disconnect(ClientCnxn.java:1508)
 at org.apache.zookeeper.ClientCnxn.close(ClientCnxn.java:1537)
 at org.apache.zookeeper.ZooKeeper.close(ZooKeeper.java:1614)
-at com.yahoo.vespa.clustercontroller.core.database.ZooKeeperDatabase.<init>(ZooKeeperDatabase.java:120)
+at com.yahoo.vespa.clustercontroller.core.database.ZooKeeperDatabase.&lt;init&gt;(ZooKeeperDatabase.java:120)
 at com.yahoo.vespa.clustercontroller.core.database.ZooKeeperDatabaseFactory.create(ZooKeeperDatabaseFactory.java:8)
 at com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler.connect(DatabaseHandler.java:197)
 at com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler.doNextZooKeeperTask(DatabaseHandler.java:252)
@@ -216,6 +216,9 @@ at java.base/java.lang.Thread.run(Thread.java:829)
 $ docker start node0 node1
 </pre>
 Observe 0 is master again.
+
+Kubernetes users sometimes have issues with the Zookeeper cluster at startup,
+see [troubleshooting](../README.md#troubleshooting).
 
 
 

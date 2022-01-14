@@ -31,6 +31,7 @@ in this guide:
 
 See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
+Also see [troubleshooting](../README.md#troubleshooting).
 
 This guide is tested with Docker using 20G Memory:
 
@@ -250,16 +251,6 @@ Notes:
 $ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7
 $ docker network rm vespa_net
 </pre>
-
-
-
-## Troubleshooting
-This section is WIP, ToDo.
-
-Refer to the [FAQ](https://docs.vespa.ai/en/faq.html).
-
-[Admin procedures](https://docs.vespa.ai/en/operations/admin-procedures.html)
-is a useful resource.
 
 
 
