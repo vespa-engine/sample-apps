@@ -6,7 +6,7 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ai.vespa.cloud.example</groupId>
-    <artifactId>albums</artifactId>  <!-- Note: When changing this, also change bundle names in services.xml -->
+    <artifactId>albums-prod-tests</artifactId>  <!-- Note: When changing this, also change bundle names in services.xml -->
     <version>1.0.0</version>
 
     <!--
