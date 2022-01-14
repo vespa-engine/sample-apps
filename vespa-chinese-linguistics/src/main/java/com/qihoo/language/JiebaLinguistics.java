@@ -9,7 +9,6 @@ package com.qihoo.language;
 
 import com.google.inject.Inject;
 import com.qihoo.language.config.DictsLocConfig;
-import com.qihoo.language.JiebaTokenizer;
 import com.yahoo.language.Linguistics;
 import com.yahoo.language.detect.Detector;
 import com.yahoo.language.process.CharacterClasses;
@@ -21,9 +20,9 @@ import com.yahoo.language.process.Stemmer;
 import com.yahoo.language.process.StemmerImpl;
 import com.yahoo.language.process.Tokenizer;
 import com.yahoo.language.process.Transformer;
+import com.yahoo.language.simple.SimpleDetector;
 import com.yahoo.language.simple.SimpleNormalizer;
 import com.yahoo.language.simple.SimpleTransformer;
-import com.yahoo.language.simple.SimpleDetector;
 
 /**
  * Factory of jieba linguistic processor implementations.
@@ -73,6 +72,8 @@ public class JiebaLinguistics implements Linguistics {
 
     @Override
     public CharacterClasses getCharacterClasses() { return characterClasses; }
+
+    @Override public boolean equals(Linguistics other) { return other instanceof JiebaLinguistics; }
 
 }
 
