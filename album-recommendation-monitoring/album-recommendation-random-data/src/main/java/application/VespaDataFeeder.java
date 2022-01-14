@@ -1,25 +1,24 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package application;
 
+import ai.vespa.feed.client.DocumentId;
+import ai.vespa.feed.client.FeedClient;
+import ai.vespa.feed.client.FeedClientBuilder;
+import ai.vespa.feed.client.FeedException;
+import ai.vespa.feed.client.OperationParameters;
+import ai.vespa.feed.client.Result;
 import com.google.gson.Gson;
-import com.yahoo.vespa.http.client.FeedClient;
-import com.yahoo.vespa.http.client.FeedClientFactory;
-import com.yahoo.vespa.http.client.SimpleLoggerResultCallback;
-import com.yahoo.vespa.http.client.config.Cluster;
-import com.yahoo.vespa.http.client.config.ConnectionParams;
-import com.yahoo.vespa.http.client.config.Endpoint;
-import com.yahoo.vespa.http.client.config.FeedParams;
-import com.yahoo.vespa.http.client.config.SessionParams;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import json.Album;
 import json.ImmutableTopLevelPut;
 import json.TopLevelPut;
 
+import java.net.URI;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@SuppressWarnings("deprecation")
 public class VespaDataFeeder extends Thread {
 
     private final FeedClient feedClient;
@@ -27,21 +26,11 @@ public class VespaDataFeeder extends Thread {
     private final BlockingQueue<Album> queue;
     private static final String ID_FORMAT = "id:mynamespace:music::%d";
     private final AtomicInteger pending = new AtomicInteger(0);
-    private boolean shouldRun = true;
+    private volatile boolean shouldRun = true;
     private final Logger logger = Logger.getLogger(VespaDataFeeder.class.getName());
 
-
     VespaDataFeeder(BlockingQueue<Album> queue) {
-
-        SessionParams sessionParams = new SessionParams.Builder()
-                .addCluster(new Cluster.Builder().addEndpoint(Endpoint.create("vespa", 8080, false)).build())
-                .setConnectionParams(new ConnectionParams.Builder().build())
-                .setFeedParams(new FeedParams.Builder()
-                        .setDataFormat(FeedParams.DataFormat.JSON_UTF8)
-                        .build())
-                .build();
-        this.feedClient = FeedClientFactory.create(sessionParams, new SimpleLoggerResultCallback(this.pending, 100, true));
-
+        this.feedClient = FeedClientBuilder.create(URI.create("http://vespa:8080")).build();
         this.queue = queue;
     }
 
@@ -66,7 +55,20 @@ public class VespaDataFeeder extends Thread {
                     .fields(album)
                     .put(id)
                     .build();
-            feedClient.stream(id, gson.toJson(newAlbum));
+            pending.incrementAndGet();
+            CompletableFuture<Result> promise = feedClient.put(DocumentId.of(id), gson.toJson(newAlbum), OperationParameters.empty());
+            promise.whenComplete(this::onOperationComplete);
+        }
+    }
+
+    private void onOperationComplete(Result result, Throwable error) {
+        pending.decrementAndGet();
+        if (error != null) {
+            FeedException feedException = (FeedException) error;
+            String docId = feedException.documentId().map(DocumentId::toString).orElse("<unknown-doc-id>");
+            logger.log(Level.SEVERE, "Failed to feed " + docId, feedException);
+        } else {
+            logger.log(Level.FINE, "Successfully fed " + result.documentId());
         }
     }
 }

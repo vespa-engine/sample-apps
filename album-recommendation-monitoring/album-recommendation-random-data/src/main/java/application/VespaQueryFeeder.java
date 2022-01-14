@@ -3,7 +3,6 @@ package application;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import json.ImmutableQuery;
-import org.apache.http.NoHttpResponseException;
 
 public class VespaQueryFeeder extends Thread {
 
@@ -20,7 +18,7 @@ public class VespaQueryFeeder extends Thread {
     Logger logger = Logger.getLogger(VespaQueryFeeder.class.getName());
     HttpClient client;
     HttpRequest request;
-    private boolean shouldRun = true;
+    private volatile boolean shouldRun = true;
 
     VespaQueryFeeder(AtomicInteger pendingQueryRequests) {
         this.pendingQueryRequests = pendingQueryRequests;
