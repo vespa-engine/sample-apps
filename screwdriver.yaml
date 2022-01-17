@@ -25,7 +25,7 @@ jobs:
             --directory-index-file README.html \
             --url-ignore 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/,src/main/application/search/query-profiles' \
             --file-ignore '/tensor-playground/src/main/resources/playground/,/src/main/resources/site/index.html/,/dense-passage-retrieval-with-ann/src/main/resources/frontend/index.html/' \
-            --url-swap 'Code-of-Conduct.md:Code-of-Conduct.html,document-ranking.md:document-ranking.html,passage-ranking.md:passage-ranking.html,colbert-performance-scaling.md:colbert-performance-scaling.html,experiment-yourself.md:experiment-yourself.html,feeding.md:feeding.html' \
+            --url-swap 'README.md:README.html,Code-of-Conduct.md:Code-of-Conduct.html,document-ranking.md:document-ranking.html,passage-ranking.md:passage-ranking.html,colbert-performance-scaling.md:colbert-performance-scaling.html,experiment-yourself.md:experiment-yourself.html,feeding.md:feeding.html' \
             _site
 
   build-apps:
