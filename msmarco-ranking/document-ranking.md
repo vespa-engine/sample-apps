@@ -223,19 +223,20 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 ## Feeding Sample Data 
 
-Feed the sample documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
+Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.485.19/vespa-http-client-7.485.19-jar-with-dependencies.jar
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
 </pre>
 
 <pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
+$ ./vespa-feed-client-cli/vespa-feed-client \
     --file sample-feed/sample_regular_fields.jsonl --endpoint http://localhost:8080
 </pre>
 
 <pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
+$ ./vespa-feed-client-cli/vespa-feed-client \
     --file sample-feed/sample_doc_t5_query.jsonl --endpoint http://localhost:8080
 </pre>
 
@@ -298,13 +299,11 @@ Then run the script with --output_docs_path *doc_t5_query_updates.jsonl*.
 Place the output file *doc_t5_query_updates.json* in the directory of the sample app. ($SAMPLE_APP)
 
 <pre>
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-    --file all-feed.jsonl --endpoint http://localhost:8080
+$ vespa-feed-client --file all-feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 <pre>
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-    --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
+$ vespa-feed-client --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
 </pre>
 
 ## Query Evaluation

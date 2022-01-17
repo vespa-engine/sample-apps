@@ -401,11 +401,12 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 ## Feeding Sample Data 
 
-Feed the sample documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
+Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.466.3/vespa-http-client-7.466.3-jar-with-dependencies.jar
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
 </pre>
 
 Download the sample data:
@@ -419,8 +420,8 @@ Feed the data :
 
 <pre data-test="exec">
 $ zstdcat sample-feed/colmini-passage-feed-sample.jsonl.zst | \
-    java -jar vespa-http-client-jar-with-dependencies.jar \
-     --endpoint http://localhost:8080
+    ./vespa-feed-client-cli/vespa-feed-client \
+     --stdin --endpoint http://localhost:8080
 </pre>
 
 Now all the data is indexed and one can play around with the search interface. Note, only searching 1K demo passages.
@@ -505,8 +506,8 @@ is large (170GB).
 
 <pre>
 $ zstdcat sample-feed/colmini-passage-feed-*.zst | \
-    java -jar vespa-http-client-jar-with-dependencies.jar \
-    --endpoint http://localhost:8080
+    ./vespa-feed-client-cli/vespa-feed-client \
+     --stdin --endpoint http://localhost:8080
 </pre>
 
 Indexing everything on a single node using real time indexing takes a few hours, depending on HW configuration (1500-2000 puts/s). 

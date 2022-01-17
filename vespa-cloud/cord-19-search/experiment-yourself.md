@@ -99,8 +99,8 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 <li>
     <p><strong>Feed documents:</strong></p>
 <pre>
-$ docker exec cord19 bash -c 'java -jar /opt/vespa/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-  --file /cord-19-search/feed-file.json --endpoint http://localhost:8080 --verbose --useCompression'
+$ docker exec cord19 bash -c '/opt/vespa/bin/vespa-feed-client \
+  --file /cord-19-search/feed-file.json --endpoint http://localhost:8080 --verbose'
 </pre>
 </li>
 

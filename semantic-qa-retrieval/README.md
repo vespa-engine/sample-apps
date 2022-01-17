@@ -121,10 +121,9 @@ The sample question set generates 351 sentence documents and 55 context document
 
 **Feed Vespa json** 
 
-We feed the documents using the [Vespa http feeder client](https://docs.vespa.ai/en/vespa-http-client.html):
+We feed the documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 <pre>
-$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-  --file squad_vespa_feed.json --endpoint http://localhost:8080
+$ $VESPA_HOME/bin/vespa-feed-client --file squad_vespa_feed.json --endpoint http://localhost:8080
 </pre>
 
 
@@ -166,8 +165,7 @@ To reproduce the paper one need to convert the entire dataset and do evaluation 
 
 <pre>
 $ ./qa/bin/convert-to-vespa-squad.py SQuAD_train_v1.1.json 2> /dev/null
-$ java -jar $VESPA_HOME/lib/jars/vespa-http-client-jar-with-dependencies.jar \
-  --file squad_vespa_feed.json --endpoint http://localhost:8080
+$ $VESPA_HOME/bin/vespa-feed-client --file squad_vespa_feed.json --endpoint http://localhost:8080
 $ cat squad_queries.txt |./qa/bin/evaluation.py 2> /dev/null
 </pre>
 

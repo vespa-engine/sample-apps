@@ -59,19 +59,20 @@ $ gunzip -c reviews_sports_24k_sample.json.gz | ./convert_reviews.py > feed_revi
 
 Get the feed client:
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
 </pre>
 
 Feed products:
 <pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
+$ ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file feed_items.json --endpoint http://localhost:8080
 </pre>
 
 Feed reviews:
 <pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
+$ ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file feed_reviews.json --endpoint http://localhost:8080
 </pre>
 
