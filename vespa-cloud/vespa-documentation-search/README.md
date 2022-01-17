@@ -136,30 +136,21 @@ Use the script in [search-suggestions](../../incremental-search/search-suggestio
 
     $ python3 ../../incremental-search/search-suggestions/count_terms.py \
       ../../../documentation/open_index.json feed_terms.json 2 ../../incremental-search/search-suggestions/top100en.txt
-    $ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-      https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
-    $ java -jar vespa-http-client-jar-with-dependencies.jar \
-      --file feed_terms.json \
-      --useTls --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
-      --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
-
-<!--
     $ curl -L -o vespa-feed-client-cli.zip \
-      https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.444.18/vespa-feed-client-cli-7.444.18-zip.zip && \
-      unzip vespa-feed-client-cli.zip
-    $ vespa-feed-client-cli/vespa-feed-client \
+      https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+    $ unzip vespa-feed-client-cli.zip
+    $ ./vespa-feed-client-cli/vespa-feed-client \
       --file feed_terms.json \
       --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
       --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
--->
 
 The above feeds single terms and phrases of 2, with stop-word removal from top100en.txt.
 Suggestions with 3 terms creates a lot of noise -
 work around by adding to this file and feed it:
 
-    $ java -jar vespa-http-client-jar-with-dependencies.jar \
+    $ ./vespa-feed-client-cli/vespa-feed-client \
       --file extra_suggestions.json \
-      --useTls --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
+      --certificate ../../../documentation/data-plane-public-key.pem --privateKey ../../../documentation/data-plane-private-key.pem \
       --endpoint https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
 
 ## Status

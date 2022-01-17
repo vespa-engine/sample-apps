@@ -100,9 +100,10 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 **Feed the example documents**
 
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
-$ java -jar vespa-http-client-jar-with-dependencies.jar --file example_feed.json --endpoint http://localhost:8080
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
+$ ./vespa-feed-client-cli/vespa-feed-client --file example_feed.json --endpoint http://localhost:8080
 </pre>
 
 
@@ -123,7 +124,7 @@ $ python3 count_terms.py open_index.json feed_terms.json 2 top100en.txt
 **Feeding bootstrapped search terms**
 <!-- It is hard to assert on no failures in the feed, assert later in term lookup query -->
 <pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_terms.json --endpoint http://localhost:8080
+$ ./vespa-feed-client-cli/vespa-feed-client --verbose --file feed_terms.json --endpoint http://localhost:8080
 </pre>
 
 
@@ -147,7 +148,7 @@ $ unzstd -c -r logs/ | grep '"uri":"/search/' | grep 'jsoncallback' \
 **Feed terms from query log**
 
 <pre>
-$ java -jar vespa-http-client-jar-with-dependencies.jar --verbose --file feed_queries.json --endpoint http://localhost:8080
+$ vespa-feed-client --verbose --file feed_queries.json --endpoint http://localhost:8080
 </pre>
 
 

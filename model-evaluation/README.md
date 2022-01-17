@@ -99,13 +99,13 @@ the model.
 
 **Test the document processor**
 
-Feed in a few documents by first downloading the `vespa-http-client` Java client:
+Feed in a few documents by first downloading the `vespa-feed-client` Java client:
 
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-  --verbose --file feed.json --endpoint http://localhost:8080
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
+$ ./vespa-feed-client-cli/vespa-feed-client --verbose --file feed.json --endpoint http://localhost:8080
 </pre>
 
 The document processor uses the `transformer` model to generate embeddings that are stored in the content cluster.

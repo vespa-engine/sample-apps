@@ -96,17 +96,16 @@ this could easily take a couple of minutes on a laptop.
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
-Feed sample data using the [Vespa http feeder
-client](https://docs.vespa.ai/en/vespa-http-client.html):
+Feed sample data using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-  https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.483.19/vespa-http-client-7.483.19-jar-with-dependencies.jar
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
 </pre>
 
 <pre data-test="exec">
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-  --file sample-feed.jsonl --endpoint http://localhost:8080
+$ ./vespa-feed-client-cli/vespa-feed-client --file sample-feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 Run a question: 
@@ -185,8 +184,7 @@ The final feed file is 273G uncompressed. Adding compression like zstd/zip is hi
 same tool as with the toy sample data:
 
 <pre>
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
-    --file feed.jsonl --endpoint http://your-vespa-instance-hostname:8080
+$ ./vespa-feed-client-cli/vespa-feed-client --file feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 ## Experiments

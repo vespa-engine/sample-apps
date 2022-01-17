@@ -55,9 +55,10 @@ $ python3 ./parts.py -f purchase.csv > purchase.json
 **Feed data into application:**
 
 <pre data-test="exec">
-$ curl -L -o vespa-http-client-jar-with-dependencies.jar \
-    https://search.maven.org/classic/remotecontent?filepath=com/yahoo/vespa/vespa-http-client/7.391.28/vespa-http-client-7.391.28-jar-with-dependencies.jar
-$ java -jar vespa-http-client-jar-with-dependencies.jar \
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
+$ ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file purchase.json --endpoint http://localhost:8080
 </pre>
 

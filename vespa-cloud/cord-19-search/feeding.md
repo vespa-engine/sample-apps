@@ -43,10 +43,9 @@ python3 scripts/convert-to-feed.py washed-with-citations.json > feed-file.json
 Note that the input to the last process script needs to be changed if the optional add/embedding routine is used.
 
 ## Feed the data
-Use [Vespa http feeding client](https://docs.vespa.ai/en/vespa-http-client.html) to feed the data to your Vespa instance
+Use [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html) to feed the data to your Vespa instance
 ```
-java -jar vespa-http-client-jar-with-dependencies.jar --file feed-file.json \
---endpoint <endpoint-url>  --verbose --useCompression
+vespa-feed-client --file feed-file.json --endpoint <endpoint-url>  --verbose
 ```
 
 
