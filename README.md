@@ -104,7 +104,7 @@ for support follow-up - i.e. run this application first.
 ### [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke)
 This sample application demonstrates deploying a simple Vespa application on Kubernetes.  
 
-### [Secure Vespa with mTLS](secure-vespa-with-mtls)
+### [Secure Vespa with mTLS](operations/secure-vespa-with-mtls)
 This sample demonstrates configuring Vespa with mTLS.
 
 ### [Vespa metrics and monitoring](album-recommendation-monitoring)
