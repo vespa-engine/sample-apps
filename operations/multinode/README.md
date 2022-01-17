@@ -218,7 +218,7 @@ $ docker start node0 node1
 Observe 0 is master again.
 
 Kubernetes users sometimes have issues with the Zookeeper cluster at startup,
-see [troubleshooting](../README.md).
+see [troubleshooting](/operations).
 
 
 
