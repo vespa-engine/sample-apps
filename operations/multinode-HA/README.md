@@ -9,7 +9,11 @@ This sample application is configured using clusters of nodes for HA.
 This application structure will scale to applications of 100s of nodes.
 Also see the smaller and simpler [multinode](../multinode) sample application.
 
-There are multiple ways of deploying such applications, on multiple platforms.
+This is a guide for functional testing, deployed on one host for simplicity.
+Refer to the [mTLS guide](/operations/secure-vespa-with-mtls) for a multinode configuration,
+set up on multiple hosts using Docker Swarm.
+
+There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
 and describes the important elements and integration points.
 Use this app as a reference for how to distribute nodes and how to validate the instance.

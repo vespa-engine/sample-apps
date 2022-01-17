@@ -10,6 +10,10 @@ Note that this is not the setup one normally will use,
 config servers are most often run on separate nodes,
 this guide will help understand why, and alternatives.
 
+This is a guide for functional testing, deployed on one host for simplicity.
+Refer to the [mTLS guide](/operations/secure-vespa-with-mtls) for a multinode configuration,
+set up on multiple hosts using Docker Swarm.
+
 The guide goes through the use of [Apache ZooKeeper](https://zookeeper.apache.org/)
 by the Vespa clustercontrollers. Summary:
 
