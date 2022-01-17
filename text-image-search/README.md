@@ -11,11 +11,9 @@ seen during training, allowing it to process and index any image. In this
 use case, we use the [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names)
 dataset, which was not explicitly used during training of the CLIP model.
 
-This sample application can be used in two different ways. The first is by using a
-[Python-based search app](https://github.com/vespa-engine/sample-apps/tree/master/text-image-search/src/python/README.md),
-which is suitable for exploration and analysis. The other is a
-[stand-alone Vespa application](https://github.com/vespa-engine/sample-apps/blob/master/text-image-search/README.md),
-which is more suitable for production.
+This sample application can be used in two different ways.
+The first is by using a [Python-based search app](src/python/README.md), which is suitable for exploration and analysis.
+The other is a stand-alone Vespa application, which is more suitable for production (below).
 
 The Python sample app includes a streamlit user interface:
 
