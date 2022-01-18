@@ -23,11 +23,11 @@ There is also a version of this sample application ready for [Vespa Cloud](vespa
 
 
 
-## Full-fledge State of the Art Search, Ranking and Question Answering applications
+## Full-fledged State-of-the-Art Search, Ranking and Question Answering applications
 These are great starting points for bringing the latest advancements in Search and Ranking to your domain!
 
-### [State of the art Ranking](https://github.com/vespa-engine/sample-apps/tree/master/msmarco-ranking)
-This sample application demonstrates state of the art text ranking
+### [State-of-the-art-Ranking](https://github.com/vespa-engine/sample-apps/tree/master/msmarco-ranking)
+This sample application demonstrates state-of-the-art text ranking
 using Transformer (BERT) models and GBDT models for text ranking.
 It uses the MS Marco passage and document ranking datasets.
 
@@ -45,7 +45,7 @@ It uses the  [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/link
 It demonstrates building next generation E-commerce Search using Vespa.
 
 ### [State of the art Question Answering](dense-passage-retrieval-with-ann)
-This sample application demonstrates end to end question answering using Faceboook's DPR models
+This sample application demonstrates end to end question answering using Facebook's DPR models
 (Dense passage Retriever for Question Answering).
 It is using Vespa's approximate nearest neighbor search to efficiently retrieve text passages
 from a Wikipedia based collection of 21M passages.
@@ -93,22 +93,10 @@ or "This product should only be visible in search during campaign hours".
 
 
 
-## Self-hosted Deployments
-
-### [Multinode](operations/multinode)
-Set up a three-node application and experiment with node start/stop.
-Use status and metrics pages to inspect the system.
-Whenever deploying and facing issues, please refer to this application for how to get useful debugging information
-for support follow-up - i.e. run this application first.
-
-### [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke)
-This sample application demonstrates deploying a simple Vespa application on Kubernetes.  
-
-### [Secure Vespa with mTLS](operations/secure-vespa-with-mtls)
-This sample demonstrates configuring Vespa with mTLS.
-
-### [Vespa metrics and monitoring](album-recommendation-monitoring)
-This sample app demonstrates how to integrate Vespa with **Prometheus and Grafana**.
+## Self-hosted Deployments - operations
+See [operations](/operations) for sample applications for multinode clusters,
+deployed in various infrastructure like Kubernetes.
+Also find examples for security and monitoring .
 
 
 
