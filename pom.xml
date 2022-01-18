@@ -12,7 +12,7 @@
 
     <modules>
         <module>album-recommendation-java</module>
-        <module>album-recommendation-monitoring/album-recommendation-random-data</module>
+        <module>operations/album-recommendation-monitoring/album-recommendation-random-data</module>
         <module>boolean-search</module>
         <module>dense-passage-retrieval-with-ann</module>
         <module>generic-request-processing</module>
