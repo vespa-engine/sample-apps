@@ -60,7 +60,8 @@ def count_terms(doc, term_length=1, common_words=set()):
                 map(lambda word: word in common_words, doc[i : i + win_len])
             ):
                 term = " ".join(doc[i : i + win_len])
-                counts[term] = counts.get(term, 0) + 1
+                if  len(term) > 0 and not term.isspace():
+                    counts[term] = counts.get(term, 0) + 1
     return counts
 
 
