@@ -9,8 +9,10 @@ environments, services and platforms.
 
 Vespa users run on a wide range of stacks - we welcome contributions once you got your app running!
 
+Use the AWS multinode quick-start guides in [getting started](https://docs.vespa.ai/en/getting-started.html).
+
 See [vespa.ai/support](https://vespa.ai/support) for how to get help / FAQ / Stack Overflow.
-[Admin procedures](https://docs.vespa.ai/en/operations/admin-procedures.html) can be a good read, too
+[Admin procedures](https://docs.vespa.ai/en/operations/admin-procedures.html) can be a good read, too.
 
 
 
@@ -24,7 +26,7 @@ Whenever deploying and facing issues, please refer to this application for how t
 for support follow-up - i.e. run this application first.
 
 
-### [Multinode](multinode-HA)
+### [Multinode High Availability](multinode-HA)
 Use this application as a starting point for high-availability multi-node applications.
 The example deploys 8 nodes using one host, and is a good example of a full-fledged multinode application -
 use this as a template.
