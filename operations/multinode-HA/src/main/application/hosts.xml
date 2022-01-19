@@ -28,4 +28,11 @@
   <host name="node7.vespa_net">
     <alias>node7</alias>
   </host>
+
+  <host name="node8.vespa_net">
+    <alias>node8</alias>
+  </host>
+  <host name="node9.vespa_net">
+    <alias>node9</alias>
+  </host>
 </hosts>

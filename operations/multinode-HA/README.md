@@ -16,10 +16,9 @@ set up on multiple hosts using Docker Swarm.
 There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
 and describes the important elements and integration points.
-Use this app as a reference for how to distribute nodes and how to validate the instance.
-High-level Vespa architecture:
+Use this app as a reference for how to distribute nodes and how to validate the instance:
 
-![Vespa overview](https://docs.vespa.ai/assets/img/vespa-overview.svg)
+![Vespa-HA topology](img/vespa-HA.svg)
 
 See [services.xml](src/main/application/services.xml) for the configuration -
 in this guide:
@@ -37,7 +36,7 @@ See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
 Also see [troubleshooting](/operations/README.md#troubleshooting).
 
-This guide is tested with Docker using 20G Memory:
+This guide is tested with Docker using 16G Memory:
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
@@ -46,10 +45,14 @@ $ cd sample-apps/operations/multinode-HA
 $ docker network create --driver bridge vespa_net
 </pre>
 
-The goal of this sample application is to create a Docker network with 8 nodes,
+The goal of this sample application is to create a Docker network with 10 nodes,
 exporting ports to be able to observe and validate that the application is fully operational:
 
 ![Application overview](img/multinode-HA.svg)
+
+Note that this application uses two container clusters - one for feeding and one for queries.
+This allows independent scaling, as reads and writes often have different load characteristics,
+e.g. batch writes with high throughput vs. user-driven queries.
 
 
 
@@ -60,17 +63,17 @@ as the other Vespa nodes depend on config servers for startup:
 $ docker run --detach --name node0 --hostname node0.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 19092:19092 \
+    --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 20092:19092 \
     vespaengine/vespa
 $ docker run --detach --name node1 --hostname node1.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 19093:19092 \
+    --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 20093:19092 \
     vespaengine/vespa
 $ docker run --detach --name node2 --hostname node2.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 19073:19071 --publish 19102:19100 --publish 19052:19050 --publish 19094:19092 \
+    --publish 19073:19071 --publish 19102:19100 --publish 19052:19050 --publish 20094:19092 \
     vespaengine/vespa
 </pre>
 
@@ -112,13 +115,15 @@ $ (cd src/main/application && zip -r - .) | \
 
 As the Docker start script will start both the config server and services,
 we expect to find responses on 19100 (`slobrok`) and 19050 (`cluster-controller`).
+
 **Important note:** Vespa has a feature to not enable `services` before 50% of the nodes are up,
 see [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
-Meaning, here we have started only 3/8, so `slobrok` and `cluster-controller` are not started yet -
+Meaning, here we have started only 3/10, so `slobrok` and `cluster-controller` are not started yet -
 find log messages like
 
-    [2021-11-02 10:30:22.220] WARNING : config-sentinel  sentinel.sentinel.connectivity
-                                        Only 3 of 7 nodes are up and OK, 42.9% (min is 50%)
+    $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
+      WARNING : config-sentinel  sentinel.sentinel.connectivity Only 3 of 10 nodes are up and OK, 30.0% (min is 50%)
+      WARNING : config-sentinel  sentinel.sentinel.env Bad network connectivity (try 71)
 
 
 
@@ -128,7 +133,7 @@ This is essentially the log server:
 $ docker run --detach --name node3 --hostname node3.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 19095:19092 \
+    --publish 20095:19092 \
     vespaengine/vespa services
 </pre>
 
@@ -138,17 +143,57 @@ Notes:
   It is normally a good idea to run this on a separate node, like here, for this reason -
   a full disk will not hit the other nodes then. 
 
-As this is node 4 of 8, 50% of services is started, and we expect the `metric proxy`
-(runs on all service nodes) to be up - and others:
 
-    $ curl http://localhost:19095/state/v1/   # metrics proxy on node4
+
+## Start the feed container cluster
+The feed container cluster has the feed endpoint, normally on 8080.
+<pre data-test="exec">
+$ docker run --detach --name node4 --hostname node4.vespa_net \
+    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    --network vespa_net \
+    --publish 8080:8080 --publish 20096:19092 \
+    vespaengine/vespa services
+$ docker run --detach --name node5 --hostname node5.vespa_net \
+    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    --network vespa_net \
+    --publish 8081:8080 --publish 20097:19092 \
+    vespaengine/vespa services
+</pre>
+
+Check for OK startup - this can take a minute or so:
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head http://localhost:8081/ApplicationStatus
+</pre>
+
+    HTTP/1.1 200 OK
+    Date: Wed, 19 Jan 2022 08:29:23 GMT
+    Content-Type: application/json
+    Content-Length: 5213
+
+As this is also the cluster where custom components for document processing are loaded,
+inspecting the `/ApplicationStatus` endpoint is useful
+
+    $ curl http://localhost:8080/ApplicationStatus
+
+As these are nodes 5 and 6 of 10, 60% of services is started:
+
+    $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
+      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node8.vespa_net'
+      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node9.vespa_net'
+      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node4.vespa_net -> OK: both ways connectivity verified
+      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node5.vespa_net -> OK: both ways connectivity verified
+      INFO    : config-sentinel  sentinel.sentinel.connectivity Enough connectivity checks OK, proceeding with service startup
+
+We hence expect the `metric proxy` (runs on all service nodes) to be up - and others:
+
+    $ curl http://localhost:20095/state/v1/   # metrics proxy on node3
     $ curl http://localhost:19100/state/v1/   # slobok on node0
     $ curl http://localhost:19051/state/v1/   # cluster-controller on node1
 
 In short, checking `/state/v1/` for services is useful to validate that services are up.
 At this point it is useful to inspect the application using `vespa-model-inspect`:
 ```sh
-$ docker exec -it node0 /bin/sh -c "/opt/vespa/bin/vespa-model-inspect hosts"
+$ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect hosts"
 node0.vespa_net
 node1.vespa_net
 node2.vespa_net
@@ -157,8 +202,10 @@ node4.vespa_net
 node5.vespa_net
 node6.vespa_net
 node7.vespa_net
+node8.vespa_net
+node9.vespa_net
 
-$ docker exec -it node0 /bin/sh -c "/opt/vespa/bin/vespa-model-inspect services"
+$ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect services"
 config-sentinel
 configproxy
 configserver
@@ -168,12 +215,13 @@ distributor
 logd
 logserver
 metricsproxy-container
+qrserver
 searchnode
 slobrok
 storagenode
 transactionlogserver
 
-$ docker exec -it node0 /bin/sh -c "/opt/vespa/bin/vespa-model-inspect service container"
+$ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect service container"
 container @ node4.vespa_net : 
 default/container.0
     tcp/node4.vespa_net:8080 (STATE EXTERNAL QUERY HTTP)
@@ -188,8 +236,8 @@ default/container.1
     tcp/node5.vespa_net:19102 (ADMIN RPC)
 ```
 
-This tool does only uses a config server, it does not check other nodes -
-it displays a view of the layout of the application - what runs where. 
+This tool only uses a config server, it does not check other nodes -
+it displays a view of the layout of the application - what runs where.
 
 **Important takeaway:** Vespa port allocations are dynamic.
 This enables Vespa to run a set of processes as configured in services.xml on each node.
@@ -198,41 +246,51 @@ this tool can be used on any Vespa node.
 
 
 
-## Start the container cluster
-The container cluster has the feed and query endpoints, normally on 8080.
+## Start the query container cluster
+The query container cluster has the query endpoint, normally on 8080.
 <pre data-test="exec">
-$ docker run --detach --name node4 --hostname node4.vespa_net \
+$ docker run --detach --name node6 --hostname node6.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 8080:8080 --publish 19096:19092 \
+    --publish 8082:8080 --publish 20098:19092 \
     vespaengine/vespa services
-$ docker run --detach --name node5 --hostname node5.vespa_net \
+$ docker run --detach --name node7 --hostname node7.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 8081:8080 --publish 19097:19092 \
+    --publish 8083:8080 --publish 20099:19092 \
     vespaengine/vespa services
 </pre>
 
-As this is also the cluster where custom components are loaded,
-checking the `/ApplicationStatus` endpoint is useful
-
-    $ curl http://localhost:8080/ApplicationStatus
+Again, wait for OK startup:
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head http://localhost:8083/ApplicationStatus
+</pre>
 
 
 
 ## Start the content cluster:
 <pre data-test="exec">
-$ docker run --detach --name node6 --hostname node6.vespa_net \
+$ docker run --detach --name node8 --hostname node8.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 19107:19107 --publish 19098:19092 \
+    --publish 19107:19107 --publish 20100:19092 \
     vespaengine/vespa services
-$ docker run --detach --name node7 --hostname node7.vespa_net \
+$ docker run --detach --name node9 --hostname node9.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
     --network vespa_net \
-    --publish 19108:19107 --publish 19099:19092 \
+    --publish 19108:19107 --publish 20101:19092 \
     vespaengine/vespa services
 </pre>
+
+Check for OK content node startup:
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head http://localhost:20101/state/v1/
+</pre>
+
+    HTTP/1.1 200 OK
+    Date: Wed, 19 Jan 2022 09:13:27 GMT
+    Content-Type: application/json
+    Content-Length: 264
 
 
 
@@ -250,9 +308,32 @@ Notes:
 
 
 
+## Test endpoints
+Feed 5 documents, using the document-API endpoint in the _feed_ container cluster on 8080/8081:
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ i=0; (for doc in $(ls ../../album-recommendation/src/test/resources); \
+  do \
+    curl -H Content-Type:application/json -d @../../album-recommendation/src/test/resources/$doc \
+    http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
+    i=$(($i + 1)); echo; \
+  done)
+</pre>
+
+List IDs of all documents (this can be run on any node in the cluster):
+<pre data-test="exec" data-test-wait-for="id:mynamespace:music::4">
+$ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
+</pre>
+
+Run a query, using the query-API endpoint in the _query_ container cluster on 8082/8083::
+<pre data-test="exec" data-test-wait-for='"totalCount":5'>
+$ curl http://localhost:8082/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+</pre>
+
+
+
 ## Clean up after testing
 <pre data-test="after">
-$ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7
+$ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7 node8 node9
 $ docker network rm vespa_net
 </pre>
 
@@ -266,33 +347,45 @@ Normal deploy output in this guide, as the service nodes are not started yet:
 {
   "log": [
     {
-      "time": 1635853384031,
+      "time": 1642578267697,
       "level": "WARNING",
       "message": "Unable to lookup IP address of host: node4.vespa_net",
       "applicationPackage": true
     },
     {
-      "time": 1635853384044,
+      "time": 1642578268248,
       "level": "WARNING",
       "message": "Unable to lookup IP address of host: node5.vespa_net",
       "applicationPackage": true
     },
     {
-      "time": 1635853384071,
-      "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node3.vespa_net",
-      "applicationPackage": true
-    },
-    {
-      "time": 1635853384164,
+      "time": 1642578268701,
       "level": "WARNING",
       "message": "Unable to lookup IP address of host: node6.vespa_net",
       "applicationPackage": true
     },
     {
-      "time": 1635853384768,
+      "time": 1642578269060,
       "level": "WARNING",
       "message": "Unable to lookup IP address of host: node7.vespa_net",
+      "applicationPackage": true
+    },
+    {
+      "time": 1642578269444,
+      "level": "WARNING",
+      "message": "Unable to lookup IP address of host: node3.vespa_net",
+      "applicationPackage": true
+    },
+    {
+      "time": 1642578269870,
+      "level": "WARNING",
+      "message": "Unable to lookup IP address of host: node8.vespa_net",
+      "applicationPackage": true
+    },
+    {
+      "time": 1642578270221,
+      "level": "WARNING",
+      "message": "Unable to lookup IP address of host: node9.vespa_net",
       "applicationPackage": true
     }
   ],
@@ -311,27 +404,30 @@ Normal deploy output in this guide, as the service nodes are not started yet:
 ### Ports
 Ports mapped in this guide:
 ```sh
-$ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|1909[2,3,4,5,6,7,8,9]|1910[0,1,2]|808[0,1]|1910[7,8]' | sort
-
+$ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|2009[2,3,4,5,6,7,8,9]|2010[0,1]|1910[0,1,2]|808[0,1,2,3]|1910[7,8]' | sort
 tcp46      0      0  *.19050                *.*                    LISTEN     
 tcp46      0      0  *.19051                *.*                    LISTEN     
 tcp46      0      0  *.19052                *.*                    LISTEN     
 tcp46      0      0  *.19071                *.*                    LISTEN     
 tcp46      0      0  *.19072                *.*                    LISTEN     
 tcp46      0      0  *.19073                *.*                    LISTEN     
-tcp46      0      0  *.19092                *.*                    LISTEN     
-tcp46      0      0  *.19093                *.*                    LISTEN     
-tcp46      0      0  *.19094                *.*                    LISTEN     
-tcp46      0      0  *.19095                *.*                    LISTEN     
-tcp46      0      0  *.19096                *.*                    LISTEN     
-tcp46      0      0  *.19097                *.*                    LISTEN     
-tcp46      0      0  *.19098                *.*                    LISTEN     
-tcp46      0      0  *.19099                *.*                    LISTEN     
 tcp46      0      0  *.19100                *.*                    LISTEN     
 tcp46      0      0  *.19101                *.*                    LISTEN     
 tcp46      0      0  *.19102                *.*                    LISTEN     
 tcp46      0      0  *.19107                *.*                    LISTEN     
 tcp46      0      0  *.19108                *.*                    LISTEN     
+tcp46      0      0  *.20092                *.*                    LISTEN     
+tcp46      0      0  *.20093                *.*                    LISTEN     
+tcp46      0      0  *.20094                *.*                    LISTEN     
+tcp46      0      0  *.20095                *.*                    LISTEN     
+tcp46      0      0  *.20096                *.*                    LISTEN     
+tcp46      0      0  *.20097                *.*                    LISTEN     
+tcp46      0      0  *.20098                *.*                    LISTEN     
+tcp46      0      0  *.20099                *.*                    LISTEN     
+tcp46      0      0  *.20100                *.*                    LISTEN     
+tcp46      0      0  *.20101                *.*                    LISTEN     
 tcp46      0      0  *.8080                 *.*                    LISTEN     
-tcp46      0      0  *.8081                 *.*                    LISTEN
+tcp46      0      0  *.8081                 *.*                    LISTEN     
+tcp46      0      0  *.8082                 *.*                    LISTEN     
+tcp46      0      0  *.8083                 *.*                    LISTEN     
 ```
