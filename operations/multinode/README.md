@@ -45,7 +45,7 @@ $ docker network create --driver bridge vespa_net
 The nodes communicate over a Docker network, this guide stops docker containers to simulate node stops.
 Ports are mapped out of Docker containers for ease of use / inspect interfaces:
 
-<img src="img/multinode-testing.svg" width="330" height="auto" alt="3-node cluster"/>
+<img src="img/multinode-testing.svg" width="540" height="auto" alt="3-node cluster"/>
 
 Use Docker for Mac dashboard to see output / status:
 ![Docker dashboard](img/docker-dashboard-1.png)
@@ -190,7 +190,7 @@ To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper
 
 By default, clustercontrollers use a ZooKeeper cluster running on the config servers:
 
-<img src="img/multinode-zk.svg" width="295" height="auto" alt="Config Servers with a ZooKeeper cluster" />
+<img src="img/multinode-zk.svg" width="540" height="auto" alt="Config Servers with a ZooKeeper cluster" />
 
 With config server on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
 the clustercontrollers will not update the cluster state.
