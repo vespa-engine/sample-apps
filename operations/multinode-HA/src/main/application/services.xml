@@ -22,12 +22,19 @@
         <adminserver hostalias="node3" />
     </admin>
 
-    <container id="default" version="1.0">
+    <container id="feed" version="1.0">
         <document-api/>
-        <search/>
         <nodes>
             <node hostalias="node4" />
             <node hostalias="node5" />
+        </nodes>
+    </container>
+
+    <container id="query" version="1.0">
+        <search/>
+        <nodes>
+            <node hostalias="node6" />
+            <node hostalias="node7" />
         </nodes>
     </container>
 
@@ -37,8 +44,8 @@
             <document type="music" mode="index" />
         </documents>
         <nodes>
-            <node hostalias="node6" distribution-key="0" />
-            <node hostalias="node7" distribution-key="1" />
+            <node hostalias="node8" distribution-key="0" />
+            <node hostalias="node9" distribution-key="1" />
         </nodes>
     </content>
 
