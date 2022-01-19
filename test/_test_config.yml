@@ -1,7 +1,6 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode-HA/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/boolean-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
@@ -24,5 +23,6 @@ urls:
     #Fails due to unknown reason, maybe related to multiple docker containers?
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
     # TBD:
+    # - operations/multinode-HA
     # - operations/secure-vespa-with-mtls
     # - basic-search-on-gke
