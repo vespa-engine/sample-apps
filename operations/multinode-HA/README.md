@@ -310,7 +310,7 @@ Notes:
 
 ## Test endpoints
 Feed 5 documents, using the document-API endpoint in the _feed_ container cluster on 8080/8081:
-<pre data-test="exec" data-test-wait-for="200 OK">
+<pre data-test="exec">
 $ i=0; (for doc in $(ls ../../album-recommendation/src/test/resources); \
   do \
     curl -H Content-Type:application/json -d @../../album-recommendation/src/test/resources/$doc \

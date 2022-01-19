@@ -45,7 +45,7 @@ $ docker network create --driver bridge vespa_net
 The nodes communicate over a Docker network, this guide stops docker containers to simulate node stops.
 Ports are mapped out of Docker containers for ease of use / inspect interfaces:
 
-<img src="img/multinode-testing.svg" width="330" height="auto" alt="3-node cluster"/>
+<img src="img/multinode-testing.svg" width="540" height="auto" alt="3-node cluster"/>
 
 Use Docker for Mac dashboard to see output / status:
 ![Docker dashboard](img/docker-dashboard-1.png)
@@ -190,7 +190,7 @@ To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper
 
 By default, clustercontrollers use a ZooKeeper cluster running on the config servers:
 
-<img src="img/multinode-zk.svg" width="295" height="auto" alt="Config Servers with a ZooKeeper cluster" />
+<img src="img/multinode-zk.svg" width="540" height="auto" alt="Config Servers with a ZooKeeper cluster" />
 
 With config server on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
 the clustercontrollers will not update the cluster state.
@@ -230,9 +230,10 @@ see [troubleshooting](/operations/README.md#troubleshooting).
 Make sure the three nodes are started and up - then feed 5 documents:
 <pre data-test="exec" data-test-assert-contains="id:mynamespace:music::4">
 $ i=0; (for doc in $(ls ../../album-recommendation/src/test/resources); \
-    do curl -H Content-Type:application/json -d @../../album-recommendation/src/test/resources/$doc \
-    http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
-    i=$(($i + 1)); echo; \
+    do \
+      curl -H Content-Type:application/json -d @../../album-recommendation/src/test/resources/$doc \
+      http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
+      i=$(($i + 1)); echo; \
     done)
 </pre>
 <!-- Wrap for-loop in ( ) for test framework, as it expects single-line using \ -->
@@ -247,9 +248,10 @@ i.e. one replica per node.
 Using [Vespa metrics](https://docs.vespa.ai/en/reference/metrics.html), expect 5 documents per node:
 <pre data-test="exec" data-test-assert-contains="content.proton.documentdb.documents.total.last">
 $ (for port in 19092 19093 19094; \
-    do curl -s http://localhost:$port/metrics/v1/values | \
-    jq '.services[] | select (.name=="vespa.searchnode") | .metrics[].values' | \
-    grep content.proton.documentdb.documents.total.last; \
+    do \
+      curl -s http://localhost:$port/metrics/v1/values | \
+      jq '.services[] | select (.name=="vespa.searchnode") | .metrics[].values' | \
+      grep content.proton.documentdb.documents.total.last; \
     done)
 </pre>
 <!-- Wrap for-loop in ( ) for test framework, as it expects single-line using \ -->
