@@ -62,16 +62,22 @@ as the other Vespa nodes depend on config servers for startup:
 <pre data-test="exec">
 $ docker run --detach --name node0 --hostname node0.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespa_net \
     --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 20092:19092 \
     vespaengine/vespa
 $ docker run --detach --name node1 --hostname node1.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespa_net \
     --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 20093:19092 \
     vespaengine/vespa
 $ docker run --detach --name node2 --hostname node2.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespa_net \
     --publish 19073:19071 --publish 19102:19100 --publish 19052:19050 --publish 20094:19092 \
     vespaengine/vespa
