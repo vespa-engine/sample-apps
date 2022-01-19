@@ -15,7 +15,8 @@
     <document-api />
     <document-processing/>
     <search />
-    <nodes jvmargs="-Xms512m -Xmx512m">
+    <nodes>
+      <jvm options="-Xms512m -Xmx512m" />
       <node hostalias="container0" />
     </nodes>
     <http>
