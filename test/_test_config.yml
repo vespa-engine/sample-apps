@@ -1,7 +1,6 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode-HA/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/boolean-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
@@ -20,7 +19,14 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
-    
+
+    # multinode-HA uses too much memory for a TURBO instance in cd.screwdriver.cd,
+    # see https://docs.screwdriver.cd/user-guide/configuration/annotations
+    # The test works when running locally using
+    # test/test.py operations/multinode-HA/README.md
+    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode-HA/README.md"
+
     # TBD:
     # - operations/secure-vespa-with-mtls
     # - operations/basic-search-on-gke
+    # - operations/album-recommendation-monitoring
