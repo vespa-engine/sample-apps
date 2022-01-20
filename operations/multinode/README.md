@@ -45,7 +45,7 @@ $ docker network create --driver bridge vespa_net
 The nodes communicate over a Docker network, this guide stops docker containers to simulate node stops.
 Ports are mapped out of Docker containers for ease of use / inspect interfaces:
 
-<img src="img/multinode-testing.svg" width="540" height="auto" alt="3-node cluster"/>
+<img src="img/multinode-testing.svg" width="405" height="auto" alt="3-node cluster"/>
 
 Use Docker for Mac dashboard to see output / status:
 ![Docker dashboard](img/docker-dashboard-1.png)
@@ -60,16 +60,22 @@ to understand how Vespa is started in a Docker container using the _vespaengine/
 <pre data-test="exec">
 $ docker run --detach --name node0 --hostname node0.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespa_net \
     --publish 8080:8080 --publish 19071:19071 --publish 19050:19050 --publish 19092:19092 \
     vespaengine/vespa
 $ docker run --detach --name node1 --hostname node1.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespa_net \
     --publish 8081:8080 --publish 19072:19071 --publish 19051:19050 --publish 19093:19092 \
     vespaengine/vespa
 $ docker run --detach --name node2 --hostname node2.vespa_net \
     -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespa_net \
     --publish 8082:8080 --publish 19073:19071 --publish 19052:19050 --publish 19094:19092 \
     vespaengine/vespa
@@ -190,7 +196,7 @@ To understand, review https://stackoverflow.com/questions/32152467/can-zookeeper
 
 By default, clustercontrollers use a ZooKeeper cluster running on the config servers:
 
-<img src="img/multinode-zk.svg" width="540" height="auto" alt="Config Servers with a ZooKeeper cluster" />
+<img src="img/multinode-zk.svg" width="405" height="auto" alt="Config Servers with a ZooKeeper cluster" />
 
 With config server on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
 the clustercontrollers will not update the cluster state.
