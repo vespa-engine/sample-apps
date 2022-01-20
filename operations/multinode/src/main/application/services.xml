@@ -20,6 +20,7 @@
         <document-api/>
         <search/>
         <nodes>
+            <jvm options="-Xms32M -Xmx128M"/>
             <node hostalias="node0" />
             <node hostalias="node1" />
             <node hostalias="node2" />
