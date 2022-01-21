@@ -120,7 +120,7 @@ def exec_script(script):
 
     failed = False
 
-    with PseudoTerminal() as pty:
+    with PseudoTerminal(timeout=2*60*60) as pty:
         try:
             for cmd in script["before"]:
                 exec_step(cmd, pty)
