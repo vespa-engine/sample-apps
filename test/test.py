@@ -120,7 +120,7 @@ def exec_script(script):
 
     failed = False
 
-    with PseudoTerminal() as pty:
+    with PseudoTerminal(timeout=2*60*60) as pty:
         try:
             for cmd in script["before"]:
                 exec_step(cmd, pty)
@@ -251,8 +251,11 @@ def create_work_dir():
 
 def run_url(url):
     print_cmd_header("Testing", url)
-    html = urllib.request.urlopen(url).read()
-    process_page(html, url)
+    allpages = b""
+    for page in url.split(","):
+        allpages += urllib.request.urlopen(page).read()
+
+    process_page(allpages, url)
 
 
 def run_config(config_file):
