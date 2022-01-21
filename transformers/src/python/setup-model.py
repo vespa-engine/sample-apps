@@ -13,7 +13,7 @@ model_name = "bert-base-uncased"
 
 tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
 model = transformers.BertForSequenceClassification.from_pretrained(model_name)
-pipeline = transformers.Pipeline(model=model, tokenizer=tokenizer)
+pipeline = transformers.pipeline("text-classification", model=model, tokenizer=tokenizer)
 
 os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
