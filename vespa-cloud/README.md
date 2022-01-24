@@ -1,4 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa Cloud sample applications
 
 ### album-recommendation
@@ -7,7 +10,7 @@ This is the intro application to Vespa.
 * The same application, with support for building Java components added: [album-recommendation-java](album-recommendation-java).
 
 ### cord-19-search
-[cord19.vespa.ai](https://cord19.vespa.ai/) is a is a full-featured application - see
+[cord19.vespa.ai](https://cord19.vespa.ai/) is a full-featured application - see
 * [cord-19](https://github.com/vespa-engine/cord-19): frontend
 * [cord-19-search](cord-19-search): search backend
 
@@ -24,7 +27,7 @@ both for regular PUT operations but also for UPDATE with _create-if-nonexistent_
 some of the possibilities for doing custom document processing in Java.
 
 ### joins
-[joins](joins) shows possibilties for doing joins of data across nodes with
+[joins](joins) shows possibilities for doing joins of data across nodes with
 customer components. This is for use cases where parent-child is not sufficient,
 and latency budgets are a bit higher.
 

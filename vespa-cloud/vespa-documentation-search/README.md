@@ -1,3 +1,7 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa Documentation Search
 Vespa Documentation Search is a Vespa Cloud instance for searching documents in
 * vespa.ai
@@ -38,12 +42,13 @@ for example use of the Query API.
 
 
 ### Feed your own instance
-It is easy to set up your own instance on Vespa Cloud and feed  documents from
+It is easy to set up your own instance on Vespa Cloud and feed documents from
 [vespa-engine/documentation](https://github.com/vespa-engine/documentation/):
 
-1: Generate the `open_index.json` feed file: `cd vespa-engine/documentation && bundle exec jekyll build -p _plugins-vespafeed`.
-Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins-vespafeed/vespa_index_generator.rb)
-for how the feed file is generated.
+1: Generate the `open_index.json` feed file:
+  `cd vespa-engine/documentation && bundle exec jekyll build -p _plugins-vespafeed`.
+  Refer to the [vespa_index_generator.rb](https://github.com/vespa-engine/documentation/blob/master/_plugins-vespafeed/vespa_index_generator.rb)
+  for how the feed file is generated.
 
 2: Add data plane credentials:
 
@@ -102,7 +107,8 @@ then add it to the https request to Vespa Cloud:
 
 The lambda needs AmazonSSMReadOnlyAccess added to its Role to access the Parameter Store.
 
-Note JSON-P being used (_jsoncallback=_) - this simplifies the search result page: [search.html](https://github.com/vespa-engine/documentation/blob/master/search.html).
+Note JSON-P being used (_jsoncallback=_) - this simplifies the search result page:
+[search.html](https://github.com/vespa-engine/documentation/blob/master/search.html).
 
 <!-- ToDo: ref to Vespa JSON interface for this quirk -->
 

@@ -1,5 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample application - Semantic Retrieval for Question-Answer Applications 
 
 This sample application contains code, document schema and dependencies for running 
@@ -57,7 +59,9 @@ One can explore the questions and the labeled answers [here](https://rajpurkar.g
 * [Docker](https://www.docker.com/) installed and running  
 * git client to checkout the sample application repository
 * Operating system: macOS or Linux, Architecture: x86_64
-* Minimum 6GB memory dedicated to Docker (the default is 2GB on Macs).
+* Minimum 6 GB memory dedicated to Docker (the default is 2 GB on Macs).
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting.
  
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 This setup is slightly different then the official quick start guide
@@ -129,7 +133,7 @@ $ $VESPA_HOME/bin/vespa-feed-client --file squad_vespa_feed.json --endpoint http
 
 **Run evaluation**
 
-The evaluation script runs all questions produced by the convertation script
+The evaluation script runs all questions produced by the conversion script
 and for each question it executes different recall and ranking strategies and finally it computes the
 [mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_
 and the Recall@1,Recall@5 and Recall@10 metrics.

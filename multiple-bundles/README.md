@@ -1,4 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample applications - Multiple bundles
 
 This sample application demonstrates how to build an application that has split
@@ -12,7 +15,10 @@ Docker requirements same as in the [quick-start](https://docs.vespa.ai/en/vespa-
 
 ### Executable example
 
-**Validate environment, should be minimum 6G:**
+**Validate environment, must be minimum 4G:**
+
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>

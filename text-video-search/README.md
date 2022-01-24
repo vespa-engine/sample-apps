@@ -1,5 +1,7 @@
 # Text-video search app
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 Build a text-video search from scratch based on CLIP models with Vespa python API.
 
 ![Text-Video Search with Vespa](demo.gif)
@@ -24,4 +26,3 @@ Run the app:
 ```
 streamlit run src/python/app.py
 ```
-

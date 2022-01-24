@@ -1,7 +1,12 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # vespa-chinese-linguistics
 This package provides Chinese tokenizer with Vespa using Jieba.
 Jieba is one of the famous Chinese tokenizer,
-it is used by various services such as Solr, Elasticsearch, QihooVerticalSearch(based on lucene)and so on.
+it is used by various services such as
+Solr, Elasticsearch, QihooVerticalSearch (based on Lucene) and so on.
 
 * [Jieba](https://github.com/huaban/jieba-analysis)
 
@@ -23,14 +28,17 @@ $ cd sample-apps/vespa-chinese-linguistics
 $ mvn package
 </pre>
 
-Build package with version 7.301.24 there. Maybe in higher version, there are some changes in the interface [Linguistics](https://github.com/vespa-engine/vespa/blob/master/linguistics/src/main/java/com/yahoo/language/Linguistics.java).
+Build package with version 7.301.24 there.
+Maybe in higher version, there are some changes in the interface [Linguistics](https://github.com/vespa-engine/vespa/blob/master/linguistics/src/main/java/com/yahoo/language/Linguistics.java).
 
 
 ## Use Package
 
 
 ### Deploy
-Put the built package to components directory of your service. If there is no components directory, create it. For example, the structure will be like below with sampleapps.
+Put the built package to components directory of your service.
+If there is no components directory, create it.
+For example, the structure will be like below with sampleapps.
 
 * sampleapps/search/kosmos/
     * services.xml
@@ -40,7 +48,8 @@ Put the built package to components directory of your service. If there is no co
 
 ### Configuration
 
-Because the package will be used by searcher and indexer, it is recommended to define &lt;component&gt; in all &lt;jdisc&gt; sections of services.xml.
+Because the package will be used by searcher and indexer,
+it is recommended to define &lt;component&gt; in all &lt;container&gt; sections of services.xml.
 
 ```xml
 <container id="mycontainer" version="1.0">
@@ -56,4 +65,4 @@ Because the package will be used by searcher and indexer, it is recommended to d
 
 ## License
 Code licensed under the Apache 2.0 license. See LICENSE for terms.
-refer to the license of https://github.com/huaban/jieba-analysis
+Refer to the license of https://github.com/huaban/jieba-analysis.

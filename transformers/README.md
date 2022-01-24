@@ -1,5 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample application - Transformers
 
 This sample application is a small example of using Transformers for ranking
@@ -9,6 +11,9 @@ which uses Transformer based models.
 
 
 **Validate environment, should be minimum 6G:**
+
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>

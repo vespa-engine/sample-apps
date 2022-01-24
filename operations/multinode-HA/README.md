@@ -40,6 +40,19 @@ This guide is tested with Docker using 16G Memory:
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
+</pre>
+
+Note that this guide is configured for minimum memory use for easier testing, adding:
+
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
+
+to `docker run` commands. For real production use cases, do not do this.
+Also remove annotated memory-settings in [services.xml](src/main/application/services.xml).
+
+Get the app and create the local network:
+
+<pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/operations/multinode-HA
 $ docker network create --driver bridge vespa_net

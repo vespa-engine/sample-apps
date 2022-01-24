@@ -1,4 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample applications - Stateless model evaluation
 
 A sample Vespa application to evaluate models of the application package in

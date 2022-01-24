@@ -1,4 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Experiment yourself
 [CORD-19 Search](https://cord19.vespa.ai/) is built on the [Vespa Cloud](https://cloud.vespa.ai/) service.
 To run the same application on your own computer,
@@ -21,7 +24,9 @@ Prerequisites:
 * [Git](https://git-scm.com/downloads) installed
 * Operating system: macOS or Linux
 * Architecture: x86_64
-* *Minimum 10GB* memory dedicated to Docker (the default is 2GB on Macs)
+* *Minimum 10GB* memory dedicated to Docker (the default is 2GB on Macs).
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting.
 
 This guide is tested with Docker for Mac, Community Edition-18.06.1-ce-mac73 (26764) and
 <em>vespaengine/vespa</em> Docker image built 2020-03-26.
