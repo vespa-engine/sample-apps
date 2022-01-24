@@ -43,8 +43,10 @@ a real application could implement a more sophisticated ranking for better sugge
 
 ## Quick start
 
-**Validate environment, should be minimum 6G:**
+**Validate environment, must be minimum 4G:**
 
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>

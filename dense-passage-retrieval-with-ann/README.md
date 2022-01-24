@@ -1,5 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample application - Open-Domain Question Answering
 
 This sample application demonstrates how to build an open domain
@@ -34,10 +36,13 @@ recreate the results in the DPR paper, see the [next section](#how-to-feed-the-e
 
 Requirements:
 
-* [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
-* Git client to checkout the sample application repository
+* [Docker](https://www.docker.com/) installed and running.
+  10Gb available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting.
+* Git client to checkout the sample application repository.
 * Java 11, Maven and python3.7+ installed. Using Python runtime environments (e.g. using [Conda](https://conda.io/projects/conda/en/latest/index.html)) is highly recommended.
-* Operating system: macOS or Linux, Architecture: x86_64
+* Operating system: macOS or Linux, Architecture: x86_64.
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
@@ -130,11 +135,15 @@ $ docker rm -f vespa
 ## How to feed the entire dataset
 
 To run the full dataset, minimum **128GB** system memory for the content node is recommended.
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 
-Since the DPR repo depends on a different version of transformers library the following steps needs to 
-be a performed in a different python
- environment. We recommend using e.g. conda. How to install and configure conda is outside of the scope of this work but the 
-below creates a python3.7 runtime environment named DPR.  This isolates the environment where the DPR dependencies are installed.
+Since the DPR repo depends on a different version of transformers library,
+the following steps needs to be a performed in a different python environment.
+We recommend using e.g. conda.
+How to install and configure conda is outside of the scope of this work
+but the  below creates a python3.7 runtime environment named DPR.
+This isolates the environment where the DPR dependencies are installed.
 
 <pre>
 $ conda create -n DPR python=3.7

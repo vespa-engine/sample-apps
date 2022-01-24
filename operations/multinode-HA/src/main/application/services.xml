@@ -25,7 +25,7 @@
     <container id="feed" version="1.0">
         <document-api/>
         <nodes>
-            <jvm options="-Xms32M -Xmx128M"/>
+            <jvm options="-Xms32M -Xmx128M"/> <!-- Added only to shrink memory for testing - remove before real use -->
             <node hostalias="node4" />
             <node hostalias="node5" />
         </nodes>
@@ -34,7 +34,7 @@
     <container id="query" version="1.0">
         <search/>
         <nodes>
-            <jvm options="-Xms32M -Xmx128M"/>
+            <jvm options="-Xms32M -Xmx128M"/> <!-- Added only to shrink memory for testing - remove before real use -->
             <node hostalias="node6" />
             <node hostalias="node7" />
         </nodes>

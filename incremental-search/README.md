@@ -26,5 +26,3 @@ which uses indexed prefix search to match and rank documents from a query log / 
 and gives query suggestions (autocomplete) based on previously written queries while the user is typing.
 
 ![query suggestions](img/search-suggestions.png)
-
-

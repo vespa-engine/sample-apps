@@ -1,18 +1,22 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample application - Text-Image Search
 
-This sample is an example of a text-to-image search application. Taking a textual query, such as "two
-people bicycling", it will return images containing two people on bikes. This
-application is built using [CLIP (Contrastive Language-Image
+This sample is an example of a text-to-image search application.
+Taking a textual query, such as "two people bicycling",
+it will return images containing two people on bikes.
+This application is built using [CLIP (Contrastive Language-Image
 Pre-Training)](https://github.com/openai/CLIP) which enables "zero-shot prediction".
 This means that the system can return sensible results for images it hasn't
-seen during training, allowing it to process and index any image. In this
-use case, we use the [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names)
+seen during training, allowing it to process and index any image.
+In this use case, we use the [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names)
 dataset, which was not explicitly used during training of the CLIP model.
 
 This sample application can be used in two different ways.
-The first is by using a [Python-based search app](src/python/README.md), which is suitable for exploration and analysis.
+The first is by using a [Python-based search app](src/python/README.md),
+which is suitable for exploration and analysis.
 The other is a stand-alone Vespa application, which is more suitable for production (below).
 
 The Python sample app includes a streamlit user interface:
@@ -31,6 +35,8 @@ tokenization and transformer model evaluation.
 
 **Validate environment, should be minimum 6G:**
 
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>

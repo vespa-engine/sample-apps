@@ -1,5 +1,7 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # MS Marco Document Ranking 
 
 The baseline model for MS Marco *Document* Ranking using sparse lexical matching and a GBDT re-ranking model
@@ -45,10 +47,12 @@ schema doc {
 } 
 </pre> 
 
-The original text fields plus an additional field from docTTTTTQuery is used by the retriever, see Rodrigo Nogueira and Jimmy Lin paper: 
+The original text fields plus an additional field from docTTTTTQuery is used by the retriever,
+see Rodrigo Nogueira and Jimmy Lin paper: 
 [From doc2query to docTTTTTquery](https://cs.uwaterloo.ca/~jimmylin/publications/Nogueira_Lin_2019_docTTTTTquery-v2.pdf). 
-The authors have published their pre-generated model and we use their predictions directly as is. The only difference from the original is that
- suggested expansion queries are indexed as an array instead of a blob of text. 
+The authors have published their pre-generated model and we use their predictions directly as is.
+The only difference from the original
+is that suggested expansion queries are indexed as an array instead of a blob of text. 
 This allows calculating ranking features which takes proximity into account. 
 
 # Training (LTR)
@@ -56,12 +60,13 @@ The MS Marco Train split to scrape features for traditional LTR.
 
 For each positive relevant document a sample of 50 negatives (not relevant) is picked from the top-k retrieved documents.  
 In total 330,302 queries from the training set is used and 16,845,191 total number of data points. 
-The efficient
-[Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html) is used to retrieve efficiently without having to score or rank all documents
-matching at least one of the query terms. 
+The efficient [Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html)
+is used to retrieve efficiently without having to score or rank all documents matching at least one of the query terms. 
 
-A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html) which are generally cheap to compute are used by the model, except
-*nativeProximity* which measures the proximity of the query terms in the document text, but its usage is limited to the short title field. 
+A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html)
+which are generally cheap to compute are used by the model,
+except *nativeProximity* which measures the proximity of the query terms in the document text,
+but its usage is limited to the short title field. 
 
 LightGBM is used to train the GBDT re-ranking model. 
 Vespa has great support for GBDT models and supports both 
@@ -85,7 +90,8 @@ params = {
 
 The final model consists of 533 trees, with up to 128 leaves. 
 The training script is [here](src/main/python/train.py). 
-To scrap features one can follow [pyvespa collecting training data](https://pyvespa.readthedocs.io/en/latest/collect-training-data.html).
+To scrap features one can follow
+[pyvespa collecting training data](https://pyvespa.readthedocs.io/en/latest/collect-training-data.html).
 
 ### Training output
 <pre>
@@ -103,10 +109,11 @@ Training until validation scores don't improve for 50 rounds
 [9]     training's ndcg@5: 0.802159     training's ndcg@10: 0.81744     valid_1's ndcg@5: 0.415425      valid_1's ndcg@10: 0.456132
 </pre>
 
-The serialized LigtGBM model is deployed for serving using the following ranking profile. 
+The serialized LightGBM model is deployed for serving using the following ranking profile. 
 The simple linear first-phase function as described earlier is also used. Re-ranking depth is set to 1K.
-Note that the ranking profile inherits the ranking profile which used for feature scraping, this avoids
-feature calculation drift so that the exact same feature definition is used both for serving and training.
+Note that the ranking profile inherits the ranking profile which used for feature scraping,
+this avoids feature calculation drift
+so that the exact same feature definition is used both for serving and training.
 
 <pre>
 rank-profile ltr inherits ltr-scrape {
@@ -127,7 +134,7 @@ See Vespa on the [MS Marco Document Ranking Leaderboard](https://microsoft.githu
 
   **MS Marco Judgements** 
 
-The offical metric on MS Marco is [MRR@100](https://en.wikipedia.org/wiki/Mean_reciprocal_rank). 
+The official metric on MS Marco is [MRR@100](https://en.wikipedia.org/wiki/Mean_reciprocal_rank). 
  
 **Dev MRR@100 = 0.355**,
 **Eval MRR@100 = 0.312** 
@@ -150,18 +157,20 @@ See the top two documents ranked for the question *when was nelson mandela born*
 
 ## Quick start
 
-Make sure to read and agree to terms and conditions of the 
+Make sure to read and agree to the terms and conditions of the 
 [MS Marco Team](https://microsoft.github.io/msmarco/) before downloading the dataset by using the *ir_datasets* package. 
 
 The following is a recipe on how to get started with a tiny set of sample data.
-The sample data only contains the first 1000 documents of the full MS Marco dataset, but
-this should be able to run on for instance a laptop. For the full dataset to
-recreate the evaluation results see later section.
+The sample data only contains the first 1000 documents of the full MS Marco dataset,
+but this should be able to run on for instance a laptop.
+For the full dataset to recreate the evaluation results see later section.
 
 Requirements:
 
 * [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
-* Git client to checkout the sample application repository
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Git client to check out the sample application repository
 * Java 11, Maven and python3
 * zstd: `brew install zstd`
 * Operating system: macOS or Linux, Architecture: x86_64
@@ -181,19 +190,18 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/msmarco-ranking
 </pre>
 
-Build the application package. This step also downloads the three ONNX models used in this application package. The download
-script used is found [here](src/main/bash/download_models.sh). The models mentioned here are only 
-used for the [passage-ranking.md](passage-ranking.md], but since both passage and document ranking
-shares the same application we also need these models to run this step to step guide.
+Build the application package. This step also downloads the three ONNX models used in this application package.
+The download script used is found [here](src/main/bash/download_models.sh).
+The models mentioned here are only used for the [passage-ranking.md](passage-ranking.md),
+but since both passage and document ranking shares the same application
+we also need these models to run this step to step guide.
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="120">
 $ mvn clean package -U
 </pre>
 
-If you run into issues running mvn package please check  mvn -v and that the Java version is 11. 
-Now, we are ready to start the vespeengine/vespa docker container - pull the latest version and run it by
-
-Start the Vespa docker container:
+If you run into issues running mvn package please check `mvn -v` and that the Java version is 11. 
+Now, we are ready to start the `vespaengine/vespa` docker container - pull the latest version and run it:
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
@@ -215,7 +223,7 @@ $ curl --header Content-Type:application/zip --data-binary @target/application.z
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-Now, wait for the application to start.
+Now, wait for the application to start:
 
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
@@ -240,15 +248,15 @@ $ ./vespa-feed-client-cli/vespa-feed-client \
     --file sample-feed/sample_doc_t5_query.jsonl --endpoint http://localhost:8080
 </pre>
 
-Now all the data is in place and one can play around with the query interface (Though only searching 1K documents)
+Now all the data is in place and one can play around with the query interface (Though only searching 1K documents).
 
-View a sample document 
+View a sample document:
 <pre data-test="exec" data-test-assert-contains="what is machacado">
 $ curl -s http://localhost:8080/document/v1/msmarco/doc/docid/D1840066 | \
     python -m json.tool
 </pre>
 
-Do a query 
+Do a query:
 <pre data-test="exec" data-test-assert-contains="0.153">
 $ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr&restrict=doc" | \
     python -m json.tool
@@ -273,7 +281,8 @@ $ ir_datasets export msmarco-document/train docs --format jsonl | \
 ## doc to query document expansion
 For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
 Follow the instructions at [https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
-but replace *paste -d" "* with *paste -d"#"* and modify the *generate_output_dict* in *convert_msmarco_doc_to_anserini.py* to emit Vespa json instead 
+but replace *paste -d" "* with *paste -d"#"*
+and modify the *generate_output_dict* in *convert_msmarco_doc_to_anserini.py* to emit Vespa json instead:
 
 <pre>
 def generate_output_dict(doc, predicted_queries):
@@ -308,15 +317,15 @@ $ vespa-feed-client --file doc_t5_query_updates.jsonl --endpoint http://localhos
 
 ## Query Evaluation
 The following script will run all queries from the MS Marco document ranking **dev** split. 
-Change the endpoint to point to your Vespa instance. Since MS Marco is using MRR@100 we
-fetch at most 100 hits.
+Change the endpoint to point to your Vespa instance.
+Since MS Marco is using MRR@100 we fetch at most 100 hits.
 
 <pre>
 $ ./src/main/python/evaluate_run.py --retriever sparse --rank_profile ltr --query_split dev \
   --wand_field default --wand_hits 500 --phase_count 1000 --run_file ltr.run.txt
 </pre>
 
-Rvaluate the run file *ltr.run.txt* by using the 
+Evaluate the run file *ltr.run.txt* by using the 
 [official ms marco eval script](https://raw.githubusercontent.com/microsoft/MSMARCO-Document-Ranking-Submissions/main/eval/ms_marco_doc_eval.py).
 
 <pre>
@@ -337,7 +346,8 @@ QueriesRanked: 5193
 #####################
 </pre>
 
-If you want to alter the application and submit to the leaderboard you can generate a run for the **eval** query split by 
+If you want to alter the application and submit to the leaderboard
+you can generate a run for the **eval** query split by: 
 
 <pre>
 $ ./src/main/python/evaluate_document_run.py --retriever sparse --rank_profile ltr \
@@ -345,4 +355,4 @@ $ ./src/main/python/evaluate_document_run.py --retriever sparse --rank_profile l
 </pre>
 
 The **eval** set relevancy judgements are hidden. To submit to the MS MARCO document ranking see 
-[this repo](https://github.com/microsoft/MSMARCO-Document-Ranking-Submissions)
+[this repo](https://github.com/microsoft/MSMARCO-Document-Ranking-Submissions).

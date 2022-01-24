@@ -28,6 +28,14 @@ by the Vespa clustercontrollers. Summary:
   In order to avoid duplicates, only _one_ bucket of documents are _active_ -
   the other replicas are _not active_ for queries.
 
+Note that this guide is configured for minimum memory use for easier testing, adding:
+
+    -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
+    -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
+
+to `docker run` commands. For real production use cases, do not do this.
+Also remove annotated memory-settings in [services.xml](src/main/application/services.xml).
+
 
 
 ## Example cluster setup

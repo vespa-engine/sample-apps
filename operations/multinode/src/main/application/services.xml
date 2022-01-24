@@ -20,7 +20,7 @@
         <document-api/>
         <search/>
         <nodes>
-            <jvm options="-Xms32M -Xmx128M"/>
+            <jvm options="-Xms32M -Xmx128M"/> <!-- Added only to shrink memory for testing - remove before real use -->
             <node hostalias="node0" />
             <node hostalias="node1" />
             <node hostalias="node2" />

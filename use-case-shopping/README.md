@@ -1,18 +1,23 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample applications - e-commerce
 
-A sample application showcasing a simple e-commerce site built with Vespa. Refer to [Use Case - shopping](https://docs.vespa.ai/en/use-case-shopping.html).
+A sample application showcasing a simple e-commerce site built with Vespa.
+Refer to [Use Case - shopping](https://docs.vespa.ai/en/use-case-shopping.html).
 
 Included scripts to convert data from Julian McAuley's Amazon product data set
-(http://jmcauley.ucsd.edu/data/amazon/links.html)
-to a Vespa data feed. This repository contains a small sample of this data from
-the sports and outdoor category, but you can download other data from the site
-above and use the scripts to convert.
+(http://jmcauley.ucsd.edu/data/amazon/links.html) to a Vespa data feed.
+This repository contains a small sample of this data from the sports and outdoor category,
+but you can download other data from the site above and use the scripts to convert.
 
 ### How to run
 
-**Validate environment, should be minimum 6G:**
+**Validate environment, should be minimum 6 Gb:**
+
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
@@ -88,7 +93,3 @@ $ curl -s http://localhost:8080/search/?query=default:golf
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
-
-
-
-

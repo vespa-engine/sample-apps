@@ -1,11 +1,16 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample applications - Part Purchases Demo
 
 A sample Vespa application to assist with learning how to group according to the
 [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
 
-**Validate environment, should be minimum 6G:**
+**Validate environment, should be minimum 4G:**
 
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>

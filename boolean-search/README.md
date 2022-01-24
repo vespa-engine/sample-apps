@@ -1,6 +1,8 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-Predicate Search
-==================
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
+# Vespa sample application - Predicate Search
 
 Predicate/Boolean Search and how to feed and query is described in
 [predicate search](https://docs.vespa.ai/en/predicate-fields.html).
@@ -22,10 +24,14 @@ just add a field of type predicate to the .sd file. (Remember to set the arity p
 
 
 ### Executable example
-**Validate environment, should be minimum 6G:**
+**Validate environment, must be minimum 4G:**
+
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
+
 **Check-out, compile and start Docker container:**
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git

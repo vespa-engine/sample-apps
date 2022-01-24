@@ -1,16 +1,22 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 # Vespa sample applications - a generic request-response processing application
 
-A simple stateless Vespa application demonstrating general composable request-response processing
-with Vespa. No content cluster is configured just a stateless Java container. A custom config class
-is created and used to control the processing component.
+A simple stateless Vespa application demonstrating general composable request-response processing with Vespa.
+No content cluster is configured just a stateless Java container.
+A custom config class is created and used to control the processing component.
 
 Refer to [getting started](https://docs.vespa.ai/en/getting-started.html) for more information.
 
 
 ### Executable example
 
-**Validate environment, should be minimum 6G:**
+**Validate environment, should be minimum 4G:**
+
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
