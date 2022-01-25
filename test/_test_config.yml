@@ -26,7 +26,9 @@ urls:
     # test/test.py operations/multinode-HA/README.md
     # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode-HA/README.md"
 
+    # operations/album-recommendation-monitoring is tested in
+    # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
+
     # TBD:
     # - operations/secure-vespa-with-mtls
     # - operations/basic-search-on-gke
-    # - operations/album-recommendation-monitoring
