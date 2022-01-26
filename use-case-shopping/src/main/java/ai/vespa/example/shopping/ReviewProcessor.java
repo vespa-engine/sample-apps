@@ -2,6 +2,7 @@
 
 package ai.vespa.example.shopping;
 
+import com.google.inject.Inject;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
 import com.yahoo.document.Document;
@@ -38,11 +39,18 @@ public class ReviewProcessor extends DocumentProcessor {
     private final static String RATING_STARS_FIELD_NAME = "rating_stars";
     private final static String RATING_COUNT_FIELD_NAME = "rating_count";
 
-    private final DocumentAccess access = DocumentAccess.createDefault();
-    private final AsyncSession asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+    private final DocumentAccess access;
+    private final AsyncSession asyncSession;
     private static final String VAR_REQ_ID = "reqId";
 
     private final Map<Long, Response> responses = new ConcurrentHashMap<>();
+
+    @Inject
+    public ReviewProcessor(DocumentAccess documentAccess) {
+        access = documentAccess;
+        asyncSession = access.createAsyncSession(new AsyncParameters().setResponseHandler(new RespHandler()));
+    }
+
     class RespHandler implements ResponseHandler {
         @Override
         public void handleResponse(Response response) {
