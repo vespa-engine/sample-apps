@@ -11,8 +11,6 @@ Running the application locally is easy and enables you to play with ranking fea
 Use this to make the application more useful for the scientists that needs it,
 and feed back improvements to _CORD-19 Search_!
 
-*This document is work in progress, the full procedure will be ready week of March 30*
-
 ----
 
 All Vespa Cloud applications can be run locally.
@@ -44,15 +42,16 @@ $ docker info | grep "Total Memory"
 <li>
     <p><strong>Clone the Vespa sample apps from
     <a href="https://github.com/vespa-engine/sample-apps">github</a>:</strong></p>
-<pre>
 $ git clone https://github.com/vespa-engine/sample-apps.git
+<pre data-test="exec">
+$ cp -r /Users/kraune/tmp/sample-apps .
 $ cd sample-apps/vespa-cloud/cord-19-search
 </pre>
 </li>
 
 <li>
     <p><strong>Generate feed-file.json in current directory:</strong></p>
-    <p>Follow procedure in <a href="feeding.md">feeding.md</a></p>
+    <p>Follow procedure in <a href="feeding.md">feeding.md</a>.</p>
 </li>
 
 <li>
@@ -65,60 +64,66 @@ $ cd sample-apps/vespa-cloud/cord-19-search
     into same location.
     Then build the application:
     </p>
-<pre>
+<pre data-test="exec">
 $ mvn clean install
 </pre>
 </li>
 
 <li>
     <p><strong>Start a Vespa Docker container:</strong></p>
-<pre>
-$ docker run --detach --name cord19 --hostname vespa-container --privileged \
-  --volume $(pwd):/cord-19-search --publish 8080:8080 vespaengine/vespa
+<pre data-test="exec">
+$ docker run --detach --name cord19 --hostname vespa-container \
+  --publish 8080:8080 --publish 19071:19071 \
+  vespaengine/vespa
 </pre>
 </li>
 
 <li>
     <p><strong>Wait for the configuration server to start - signified by a 200 OK response:</strong></p>
-<pre>
-$ docker exec cord19 bash -c 'curl -s --head http://localhost:19071/ApplicationStatus'
+<pre data-test="exec" data-test-wait-for="200 OK">
+$ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 </li>
 
 <li>
     <p><strong>Deploy and activate a sample application:</strong></p>
-<pre>
-$ docker exec cord19 bash -c '/opt/vespa/bin/vespa-deploy prepare \
-  /cord-19-search/target/application.zip &amp;&amp; \
-  /opt/vespa/bin/vespa-deploy activate'
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
+$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
+  localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 </li>
 
 <li>
     <p><strong>Ensure the application is active - wait for a 200 OK response:</strong></p>
-<pre>
+<pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 </li>
 
 <li>
     <p><strong>Feed documents:</strong></p>
+    <p>Feed sample data using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):</p>
+<pre data-test="exec">
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip vespa-feed-client-cli.zip
+</pre>
+<!-- ToDo: feed a small sample file -->
 <pre>
-$ docker exec cord19 bash -c '/opt/vespa/bin/vespa-feed-client \
-  --file /cord-19-search/feed-file.json --endpoint http://localhost:8080 --verbose'
+$ ./vespa-feed-client-cli/vespa-feed-client --file feed-file.json --endpoint http://localhost:8080
 </pre>
 </li>
 
 <li>
     <p><strong>Make a query:</strong></p>
-<pre>
+<pre data-test="exec" data-test-assert-contains='"resultsFull":1'>
 $ curl -s http://localhost:8080/search/?query=virus
 </pre>
 </li>
 
 <li>
     <p><strong>Clean up:</strong></p>
-<pre>
+<pre data-test="after">
 $ docker rm -f cord19
 </pre>
 </li>
