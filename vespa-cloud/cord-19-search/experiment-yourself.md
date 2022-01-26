@@ -42,9 +42,8 @@ $ docker info | grep "Total Memory"
 <li>
     <p><strong>Clone the Vespa sample apps from
     <a href="https://github.com/vespa-engine/sample-apps">github</a>:</strong></p>
-$ git clone https://github.com/vespa-engine/sample-apps.git
 <pre data-test="exec">
-$ cp -r /Users/kraune/tmp/sample-apps .
+$ git clone https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/vespa-cloud/cord-19-search
 </pre>
 </li>
