@@ -47,7 +47,7 @@ Prerequisites:
 $ docker info | grep "Total Memory"
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/operations/multinode
-$ docker network create --driver bridge vespa_net
+$ docker network create --driver bridge vespanet
 </pre>
 
 The nodes communicate over a Docker network, this guide stops docker containers to simulate node stops.
@@ -66,25 +66,25 @@ to understand how Vespa is started in a Docker container using the _vespaengine/
 
 ## Start 3 nodes
 <pre data-test="exec">
-$ docker run --detach --name node0 --hostname node0.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+$ docker run --detach --name node0 --hostname node0.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
-    --network vespa_net \
+    --network vespanet \
     --publish 8080:8080 --publish 19071:19071 --publish 19050:19050 --publish 19092:19092 \
     vespaengine/vespa
-$ docker run --detach --name node1 --hostname node1.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+$ docker run --detach --name node1 --hostname node1.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
-    --network vespa_net \
+    --network vespanet \
     --publish 8081:8080 --publish 19072:19071 --publish 19051:19050 --publish 19093:19092 \
     vespaengine/vespa
-$ docker run --detach --name node2 --hostname node2.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+$ docker run --detach --name node2 --hostname node2.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
-    --network vespa_net \
+    --network vespanet \
     --publish 8082:8080 --publish 19073:19071 --publish 19052:19050 --publish 19094:19092 \
     vespaengine/vespa
 </pre>
@@ -214,7 +214,7 @@ where the current cluster state lags what node2's clustercontroller is observing
 
 <pre>
 [2021-06-18 07:57:52.246] WARNING : container-clustercontroller Container.com.yahoo.vespa.clustercontroller.core.database.DatabaseHandler
-  Fleetcontroller 0: Failed to connect to ZooKeeper at node0.vespa_net:2181,node1.vespa_net:2181,node2.vespa_net:2181
+  Fleetcontroller 0: Failed to connect to ZooKeeper at node0.vespanet:2181,node1.vespanet:2181,node2.vespanet:2181
   with session timeout 30000: java.lang.NullPointerException
 at org.apache.zookeeper.ClientCnxnSocketNetty.onClosing(ClientCnxnSocketNetty.java:247)
 at org.apache.zookeeper.ClientCnxn$SendThread.close(ClientCnxn.java:1465)
@@ -317,7 +317,7 @@ due to missing ZooKeeper quorum.
 ## Single-node clustercontroller
 It is possible to set up clusters with only one clustercontroller - changes:
 <pre>
-&lt;host name="node3.vespa_net"&gt;
+&lt;host name="node3.vespanet"&gt;
     &lt;alias&gt;node3&lt;/alias&gt;
 &lt;/host&gt;
 
@@ -333,9 +333,9 @@ It is possible to set up clusters with only one clustercontroller - changes:
     &lt;/cluster-controllers&gt;
 &lt;/admin&gt;
 
-$ docker run --detach --name node3 --hostname node3.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node3 --hostname node3.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 8083:8080 --publish 19074:19071 --publish 19053:19050 --publish 19095:19092 \
     vespaengine/vespa services
 </pre>
@@ -351,5 +351,5 @@ the cluster state is not updated, and partial query results is expected.
 ## Clean up after testing
 <pre data-test="after">
 $ docker rm -f node0 node1 node2
-$ docker network rm vespa_net
+$ docker network rm vespanet
 </pre>

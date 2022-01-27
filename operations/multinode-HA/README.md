@@ -12,6 +12,8 @@ Also see the smaller and simpler [multinode](../multinode) sample application.
 This is a guide for functional testing, deployed on one host for simplicity.
 Refer to the [mTLS guide](/operations/secure-vespa-with-mtls) for a multinode configuration,
 set up on multiple hosts using Docker Swarm.
+See the [reference documentation](https://docs.vespa.ai/en/reference/metrics.html)
+for use of `/state/v1/health` and `/state/v1/metrics` APIs used in this guide.
 
 There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
@@ -55,7 +57,7 @@ Get the app and create the local network:
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/operations/multinode-HA
-$ docker network create --driver bridge vespa_net
+$ docker network create --driver bridge vespanet
 </pre>
 
 The goal of this sample application is to create a Docker network with 10 nodes,
@@ -73,25 +75,25 @@ e.g. batch writes with high throughput vs. user-driven queries.
 Config servers are normally started first,
 as the other Vespa nodes depend on config servers for startup:
 <pre data-test="exec">
-$ docker run --detach --name node0 --hostname node0.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+$ docker run --detach --name node0 --hostname node0.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
-    --network vespa_net \
+    --network vespanet \
     --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 20092:19092 \
     vespaengine/vespa
-$ docker run --detach --name node1 --hostname node1.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+$ docker run --detach --name node1 --hostname node1.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
-    --network vespa_net \
+    --network vespanet \
     --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 20093:19092 \
     vespaengine/vespa
-$ docker run --detach --name node2 --hostname node2.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
+$ docker run --detach --name node2 --hostname node2.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
-    --network vespa_net \
+    --network vespanet \
     --publish 19073:19071 --publish 19102:19100 --publish 19052:19050 --publish 20094:19092 \
     vespaengine/vespa
 </pre>
@@ -149,9 +151,9 @@ find log messages like
 ## Start admin server
 This is essentially the log server:
 <pre data-test="exec">
-$ docker run --detach --name node3 --hostname node3.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node3 --hostname node3.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 20095:19092 \
     vespaengine/vespa services
 </pre>
@@ -167,14 +169,14 @@ Notes:
 ## Start the feed container cluster
 The feed container cluster has the feed endpoint, normally on 8080.
 <pre data-test="exec">
-$ docker run --detach --name node4 --hostname node4.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node4 --hostname node4.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 8080:8080 --publish 20096:19092 \
     vespaengine/vespa services
-$ docker run --detach --name node5 --hostname node5.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node5 --hostname node5.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 8081:8080 --publish 20097:19092 \
     vespaengine/vespa services
 </pre>
@@ -197,10 +199,10 @@ inspecting the `/ApplicationStatus` endpoint is useful
 As these are nodes 5 and 6 of 10, 60% of services is started:
 
     $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
-      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node8.vespa_net'
-      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node9.vespa_net'
-      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node4.vespa_net -> OK: both ways connectivity verified
-      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node5.vespa_net -> OK: both ways connectivity verified
+      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node8.vespanet'
+      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node9.vespanet'
+      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node4.vespanet -> OK: both ways connectivity verified
+      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node5.vespanet -> OK: both ways connectivity verified
       INFO    : config-sentinel  sentinel.sentinel.connectivity Enough connectivity checks OK, proceeding with service startup
 
 We hence expect the `metric proxy` (runs on all service nodes) to be up - and others:
@@ -210,19 +212,20 @@ We hence expect the `metric proxy` (runs on all service nodes) to be up - and ot
     $ curl http://localhost:19051/state/v1/   # cluster-controller on node1
 
 In short, checking `/state/v1/` for services is useful to validate that services are up.
-At this point it is useful to inspect the application using `vespa-model-inspect`:
+At this point it is useful to inspect the application using
+[vespa-model-inspect](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-model-inspect):
 ```sh
 $ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect hosts"
-node0.vespa_net
-node1.vespa_net
-node2.vespa_net
-node3.vespa_net
-node4.vespa_net
-node5.vespa_net
-node6.vespa_net
-node7.vespa_net
-node8.vespa_net
-node9.vespa_net
+node0.vespanet
+node1.vespanet
+node2.vespanet
+node3.vespanet
+node4.vespanet
+node5.vespanet
+node6.vespanet
+node7.vespanet
+node8.vespanet
+node9.vespanet
 
 $ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect services"
 config-sentinel
@@ -241,18 +244,18 @@ storagenode
 transactionlogserver
 
 $ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect service container"
-container @ node4.vespa_net : 
+container @ node4.vespanet : 
 default/container.0
-    tcp/node4.vespa_net:8080 (STATE EXTERNAL QUERY HTTP)
-    tcp/node4.vespa_net:19100 (EXTERNAL HTTP)
-    tcp/node4.vespa_net:19101 (MESSAGING RPC)
-    tcp/node4.vespa_net:19102 (ADMIN RPC)
-container @ node5.vespa_net : 
+    tcp/node4.vespanet:8080 (STATE EXTERNAL QUERY HTTP)
+    tcp/node4.vespanet:19100 (EXTERNAL HTTP)
+    tcp/node4.vespanet:19101 (MESSAGING RPC)
+    tcp/node4.vespanet:19102 (ADMIN RPC)
+container @ node5.vespanet : 
 default/container.1
-    tcp/node5.vespa_net:8080 (STATE EXTERNAL QUERY HTTP)
-    tcp/node5.vespa_net:19100 (EXTERNAL HTTP)
-    tcp/node5.vespa_net:19101 (MESSAGING RPC)
-    tcp/node5.vespa_net:19102 (ADMIN RPC)
+    tcp/node5.vespanet:8080 (STATE EXTERNAL QUERY HTTP)
+    tcp/node5.vespanet:19100 (EXTERNAL HTTP)
+    tcp/node5.vespanet:19101 (MESSAGING RPC)
+    tcp/node5.vespanet:19102 (ADMIN RPC)
 ```
 
 This tool only uses a config server, it does not check other nodes -
@@ -268,14 +271,14 @@ this tool can be used on any Vespa node.
 ## Start the query container cluster
 The query container cluster has the query endpoint, normally on 8080.
 <pre data-test="exec">
-$ docker run --detach --name node6 --hostname node6.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node6 --hostname node6.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 8082:8080 --publish 20098:19092 \
     vespaengine/vespa services
-$ docker run --detach --name node7 --hostname node7.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node7 --hostname node7.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 8083:8080 --publish 20099:19092 \
     vespaengine/vespa services
 </pre>
@@ -289,28 +292,92 @@ $ curl -s --head http://localhost:8083/ApplicationStatus
 
 ## Start the content cluster:
 <pre data-test="exec">
-$ docker run --detach --name node8 --hostname node8.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node8 --hostname node8.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 19107:19107 --publish 20100:19092 \
     vespaengine/vespa services
-$ docker run --detach --name node9 --hostname node9.vespa_net \
-    -e VESPA_CONFIGSERVERS=node0.vespa_net,node1.vespa_net,node2.vespa_net \
-    --network vespa_net \
+$ docker run --detach --name node9 --hostname node9.vespanet \
+    -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
+    --network vespanet \
     --publish 19108:19107 --publish 20101:19092 \
     vespaengine/vespa services
 </pre>
 
-Check for OK content node startup:
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:20101/state/v1/
+Check for content node startup using `/state/v1/health`:
+<pre data-test="exec" data-test-wait-for='"code":"up"'>
+$ curl http://localhost:19108/state/v1/health
 </pre>
+    {
+        "status": {
+            "code": "up"
+        }
+    }
 
-    HTTP/1.1 200 OK
-    Date: Wed, 19 Jan 2022 09:13:27 GMT
-    Content-Type: application/json
-    Content-Length: 264
+Inspect the content node _process_ metrics using `/state/v1/metrics`:
+<pre data-test="exec" data-test-wait-for='"metrics":  '>
+$ curl http://localhost:19108/state/v1/metrics
+</pre>
+    {
+        "status": {
+            "code": "up"
+        },
+        "metrics": {
+            "snapshot": {
+                "from": 1643285217,
+                "to": 1643285277
+            },
+            "values": [
+                {
+                    "name": "metricmanager.periodichooklatency",
+                    "description": "Time in ms used to update a single periodic hook",
+                    "values": {
+                        "average": 0,
+                        "sum": 0,
+                        "count": 255,
+                        "rate": 4.25,
+                        "min": 0,
+                        "max": 0,
 
+
+Dump the content node _node_ metrics (i.e. _all_ processes on the node) using `/metrics/v1/values`:
+<pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
+$ curl http://localhost:20101/metrics/v1/values
+</pre>
+    {
+        "services": [
+            {
+                "name": "vespa.searchnode",
+                "timestamp": 1643284794,
+                "status": {
+                    "code": "up",
+                    "description": "Data collected successfully"
+            },
+            "metrics": [
+
+Dump the content node _node_ metrics, in Prometheus format:
+<pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
+$ curl http://localhost:20101/metrics/v1/values
+</pre>
+    # HELP memory_virt
+    # TYPE memory_virt untyped
+    memory_virt{metrictype="system",instance="distributor",vespaVersion="7.531.17",vespa_service="vespa_distributor",} 3.39165184E8 1643286737000
+    memory_virt{metrictype="system",instance="logd",vespaVersion="7.531.17",vespa_service="vespa_logd",} 1.29429504E8 1643286737000
+
+Test metrics from all nodes using `/metrics/v2/values`:
+<pre data-test="exec" data-test-wait-for='"services":'>
+curl 'http://localhost:8083/metrics/v2/values' | jq . | less
+</pre>
+    {
+        "nodes": [
+            {
+                "hostname": "node5.vespanet",
+                "role": "hosts/node5.vespanet",
+                "services": [
+                    {
+                        "name": "vespa.container",
+                        "timestamp": 1643289142,
+                        "status": {
 
 
 ## Process overview
@@ -353,7 +420,7 @@ $ curl http://localhost:8082/search/?yql=select%20%2A%20from%20sources%20%2A%20w
 ## Clean up after testing
 <pre data-test="after">
 $ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7 node8 node9
-$ docker network rm vespa_net
+$ docker network rm vespanet
 </pre>
 
 
@@ -368,43 +435,43 @@ Normal deploy output in this guide, as the service nodes are not started yet:
     {
       "time": 1642578267697,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node4.vespa_net",
+      "message": "Unable to lookup IP address of host: node4.vespanet",
       "applicationPackage": true
     },
     {
       "time": 1642578268248,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node5.vespa_net",
+      "message": "Unable to lookup IP address of host: node5.vespanet",
       "applicationPackage": true
     },
     {
       "time": 1642578268701,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node6.vespa_net",
+      "message": "Unable to lookup IP address of host: node6.vespanet",
       "applicationPackage": true
     },
     {
       "time": 1642578269060,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node7.vespa_net",
+      "message": "Unable to lookup IP address of host: node7.vespanet",
       "applicationPackage": true
     },
     {
       "time": 1642578269444,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node3.vespa_net",
+      "message": "Unable to lookup IP address of host: node3.vespanet",
       "applicationPackage": true
     },
     {
       "time": 1642578269870,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node8.vespa_net",
+      "message": "Unable to lookup IP address of host: node8.vespanet",
       "applicationPackage": true
     },
     {
       "time": 1642578270221,
       "level": "WARNING",
-      "message": "Unable to lookup IP address of host: node9.vespa_net",
+      "message": "Unable to lookup IP address of host: node9.vespanet",
       "applicationPackage": true
     }
   ],
