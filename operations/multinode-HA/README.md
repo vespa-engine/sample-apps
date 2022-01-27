@@ -371,7 +371,7 @@ $ curl http://localhost:20101/prometheus/v1/values
 
 Test metrics from all nodes using `/metrics/v2/values`:
 <pre data-test="exec" data-test-wait-for='"services":'>
-curl 'http://localhost:8083/metrics/v2/values' | jq . | less
+curl http://localhost:8083/metrics/v2/values
 </pre>
 ```json
 {
