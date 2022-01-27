@@ -308,53 +308,56 @@ Check for content node startup using `/state/v1/health`:
 <pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl http://localhost:19108/state/v1/health
 </pre>
-    {
-        "status": {
-            "code": "up"
-        }
+```json
+{
+    "status": {
+        "code": "up"
     }
-
+}
+```
 Inspect the content node _process_ metrics using `/state/v1/metrics`:
 <pre data-test="exec" data-test-wait-for='"metrics":  '>
 $ curl http://localhost:19108/state/v1/metrics
 </pre>
-    {
-        "status": {
-            "code": "up"
+```json
+{
+    "status": {
+        "code": "up"
+    },
+    "metrics": {
+        "snapshot": {
+            "from": 1643285217,
+            "to": 1643285277
         },
-        "metrics": {
-            "snapshot": {
-                "from": 1643285217,
-                "to": 1643285277
-            },
-            "values": [
-                {
-                    "name": "metricmanager.periodichooklatency",
-                    "description": "Time in ms used to update a single periodic hook",
-                    "values": {
-                        "average": 0,
-                        "sum": 0,
-                        "count": 255,
-                        "rate": 4.25,
-                        "min": 0,
-                        "max": 0,
-
+        "values": [
+            {
+                "name": "metricmanager.periodichooklatency",
+                "description": "Time in ms used to update a single periodic hook",
+                "values": {
+                    "average": 0,
+                    "sum": 0,
+                    "count": 255,
+                    "rate": 4.25,
+                    "min": 0,
+                    "max": 0,
+```
 
 Dump the content node _node_ metrics (i.e. _all_ processes on the node) using `/metrics/v1/values`:
 <pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
 $ curl http://localhost:20101/metrics/v1/values
 </pre>
-    {
-        "services": [
-            {
-                "name": "vespa.searchnode",
-                "timestamp": 1643284794,
-                "status": {
-                    "code": "up",
-                    "description": "Data collected successfully"
-            },
-            "metrics": [
-
+```json
+{
+    "services": [
+        {
+            "name": "vespa.searchnode",
+            "timestamp": 1643284794,
+            "status": {
+                "code": "up",
+                "description": "Data collected successfully"
+        },
+        "metrics": [
+```
 Dump the content node _node_ metrics, in Prometheus format:
 <pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
 $ curl http://localhost:20101/metrics/v1/values
@@ -368,17 +371,18 @@ Test metrics from all nodes using `/metrics/v2/values`:
 <pre data-test="exec" data-test-wait-for='"services":'>
 curl 'http://localhost:8083/metrics/v2/values' | jq . | less
 </pre>
-    {
-        "nodes": [
-            {
-                "hostname": "node5.vespanet",
-                "role": "hosts/node5.vespanet",
-                "services": [
-                    {
-                        "name": "vespa.container",
-                        "timestamp": 1643289142,
-                        "status": {
-
+```json
+{
+    "nodes": [
+        {
+            "hostname": "node5.vespanet",
+            "role": "hosts/node5.vespanet",
+            "services": [
+                {
+                    "name": "vespa.container",
+                    "timestamp": 1643289142,
+                    "status": {
+```
 
 ## Process overview
 Notes:
