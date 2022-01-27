@@ -3,7 +3,6 @@ package ai.vespa.example.joins;
 
 import ai.vespa.example.joins.Intersector.Intersection;
 import ai.vespa.example.joins.Intersector.Interval;
-import com.yahoo.prelude.fastsearch.DocumentdbInfoConfig;
 import com.yahoo.prelude.query.AndItem;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.Limit;
