@@ -362,7 +362,7 @@ $ curl http://localhost:20101/metrics/v1/values
 ```
 Dump the content node _node_ metrics, in Prometheus format:
 <pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
-$ curl http://localhost:20101/metrics/v1/values
+$ curl http://localhost:20101/prometheus/v1/values
 </pre>
     # HELP memory_virt
     # TYPE memory_virt untyped
