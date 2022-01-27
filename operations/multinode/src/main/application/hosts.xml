@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <hosts>
-  <host name="node0.vespa_net">
+  <host name="node0.vespanet">
     <alias>node0</alias>
   </host>
-  <host name="node1.vespa_net">
+  <host name="node1.vespanet">
     <alias>node1</alias>
   </host>
-  <host name="node2.vespa_net">
+  <host name="node2.vespanet">
     <alias>node2</alias>
   </host>
 </hosts>
