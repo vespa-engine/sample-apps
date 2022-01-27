@@ -317,6 +317,7 @@ $ curl http://localhost:19108/state/v1/health
     }
 }
 ```
+
 Inspect the content node _process_ metrics using `/state/v1/metrics`:
 <pre data-test="exec" data-test-wait-for='"metrics":  '>
 $ curl http://localhost:19108/state/v1/metrics
@@ -360,6 +361,7 @@ $ curl http://localhost:20101/metrics/v1/values
         },
         "metrics": [
 ```
+
 Dump the content node _node_ metrics, in Prometheus format:
 <pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
 $ curl http://localhost:20101/prometheus/v1/values
