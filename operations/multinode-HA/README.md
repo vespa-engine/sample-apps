@@ -143,6 +143,7 @@ Meaning, here we have started only 3/10, so `slobrok` and `cluster-controller` a
 find log messages like
 
     $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
+
       WARNING : config-sentinel  sentinel.sentinel.connectivity Only 3 of 10 nodes are up and OK, 30.0% (min is 50%)
       WARNING : config-sentinel  sentinel.sentinel.env Bad network connectivity (try 71)
 
@@ -199,6 +200,7 @@ inspecting the `/ApplicationStatus` endpoint is useful
 As these are nodes 5 and 6 of 10, 60% of services is started:
 
     $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
+
       WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node8.vespanet'
       WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node9.vespanet'
       INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node4.vespanet -> OK: both ways connectivity verified
