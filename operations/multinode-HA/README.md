@@ -38,7 +38,7 @@ See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
 Also see [troubleshooting](/operations/README.md#troubleshooting).
 
-This guide is tested with Docker using 16G Memory:
+This guide is tested with Docker using 12G Memory:
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
@@ -143,6 +143,7 @@ Meaning, here we have started only 3/10, so `slobrok` and `cluster-controller` a
 find log messages like
 
     $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
+
       WARNING : config-sentinel  sentinel.sentinel.connectivity Only 3 of 10 nodes are up and OK, 30.0% (min is 50%)
       WARNING : config-sentinel  sentinel.sentinel.env Bad network connectivity (try 71)
 
@@ -199,6 +200,7 @@ inspecting the `/ApplicationStatus` endpoint is useful
 As these are nodes 5 and 6 of 10, 60% of services is started:
 
     $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
+
       WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node8.vespanet'
       WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node9.vespanet'
       INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node4.vespanet -> OK: both ways connectivity verified
@@ -308,56 +310,61 @@ Check for content node startup using `/state/v1/health`:
 <pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl http://localhost:19108/state/v1/health
 </pre>
-    {
-        "status": {
-            "code": "up"
-        }
+```json
+{
+    "status": {
+        "code": "up"
     }
+}
+```
 
 Inspect the content node _process_ metrics using `/state/v1/metrics`:
 <pre data-test="exec" data-test-wait-for='"metrics":  '>
 $ curl http://localhost:19108/state/v1/metrics
 </pre>
-    {
-        "status": {
-            "code": "up"
+```json
+{
+    "status": {
+        "code": "up"
+    },
+    "metrics": {
+        "snapshot": {
+            "from": 1643285217,
+            "to": 1643285277
         },
-        "metrics": {
-            "snapshot": {
-                "from": 1643285217,
-                "to": 1643285277
-            },
-            "values": [
-                {
-                    "name": "metricmanager.periodichooklatency",
-                    "description": "Time in ms used to update a single periodic hook",
-                    "values": {
-                        "average": 0,
-                        "sum": 0,
-                        "count": 255,
-                        "rate": 4.25,
-                        "min": 0,
-                        "max": 0,
-
+        "values": [
+            {
+                "name": "metricmanager.periodichooklatency",
+                "description": "Time in ms used to update a single periodic hook",
+                "values": {
+                    "average": 0,
+                    "sum": 0,
+                    "count": 255,
+                    "rate": 4.25,
+                    "min": 0,
+                    "max": 0,
+```
 
 Dump the content node _node_ metrics (i.e. _all_ processes on the node) using `/metrics/v1/values`:
 <pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
 $ curl http://localhost:20101/metrics/v1/values
 </pre>
-    {
-        "services": [
-            {
-                "name": "vespa.searchnode",
-                "timestamp": 1643284794,
-                "status": {
-                    "code": "up",
-                    "description": "Data collected successfully"
-            },
-            "metrics": [
+```json
+{
+    "services": [
+        {
+            "name": "vespa.searchnode",
+            "timestamp": 1643284794,
+            "status": {
+                "code": "up",
+                "description": "Data collected successfully"
+        },
+        "metrics": [
+```
 
 Dump the content node _node_ metrics, in Prometheus format:
 <pre data-test="exec" data-test-wait-for='"name":"vespa.searchnode"'>
-$ curl http://localhost:20101/metrics/v1/values
+$ curl http://localhost:20101/prometheus/v1/values
 </pre>
     # HELP memory_virt
     # TYPE memory_virt untyped
@@ -366,19 +373,20 @@ $ curl http://localhost:20101/metrics/v1/values
 
 Test metrics from all nodes using `/metrics/v2/values`:
 <pre data-test="exec" data-test-wait-for='"services":'>
-curl 'http://localhost:8083/metrics/v2/values' | jq . | less
+curl http://localhost:8083/metrics/v2/values
 </pre>
-    {
-        "nodes": [
-            {
-                "hostname": "node5.vespanet",
-                "role": "hosts/node5.vespanet",
-                "services": [
-                    {
-                        "name": "vespa.container",
-                        "timestamp": 1643289142,
-                        "status": {
-
+```json
+{
+    "nodes": [
+        {
+            "hostname": "node5.vespanet",
+            "role": "hosts/node5.vespanet",
+            "services": [
+                {
+                    "name": "vespa.container",
+                    "timestamp": 1643289142,
+                    "status": {
+```
 
 ## Process overview
 Notes:
@@ -391,6 +399,8 @@ Notes:
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
 * The [cluster controller](https://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
   manages the system state, and is useful in debugging cluster failures.
+* The [metrics proxy](https://docs.vespa.ai/en/reference/metrics.html) is used to aggregate metrics 
+  from all processes on a node, serving on _http://node:19092/metrics/v1/values_
 
 
 
