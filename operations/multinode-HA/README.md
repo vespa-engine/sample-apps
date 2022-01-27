@@ -38,7 +38,7 @@ See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
 Also see [troubleshooting](/operations/README.md#troubleshooting).
 
-This guide is tested with Docker using 16G Memory:
+This guide is tested with Docker using 12G Memory:
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
