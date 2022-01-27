@@ -397,6 +397,8 @@ Notes:
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
 * The [cluster controller](https://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
   manages the system state, and is useful in debugging cluster failures.
+* The [metrics proxy](https://docs.vespa.ai/en/reference/metrics.html) is used to aggregate metrics 
+  from all processes on a node, serving on _http://node:19092/metrics/v1/values_
 
 
 
