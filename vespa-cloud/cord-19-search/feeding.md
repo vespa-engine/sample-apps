@@ -1,3 +1,6 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
 ## Prerequisites
 ```
@@ -47,15 +50,3 @@ Use [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html) to feed
 ```
 vespa-feed-client --file feed-file.json --endpoint <endpoint-url>  --verbose
 ```
-
-
-
-
-
-
- 
-
-
-
-
-
