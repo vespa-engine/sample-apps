@@ -3,6 +3,7 @@ package ai.vespa.example.joins;
 
 import ai.vespa.example.joins.Intersector.Intersection;
 import ai.vespa.example.joins.Intersector.Interval;
+import com.yahoo.prelude.fastsearch.DocumentdbInfoConfig;
 import com.yahoo.prelude.query.AndItem;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.Limit;
@@ -24,13 +25,14 @@ import java.util.Optional;
 
 public class JoinSearcher extends Searcher {
 
+    private static final String ATTRIBUTE_ONLY_SUMMARY_CLASS = "attribute-only";
     @Override
     public Result search(Query query, Execution execution) {
         Optional<JoinSpec> spec = JoinSpec.from(query);
         if (spec.isEmpty()) return execution.search(query); // No join spec so skip this searcher
 
         Result aResult = execution.search(spec.get().addATerms(query.clone()));
-        execution.fillAttributes(aResult);
+        execution.fill(aResult, ATTRIBUTE_ONLY_SUMMARY_CLASS);
 
         switch (spec.get().variant) {
             case queryPerHit: return joinWithQueryPerHit(query.clone(), aResult, spec.get(), execution);
@@ -59,7 +61,7 @@ public class JoinSearcher extends Searcher {
         query.getModel().getQueryTree().and(new WordItem(aHit.getField("id").toString(), "id"));
         spec.addInterval((long)aHit.getField("start"), (long)aHit.getField("end"), query);
         Result bResult = execution.search(query);
-        execution.fillAttributes(bResult);
+        execution.fill(bResult, ATTRIBUTE_ONLY_SUMMARY_CLASS);
         List<Hit> joinedHits = new ArrayList<>();
         for (Hit bHit : bResult.hits()) {
             Hit joinedHit = aHit.clone();
@@ -82,8 +84,7 @@ public class JoinSearcher extends Searcher {
         query.getModel().getQueryTree().and(rangesRoot);
 
         Result result = execution.search(query);
-        execution.fillAttributes(result);
-
+        execution.fill(result, ATTRIBUTE_ONLY_SUMMARY_CLASS);
         for (Hit hit : aResult.hits()) {
             if (hit.isAuxiliary()) {
                 result.hits().add(hit);
@@ -125,7 +126,7 @@ public class JoinSearcher extends Searcher {
     private List<Hit> joinInContainer(Query query, String id, List<HitInterval> aIntervals, Execution execution) {
         query.getModel().getQueryTree().and(new WordItem(id, "id"));
         Result bResult = execution.search(query);
-        execution.fillAttributes(bResult);
+        execution.fill(bResult, ATTRIBUTE_ONLY_SUMMARY_CLASS);
 
         List<HitInterval> bIntervals = new ArrayList<>();
         for (Hit bHit : bResult.hits()) {
