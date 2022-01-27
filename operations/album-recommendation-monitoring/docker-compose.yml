@@ -27,7 +27,6 @@ services:
       dockerfile: vespa/VespaAlternateDockerfile
     container_name: vespa
     hostname: vespa-container
-    privileged: true
     volumes:
       - ..:/vespa-sample-apps
     ports:
