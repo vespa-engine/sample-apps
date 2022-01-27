@@ -25,6 +25,7 @@ import java.util.Optional;
 public class JoinSearcher extends Searcher {
 
     private static final String ATTRIBUTE_ONLY_SUMMARY_CLASS = "attribute-only";
+
     @Override
     public Result search(Query query, Execution execution) {
         Optional<JoinSpec> spec = JoinSpec.from(query);
