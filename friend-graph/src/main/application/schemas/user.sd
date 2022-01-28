@@ -1,0 +1,48 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema user {
+
+    document user {
+
+        field uuid type string {
+          indexing: summary |index
+          match:word
+          rank:filter
+        }
+
+        field firstname type string {
+            indexing: summary | index
+            match {
+              gram
+              gram-size: 3
+            }
+        }
+
+        field lastname type string {
+            indexing: summary | index
+            match {
+              gram
+              gram-size: 3
+            }
+        }
+
+        field id type tensor<int8>(uuid{}) {
+            indexing: summary | attribute
+            attribute:fast-search 
+        }
+
+    }
+    fieldset default {
+      fields: firstname, lastname
+    }
+
+    rank-profile friend inherits default {
+      function social() {
+        expression: sum(query(friends) * attribute(id)) 
+      } 
+      first-phase {
+        expression: 2*social() + nativeRank(firstname) + nativeRank(lastname)
+      }
+      match-features: social() nativeRank(firstname) nativeRank(lastname)
+    }
+}

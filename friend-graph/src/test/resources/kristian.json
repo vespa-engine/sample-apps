@@ -1,0 +1,13 @@
+{
+    "put": "id:app:user::1",
+    "fields": {
+        "firstname": "Kristian",
+        "lastname": "Aune",
+        "uuid": "1",
+        "id": {
+            "cells": [
+                { "address" : { "uuid" : "1" },  "value": 1 }
+            ]
+        }
+    }
+}
