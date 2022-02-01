@@ -27,7 +27,7 @@ schema user {
       fields: firstname, lastname
     }
 }
-<pre>
+</pre>
 The *id* tensor field is used for the tensor sparse dot product and only contain *one* cell. The reason
 we use a tensor type for the *id* field is to optimize the sparse tensor dot product. The redundant
 *uuid* field which could have the same value, is used for matching, as tensors generally cannot be used for matching,
