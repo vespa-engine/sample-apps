@@ -4,9 +4,12 @@
 
 # Vespa sample applications - Friend Graph Search 
 
-Given a directed social graph (possible maintained outside of Vespa), that maintains the edges in the social graph :
+Given a directed social graph (possible maintained outside of Vespa), that keeps tracks of the 
+edges (relationship) in the social graph :
 
 * user_id (uuid) is friend with user_id (uuid) with weight k
+
+The graph could also be represented in Vespa, and fetched before executing the name search.
 
 We want to search using n-gram matching over first name and last name, and rank users 
 that are (always), regardless of text matching score. Similar mechanism can be used
@@ -31,7 +34,8 @@ schema user {
 The *id* tensor field is used for the tensor sparse dot product and only contain *one* cell. The reason
 we use a tensor type for the *id* field is to optimize the sparse tensor dot product. The redundant
 *uuid* field which could have the same value, is used for matching, as tensors generally cannot be used for matching,
-only ranking.
+only ranking. See [tensor user guide](https://docs.vespa.ai/en/tensor-user-guide.html), and 
+[tensor computation example](https://docs.vespa.ai/en/tensor-examples.html).
 
 ## Ranking 
 <pre>
