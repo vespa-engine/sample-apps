@@ -2,8 +2,9 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-# MS Marco Document Ranking 
 
+
+# MS Marco Document Ranking
 The baseline model for MS Marco *Document* Ranking using sparse lexical matching and a GBDT re-ranking model
 trained using [LightGBM](https://github.com/microsoft/LightGBM). 
 To enhance the first phase retrieval, 
@@ -12,8 +13,9 @@ a sequence-to-sequence neural network (T5) is used to perform document expansion
 This initial baseline scores a MRR@100 of 0.355 on the **dev** and 0.312 on the **eval** set.
 See [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/).
 
-# Vespa Document Schema 
 
+
+# Vespa Document Schema
 <pre>
 schema doc {
 
@@ -54,6 +56,8 @@ The authors have published their pre-generated model and we use their prediction
 The only difference from the original
 is that suggested expansion queries are indexed as an array instead of a blob of text. 
 This allows calculating ranking features which takes proximity into account. 
+
+
 
 # Training (LTR)
 The MS Marco Train split to scrape features for traditional LTR. 
@@ -129,6 +133,7 @@ docranker.json is deployed with the Vespa application package and translated to 
 See [docranker.json (25MB)](src/main/application/models/docranker.json)
 
 
+
 # Ranking Evaluation 
 See Vespa on the [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/)
 
@@ -139,9 +144,10 @@ The official metric on MS Marco is [MRR@100](https://en.wikipedia.org/wiki/Mean_
 **Dev MRR@100 = 0.355**,
 **Eval MRR@100 = 0.312** 
 
-A baseline bm25 model has MRR@100 around 0.161 on the Eval set. 
-  
-  
+A baseline bm25 model has MRR@100 around 0.161 on the Eval set.
+
+
+
 # Run Time Serving Performance
 Vespa's evaluation of GBDT models is hyper optimized after 20 years of using GBDT at scale 
 so end to end serving time is roughly 20 ms. 
@@ -154,6 +160,7 @@ This allows scaling latency per node and make use of multi-core cpu architecture
 See the top two documents ranked for the question *when was nelson mandela born* below.
 
 ![Vespa Response for when was nelson mandela born](img/screen.png)
+
 
 ## Quick start
 
@@ -229,8 +236,8 @@ Now, wait for the application to start:
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
-## Feeding Sample Data 
 
+## Feeding Sample Data
 Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
@@ -265,6 +272,12 @@ $ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of
 The data set is small, but one gets a feel for how the data and how the document to query expansion work. 
 Note that negative relevance scores from the GBDT evaluation is normal. 
 
+Shutdown and remove the Docker container:
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
+
+
 ## Full Evaluation (Using full dataset, all 3.2M documents)
 Download and index the entire data set, including the document to query expansion. 
 
@@ -272,13 +285,15 @@ Download and index the entire data set, including the document to query expansio
 $ python3 -m pip install ir_datasets tqdm requests
 </pre>
 
+
 ### Download all documents 
 <pre>
 $ ir_datasets export msmarco-document/train docs --format jsonl | \
   ./src/main/python/document-feed.py > all-feed.jsonl
 </pre>
 
-## doc to query document expansion
+
+## Doc to query document expansion
 For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
 Follow the instructions at [https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
 but replace *paste -d" "* with *paste -d"#"*
@@ -314,6 +329,7 @@ $ vespa-feed-client --file all-feed.jsonl --endpoint http://localhost:8080
 <pre>
 $ vespa-feed-client --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
 </pre>
+
 
 ## Query Evaluation
 The following script will run all queries from the MS Marco document ranking **dev** split. 
