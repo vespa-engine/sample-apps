@@ -1,36 +1,15 @@
 {
-    "name": "Query before and after album update, after application upgrade",
-    "comment": "Run staging-setup, with no stemming on the 'album' field, then re-add that, and run this.",
+    "name": "Query after application upgrade",
+    "comment": "The test steps here are run after the test deployment is upgraded to the next platform and/or application package.",
     "defaults": {
         "cluster": "default"
     },
     "steps": [
         {
-            "name": "query before album update",
-            "comment": "If the document was fed with deafult stemming, this step fails. For a non-upgrade scenario, remove this step, and the next.",
-            "request": {
-                "parameters": "../query.json"
-            },
-            "response": {
-                "body": {
-                    "root": {
-                        "fields": {
-                            "totalCount": 0
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "name": "update album field",
-            "request": {
-                "method": "PUT",
-                "uri": "/document/v1/test/music/docid/foo",
-                "body": "../update.json"
-            }
-        },
-        {
-            "name": "query after album update",
+            "name": "query for 'fighter'",
+            "comment": "Consider removing stemming from the 'artist' field, and updating the expected ../hit.json to assert no hits;",
+            "more-comment": "since the old (current) config is _with_ stemming, the doc will be fed _with_ stemming prior to upgrade,",
+            "even-more-comment": "and it will match ('fighters' was stemmed to 'fighter'). This is different from the system-test.",
             "request": {
                 "parameters": "../query.json"
             },
