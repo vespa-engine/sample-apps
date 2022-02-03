@@ -7,9 +7,7 @@
     "steps": [
         {
             "name": "query for 'fighter'",
-            "comment": "Consider removing stemming from the 'artist' field, and updating the expected ../hit.json to assert no hits;",
-            "more-comment": "since the old (current) config is _with_ stemming, the doc will be fed _with_ stemming prior to upgrade,",
-            "even-more-comment": "and it will match ('fighters' was stemmed to 'fighter'). This is different from the system-test.",
+            "comment": "Document was fed while the old application code was deployed, and will still be there",
             "request": {
                 "parameters": "../query.json"
             },
