@@ -1,6 +1,6 @@
 {
     "name": "Feed prior to upgrade",
-    "comment": "Deploy with 'stemming: none' for the album field, then run this.",
+    "comment": "The setup steps are run against the test deployment before it is upgraded.",
     "steps": [
         {
             "name": "feed foo",
