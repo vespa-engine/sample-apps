@@ -68,8 +68,8 @@ jobs:
           #Install git 2.9 since CentOs Image has old git 1.8 which brew install routine will not accept
           yum -y install autoconf cpio curl-devel expat-devel gcc gettext-devel make openssl-devel perl-ExtUtils-MakeMaker zlib-devel wget
           yum -y remove git git-*
-          rm /usr/local/git/bin/*
-          rm /usr/bin/git*
+          rm -f /usr/local/git/bin/*
+          rm -f /usr/bin/git*
           wget -O v2.9.0.tar.gz https://github.com/git/git/archive/v2.9.0.tar.gz
           tar -xzvf ./v2.9.0.tar.gz
           cd git-2.9.0/
