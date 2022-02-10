@@ -78,6 +78,14 @@ jobs:
           make && make install
           ln -sv /usr/local/git/bin/* /usr/bin/
           git --version
+          #brew is picky and wants a recent curl release
+          wget --no-check-certificate https://curl.se/download/curl-7.81.0.tar.gz
+          gunzip -c curl-7.81.0.tar.gz | tar xvf -
+          cd curl-7.81.0
+          ./configure --with-ssl
+          make
+          make install
+
           #Install brew to get vespa-cli 
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           brew install vespa-cli 
