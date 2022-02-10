@@ -60,7 +60,7 @@ $ curl --header Content-Type:application/zip --data-binary @target/application.z
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
-**Download Create data feed:**
+**Download and create data feed:**
 
 First, create data feed for products:
 <pre data-test="exec">
