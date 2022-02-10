@@ -2,8 +2,6 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-
-
 # MS Marco Document Ranking
 The baseline model for MS Marco *Document* Ranking using sparse lexical matching and a GBDT re-ranking model
 trained using [LightGBM](https://github.com/microsoft/LightGBM). 
@@ -12,8 +10,6 @@ a sequence-to-sequence neural network (T5) is used to perform document expansion
  
 This initial baseline scores a MRR@100 of 0.355 on the **dev** and 0.312 on the **eval** set.
 See [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/).
-
-
 
 # Vespa Document Schema
 <pre>
@@ -53,11 +49,9 @@ The original text fields plus an additional field from docTTTTTQuery is used by 
 see Rodrigo Nogueira and Jimmy Lin paper: 
 [From doc2query to docTTTTTquery](https://cs.uwaterloo.ca/~jimmylin/publications/Nogueira_Lin_2019_docTTTTTquery-v2.pdf). 
 The authors have published their pre-generated model and we use their predictions directly as is.
-The only difference from the original
+The only difference from the original paper and implementation
 is that suggested expansion queries are indexed as an array instead of a blob of text. 
 This allows calculating ranking features which takes proximity into account. 
-
-
 
 # Training (LTR)
 The MS Marco Train split to scrape features for traditional LTR. 
@@ -130,9 +124,6 @@ rank-profile ltr inherits ltr-scrape {
 </pre>
 
 docranker.json is deployed with the Vespa application package and translated to Vespa's optimized GBDT model evaluation. 
-See [docranker.json (25MB)](src/main/application/models/docranker.json)
-
-
 
 # Ranking Evaluation 
 See Vespa on the [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/)
@@ -145,8 +136,6 @@ The official metric on MS Marco is [MRR@100](https://en.wikipedia.org/wiki/Mean_
 **Eval MRR@100 = 0.312** 
 
 A baseline bm25 model has MRR@100 around 0.161 on the Eval set.
-
-
 
 # Run Time Serving Performance
 Vespa's evaluation of GBDT models is hyper optimized after 20 years of using GBDT at scale 
@@ -223,6 +212,12 @@ Wait for configuration service to start (the command below should return a 200 O
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
+<pre data-test="exec">
+$ curl -L -o src/main/application/models/docranker.json.zst \
+  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
+$ zstd -d src/main/application/models/docranker.json.zst 
+</pre>
+
 Deploy the application package:
 
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
@@ -238,12 +233,30 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 
 ## Feeding Sample Data
-Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html).
+
+Download feeding client
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
     https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
 $ unzip vespa-feed-client-cli.zip
 </pre>
+
+#Download sample feed files
+
+<pre data-test="exec">
+$ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
+    https://data.vespa.oath.cloud/sample-apps/feeds/sample_regular_fields.jsonl.zst 
+
+$ curl -L -o sample-feed/sample_doc_t5_query.jsonl.zst \
+    https://data.vespa.oath.cloud/sample-apps/feeds/sample_doc_t5_query.jsonl.zst
+
+$ zstd -d sample-feed/sample_regular_fields.jsonl.zst 
+
+$ zstd -d sample-feed/sample_doc_t5_query.jsonl.zst 
+</pre>
+
+Feed the data
 
 <pre data-test="exec">
 $ ./vespa-feed-client-cli/vespa-feed-client \
