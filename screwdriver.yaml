@@ -65,6 +65,9 @@ jobs:
             rh-ruby27-rubygem-net-telnet devtoolset-9-gcc-c++
           source /opt/rh/rh-ruby27/enable
           source /opt/rh/devtoolset-9/enable
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install vespa-cli 
+          vespa help
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
