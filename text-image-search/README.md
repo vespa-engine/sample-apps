@@ -21,7 +21,7 @@ The other is a stand-alone Vespa application, which is more suitable for product
 
 The Python sample app includes a streamlit user interface:
 
-![Text-Image Search with Vespa](resources/demo.gif)
+![Text-Image Search with Vespa](https://data.vespa.oath.cloud/sample-apps/media/image_demo.gif)
 
 
 ## Vespa CLI
