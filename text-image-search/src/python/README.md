@@ -60,4 +60,4 @@ Now you are ready to run the app:
 streamlit run app.py
 ```
 
-![Text-Image Search with Vespa](../../resources/demo.gif)
+![Text-Image Search with Vespa](https://data.vespa.oath.cloud/sample-apps/media/image_demo.gif)
