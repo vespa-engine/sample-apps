@@ -95,6 +95,10 @@ jobs:
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew install vespa-cli 
           vespa help
+          curl --version 
+          #uinstall curl - we are in curl-7-81.0 dir
+          make uninstall
+          
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
