@@ -33,7 +33,6 @@ $ docker info | grep "Total Memory"
 
 Clone the sample apps :
 
-<pre data-test="exec">
 **Check-out, compile and run:**
 
 <pre data-test="exec">
