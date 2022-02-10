@@ -398,6 +398,15 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/msmarco-ranking
 </pre>
 
+Since the sample app is used for both document and passage ranking we need also to download the
+[document-ranking](document-ranking.md) GBDT model:
+
+<pre data-test="exec">
+$ curl -L -o src/main/application/models/docranker.json.zst \
+  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
+$ zstd -d src/main/application/models/docranker.json.zst 
+</pre>
+
 Build the application package. This step also downloads the three ONNX models used in this application package. The download
 script used is found [here](src/main/bash/download_models.sh). 
 

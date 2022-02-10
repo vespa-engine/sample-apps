@@ -14,14 +14,26 @@ but you can download other data from the site above and use the scripts to conve
 
 ### How to run
 
-**Validate environment, should be minimum 6 Gb:**
+Requirements:
 
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-for details and troubleshooting:
+* [Docker](https://www.docker.com/) installed and running. 6GB available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Git client to check out the sample application repository
+* Java 11, Maven and python3
+* zstd: `brew install zstd`
+* Operating system: macOS or Linux, Architecture: x86_64
+
+
+Validate environment, should be minimum 6GB:
+
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
+Clone the sample apps :
+
+<pre data-test="exec">
 **Check-out, compile and run:**
 
 <pre data-test="exec">
@@ -48,16 +60,20 @@ $ curl --header Content-Type:application/zip --data-binary @target/application.z
 $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
-**Create data feed:**
+**Download and create data feed:**
 
 First, create data feed for products:
 <pre data-test="exec">
-$ gunzip -c meta_sports_20k_sample.json.gz | ./convert_meta.py > feed_items.json
+$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa.oath.cloud/sample-apps/feeds/meta_sports_20k_sample.json.zst 
+$ zstd -d meta_sports_20k_sample.json.zst
+$ cat meta_sports_20k_sample.json | ./convert_meta.py > feed_items.json
 </pre>
 
 Next, data feed for reviews:
 <pre data-test="exec">
-$ gunzip -c reviews_sports_24k_sample.json.gz | ./convert_reviews.py > feed_reviews.json
+$ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa.oath.cloud/sample-apps/feeds/reviews_sports_24k_sample.json.zst
+$ zstd -d reviews_sports_24k_sample.json.zst 
+$ cat reviews_sports_24k_sample.json | ./convert_reviews.py > feed_reviews.json
 </pre>
 
 **Feed data:**
