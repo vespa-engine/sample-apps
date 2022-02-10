@@ -65,6 +65,11 @@ jobs:
             rh-ruby27-rubygem-net-telnet devtoolset-9-gcc-c++
           source /opt/rh/rh-ruby27/enable
           source /opt/rh/devtoolset-9/enable
+          
+          yum -y install centos-release-scl
+          yum-config-manager --enable rhel-server-rhscl-7-rpms
+          yum -y install devtoolset-7
+
           #Install git 2.9 since CentOs Image has old git 1.8 which brew install routine will not accept
           yum -y install autoconf cpio curl-devel expat-devel gcc gettext-devel make openssl-devel perl-ExtUtils-MakeMaker zlib-devel wget
           yum -y remove git git-*
@@ -83,8 +88,7 @@ jobs:
           gunzip -c curl-7.81.0.tar.gz | tar xvf -
           cd curl-7.81.0
           ./configure --with-ssl
-          make
-          make install
+          make && make install
 
           #Install brew to get vespa-cli 
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
