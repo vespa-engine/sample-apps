@@ -65,10 +65,7 @@ jobs:
             rh-ruby27-rubygem-net-telnet devtoolset-9-gcc-c++
           source /opt/rh/rh-ruby27/enable
           source /opt/rh/devtoolset-9/enable
-          wget https://github.com/vespa-engine/vespa/releases/download/v7.534.29/vespa-cli_7.534.29_linux_amd64.tar.gz
-          tar xzvf vespa-cli_7.534.29_linux_amd64.tar.gz
-          mv vespa-cli_7.534.29_linux_amd64/bin/vespa /usr/bin/
-          vespa version
+       
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
