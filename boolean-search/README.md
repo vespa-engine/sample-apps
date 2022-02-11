@@ -67,7 +67,7 @@ $ ./vespa-feed-client-cli/vespa-feed-client --verbose --file adsdata.json --endp
 
 **Test the application:**
 <pre data-test="exec" data-test-assert-contains="ACME Rocket Sled">
-$ curl "http://localhost:8080/search/?yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B" | python -m json.tool
+$ curl "http://localhost:8080/search/?yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B"
 </pre>
 
 **Shutdown and remove the container:**
