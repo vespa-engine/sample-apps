@@ -2,7 +2,6 @@
 
 urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/boolean-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/multiple-bundles/README.md"

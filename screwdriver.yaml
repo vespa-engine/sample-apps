@@ -69,3 +69,27 @@ jobs:
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
           $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
+
+  verify-guides-ubuntu:
+    requires: [~pr, ~commit]
+    secrets:
+      - VESPA_TEAM_API_KEY
+    image: ubuntu
+    environment:
+      USER_SHELL_BIN: bash
+    annotations:
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
+    steps:
+      - install-deps: |
+          apt update
+          apt install -y openjdk-11-jdk < /dev/null
+          apt install -y docker.io zstd curl maven unzip python3 python3-pip
+          python3 -m pip install -qqq -r test/requirements.txt --user
+      - run-tests: |
+          export VESPA_TEAM_API_KEY
+          cd $SD_DIND_SHARE_PATH
+          $SD_SOURCE_DIR/test/test.py -v -c $SD_SOURCE_DIR/test/_test_config_new.yml
