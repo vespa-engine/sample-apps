@@ -192,6 +192,13 @@ The models mentioned here are only used for the [passage-ranking.md](passage-ran
 but since both passage and document ranking shares the same application
 we also need these models to run this step to step guide.
 
+<pre data-test="exec">
+$ mkdir -p src/main/application/models
+$ curl -L -o src/main/application/models/docranker.json.zst \
+  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
+$ zstd -d src/main/application/models/docranker.json.zst 
+</pre>
+
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="120">
 $ mvn clean package -U
 </pre>
@@ -212,11 +219,6 @@ Wait for configuration service to start (the command below should return a 200 O
 $ curl -s --head http://localhost:19071/ApplicationStatus
 </pre>
 
-<pre data-test="exec">
-$ curl -L -o src/main/application/models/docranker.json.zst \
-  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
-$ zstd -d src/main/application/models/docranker.json.zst 
-</pre>
 
 Deploy the application package:
 
@@ -242,7 +244,7 @@ $ curl -L -o vespa-feed-client-cli.zip \
 $ unzip vespa-feed-client-cli.zip
 </pre>
 
-#Download sample feed files
+### Download sample feed files
 
 <pre data-test="exec">
 $ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
