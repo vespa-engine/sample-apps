@@ -37,45 +37,8 @@ jobs:
           source /etc/profile.d/jdk-env.sh
           mvn -V --batch-mode --no-snapshot-updates install
 
-  verify-guides:
-    requires: [~commit]
-    secrets:
-      - VESPA_TEAM_API_KEY
-    image: vespaengine/vespa-pipeline
-    environment:
-      USER_SHELL_BIN: bash
-    annotations:
-      screwdriver.cd/cpu: TURBO
-      screwdriver.cd/ram: TURBO
-      screwdriver.cd/dockerEnabled: true
-      screwdriver.cd/dockerCpu: TURBO
-      screwdriver.cd/dockerRam: TURBO
-    steps:
-      - install-deps: |
-          source /etc/profile.d/jdk-env.sh
-          export PATH="$JAVA_HOME/bin:$PATH"
-          yum install -y python36-pip
-          python3 -m pip install -qqq --upgrade pip
-          python3 -m pip install -qqq -r test/requirements.txt --user
-          yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-          yum install -y zstd unzip wget
-          yum install -y docker-ce docker-ce-cli containerd.io openssl yum-utils
-          yum -y install --setopt=skip_missing_names_on_install=False \
-            rh-maven35 libxml2-devel rh-ruby27 rh-ruby27-rubygems-devel rh-ruby27-ruby-devel \
-            rh-ruby27-rubygem-net-telnet devtoolset-9-gcc-c++
-          source /opt/rh/rh-ruby27/enable
-          source /opt/rh/devtoolset-9/enable
-          wget https://github.com/vespa-engine/vespa/releases/download/v7.534.29/vespa-cli_7.534.29_linux_amd64.tar.gz
-          tar xzvf vespa-cli_7.534.29_linux_amd64.tar.gz
-          mv vespa-cli_7.534.29_linux_amd64/bin/vespa /usr/bin/
-          vespa version
-      - run-tests: |
-          export VESPA_TEAM_API_KEY
-          cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
-
   verify-guides-ubuntu:
-    requires: [~pr, ~commit]
+    requires: [~commit]
     secrets:
       - VESPA_TEAM_API_KEY
     image: ubuntu
@@ -97,3 +60,36 @@ jobs:
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
           $SD_SOURCE_DIR/test/test.py -v -c $SD_SOURCE_DIR/test/_test_config_new.yml
+
+  verify-guides:
+    requires: [~commit]
+    secrets:
+      - VESPA_TEAM_API_KEY
+    image: vespaengine/vespa-pipeline
+    environment:
+      USER_SHELL_BIN: bash
+    annotations:
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
+    steps:
+      - install-deps: |
+          source /etc/profile.d/jdk-env.sh
+          export PATH="$JAVA_HOME/bin:$PATH"
+          yum install -y python36-pip
+          python3 -m pip install -qqq --upgrade pip
+          python3 -m pip install -qqq -r test/requirements.txt --user
+          yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          yum install -y zstd unzip
+          yum install -y docker-ce docker-ce-cli containerd.io openssl yum-utils
+          yum -y install --setopt=skip_missing_names_on_install=False \
+            rh-maven35 libxml2-devel rh-ruby27 rh-ruby27-rubygems-devel rh-ruby27-ruby-devel \
+            rh-ruby27-rubygem-net-telnet devtoolset-9-gcc-c++
+          source /opt/rh/rh-ruby27/enable
+          source /opt/rh/devtoolset-9/enable
+      - run-tests: |
+          export VESPA_TEAM_API_KEY
+          cd $SD_DIND_SHARE_PATH
+          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
