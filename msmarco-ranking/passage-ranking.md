@@ -402,6 +402,7 @@ Since the sample app is used for both document and passage ranking we need also 
 [document-ranking](document-ranking.md) GBDT model:
 
 <pre data-test="exec">
+$ mkdir -p src/main/application/models
 $ curl -L -o src/main/application/models/docranker.json.zst \
   https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
 $ zstd -d src/main/application/models/docranker.json.zst 
