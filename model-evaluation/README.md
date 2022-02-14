@@ -63,19 +63,20 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 List the available models:
 
 <pre data-test="exec" data-test-assert-contains="transformer">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/' | python -m json.tool
+$ curl -s 'http://localhost:8080/model-evaluation/v1/' | python3 -m json.tool
 </pre>
 
 Details of model the `transformer` model:
 
 <pre data-test="exec" data-test-assert-contains="transformer">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer' | python -m json.tool
+$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer' | python3 -m json.tool
 </pre>
 
 Evaluating the model:
 
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format=short' | python -m json.tool
+$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format=short' | \
+  python3 -m json.tool
 </pre>
 
 The input here is a URL encoded Vespa tensor in
@@ -88,7 +89,8 @@ The input here is a URL encoded Vespa tensor in
 **Test the application - Java API in a handler**
 
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s 'http://localhost:8080/models/?model=transformer&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | python -m json.tool
+$ curl -s 'http://localhost:8080/models/?model=transformer&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | \
+  python3 -m json.tool
 </pre>
 
 The input here is
@@ -116,7 +118,8 @@ The document processor uses the `transformer` model to generate embeddings that 
 **Test the searchers**
 
 <pre data-test="exec" data-test-assert-contains="1.58892">
-$ curl -s 'http://localhost:8080/search/?searchChain=mychain&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | python -m json.tool
+$ curl -s 'http://localhost:8080/search/?searchChain=mychain&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | \
+  python3 -m json.tool
 </pre>
 
 This issues a search for the same input as above:

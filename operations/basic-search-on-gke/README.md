@@ -52,7 +52,8 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 </pre>
 **Do a search:**
 <pre data-test="exec">
-$ curl -s "http://$(kubectl get service/vespa -o jsonpath='{.status.loadBalancer.ingress[*].ip}'):$(kubectl get service/vespa -o jsonpath='{.spec.ports[?(@.name=="container")].port}')/search/?query=michael" | python -m json.tool
+$ curl -s "http://$(kubectl get service/vespa -o jsonpath='{.status.loadBalancer.ingress[*].ip}'):$(kubectl get service/vespa -o jsonpath='{.spec.ports[?(@.name=="container")].port}')/search/?query=michael" | \
+  python3 -m json.tool
 </pre>
 
 **Security notice**
