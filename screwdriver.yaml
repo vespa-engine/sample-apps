@@ -37,11 +37,11 @@ jobs:
           source /etc/profile.d/jdk-env.sh
           mvn -V --batch-mode --no-snapshot-updates install
 
-  verify-guides-ubuntu:
+  verify-guides-new:
     requires: [~commit]
     secrets:
       - VESPA_TEAM_API_KEY
-    image: ubuntu
+    image: buildpack-deps
     environment:
       USER_SHELL_BIN: bash
     annotations:
@@ -53,8 +53,7 @@ jobs:
     steps:
       - install-deps: |
           apt update
-          apt install -y openjdk-11-jdk < /dev/null
-          apt install -y docker.io zstd curl maven unzip python3 python3-pip
+          apt install -y docker.io zstd maven unzip python3-pip
           python3 -m pip install -qqq -r test/requirements.txt --user
       - run-tests: |
           export VESPA_TEAM_API_KEY
