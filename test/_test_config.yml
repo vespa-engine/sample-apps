@@ -1,22 +1,6 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/multiple-bundles/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/use-case-shopping/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/vespa-documentation-search/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/semantic-qa-retrieval/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
     #
     # Test queries to https://api.cord19.vespa.ai/search/?query=sars-cov-2
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/README.md"
