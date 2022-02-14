@@ -1,6 +1,10 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
+    # keep on this image for now:
+    # ERROR: Could not find a version that satisfies the requirement torch==1.7.0
+    # ERROR: No matching distribution found for torch==1.7.0
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
     #
     # Test queries to https://api.cord19.vespa.ai/search/?query=sars-cov-2
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/README.md"
