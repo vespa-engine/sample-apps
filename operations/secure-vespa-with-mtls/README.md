@@ -78,7 +78,8 @@ $ $VESPA_SAMPLE_APP/scripts/feed.sh
 
 **Do a search:**
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s "https://localhost:8443/search/?query=michael" | python -m json.tool
+$ $VESPA_SAMPLE_APP/scripts/client-curl.sh -s "https://localhost:8443/search/?query=michael" | \
+  python3 -m json.tool
 </pre>
 
 **Congratulations. You have now deployed and tested a secure Vespa installation.**

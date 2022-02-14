@@ -116,13 +116,13 @@ $ ./vespa-feed-client-cli/vespa-feed-client --file sample-feed.jsonl --endpoint 
 Run a question: 
 
 <pre data-test="exec" data-test-assert-contains='prediction": "2, 700"'>
-$ curl -s "http://localhost:8080/search/?query=what+is+the+population+of+achill+island%3F" | python -m json.tool
+$ curl -s "http://localhost:8080/search/?query=what+is+the+population+of+achill+island%3F" | python3 -m json.tool
 </pre>
 
 Run another question: 
 
 <pre data-test="exec" data-test-assert-contains='prediction": "78. 29'>
-$ curl -s "http://localhost:8080/search/?query=what+is+the+boiling+point+of+ethanol%3F" | python -m json.tool
+$ curl -s "http://localhost:8080/search/?query=what+is+the+boiling+point+of+ethanol%3F" | python3 -m json.tool
 </pre>
 
 After you are done, shutdown and remove the container:
