@@ -53,7 +53,7 @@ jobs:
     steps:
       - install-deps: |
           apt update
-          apt install -y docker.io zstd maven zip unzip python3-pip net-tools
+          apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
           python3 -m pip install -qqq -r test/requirements.txt --user
       - run-tests: |
           export VESPA_TEAM_API_KEY
