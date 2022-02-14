@@ -248,10 +248,10 @@ $ unzip vespa-feed-client-cli.zip
 
 <pre data-test="exec">
 $ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps-data/feeds/sample_regular_fields.jsonl.zst 
+    https://data.vespa.oath.cloud/sample-apps-data/sample_regular_fields.jsonl.zst
 
 $ curl -L -o sample-feed/sample_doc_t5_query.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps-data/feeds/sample_doc_t5_query.jsonl.zst
+    https://data.vespa.oath.cloud/sample-apps-data/sample_doc_t5_query.jsonl.zst
 
 $ zstd -d sample-feed/sample_regular_fields.jsonl.zst 
 
