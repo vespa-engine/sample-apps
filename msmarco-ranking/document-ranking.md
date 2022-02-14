@@ -195,7 +195,7 @@ we also need these models to run this step to step guide.
 <pre data-test="exec">
 $ mkdir -p src/main/application/models
 $ curl -L -o src/main/application/models/docranker.json.zst \
-  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
+  https://data.vespa.oath.cloud/sample-apps-data/docranker.json.zst 
 $ zstd -d src/main/application/models/docranker.json.zst 
 </pre>
 
