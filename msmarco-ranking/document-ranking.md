@@ -195,7 +195,7 @@ we also need these models to run this step to step guide.
 <pre data-test="exec">
 $ mkdir -p src/main/application/models
 $ curl -L -o src/main/application/models/docranker.json.zst \
-  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
+  https://data.vespa.oath.cloud/sample-apps-data/docranker.json.zst 
 $ zstd -d src/main/application/models/docranker.json.zst 
 </pre>
 
@@ -248,10 +248,10 @@ $ unzip vespa-feed-client-cli.zip
 
 <pre data-test="exec">
 $ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps/feeds/sample_regular_fields.jsonl.zst 
+    https://data.vespa.oath.cloud/sample-apps-data/feeds/sample_regular_fields.jsonl.zst 
 
 $ curl -L -o sample-feed/sample_doc_t5_query.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps/feeds/sample_doc_t5_query.jsonl.zst
+    https://data.vespa.oath.cloud/sample-apps-data/feeds/sample_doc_t5_query.jsonl.zst
 
 $ zstd -d sample-feed/sample_regular_fields.jsonl.zst 
 
