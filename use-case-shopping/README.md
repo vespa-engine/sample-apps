@@ -63,14 +63,14 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 
 First, create data feed for products:
 <pre data-test="exec">
-$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa.oath.cloud/sample-apps/feeds/meta_sports_20k_sample.json.zst 
+$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa.oath.cloud/sample-apps-data/meta_sports_20k_sample.json.zst 
 $ zstd -d meta_sports_20k_sample.json.zst
 $ cat meta_sports_20k_sample.json | ./convert_meta.py > feed_items.json
 </pre>
 
 Next, data feed for reviews:
 <pre data-test="exec">
-$ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa.oath.cloud/sample-apps/feeds/reviews_sports_24k_sample.json.zst
+$ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa.oath.cloud/sample-apps-data/reviews_sports_24k_sample.json.zst
 $ zstd -d reviews_sports_24k_sample.json.zst 
 $ cat reviews_sports_24k_sample.json | ./convert_reviews.py > feed_reviews.json
 </pre>
