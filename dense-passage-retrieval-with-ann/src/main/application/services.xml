@@ -7,6 +7,17 @@
       <node hostalias="node1" />
     </nodes>
 
+    <component id="com.yahoo.language.weordpiece.WordPieceEmbedder" bundle="linguistics-components">
+      <config name="language.wordpiece.word-piece">
+        <model>
+          <item>
+            <language>unknown</language>
+            <path>files/bert-base-uncased-vocab.txt</path>
+          </item>
+        </model>
+      </config>
+    </component>
+
     <component id="ai.vespa.tokenizer.BertTokenizer" bundle="question-answering">
       <config name="ai.vespa.tokenizer.bert-model">
         <max_input>256</max_input>

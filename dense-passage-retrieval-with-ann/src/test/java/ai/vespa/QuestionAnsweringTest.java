@@ -8,20 +8,22 @@ import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.tensor.Tensor;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class QuestionAnsweringTest {
-    static BertModelConfig bertModelConfig;
+
+
     static BertTokenizer tokenizer;
 
     static {
         BertModelConfig.Builder builder = new BertModelConfig.Builder();
         builder.vocabulary(new com.yahoo.config.FileReference("src/test/resources/bert-base-uncased-vocab.txt")).max_input(128);
-        bertModelConfig = builder.build();
         try {
-            tokenizer = new BertTokenizer(bertModelConfig, new SimpleLinguistics());
-        }catch (Exception e) {
+            tokenizer = new BertTokenizer(builder.build(), new SimpleLinguistics());
+        } catch (IOException e) {
         }
     }
 

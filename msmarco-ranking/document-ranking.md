@@ -54,23 +54,23 @@ is that suggested expansion queries are indexed as an array instead of a blob of
 This allows calculating ranking features which takes proximity into account. 
 
 # Training (LTR)
-The MS Marco Train split to scrape features for traditional LTR. 
+This work uses the MS Marco train split to scrape features for learning to rank. 
 
-For each positive relevant document a sample of 50 negatives (not relevant) is picked from the top-k retrieved documents.  
-In total 330,302 queries from the training set is used and 16,845,191 total number of data points. 
+For each positive relevant document a sample of 50 negatives (not relevant) is picked from the top-k retrieved documents
+using the baseline BM25 function. This ensures that the re-ranking model is trained on the distribution of the retriever. 
+
+In total 330,302 queries from the training set is used , with 16,845,191 total number of data points. 
 The efficient [Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html)
-is used to retrieve efficiently without having to score or rank all documents matching at least one of the query terms. 
+query operator is used to retrieve efficiently without having to score all documents matching at least one of the query terms. 
 
 A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html)
-which are generally cheap to compute are used by the model,
-except *nativeProximity* which measures the proximity of the query terms in the document text,
-but its usage is limited to the short title field. 
+which are generally cheap to compute are used by the model.
 
 LightGBM is used to train the GBDT re-ranking model. 
 Vespa has great support for GBDT models and supports both 
 [LightGBM](https://docs.vespa.ai/en/lightgbm.html) and [XGBoost](https://docs.vespa.ai/en/xgboost.html). 
 
-**GBDT Hyperparameters **
+## LightGBM hyper-parameters
 
 <pre>
 params = {
@@ -86,9 +86,10 @@ params = {
     }
 </pre>
 
-The final model consists of 533 trees, with up to 128 leaves. 
+The final GBDT model consists of 533 trees, with up to 128 leaves. 
 The training script is [here](src/main/python/train.py). 
-To scrap features one can follow
+T
+o scrape features one can follow
 [pyvespa collecting training data](https://pyvespa.readthedocs.io/en/latest/collect-training-data.html).
 
 ### Training output
@@ -108,10 +109,10 @@ Training until validation scores don't improve for 50 rounds
 </pre>
 
 The serialized LightGBM model is deployed for serving using the following ranking profile. 
-The simple linear first-phase function as described earlier is also used. Re-ranking depth is set to 1K.
+Re-ranking depth is set to 1K (per content node)
 Note that the ranking profile inherits the ranking profile which used for feature scraping,
-this avoids feature calculation drift
-so that the exact same feature definition is used both for serving and training.
+this avoids feature calculation drift, since the deployed model uses
+the exact same feature definition as was used during training. 
 
 <pre>
 rank-profile ltr inherits ltr-scrape {
@@ -123,7 +124,6 @@ rank-profile ltr inherits ltr-scrape {
   }
 </pre>
 
-docranker.json is deployed with the Vespa application package and translated to Vespa's optimized GBDT model evaluation. 
 
 # Ranking Evaluation 
 See Vespa on the [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/)
@@ -141,17 +141,16 @@ A baseline bm25 model has MRR@100 around 0.161 on the Eval set.
 Vespa's evaluation of GBDT models is hyper optimized after 20 years of using GBDT at scale 
 so end to end serving time is roughly 20 ms. 
  
-Vespa supports using multiple threads per *query* 
-and in our experiment we use up to 12 threads per query. 
+Vespa supports using multiple threads per *query* and in our experiment we use up to 12 threads per query. 
 
-This allows scaling latency per node and make use of multi-core cpu architectures efficiently.
 
+# Query API Example 
 See the top two documents ranked for the question *when was nelson mandela born* below.
 
 ![Vespa Response for when was nelson mandela born](img/screen.png)
 
 
-## Quick start
+# Quick start
 
 Make sure to read and agree to the terms and conditions of the 
 [MS Marco Team](https://microsoft.github.io/msmarco/) before downloading the dataset by using the *ir_datasets* package. 
@@ -159,52 +158,58 @@ Make sure to read and agree to the terms and conditions of the
 The following is a recipe on how to get started with a tiny set of sample data.
 The sample data only contains the first 1000 documents of the full MS Marco dataset,
 but this should be able to run on for instance a laptop.
-For the full dataset to recreate the evaluation results see later section.
+For the full dataset to recreate the evaluation results, see later section.
 
 Requirements:
 
-* [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
-* Git client to check out the sample application repository
-* Java 11, Maven and python3
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS).
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+  to build the application.
 * zstd: `brew install zstd`
 * Operating system: macOS or Linux, Architecture: x86_64
 
-See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
-
-Validate environment, should be minimum 10G:
+Validate Docker resource settings, should be minimum 6GB:
 
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Clone the sample app 
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
+
+<pre >
+$ brew install vespa-cli
+</pre>
+
+Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
+using target cloud.
+
+For local deployment using docker image use
 
 <pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/msmarco-ranking
+$ vespa config set target local
 </pre>
 
-Build the application package. This step also downloads the three ONNX models used in this application package.
-The download script used is found [here](src/main/bash/download_models.sh).
-The models mentioned here are only used for the [passage-ranking.md](passage-ranking.md),
-but since both passage and document ranking shares the same application
-we also need these models to run this step to step guide.
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
 
-<pre data-test="exec">
-$ mkdir -p src/main/application/models
-$ curl -L -o src/main/application/models/docranker.json.zst \
-  https://data.vespa.oath.cloud/sample-apps/docranker.json.zst 
-$ zstd -d src/main/application/models/docranker.json.zst 
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa api-key
+$ vespa cert
 </pre>
 
-<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="120">
-$ mvn clean package -U
-</pre>
+See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
+to switch between local deployment and cloud deployment by changing the `config target`.
 
-If you run into issues running mvn package please check `mvn -v` and that the Java version is 11. 
-Now, we are ready to start the `vespaengine/vespa` docker container - pull the latest version and run it:
+Pull and start the vespa docker container image:
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
@@ -213,25 +218,61 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Wait for configuration service to start (the command below should return a 200 OK):
+Verify that configuration service (deploy api) is ready
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+<pre data-test="exec">
+$ vespa status deploy --wait 300
 </pre>
 
+Download this sample application
 
-Deploy the application package:
-
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+<pre data-test="exec">
+$ cd /Users/bergum/cloud-ultimate/sample-apps/msmarco-ranking/
 </pre>
 
-Now, wait for the application to start:
+Download GBDT model which is used by [document ranking](document-ranking.md),
+this step is required since both passage and document ranking is represented
+in the same sample application.
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
+<pre data-test="exec">
+$ mkdir -p src/main/application/models
+$ curl -L -o src/main/application/models/docranker.json.zst \
+  https://data.vespa.oath.cloud/sample-apps-data/docranker.json.zst 
+$ zstd -f -d src/main/application/models/docranker.json.zst 
 </pre>
+
+## Build the application package.
+This step also downloads the three ONNX models used in this application package. The download
+script used is found [here](src/main/bash/download_models.sh).
+
+#<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+#$ mvn clean package -U
+#</pre>
+
+Make sure that the used Java version is 11.
+The above mvn command will download models, build and package the vespa application package.
+
+Deploy the application. This step deploys the application package built in the previous step:
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
+</pre>
+
+Wait for the application endpoint to become available
+
+<pre data-test="exec">
+$ vespa status --wait 300
+</pre>
+
+Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which runs a set of basic tests to verify that the application is working as expected.
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/passage-ranking-system-test.json
+</pre>
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/document-ranking-system-test.json
+</pre>
+
 
 
 ## Feeding Sample Data
@@ -241,17 +282,17 @@ Download feeding client
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
     https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
-$ unzip vespa-feed-client-cli.zip
+$ unzip -o vespa-feed-client-cli.zip
 </pre>
 
 ### Download sample feed files
 
 <pre data-test="exec">
 $ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps/feeds/sample_regular_fields.jsonl.zst 
+    https://data.vespa.oath.cloud/sample-apps-data/sample_regular_fields.jsonl.zst 
 
 $ curl -L -o sample-feed/sample_doc_t5_query.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps/feeds/sample_doc_t5_query.jsonl.zst
+    https://data.vespa.oath.cloud/sample-apps-data/sample_doc_t5_query.jsonl.zst
 
 $ zstd -d sample-feed/sample_regular_fields.jsonl.zst 
 
@@ -293,13 +334,13 @@ $ docker rm -f vespa
 </pre>
 
 
-## Full Evaluation (Using full dataset, all 3.2M documents)
+## Full Evaluation 
+Using full dataset, all 3.2M documents.
 Download and index the entire data set, including the document to query expansion. 
 
 <pre>
 $ python3 -m pip install ir_datasets tqdm requests
 </pre>
-
 
 ### Download all documents 
 <pre>
@@ -310,7 +351,8 @@ $ ir_datasets export msmarco-document/train docs --format jsonl | \
 
 ## Doc to query document expansion
 For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
-Follow the instructions at [https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
+Follow the instructions at 
+[https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
 but replace *paste -d" "* with *paste -d"#"*
 and modify the *generate_output_dict* in *convert_msmarco_doc_to_anserini.py* to emit Vespa json instead:
 

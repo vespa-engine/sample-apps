@@ -1,0 +1,124 @@
+{
+  "name": "Document ranking system tests",
+  "comment": "Test all retrieval and ranking pipelines",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/msmarco/doc/docid/D2951578",
+        "body": "../../sample-doc.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/msmarco/doc/docid/D2951578"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "id": "D2951578",
+            "url": "http://coffeetea.about.com/od/advancedtisanes/a/Ginger.htm",
+            "title": "Cooking With Ginger"
+          }
+        }
+      }
+    },
+    {
+      "name": "query for documents using simple BM25 ",
+      "request": {
+        "parameters": {
+          "yql": "select id,summaryfeatures from doc where userQuery();",
+          "query": "what is ginger cooking",
+          "ranking": "ltr-scrape"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance":2.3693170684788805,
+                "fields": {
+                  "id": "D2951578",
+                  "summaryfeatures": {
+                    "bm25(text)": 1.506270851123538,
+                    "bm25(title)": 0.5753641449035617,
+                    "bm25(doc_t5_query)": 0.0
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "name": "Update document with document expansion",
+      "request": {
+        "method": "PUT",
+        "uri": "/document/v1/msmarco/doc/docid/D2951578",
+        "body": "../../update-doc.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/msmarco/doc/docid/D2951578"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "id": "D2951578",
+            "url": "http://coffeetea.about.com/od/advancedtisanes/a/Ginger.htm",
+            "title": "Cooking With Ginger"
+          }
+        }
+      }
+    },
+    {
+      "name": "query for documents using GBDT model ",
+      "request": {
+        "parameters": {
+          "yql": "select id,summaryfeatures from doc where userQuery();",
+          "query": "what is ginger cooking",
+          "ranking": "ltr"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance":-7.32028965344216,
+                "fields": {
+                  "id": "D2951578",
+                  "summaryfeatures": {
+                    "bm25(text)": 1.506270851123538,
+                    "bm25(title)": 0.5753641449035617,
+                    "bm25(url)": 0.28768207245178085,
+                    "bm25(doc_t5_query)": 2.1530503981771756,
+                    "elementCompleteness(doc_t5_query).queryCompleteness": 1,
+                    "elementSimilarity(doc_t5_query)": 0.9260416666666667,
+                    "matchCount(text)": 3,
+                    "queryTermCount": 4
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

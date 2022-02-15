@@ -1,6 +1,7 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
+import ai.vespa.TokenizerFactory;
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import com.yahoo.component.chain.Chain;
 import com.yahoo.language.simple.SimpleLinguistics;
@@ -37,7 +38,8 @@ public class ReRankingSearcherTest {
 
         private ReRankingSearcherTester(MockBackend backend){
             ModelsEvaluator eval = ModelsEvaluatorTester.create("src/main/application/models/");
-            RetrievalModelSearcher retrievalModelSearcher = new RetrievalModelSearcher(new SimpleLinguistics(),TokenizerFactory.getTokenizer());
+            RetrievalModelSearcher retrievalModelSearcher = new RetrievalModelSearcher(
+                    new SimpleLinguistics(), TokenizerFactory.getEmbedder());
             searcher = new ReRankingSearcher(eval);
             chain = new Chain<>(retrievalModelSearcher,searcher,backend);
 
@@ -72,7 +74,8 @@ public class ReRankingSearcherTest {
         Result result = mock.search(new Query("?query=what+was+the+manhattan+project"), null);
         result.hits().trim(0,1);
         List<Integer> queryTokens = new ArrayList<>(Arrays.asList(2054, 2001, 1996, 7128, 262));
-        ReRankingSearcher.BertModelBatchInput batchInput = ReRankingSearcher.buildModelInput(queryTokens,result,24,"text_token_ids");
+        ReRankingSearcher.BertModelBatchInput batchInput = ReRankingSearcher.buildModelInput(
+                queryTokens,result,24,"text_token_ids");
         assertEquals(1,batchInput.inputIds.dimensionSizes().size(0));
         assertEquals(24,batchInput.inputIds.dimensionSizes().size(1));
         Tensor inputIds = batchInput.inputIds.reduce(Reduce.Aggregator.min,"d0");

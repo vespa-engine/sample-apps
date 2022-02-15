@@ -1,5 +1,6 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package ai.vespa.processor;
+
+package ai.vespa.docproc;
 
 import com.yahoo.config.FileReference;
 import com.yahoo.docproc.CallStack;
@@ -7,22 +8,17 @@ import com.yahoo.docproc.DocprocService;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
 import com.yahoo.docproc.jdisc.metric.NullMetric;
-import com.yahoo.document.DataType;
-import com.yahoo.document.Document;
-import com.yahoo.document.DocumentOperation;
-import com.yahoo.document.DocumentPut;
-import com.yahoo.document.DocumentType;
-import com.yahoo.document.TensorDataType;
+import com.yahoo.document.*;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.datatypes.TensorFieldValue;
 import com.yahoo.language.wordpiece.WordPieceConfig;
 import com.yahoo.language.wordpiece.WordPieceEmbedder;
 import com.yahoo.tensor.TensorType;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class QADocumentProcessorTest {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+public class DocumentTensorizerTest {
 
     private static WordPieceEmbedder getEmbedder() {
         WordPieceConfig.Builder b = new WordPieceConfig.Builder().model(
@@ -51,37 +47,23 @@ public class QADocumentProcessorTest {
         return processing;
     }
 
-    private static DocumentType createWikiDocType() {
-        DocumentType type = new DocumentType("wiki");
-        type.addField("title", DataType.STRING);
-        type.addField("title_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[256])")));
+    private static DocumentType createDocType() {
+        DocumentType type = new DocumentType("passage");
         type.addField("text", DataType.STRING);
-        type.addField("text_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[256])")));
+        type.addField("text_token_ids", TensorDataType.getTensor(TensorType.fromSpec("tensor<float>(d0[128])")));
         return type;
     }
 
     @Test
     public void testProcessing() throws Exception {
-        Document doc = new Document(createWikiDocType(), "id:foo:wiki::0");
-        doc.setFieldValue("title", new StringFieldValue("Britney_spears"));
-        doc.setFieldValue("text", new StringFieldValue("Britney Jean Spears (born December 2, 1981) is an American singer, songwriter, dancer, and actress."));
+        Document doc = new Document(createDocType(), "id:msmarco:passage::0");
+        doc.setFieldValue("text", new
+                StringFieldValue("Britney Jean Spears (born December 2, 1981) is an American singer, songwriter, dancer, and actress."));
         Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new QADocumentProcessor(embedder));
+        DocprocService service = setupDocprocService(new DocumentTensorizer(embedder));
         service.getExecutor().process(p);
-
-        TensorFieldValue title_tensor = (TensorFieldValue)doc.getFieldValue("title_token_ids");
-        TensorFieldValue text_tensor = (TensorFieldValue)doc.getFieldValue("text_token_ids");
-        assertNotNull(title_tensor);
+        TensorFieldValue text_tensor = (TensorFieldValue) doc.getFieldValue("text_token_ids");
         assertNotNull(text_tensor);
-        assertTrue(title_tensor.toString().startsWith("tensor<float>(d0[256]):[29168.0, 1035.0, 13957.0"));
-        assertTrue(text_tensor.toString().startsWith("tensor<float>(d0[256]):[29168.0, 3744.0, 13957.0, 1006.0, 2141.0, 2285.0, 1016.0, 1010.0"));
-    }
 
-    @Test
-    public void testEmptyProcessing() throws Exception  {
-        Document doc = new Document(new DocumentType("query"), "id:foo:query::0");
-        Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new QADocumentProcessor(embedder));
-        service.getExecutor().process(p);
     }
 }

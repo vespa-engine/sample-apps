@@ -1,0 +1,230 @@
+{
+  "name": "Passage ranking system tests",
+  "comment": "Test all retrieval and ranking pipelines",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single passage document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/msmarco/passage/docid/0",
+        "body": "../../sample-passage.json"
+      }
+    },
+    {
+      "name": "feed second passage document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/msmarco/passage/docid/1",
+        "body": "../../sample-passage2.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/msmarco/passage/docid/0"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "id": 0,
+            "text_token_ids":{},
+            "mini_document_embedding":  {}
+          }
+        }
+      }
+    },
+    {
+      "name": "query for passages using simple BM25 ",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile":"sparse-bm25"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "id": 0
+                }
+              },
+              {
+                "fields": {
+                  "id": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "query for passages using dense embedding",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile":"dense"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance": 0.7629981105614005,
+                "fields": {
+                  "id": 1
+                }
+              },
+              {
+                "relevance": 0.6636432003891066,
+                "fields": {
+                  "id": 0
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Update document with colbert tensor",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/msmarco/passage/docid/0",
+        "body": "../../sample-passage-v2.json"
+      }
+    },
+    {
+      "name": "query for passages using dense with colbert re-ranking",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile":"dense-colbert"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance": 22.187801331281662,
+                "fields": {
+                  "id": 0
+                }
+              },
+              {
+                "relevance": 0.0,
+                "fields": {
+                  "id": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "query for passages using dense with dense, colbert and cross re-ranking",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile":"dense-colbert-cross"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance": 1.9631253422747217,
+                "fields": {
+                  "id": 0
+                }
+              },
+              {
+                "relevance": 1.2406434587707758,
+                "fields": {
+                  "id": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "query for passages using dense with dense, colbert and container re-ranking",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile": "dense-colbert-container-rerank"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance": 3.4987215995788574,
+                "fields": {
+                  "id": 0
+                }
+              },
+              {
+                "relevance": 3.30483078956604,
+                "fields": {
+                  "id": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "query for passages using sparse (bm25) and re-rank with colbert",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile":"sparse-colbert"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "relevance": 22.187801331281662,
+                "fields": {
+                  "id": 0
+                }
+              },
+              {
+                "relevance": 0.0,
+                "fields": {
+                  "id": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

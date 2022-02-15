@@ -1,0 +1,64 @@
+{
+  "name": "Question Answering Pipeline Test",
+  "comment": "Test of end to end retrieve and read pipeline",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single passage document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/wiki/wiki/docid/62",
+        "body": "../../sample-passage.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/wiki/wiki/docid/62"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "id": 62,
+            "title":"Achill Island",
+            "text_embedding":  {}
+          }
+        }
+      }
+    },
+    {
+      "name": "query for passages using simple BM25 ",
+      "request": {
+        "parameters": {
+          "yql": "select id from passage where userQuery();",
+          "query": "what was the manhattan project?",
+          "queryProfile":"sparse-bm25"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "id": 0
+                }
+              },
+              {
+                "fields": {
+                  "id": 1
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+package=ai.vespa.embedding
+
+max_query_length int
+max_document_length int
+model_name string

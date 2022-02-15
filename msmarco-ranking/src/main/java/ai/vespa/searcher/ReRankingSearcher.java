@@ -13,7 +13,6 @@ import com.yahoo.tensor.IndexedTensor;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -52,28 +51,33 @@ public class ReRankingSearcher extends Searcher {
         query.getPresentation().getSummaryFields().add(TENSOR_TOKEN_FIELD_NAME);
         Result result = execution.search(query);
         execution.fill(result, TENSOR_TOKEN_FIELD_NAME);
-        Result reRanked = reRank(result,TENSOR_TOKEN_FIELD_NAME);
+        Result reRanked = reRank(result);
         reRanked.hits().trim(0,hits);
         for(Hit h:reRanked.hits())
             h.removeField(TENSOR_TOKEN_FIELD_NAME);
         return reRanked;
     }
 
-    private Result reRank(Result result,String textField) {
+    private Result reRank(Result result) {
         if(result.getConcreteHitCount() == 0)
             return result;
-        List<Integer> queryTokens = QueryTensorInput.getFrom(result.getQuery().properties()).getQueryTokenIds();
-        int maxSequenceLength = result.getQuery().properties().getInteger("rerank.sequence-length", 128);
+        List<Integer> queryTokens = QueryTensorInput.getFrom(result.getQuery().
+                properties()).getQueryTokenIds();
+        int maxSequenceLength = result.getQuery().
+                properties().getInteger("rerank.sequence-length", 128);
 
         long start = System.currentTimeMillis();
-        BertModelBatchInput input = buildModelInput(queryTokens, result,maxSequenceLength,textField);
+        BertModelBatchInput input = buildModelInput(queryTokens,
+                result,maxSequenceLength,TENSOR_TOKEN_FIELD_NAME);
         if(result.getQuery().isTraceable(1))
-            result.getQuery().trace("Prepare batch input took " + (System.currentTimeMillis() - start)  + " ms",1);
+            result.getQuery().trace("Prepare batch input took "
+                    + (System.currentTimeMillis() - start)  + " ms",1);
 
         start = System.currentTimeMillis();
         batchInference(input);
         if(result.getQuery().isTraceable(1))
-            result.getQuery().trace("Inference batch took " + (System.currentTimeMillis() - start)  + " ms",1);
+            result.getQuery().trace("Inference batch took "
+                    + (System.currentTimeMillis() - start)  + " ms",1);
         result.hits().sort();
         return result;
     }
@@ -90,7 +94,10 @@ public class ReRankingSearcher extends Searcher {
     }
 
 
-    protected static BertModelBatchInput buildModelInput(List<Integer> queryTokens, Result result,int maxSequenceLength, String tensorField) {
+    protected static BertModelBatchInput buildModelInput(List<Integer> queryTokens,
+                                                         Result result,
+                                                         int maxSequenceLength,
+                                                         String tensorField) {
         if(maxSequenceLength < 3)
             maxSequenceLength = 3;
 
