@@ -227,7 +227,7 @@ $ vespa status deploy --wait 300
 Download this sample application
 
 <pre data-test="exec">
-$ cd /Users/bergum/cloud-ultimate/sample-apps/msmarco-ranking/
+$ vespa clone msmarco-ranking myapp && cd myapp
 </pre>
 
 Download GBDT model which is used by [document ranking](document-ranking.md),
@@ -316,13 +316,13 @@ Now all the data is in place and one can play around with the query interface (T
 View a sample document:
 <pre data-test="exec" data-test-assert-contains="what is machacado">
 $ curl -s http://localhost:8080/document/v1/msmarco/doc/docid/D1840066 | \
-    python -m json.tool
+    python3 -m json.tool
 </pre>
 
 Do a query:
 <pre data-test="exec" data-test-assert-contains="0.153">
 $ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr&restrict=doc" | \
-    python -m json.tool
+    python3 -m json.tool
 </pre>
 
 The data set is small, but one gets a feel for how the data and how the document to query expansion work. 

@@ -6,4 +6,4 @@ set -x
 readonly MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $MYDIR
 
-tar -C ../src/main/application -cf - . | gzip | $MYDIR/vespa-curl.sh -s -L --header "Content-Type: application/x-gzip" --data-binary @- "https://localhost:19071/application/v2/tenant/default/prepareandactivate" | python -mjson.tool
+tar -C ../src/main/application -cf - . | gzip | $MYDIR/vespa-curl.sh -s -L --header "Content-Type: application/x-gzip" --data-binary @- "https://localhost:19071/application/v2/tenant/default/prepareandactivate" | python3 -m json.tool

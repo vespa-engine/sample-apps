@@ -13,6 +13,10 @@
     <version>[7,999)</version>  <!-- Use the latest Vespa release on each build -->
     <relativePath/>
   </parent>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <test.hide>true</test.hide>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -22,10 +26,5 @@
       <version>[7,999)</version>
     </dependency>
   </dependencies>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <test.hide>true</test.hide>
-  </properties>
 
 </project>

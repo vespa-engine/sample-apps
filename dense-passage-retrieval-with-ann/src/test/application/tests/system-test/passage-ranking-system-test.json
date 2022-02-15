@@ -33,12 +33,11 @@
       }
     },
     {
-      "name": "query for passages using simple BM25 ",
+      "name": "Ask a question",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
-          "query": "what was the manhattan project?",
-          "queryProfile":"sparse-bm25"
+          "yql": "select * from wiki where userQuery();",
+          "query": "what is the population of achill island?"
         }
       },
       "response": {
@@ -47,12 +46,10 @@
             "children": [
               {
                 "fields": {
-                  "id": 0
-                }
-              },
-              {
-                "fields": {
-                  "id": 1
+                  "context_title": "Achill Island",
+                  "prediction": "2, 700",
+                  "reader_score": 11.106307983398438,
+                  "prediction_score": 23.630077362060547
                 }
               }
             ]

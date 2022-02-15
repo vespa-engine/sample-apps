@@ -441,7 +441,7 @@ $ vespa status deploy --wait 300
 Download this sample application 
 
 <pre data-test="exec">
-$ cd /Users/bergum/cloud-ultimate/sample-apps/msmarco-ranking/
+$ vespa clone msmarco-ranking myapp && cd myapp
 </pre>
 
 Download GBDT model which is used by [document ranking](document-ranking.md),
@@ -459,9 +459,9 @@ $ zstd -f -d src/main/application/models/docranker.json.zst
 This step also downloads the three ONNX models used in this application package. The download
 script used is found [here](src/main/bash/download_models.sh). 
 
-#<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
-#$ mvn clean package -U
-#</pre>
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
+</pre>
 
 Make sure that the used Java version is 11.
 The above mvn command will download models, build and package the vespa application package. 
@@ -530,7 +530,7 @@ $ cat sample-feed/query.json
 
 <pre data-test="exec" data-test-assert-contains="29.545">
 $ curl -H Content-Type:application/json --data @sample-feed/query.json \
-    http://localhost:8080/search/ |python3 -m json.tool
+    http://localhost:8080/search/ | python3 -m json.tool
 </pre>
 
 
