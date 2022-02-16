@@ -82,13 +82,11 @@
           "root": {
             "children": [
               {
-                "relevance": 0.7629981105614005,
                 "fields": {
                   "id": 1
                 }
               },
               {
-                "relevance": 0.6636432003891066,
                 "fields": {
                   "id": 0
                 }
@@ -120,13 +118,11 @@
           "root": {
             "children": [
               {
-                "relevance": 22.187801331281662,
                 "fields": {
                   "id": 0
                 }
               },
               {
-                "relevance": 0.0,
                 "fields": {
                   "id": 1
                 }
@@ -150,13 +146,11 @@
           "root": {
             "children": [
               {
-                "relevance": 1.9631253422747217,
                 "fields": {
                   "id": 0
                 }
               },
               {
-                "relevance": 1.2406434587707758,
                 "fields": {
                   "id": 1
                 }
@@ -180,13 +174,11 @@
           "root": {
             "children": [
               {
-                "relevance": 3.4987215995788574,
                 "fields": {
                   "id": 0
                 }
               },
               {
-                "relevance": 3.30483078956604,
                 "fields": {
                   "id": 1
                 }
@@ -210,13 +202,11 @@
           "root": {
             "children": [
               {
-                "relevance": 22.187801331281662,
                 "fields": {
                   "id": 0
                 }
               },
               {
-                "relevance": 0.0,
                 "fields": {
                   "id": 1
                 }
