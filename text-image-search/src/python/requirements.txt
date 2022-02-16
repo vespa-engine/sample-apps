@@ -6,4 +6,5 @@ tqdm
 pyvespa
 streamlit
 matplotlib
+tenacity
 git+https://github.com/openai/CLIP.git
