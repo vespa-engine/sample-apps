@@ -1,12 +1,13 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
-import ai.vespa.tokenizer.BertTokenizer;
 import com.google.inject.Inject;
 import com.yahoo.language.Language;
 import com.yahoo.language.Linguistics;
+import com.yahoo.language.process.Embedder;
 import com.yahoo.language.process.StemMode;
 import com.yahoo.language.process.Token;
+import com.yahoo.language.wordpiece.WordPieceEmbedder;
 import com.yahoo.prelude.query.NearestNeighborItem;
 import com.yahoo.prelude.query.WeakAndItem;
 import com.yahoo.prelude.query.WordItem;
@@ -16,8 +17,6 @@ import com.yahoo.search.Searcher;
 import com.yahoo.search.result.ErrorMessage;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
-import com.yahoo.tensor.TensorType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +26,7 @@ public class RetrievalModelSearcher extends Searcher {
     private static final int MAX_QUERY_LENGTH = 32;
 
     private final Linguistics linguistics;
-    private final BertTokenizer tokenizer;
-
+    private WordPieceEmbedder embedder;
 
     public enum RetrievalMethod {
         SPARSE,
@@ -37,9 +35,9 @@ public class RetrievalModelSearcher extends Searcher {
     }
 
     @Inject
-    public RetrievalModelSearcher(Linguistics linguistics, BertTokenizer tokenizer) {
+    public RetrievalModelSearcher(Linguistics linguistics, WordPieceEmbedder embedder) {
         this.linguistics = linguistics;
-        this.tokenizer = tokenizer;
+        this.embedder = embedder;
     }
 
     @Override
@@ -47,11 +45,12 @@ public class RetrievalModelSearcher extends Searcher {
         String queryInput = query.getModel().getQueryString();
         if (query.getModel().getQueryString() == null || query.getModel().getQueryString().length() == 0)
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
+        List<Integer> bertTokenIds = this.embedder.embed(queryInput, new Embedder.Context("q"));
+        if(bertTokenIds.size() > MAX_QUERY_LENGTH)
+            bertTokenIds = bertTokenIds.subList(0,MAX_QUERY_LENGTH);
 
-        List<Integer> bertTokenIds = this.tokenizer.tokenize(queryInput,MAX_QUERY_LENGTH,false);
         QueryTensorInput queryTensorInput = new QueryTensorInput(bertTokenIds);
         QueryTensorInput.setTo(query.properties(),queryTensorInput);
-
         Tensor queryTensor = queryTensorInput.getTensorRepresentation(
                 queryTensorInput.getQueryTokenIdsPadded(MAX_QUERY_LENGTH,0),"d0");
         query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, queryTensor);

@@ -61,7 +61,7 @@ public class ColBERTSearcher extends Searcher {
         int CLS_TOKEN_ID = 101;  // [CLS]
         int SEP_TOKEN_ID = 102;  // [SEP]
         int MASK_TOKEN_ID = 103; // [MASK]
-        int Q_TOKEN_ID = 1; // [unused0] token id used during training to represent the query.
+        int Q_TOKEN_ID = 1; // [unused0] token id used during training to differentiate query versus document.
 
         QueryTensorInput helper = QueryTensorInput.getFrom(originalQuery.properties());
         List<Integer> tokenIds = helper.getQueryTokenIds();
@@ -111,6 +111,4 @@ public class ColBERTSearcher extends Searcher {
                 builder.cell(TensorAddress.of(i, j), t.get(TensorAddress.of(i, j)));
         return builder.build();
     }
-
-
 }

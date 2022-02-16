@@ -376,48 +376,52 @@ For the full dataset to reproduce the submission to the MS Marco Passage ranking
 
 Requirements:
 
-* [Docker](https://www.docker.com/) installed and running. 10Gb available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
-* Git client to check out the sample application repository
-* Java 11, Maven and python3
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS). 
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
+ a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed. 
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+to build the application. 
 * zstd: `brew install zstd`
 * Operating system: macOS or Linux, Architecture: x86_64
 
-
-Validate environment, should be minimum 10G:
+Validate Docker resource settings, should be minimum 6GB:
 
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Clone the sample apps :
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
+
+<pre >
+$ brew install vespa-cli
+</pre>
+
+Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
+using target cloud. 
+
+For local deployment using docker image use 
 
 <pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/msmarco-ranking
+$ vespa config set target local
 </pre>
 
-Since the sample app is used for both document and passage ranking one need also to download the
-[document-ranking](document-ranking.md) GBDT model:
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
 
-<pre data-test="exec">
-$ mkdir -p src/main/application/models
-$ curl -L -o src/main/application/models/docranker.json.zst \
-  https://data.vespa.oath.cloud/sample-apps-data/docranker.json.zst 
-$ zstd -d src/main/application/models/docranker.json.zst 
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa api-key
+$ vespa cert
 </pre>
 
-## Build the application package. 
-This step also downloads the three ONNX models used in this application package. The download
-script used is found [here](src/main/bash/download_models.sh). 
-
-<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="120">
-$ mvn clean package -U
-</pre>
-
-Make sure that the used Java version is 11.
-The above mvn command will download models, build and package the vespa application package. 
+See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
+to switch between local deployment and cloud deployment by changing the `config target`. 
 
 Pull and start the vespa docker container image:
 
@@ -428,23 +432,59 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Wait for configuration service to start, the command below should return a 200 OK:
+Verify that configuration service (deploy api) is ready
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+<pre data-test="exec">
+$ vespa status deploy --wait 300
 </pre>
 
-Deploy the application package built by the mvn step above:
+Download this sample application 
 
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ curl --max-time 300 --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+<pre data-test="exec">
+$ vespa clone msmarco-ranking myapp && cd myapp
 </pre>
 
-Wait for the application to start, the command below should return a 200 OK
+Download GBDT model which is used by [document ranking](document-ranking.md),
+this step is required since both passage and document ranking is represented
+in the same sample application. 
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
+<pre data-test="exec">
+$ mkdir -p src/main/application/models
+$ curl -L -o src/main/application/models/docranker.json.zst \
+  https://data.vespa.oath.cloud/sample-apps-data/docranker.json.zst 
+$ zstd -f -d src/main/application/models/docranker.json.zst 
+</pre>
+
+## Build the application package. 
+This step also downloads the three ONNX models used in this application package. The download
+script used is found [here](src/main/bash/download_models.sh). 
+
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
+</pre>
+
+Make sure that the used Java version is 11.
+The above mvn command will download models, build and package the vespa application package. 
+
+Deploy the application. This step deploys the application package built in the previous step:
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
+</pre>
+
+Wait for the application endpoint to become available 
+
+<pre data-test="exec">
+$ vespa status --wait 300
+</pre>
+
+Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which runs a set of basic tests to verify that the application is working as expected. 
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/passage-ranking-system-test.json
+</pre>
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/document-ranking-system-test.json
 </pre>
 
 ## Feeding Sample Data 
@@ -454,7 +494,7 @@ Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
     https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
-$ unzip vespa-feed-client-cli.zip
+$ unzip -o vespa-feed-client-cli.zip
 </pre>
 
 Download the sample data:

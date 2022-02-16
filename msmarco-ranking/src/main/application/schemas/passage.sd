@@ -26,8 +26,8 @@ schema passage {
       }
       index {
         hnsw {
-          max-links-per-node: 32
-          neighbors-to-explore-at-insert: 500
+          max-links-per-node: 16
+          neighbors-to-explore-at-insert: 200
         }
       }
     }
@@ -50,7 +50,6 @@ schema passage {
       source:text_token_ids
     }
   }
-
 
   fieldset default {
     fields: text

@@ -1,0 +1,61 @@
+{
+  "name": "Question Answering Pipeline Test",
+  "comment": "Test of end to end retrieve and read pipeline",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single passage document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/wiki/wiki/docid/62",
+        "body": "../../sample-passage.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/wiki/wiki/docid/62"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "id": 62,
+            "title":"Achill Island",
+            "text_embedding":  {}
+          }
+        }
+      }
+    },
+    {
+      "name": "Ask a question",
+      "request": {
+        "parameters": {
+          "yql": "select * from wiki where userQuery();",
+          "query": "what is the population of achill island?"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "context_title": "Achill Island",
+                  "prediction": "2, 700",
+                  "reader_score": 11.106307983398438,
+                  "prediction_score": 23.630077362060547
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

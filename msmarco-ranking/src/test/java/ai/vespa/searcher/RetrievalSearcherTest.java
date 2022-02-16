@@ -1,12 +1,14 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
+import ai.vespa.TokenizerFactory;
 import com.yahoo.component.chain.Chain;
 import com.yahoo.language.detect.Detection;
 import com.yahoo.language.detect.Detector;
 import com.yahoo.language.detect.Hint;
 import com.yahoo.language.opennlp.OpenNlpLinguistics;
 import com.yahoo.language.simple.SimpleLinguistics;
+import com.yahoo.language.wordpiece.WordPieceEmbedder;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.NearestNeighborItem;
 import com.yahoo.search.Query;
@@ -23,6 +25,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RetrievalSearcherTest {
+    static WordPieceEmbedder tokenizer;
+
+    static {
+        tokenizer = TokenizerFactory.getEmbedder();
+    }
 
     private Result execute(Query query, Searcher... searcher) {
         Execution execution = new Execution(new Chain<>(searcher), Execution.Context.createContextStub());
@@ -37,7 +44,7 @@ public class RetrievalSearcherTest {
 
     @Test
     public void test_queries() {
-        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), TokenizerFactory.getTokenizer());
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         test_query_tree("this is a test query",
                         "WEAKAND(10) default:this default:is default:a default:test default:query", searcher);
         test_query_tree("with some +.% not ",
@@ -49,7 +56,7 @@ public class RetrievalSearcherTest {
 
     @Test
     public void test_sparse_params() {
-        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), TokenizerFactory.getTokenizer());
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         Query query = new Query("?query=a+test&wand.field=foo&wand.hits=100");
         Result result = execute(query, searcher);
         assertEquals("WEAKAND(100) foo:a foo:test", result.getQuery().getModel().getQueryTree().toString());
@@ -62,7 +69,7 @@ public class RetrievalSearcherTest {
         String queryString = "Kosten für endlose Pools/Schwimmbad";
         Detection detection = detect.detect(queryString, Hint.newCountryHint("en"));
         assertEquals("de", detection.getLanguage().languageCode());
-        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), TokenizerFactory.getTokenizer());
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         Query query = new Query("?query=" + URLEncoder.encode(queryString, StandardCharsets.UTF_8)
                 + "&wand.field=foo&wand.hits=10&language=" + detection.getLanguage().languageCode());
         Result result = execute(query, searcher);
@@ -71,7 +78,7 @@ public class RetrievalSearcherTest {
 
     @Test
     public void test_dense_params() {
-        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), TokenizerFactory.getTokenizer());
+        RetrievalModelSearcher searcher = new RetrievalModelSearcher(new SimpleLinguistics(), tokenizer);
         Query query = new Query("?query=a+test&retriever=dense&ann.hits=98");
         Result result = execute(query, searcher);
         QueryTree tree = result.getQuery().getModel().getQueryTree();

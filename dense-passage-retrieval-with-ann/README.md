@@ -35,44 +35,57 @@ this should be able to run on for instance a laptop. For the full dataset to
 recreate the results in the DPR paper, see the [next section](#how-to-feed-the-entire-dataset).
 
 Requirements:
-
-* [Docker](https://www.docker.com/) installed and running.
-  10Gb available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-  for details and troubleshooting.
-* Git client to checkout the sample application repository.
-* Java 11, Maven and python3.7+ installed. Using Python runtime environments (e.g. using [Conda](https://conda.io/projects/conda/en/latest/index.html)) is highly recommended.
-* Operating system: macOS or Linux, Architecture: x86_64.
+  for details and troubleshooting
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS).
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* python3.7+ installed. Using Python runtime environments (e.g. using [Conda](https://conda.io/projects/conda/en/latest/index.html)) is highly recommended
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+  to build the application.
+* zstd: `brew install zstd`
+* Operating system: macOS or Linux, Architecture: x86_64
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
-Validate environment, should be minimum 10G:
+Validate Docker resource settings, should be minimum 6GB:
 
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Get the sample app:
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
 
-<pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/dense-passage-retrieval-with-ann
+<pre >
+$ brew install vespa-cli
 </pre>
 
-Download and setup the Transformer models, and build the application package.
-This can take some time as the two BERT-based models are around 100Mb each. The quick
-start uses quantized model versions. 
+Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
+using target cloud.
+
+For local deployment using docker image use
 
 <pre data-test="exec">
-$ pip3 install -r requirements.txt
-$ python3 bin/export-reader-model.py src/main/application/models/reader.onnx
-$ mv src/main/application/models/reader-quantized.onnx src/main/application/models/reader.onnx
-$ python3 bin/export-query-model.py src/main/application/models/question_encoder.onnx
-$ mv src/main/application/models/question_encoder-quantized.onnx src/main/application/models/question_encoder.onnx
-$ mvn clean package
+$ vespa config set target local
 </pre>
 
-Start the Vespa docker container:
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa api-key
+$ vespa cert
+</pre>
+
+See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
+to switch between local deployment and cloud deployment by changing the `config target`.
+
+Pull and start the vespa docker container image:
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
@@ -81,24 +94,53 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Wait for configuration service to start (the command below should return a 200 OK):
+Verify that configuration service (deploy api) is ready
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+<pre data-test="exec">
+$ vespa status deploy --wait 300
+</pre>
+
+Download this sample application
+
+<pre data-test="exec">
+$ vespa clone dense-passage-retrieval-with-ann myapp && cd myapp
+</pre>
+
+
+Download and setup the Transformer models, and build the application package.
+This can take some time as the two BERT-based models are around 100Mb each. The quick
+start uses quantized model versions. 
+
+<pre data-test="exec">
+$ pip3 install -r requirements.txt
+$ mkdir -p src/main/application/models/
+$ python3 bin/export-reader-model.py src/main/application/models/reader.onnx
+$ mv src/main/application/models/reader-quantized.onnx src/main/application/models/reader.onnx
+$ python3 bin/export-query-model.py src/main/application/models/question_encoder.onnx
+$ mv src/main/application/models/question_encoder-quantized.onnx src/main/application/models/question_encoder.onnx
+</pre>
+
+Build the application package 
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
 </pre>
 
 Deploy the application package:
-
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ curl -m 256 --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
 </pre>
 
-Now, wait for the application to start. This is a fairly large application, so
-this could easily take a couple of minutes on a laptop.
+Wait for the application endpoint to become available
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
+<pre data-test="exec">
+$ vespa status --wait 300
+</pre>
+
+Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which runs a set of basic tests to verify that the application is working as expected.
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/passage-ranking-system-test.json
 </pre>
 
 Feed sample data using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):

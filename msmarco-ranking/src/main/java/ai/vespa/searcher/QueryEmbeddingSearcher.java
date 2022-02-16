@@ -1,6 +1,7 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.searcher;
 
+import ai.vespa.embedding.DenseEmbedder;
 import ai.vespa.models.evaluation.Model;
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import com.google.inject.Inject;
@@ -14,6 +15,7 @@ import com.yahoo.tensor.functions.Reduce;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This Searcher encodes the query using the sentence transformer model
@@ -23,12 +25,12 @@ import java.util.List;
 public class QueryEmbeddingSearcher extends Searcher {
 
     private static final Tensor BATCH_TENSOR = Tensor.from("tensor<float>(d0[1]):[1]");
-    private final Model encoder;
-    private static final int maxQueryLength = 32;
+    private final DenseEmbedder embedder;
+    private int maxLength = 32;
 
     @Inject
-    public QueryEmbeddingSearcher(ModelsEvaluator evaluator) {
-        this.encoder = evaluator.requireModel("dense_encoder");
+    public QueryEmbeddingSearcher(DenseEmbedder embedder) {
+        this.embedder = embedder;
     }
 
     @Override
@@ -45,30 +47,12 @@ public class QueryEmbeddingSearcher extends Searcher {
     }
 
     protected Tensor getEmbedding(Query originalQuery)  {
-        int CLS_TOKEN_ID = 101; // [CLS]
-        int SEP_TOKEN_ID = 102; // [SEP]
         QueryTensorInput queryTensorInput = QueryTensorInput.getFrom(originalQuery.properties());
         List<Integer> queryTokenIds = queryTensorInput.getQueryTokenIds();
-        if(queryTokenIds.size() > maxQueryLength -2)
-            queryTokenIds.subList(0,maxQueryLength-2);
-        List<Integer> inputIds = new ArrayList<>(queryTokenIds.size()+2 );
-        inputIds.add(CLS_TOKEN_ID);
-        inputIds.addAll(queryTokenIds);
-        inputIds.add(SEP_TOKEN_ID);
-        Tensor input_sequence = queryTensorInput.getTensorRepresentation(inputIds,"d1");
-        Tensor attentionMask = createAttentionMask(input_sequence);
-        return rewriteTensor(this.encoder.evaluatorOf().
-                bind("input_ids",input_sequence.multiply(BATCH_TENSOR)).
-                bind("attention_mask",attentionMask.multiply(BATCH_TENSOR)).evaluate());
-    }
-
-    protected static Tensor createAttentionMask(Tensor d)  {
-        return d.map((x) -> x > 0 ? 1:0);
-    }
-
-    protected static Tensor rewriteTensor(Tensor embedding) {
-        Tensor t = embedding.reduce(Reduce.Aggregator.min, "d0");
-        return t.rename("d1","d0");
+        Optional<Tensor> result = embedder.embed(queryTokenIds,maxLength);
+        if(result.isEmpty())
+            return null;
+        return result.get();
     }
 }
 

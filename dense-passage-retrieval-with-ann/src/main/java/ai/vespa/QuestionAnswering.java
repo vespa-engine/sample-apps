@@ -2,11 +2,11 @@
 
 package ai.vespa;
 
+
 import ai.vespa.tokenizer.BertTokenizer;
 import com.yahoo.search.Query;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
-
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +81,8 @@ public class QuestionAnswering {
         }
     }
 
-    static public Span getSpan(Tensor startLogits, Tensor endLogits, Tensor input, double readerScore, BertTokenizer tokenizer)  {
+    static public Span getSpan(Tensor startLogits, Tensor endLogits, Tensor input, double readerScore,
+                               BertTokenizer tokenizer)  {
         long inputLength = startLogits.size();
         List<Span> spans = new ArrayList<>();
         for(int i = 0; i < inputLength; i++) {

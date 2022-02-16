@@ -5,9 +5,10 @@ package ai.vespa.searcher;
 import ai.vespa.QuestionAnswering;
 import ai.vespa.models.evaluation.FunctionEvaluator;
 import ai.vespa.models.evaluation.ModelsEvaluator;
-import ai.vespa.tokenizer.BertTokenizer;
 import com.google.inject.Inject;
 import com.yahoo.component.chain.dependencies.Before;
+import com.yahoo.language.process.Embedder;
+import com.yahoo.language.wordpiece.WordPieceEmbedder;
 import com.yahoo.prelude.query.*;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
@@ -18,10 +19,8 @@ import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
 import com.yahoo.tensor.TensorType;
 import java.util.List;
-
 import com.yahoo.tensor.functions.Reduce;
-import com.yahoo.tensor.functions.Slice;
-import com.yahoo.tensor.functions.ConstantTensor;
+
 
 @Before("QuestionAnswering")
 public class RetrieveModelSearcher extends Searcher {
@@ -31,13 +30,13 @@ public class RetrieveModelSearcher extends Searcher {
 
     private final TensorType queryTokenType = TensorType.fromSpec("tensor<float>(d0[32])");
 
-    private final BertTokenizer tokenizer;
+    private final WordPieceEmbedder embedder;
     private final ModelsEvaluator modelsEvaluator;
 
     @Inject
-    public RetrieveModelSearcher(BertTokenizer tokenizer,  ModelsEvaluator evaluator) {
+    public RetrieveModelSearcher(WordPieceEmbedder embedder, ModelsEvaluator evaluator) {
         this.modelsEvaluator = evaluator;
-        this.tokenizer = tokenizer;
+        this.embedder = embedder;
     }
 
     @Override
@@ -48,8 +47,11 @@ public class RetrieveModelSearcher extends Searcher {
             return new Result(query, ErrorMessage.createBadRequest("No query input"));
 
         Tensor.Builder builder = Tensor.Builder.of(queryTokenType);
+        List<Integer> bertTokenIds = this.embedder.embed(queryInput, new Embedder.Context("q"));
+        if(bertTokenIds.size() > 32)
+            bertTokenIds = bertTokenIds.subList(0,32);
         int index = 0;
-        for(Integer token : this.tokenizer.tokenize(queryInput,32,true)) {
+        for(Integer token : bertTokenIds) {
             builder.cell(TensorAddress.of(index), token);
             index++;
         }
@@ -57,7 +59,7 @@ public class RetrieveModelSearcher extends Searcher {
 
         switch (QuestionAnswering.getRetrivalMethod(query)) {
             case DENSE:
-                query.getModel().getQueryTree().setRoot(denseRetrieval(getEmbeddingTensor(queryInput, query), query));
+                query.getModel().getQueryTree().setRoot(denseRetrieval(getEmbeddingTensor(bertTokenIds), query));
                 query.getRanking().setProfile("dense");
                 break;
             case SPARSE:
@@ -65,7 +67,7 @@ public class RetrieveModelSearcher extends Searcher {
                 query.getRanking().setProfile("sparse");
                 break;
             case HYBRID:
-                Item ann = denseRetrieval(getEmbeddingTensor(queryInput, query),query);
+                Item ann = denseRetrieval(getEmbeddingTensor(bertTokenIds),query);
                 Item wand = sparseRetrieval(queryInput,query);
                 OrItem disjunction = new OrItem();
                 disjunction.addItem(ann);
@@ -101,13 +103,11 @@ public class RetrieveModelSearcher extends Searcher {
 
     /**
      * Produce the DPR query embedding
-     * @param queryInput The input tensor with the question token_ids
-     * @param query The original query
+
      * @return The embedding tensor as produced by the DPR query encoder
      */
 
-    private Tensor getEmbeddingTensor(String queryInput,  Query query) {
-        List<Integer> tokenIds = tokenizer.tokenize(queryInput, 32);
+    private Tensor getEmbeddingTensor(List<Integer> tokenIds ) {
         FunctionEvaluator evaluator = modelsEvaluator.evaluatorOf("question_encoder", "output_0");
         evaluator.bind("input_ids", transformTokenInputIds(tokenIds));
         evaluator.bind("token_type_ids", transformTokenTypeIds(tokenIds));

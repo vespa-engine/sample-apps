@@ -14,8 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Searcher which asynchronously invokes the colbert and embedding search chains
- * to compute the colbert query tensor representation and the dense query embedding representation
+ * Searcher that asynchronously invokes the colbert and embedding search chains
+ * to compute the colbert query tensor multi-representation and the single dense query embedding representation.
+ *
+ * The requests never reaches the backend, but we reuse the request response paradigm to return
+ * the result of the computation as hits.
+ *
  */
 
 public class QueryEncodingSearcher  extends Searcher {
@@ -26,7 +30,6 @@ public class QueryEncodingSearcher  extends Searcher {
      * See src/main/application/search/query-profiles/types/root.xml for
      * tensor type definition
      */
-
     private final String colbertTensorName = "query(qt)";
     private final String embeddingTensorName = "query(query_embedding)";
 

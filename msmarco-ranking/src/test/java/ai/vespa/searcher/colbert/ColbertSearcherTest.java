@@ -4,10 +4,10 @@ package ai.vespa.searcher.colbert;
 import ai.vespa.colbert.ColbertConfig;
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import ai.vespa.searcher.RetrievalModelSearcher;
-import ai.vespa.tokenizer.BertModelConfig;
-import ai.vespa.tokenizer.BertTokenizer;
+import ai.vespa.TokenizerFactory;
 import com.yahoo.component.chain.Chain;
 import com.yahoo.language.simple.SimpleLinguistics;
+import com.yahoo.language.wordpiece.WordPieceEmbedder;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.result.Hit;
@@ -17,30 +17,19 @@ import com.yahoo.tensor.Tensor;
 import com.yahoo.vespa.model.container.ml.ModelsEvaluatorTester;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ColbertSearcherTest {
 
     private static final ColbertConfig colbertConfig;
-    private static BertTokenizer tokenizer;
+    private static WordPieceEmbedder tokenizer;
 
     private static final int DIM = 32;
     private static final int MAX_QUERY_LENGHT = 32;
 
     static {
-        BertModelConfig.Builder builder = new BertModelConfig.Builder();
-        builder.vocabulary(new com.yahoo.config.FileReference("src/main/application/files/bert-base-uncased-vocab.txt"))
-               .max_input(128);
-        BertModelConfig bertModelConfig = builder.build();
-        try {
-            tokenizer = new BertTokenizer(bertModelConfig, new SimpleLinguistics());
-        } catch (IOException e) {
-            fail("IO Error during bert model read");
-        }
+        tokenizer = TokenizerFactory.getEmbedder();
         ColbertConfig.Builder colbertBuilder = new ColbertConfig.Builder();
         colbertBuilder.dim(DIM).max_query_length(MAX_QUERY_LENGHT);
         colbertConfig = colbertBuilder.build();
