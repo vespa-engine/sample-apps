@@ -13,12 +13,12 @@
     <!-- Add searchers using model evaluation to the search chain -->
     <search>
       <chain id='mychain' inherits='vespa'>
-        <searcher id='ai.vespa.example.TextEmbeddingSearcher' bundle="ai.vespa.example.text_image_search" />
+        <searcher id='ai.vespa.example.TextEmbeddingSearcher' bundle="text_image_search" />
       </chain>
     </search>
 
     <!-- Configure the tokenizer -->
-    <component id="ai.vespa.example.BPETokenizer" bundle="ai.vespa.example.text_image_search">
+    <component id="ai.vespa.example.BPETokenizer" bundle="text_image_search">
       <config name="ai.vespa.example.bpe-tokenizer">
         <contextlength>77</contextlength>
         <vocabulary>files/bpe_simple_vocab_16e6.txt.gz</vocabulary>

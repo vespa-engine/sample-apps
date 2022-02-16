@@ -85,20 +85,21 @@ $ ./src/sh/download_flickr8k.sh
 $ export IMG_DIR=data/Flicker8k_Dataset/
 </pre>
 
-The full Flickr8k dataset is around 1.1Gb.
+The full Flickr8k dataset is around 1.1GB, the feed script
+uses pyvespa to feed the image data to the running instance.
 
-**Feed data:**
+**Encode images and feed data:**
+This step take some time as each image is encoded using the CLIP model:
 
 <pre data-test="exec">
 $ python3 src/python/clip_feed.py
 </pre>
 
-This uses pyvespa to feed the image data to the running instance.
 
 **Search:**
-
-<pre data-test="exec">
-$ http://localhost:8080/search/?input=a+child+playing+football
+Run a query using curl 
+<pre data-test="exec" data-test-assert-contains="2337919839_df83827fa0">
+$ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=1s"
 </pre>
 
 **Shutdown and remove the container:**
