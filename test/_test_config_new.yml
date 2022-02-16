@@ -18,6 +18,7 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/text-image-search/README.md"
     #
     # Test queries to https://api.cord19.vespa.ai/search/?query=sars-cov-2
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/README.md"
