@@ -35,7 +35,7 @@ jobs:
       - build: |
           set -e
           source /etc/profile.d/jdk-env.sh
-          mvn -DargLine="-Xmx2048m" -V --batch-mode --no-snapshot-updates install
+          mvn -DargLine="-Xmx4096m" -V --batch-mode --no-snapshot-updates install
 
   verify-guides-new:
     requires: [~commit]
