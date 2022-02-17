@@ -1,7 +1,7 @@
 shared:
   settings:
     email:
-      addresses: [kraune@yahooinc.com]
+      addresses: [kraune@yahooinc.com,bergum@yahooinc.com]
       statuses: [SUCCESS, FAILURE]
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
       - build: |
           set -e
           source /etc/profile.d/jdk-env.sh
-          mvn -V --batch-mode --no-snapshot-updates install
+          mvn -DargLine="-Xmx2048m" -V --batch-mode --no-snapshot-updates install
 
   verify-guides-new:
     requires: [~commit]
