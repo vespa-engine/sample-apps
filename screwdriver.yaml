@@ -35,6 +35,7 @@ jobs:
       - build: |
           set -e
           source /etc/profile.d/jdk-env.sh
+          export MAVEN_OPTS="-Xms128m -Xmx4096m"
           mvn -DargLine="-Xmx4096m" -V --batch-mode --no-snapshot-updates install
 
   verify-guides-new:
