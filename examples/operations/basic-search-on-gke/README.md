@@ -19,7 +19,7 @@ If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-
 The example below shows the steps to pop a GKE cluster and deploy a multinode setup on GKE.
 
 **Note:** To extend this to multiple config servers, set `publishNotReadyAddress: true` on the service,
-see [troubleshooting](/operations/README.md#troubleshooting).
+see [troubleshooting](/examples/operations/README.md#troubleshooting).
 
 
 ### Executable example
