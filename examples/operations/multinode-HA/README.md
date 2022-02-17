@@ -10,7 +10,7 @@ This application structure will scale to applications of 100s of nodes.
 Also see the smaller and simpler [multinode](../multinode) sample application.
 
 This is a guide for functional testing, deployed on one host for simplicity.
-Refer to the [mTLS guide](/operations/secure-vespa-with-mtls) for a multinode configuration,
+Refer to the [mTLS guide](/examples/operations/secure-vespa-with-mtls) for a multinode configuration,
 set up on multiple hosts using Docker Swarm.
 See the [reference documentation](https://docs.vespa.ai/en/reference/metrics.html)
 for use of `/state/v1/health` and `/state/v1/metrics` APIs used in this guide.
@@ -36,7 +36,7 @@ in this guide:
 
 See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
-Also see [troubleshooting](/operations/README.md#troubleshooting).
+Also see [troubleshooting](/examples/operations/README.md#troubleshooting).
 
 This guide is tested with Docker using 12G Memory:
 
