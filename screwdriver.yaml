@@ -31,6 +31,9 @@ jobs:
   build-apps:
     requires: [~pr, ~commit]
     image: vespaengine/vespa-pipeline
+    annotations:
+      screwdriver.cd/cpu: HIGH
+      screwdriver.cd/ram: HIGH
     steps:
       - build: |
           set -e
