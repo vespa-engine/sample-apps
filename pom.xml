@@ -12,29 +12,29 @@
 
     <modules>
         <module>album-recommendation-java</module>
-        <module>operations/album-recommendation-monitoring/album-recommendation-random-data</module>
-        <module>boolean-search</module>
+        <module>examples/operations/album-recommendation-monitoring/album-recommendation-random-data</module>
+        <module>examples/boolean-search</module>
         <module>dense-passage-retrieval-with-ann</module>
-        <module>generic-request-processing</module>
-        <module>http-api-using-request-handlers-and-processors</module>
+        <module>examples/generic-request-processing</module>
+        <module>examples/http-api-using-request-handlers-and-processors</module>
         <module>incremental-search/search-as-you-type</module>
         <module>incremental-search/search-suggestions</module>
         <module>model-evaluation</module>
         <module>msmarco-ranking</module>
-        <module>multiple-bundles-lib</module>
-        <module>multiple-bundles</module>
+        <module>examples/multiple-bundles-lib</module>
+        <module>examples/multiple-bundles</module>
         <module>news/app-6-recommendation-with-searchers</module>
         <module>news/app-7-parent-child</module>
         <module>text-image-search</module>
         <module>text-search</module>
         <module>transformers</module>
         <module>use-case-shopping</module>
-        <module>vespa-chinese-linguistics</module>
+        <module>examples/vespa-chinese-linguistics</module>
         <module>vespa-cloud/album-recommendation-java</module>
         <module>vespa-cloud/album-recommendation-prod-tests</module>
         <module>vespa-cloud/cord-19-search</module>
-        <module>vespa-cloud/document-processing</module>
-        <module>vespa-cloud/joins</module>
+        <module>examples/vespa-cloud/document-processing</module>
+        <module>examples/vespa-cloud/joins</module>
         <module>vespa-cloud/vespa-documentation-search</module>
     </modules>
 </project>
