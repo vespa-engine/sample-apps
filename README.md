@@ -81,39 +81,6 @@ Stateless ML model serving can also be used in state-of-the-art retrieval and ra
 e.g. query classification and encoding text queries to dense vector representation
 for efficient retrieval using Vespa's approximate nearest neighbor search.
 
-### [Vespa grouping and facets for organizing results ](part-purchases-demo)
-A sample application demonstrating Vespa grouping and faceting for query time result analytics.
-[Vespa grouping documentation](https://docs.vespa.ai/en/grouping.html)
-
-### [Vespa predicate fields](boolean-search)
-A sample app which demonstrates how to use Vespa's **predicate** field type to implement indexing of boolean expressions.
-Boolean document side constraints allows the document to specify which type of queries it can be retrieved for.
-This allows expressing logic like _"this document should only be visible in search for readers in age range 20 to 30"_
-or "This product should only be visible in search during campaign hours".
-
-
-
-## Self-hosted Deployments - operations
-See [operations](/operations) for sample applications for multinode clusters,
-deployed in various infrastructure like Kubernetes.
-Also find examples for security and monitoring .
-
-
-
-## Custom API and Plugins
-
-### [Vespa custom linguistics Integration](vespa-chinese-linguistics)
-This application demonstrates integrating custom linguistic processing,
-in this case a Chinese tokenizer ([Jieba](https://github.com/fxsjy/jieba)).
-
-### [Vespa custom HTTP api using request handlers and processors](http-api-using-request-handlers-and-processors)
-This application demonstrates how to build custom HTTP apis,
-building REST interfaces with custom handlers and renderers.
-See also [Custom HTTP Api tutorial](https://docs.vespa.ai/en/jdisc/http-api-tutorial.html).
-
-### [Vespa container plugins with multiple OSGI bundles](multiple-bundles)
-This is a technical sample application demonstrating how to use multiple OSGI bundles for custom plugins
-(searchers, handlers, renderers).
 
 
 <!--
