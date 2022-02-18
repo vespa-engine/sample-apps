@@ -34,7 +34,7 @@
         <module>vespa-cloud/album-recommendation-prod-tests</module>
         <module>vespa-cloud/cord-19-search</module>
         <module>examples/document-processing</module>
-        <module>examples/vespa-cloud/joins</module>
+        <module>examples/joins</module>
         <module>vespa-cloud/vespa-documentation-search</module>
     </modules>
 </project>
