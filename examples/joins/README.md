@@ -4,4 +4,4 @@
 
 # Vespa sample applications - document joins
 
-Refer to [getting-started-java](https://cloud.vespa.ai/en/getting-started-java) to try this sample application.
+This example is work in progress, to be documented when done

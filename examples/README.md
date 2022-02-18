@@ -17,8 +17,8 @@ This allows expressing logic like _"this document should only be visible in sear
 or "This product should only be visible in search during campaign hours".
 
 
-## Self-hosted Deployments - operations
-See [operations](operations) for sample applications for multinode clusters,
+### [Operations](operations)
+See _operations_ for sample applications for multinode clusters,
 deployed in various infrastructure like Kubernetes.
 Also find examples for security and monitoring .
 
@@ -39,21 +39,21 @@ This is a technical sample application demonstrating how to use multiple OSGI bu
 (searchers, handlers, renderers).
 
 
-### joins
-[joins](vespa-cloud/joins) shows possibilities for doing joins of data across nodes with
-customer components. This is for use cases where parent-child is not sufficient,
-and latency budgets are a bit higher.
-<!-- ToDo: remove cloud specifics -->
+### [Joins](joins)
+_Joins_ shows possibilities for doing joins of data across nodes with customer components.
+This is for use cases where parent-child is not sufficient, and latency budgets are a bit higher.
 
 
-### document-processing
-[document-processing](document-processing) builds on album-recommendation to show
+### [Document processing](document-processing)
+Document-processing builds on album-recommendation to show
 some of the possibilities for doing custom document processing in Java.
 
 
-<!--
-[generic-request-processing](generic-request-processing)
--->
+### [Generic request processing](generic-request-processing)
+generic-request-processing description TBD
+<!-- ToDo: FIXME -->
+
+
 
 ----
 
