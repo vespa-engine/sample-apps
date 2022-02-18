@@ -56,7 +56,7 @@ Get the app and create the local network:
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/operations/multinode-HA
+$ cd sample-apps/examples/operations/multinode-HA
 $ docker network create --driver bridge vespanet
 </pre>
 

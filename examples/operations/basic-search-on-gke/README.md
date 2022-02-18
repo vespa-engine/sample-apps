@@ -26,7 +26,7 @@ see [troubleshooting](/examples/operations/README.md#troubleshooting).
 **Check-out the example repository:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ VESPA_SAMPLE_APP=`pwd`/basic-search-on-gke
+$ VESPA_SAMPLE_APP=`pwd`/sample-apps/examples/operations/basic-search-on-gke
 </pre>
 
 **Create a GKE cluster :**
