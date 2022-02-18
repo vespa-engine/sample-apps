@@ -6,9 +6,10 @@
 
 This sample application demonstrates how to build an application that has split
 some of its code into a separate bundle.
-The extra bundle for this application is found in [multiple-bundles-lib][1] .
+The extra bundle for this application is found in [multiple-bundles-lib](../multiple-bundles-lib) .
 
-Refer to [container components][2] and the [bundle plugin][3] for more information.
+Refer to [container components](https://docs.vespa.ai/en/jdisc/container-components.html)
+and the [bundle plugin](https://docs.vespa.ai/en/bundle-plugin.html) for more information.
 
 Docker requirements same as in the [quick-start](https://docs.vespa.ai/en/vespa-quick-start.html).
 
@@ -68,7 +69,3 @@ of the search result.
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
-
-[1]: https://github.com/vespa-engine/sample-apps/tree/master/multiple-bundles-lib
-[2]: https://docs.vespa.ai/en/jdisc/container-components.html
-[3]: https://docs.vespa.ai/en/bundle-plugin.html
