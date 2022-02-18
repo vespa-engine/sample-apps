@@ -448,6 +448,8 @@ Use _http://node0.vespanet:19071_ as the config server endpoint:
 
     http://localhost:4000/content?config_host=http://node0.vespanet:19071/
 
+![Vispana screenshot](img/vispana.png)
+
 
 
 ## Appendix
