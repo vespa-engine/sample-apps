@@ -33,7 +33,7 @@ $ docker info | grep "Total Memory"
 **Check-out the example repository:**
 <pre data-test="exec">
 $ git clone https://github.com/vespa-engine/sample-apps.git
-$ VESPA_SAMPLE_APP=`pwd`/sample-apps/operations/secure-vespa-with-mtls
+$ VESPA_SAMPLE_APP=`pwd`/sample-apps/examples/operations/secure-vespa-with-mtls
 </pre>
 
 **Generate keys and certificate chains:**

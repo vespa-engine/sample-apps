@@ -46,7 +46,7 @@ Prerequisites:
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/operations/multinode
+$ cd sample-apps/examples/operations/multinode
 $ docker network create --driver bridge vespanet
 </pre>
 
