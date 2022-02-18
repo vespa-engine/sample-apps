@@ -437,6 +437,19 @@ $ docker network rm vespanet
 
 
 
+## Integrations
+[Vispana](https://github.com/vispana/vispana) is a Vespa.ai web client tool
+designed to quickly understand the status of a cluster.
+To use Vispana with this example app, add it to the same Docker network:
+
+    docker run -p 4000:4000 --network vespanet vispana/vispana
+
+Use _http://node0.vespanet:19071_ as the config server endpoint:
+
+    http://localhost:4000/content?config_host=http://node0.vespanet:19071/
+
+
+
 ## Appendix
 
 ### Deploy output
