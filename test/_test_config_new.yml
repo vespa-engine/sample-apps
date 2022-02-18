@@ -1,15 +1,16 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/boolean-search/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/operations/multinode/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/generic-request-processing/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/http-api-using-request-handlers-and-processors/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/multiple-bundles/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/document-processing/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/boolean-search/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/operations/multinode/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/generic-request-processing/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/http-api-using-request-handlers-and-processors/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/multiple-bundles/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/use-case-shopping/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/model-evaluation/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/part-purchases-demo/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-chinese-linguistics/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/part-purchases-demo/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/vespa-chinese-linguistics/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/vespa-documentation-search/README.md"
