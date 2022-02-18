@@ -47,9 +47,8 @@ and latency budgets are a bit higher.
 
 
 ### document-processing
-[document-processing](vespa-cloud/document-processing) builds on album-recommendation to show
+[document-processing](document-processing) builds on album-recommendation to show
 some of the possibilities for doing custom document processing in Java.
-<!-- ToDo: remove cloud specifics -->
 
 
 <!--
