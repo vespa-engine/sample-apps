@@ -29,9 +29,11 @@ in this guide:
   See the `admin` section in services.xml.
 * the admin server node that hosts the log server is hosted on node4.
   See the `admin` section in services.xml.
-* the stateless java container cluster that hosts the _stateless_ nodes on node[4,5].
+* the stateless java container cluster that hosts the _stateless_ nodes for _feed_ processing on node[4,5].
   See `container` section in services.xml.
-* the content cluster that hosts the _stateful_ content nodes on node[6,7].
+* the stateless java container cluster that hosts the _stateless_ nodes for _query_ processing on node[6,7].
+  See `container` section in services.xml.
+* the content cluster that hosts the _stateful_ content nodes on node[8,9].
   See `content` section in services.xml.
 
 See [Process overview](#process-overview) below for more details,
@@ -193,7 +195,7 @@ $ curl -s --head http://localhost:8081/ApplicationStatus
     Content-Length: 5213
 
 As this is also the cluster where custom components for document processing are loaded,
-inspecting the `/ApplicationStatus` endpoint is useful
+inspecting the `/ApplicationStatus` endpoint is useful:
 
     $ curl http://localhost:8080/ApplicationStatus
 
@@ -407,9 +409,9 @@ Notes:
 ## Test endpoints
 Feed 5 documents, using the document-API endpoint in the _feed_ container cluster on 8080/8081:
 <pre data-test="exec">
-$ i=0; (for doc in $(ls ../../album-recommendation/src/test/resources); \
+$ i=0; (for doc in $(ls ../../../album-recommendation/src/test/resources); \
   do \
-    curl -H Content-Type:application/json -d @../../album-recommendation/src/test/resources/$doc \
+    curl -H Content-Type:application/json -d @../../../album-recommendation/src/test/resources/$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
     i=$(($i + 1)); echo; \
   done)
