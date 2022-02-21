@@ -31,12 +31,12 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 
 **Build the "library" bundle:**
 <pre data-test="exec">
-$ (cd sample-apps/multiple-bundles-lib &amp;&amp; mvn clean install)
+$ (cd sample-apps/examples/multiple-bundles-lib &amp;&amp; mvn clean install)
 </pre>
 
 **Build the main bundle and start the docker container:**
 <pre data-test="exec">
-$ cd sample-apps/multiple-bundles &amp;&amp; mvn clean verify
+$ cd sample-apps/examples/multiple-bundles &amp;&amp; mvn clean verify
 $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa

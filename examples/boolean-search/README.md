@@ -36,7 +36,7 @@ $ docker info | grep "Total Memory"
 **Check-out, compile and start Docker container:**
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/boolean-search &amp;&amp; mvn -U clean package
+$ cd sample-apps/examples/boolean-search &amp;&amp; mvn -U clean package
 $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa

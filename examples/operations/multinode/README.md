@@ -243,9 +243,9 @@ see [troubleshooting](/examples/operations/README.md#troubleshooting).
 ## Feed data, check distribution
 Make sure the three nodes are started and up - then feed 5 documents:
 <pre data-test="exec" data-test-assert-contains="id:mynamespace:music::4">
-$ i=0; (for doc in $(ls ../../album-recommendation/src/test/resources); \
+$ i=0; (for doc in $(ls ../../../album-recommendation/src/test/resources); \
     do \
-      curl -H Content-Type:application/json -d @../../album-recommendation/src/test/resources/$doc \
+      curl -H Content-Type:application/json -d @../../../album-recommendation/src/test/resources/$doc \
       http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
       i=$(($i + 1)); echo; \
     done)

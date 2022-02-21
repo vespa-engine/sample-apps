@@ -112,7 +112,7 @@ $ cat src/test/resources/A-Head-Full-of-Dreams.json
 
 ### Review logs:
 Inspect what happened:
-<pre data-test="exec">
+<pre data-test="exec" data-test-assert-contains="Found lyrics">
 docker exec vespa sh -c '/opt/vespa/bin/vespa-logfmt | grep LyricsDocumentProcessor'
 </pre>
 
