@@ -21,7 +21,7 @@ Open API endpoints:
 * https://doc-search.vespa.oath.cloud/document/v1/
 * https://doc-search.vespa.oath.cloud/search/
 
-Example queries:
+Example requests:
 * https://doc-search.vespa.oath.cloud/document/v1/open/doc/docid/open%2Fen%2Freference%2Fquery-api-reference.html
 * https://doc-search.vespa.oath.cloud/search/?yql=select+*+from+doc+where+userInput(@input)%3B&input=vespa+ranking+is+great
 
@@ -29,7 +29,9 @@ Example queries:
 $ curl "https://doc-search.vespa.oath.cloud/document/v1/open/doc/docid/open%2Fen%2Freference%2Fquery-api-reference.html"
 </pre>
 <pre data-test="exec" data-test-assert-contains="the-great-search-engine-debate">
-$ curl "https://doc-search.vespa.oath.cloud/search/?yql=select+*+from+doc+where+userInput(@input)%3B&input=vespa+ranking+is+great"
+$ curl --data-urlencode 'yql=select * from doc where userInput(@input)' \
+  --data-urlencode 'input=vespa ranking is great' \
+  https://doc-search.vespa.oath.cloud/search/
 </pre>
 
 Using these endpoints is a good way to get started with Vespa -
