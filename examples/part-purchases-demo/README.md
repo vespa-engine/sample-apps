@@ -20,7 +20,7 @@ $ docker info | grep "Total Memory"
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/part-purchases-demo
+$ cd sample-apps/examples/part-purchases-demo
 $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa

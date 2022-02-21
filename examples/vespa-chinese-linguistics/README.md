@@ -24,7 +24,7 @@ Execute mvn command as below to produce the component jar target/chinese-linguis
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/vespa-chinese-linguistics
+$ cd sample-apps/examples/vespa-chinese-linguistics
 $ mvn package
 </pre>
 
@@ -37,7 +37,7 @@ Maybe in higher version, there are some changes in the interface [Linguistics](h
 
 ### Deploy
 Put the built package to components directory of your service.
-If there is no components directory, create it.
+If there is no _components_ directory, create it.
 For example, the structure will be like below with sampleapps.
 
 * sampleapps/search/kosmos/

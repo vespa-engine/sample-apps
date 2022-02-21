@@ -22,7 +22,7 @@ $ docker info | grep "Total Memory"
 **Check-out, compile and run:**
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/http-api-using-request-handlers-and-processors &amp;&amp; mvn clean package
+$ cd sample-apps/examples/http-api-using-request-handlers-and-processors &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
