@@ -424,7 +424,8 @@ $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 
 Run a query, using the query-API endpoint in the _query_ container cluster on 8082/8083::
 <pre data-test="exec" data-test-wait-for='"totalCount":5'>
-$ curl http://localhost:8082/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+$ curl --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
+  http://localhost:8082/search/
 </pre>
 
 

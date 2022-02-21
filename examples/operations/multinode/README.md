@@ -274,21 +274,24 @@ $ (for port in 19092 19093 19094; \
 ## Run queries while stopping nodes
 Query any of the nodes using 8080, 8081 or 8082 - this query selects _all_ documents:
 <pre data-test="exec" data-test-assert-contains='{"totalCount":5}'>
-$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+$ curl --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
+  http://localhost:8080/search/
 </pre>
 
 Check http://localhost:19050/clustercontroller-status/v1/music, then set node2 down:
 <pre>
 $ docker stop node2
 $ sleep 5
-$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+$ curl --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
+  http://localhost:8080/search/
 </pre>
 
 See _{"totalCount":5}_. Then stop node1:
 <pre>
 $ docker stop node1
 $ sleep 5
-$ curl http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20sddocname%20contains%20%22music%22%3B
+$ curl --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
+  http://localhost:8080/search/
 </pre>
 
 We see that the last clustercontroller is still up.

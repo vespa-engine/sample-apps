@@ -166,7 +166,8 @@ $ curl -s http://localhost:8080/site/
 **Do a term lookup**
 
 <pre data-test="exec" data-test-assert-contains="id:term:term::doc">
-$ curl -s http://localhost:8080/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20term%20contains%20%22doc%22%3B
+$ curl --data-urlencode 'yql=select * from sources * where term contains "doc"' \
+  http://localhost:8080/search/
 </pre>
 
 

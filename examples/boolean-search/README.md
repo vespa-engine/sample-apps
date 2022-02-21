@@ -14,12 +14,13 @@ just add a field of type predicate to the .sd file. (Remember to set the arity p
 ### Feed and query
 1. **Feed** the data:
     ```sh
-    vespa-feed-client --file adsdata.json --endpoint <endpoint>
+    $ vespa-feed-client --file adsdata.json --endpoint <endpoint>
     ```
 
-2. **Query** using yql, e.g. `select * from sources * where predicate(target, {"name":"Wile E. Coyote"},{});`
+2. **Query** using yql:
     ```sh
-    curl "<endpoint url>/search/?yql=select%20*%20from%20sources%20*%20where%20predicate(target%2C%20%7B%22name%22%3A%22Wile%20E.%20Coyote%22%7D%2C%7B%7D)%3B"
+    $ curl --data-urlencode 'yql=select * from sources * where predicate(target, {"name":"Wile E. Coyote"},{})' \
+      <endpoint>
     ```
 
 
