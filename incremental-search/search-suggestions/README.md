@@ -12,8 +12,8 @@ and extracts terms and phrases.
 [Prefix search](https://docs.vespa.ai/en/text-matching-ranking.html#prefix-search) is used,
 so suggestions are shown as the user types.
 
-This sample application is also deployed for [vespa-documentation-search](../../vespa-cloud/vespa-documentation-search),
-see [schema](../../vespa-cloud/vespa-documentation-search/src/main/application/schemas/term.sd).
+This sample application is also deployed for [vespa-documentation-search](https://github.com/vespa-cloud/vespa-documentation-search),
+see [schema](https://github.com/vespa-cloud/vespa-documentation-search/blob/main/src/main/application/schemas/term.sd).
 Note an enhancement to this sample app:
 
     field terms type array<string> {
