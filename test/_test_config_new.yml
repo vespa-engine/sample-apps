@@ -13,7 +13,6 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/vespa-chinese-linguistics/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/vespa-documentation-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/semantic-qa-retrieval/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
@@ -23,11 +22,14 @@ urls:
     # Text image search is currently failing in mvn clean package:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/text-image-search/README.md"
     #
+    # ToDo: move to other repo
     # Test queries to https://api.cord19.vespa.ai/search/?query=sars-cov-2
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/README.md"
-    #
+    - "https://raw.githubusercontent.com/vespa-cloud/cord-19-search/master/README.md"
     # Test self-hosted deployment of cord-19. ToDo: feed a few sample documents
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/vespa-cloud/cord-19-search/experiment-yourself.md"
+    - "https://raw.githubusercontent.com/vespa-cloud/cord-19-search/master/experiment-yourself.md"
+    #
+    # ToDo: Move to other repo
+    - "https://raw.githubusercontent.com/vespa-cloud/vespa-documentation-search/master/README.md"
 
     # multinode-HA uses too much memory for a TURBO instance in cd.screwdriver.cd,
     # see https://docs.screwdriver.cd/user-guide/configuration/annotations
