@@ -135,7 +135,12 @@ Then, the handler for the async operation is invoked as the call has completed
 In the subsequent process invocation, we see that the async operation has completed - set `Progress.DONE`
 
 
-**Further reading:**
+### Shutdown and remove the container:
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
 
+
+### Further reading:
 * [Getting started](https://docs.vespa.ai/en/getting-started.html)
 * [Developer guide](https://docs.vespa.ai/en/developer-guide.html)
