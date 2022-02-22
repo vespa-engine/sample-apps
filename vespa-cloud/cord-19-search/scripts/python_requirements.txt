@@ -1,7 +1,0 @@
-pandas
-transformers
-sentence-transformers
-torch
-tqdm
-scipy
-numpy

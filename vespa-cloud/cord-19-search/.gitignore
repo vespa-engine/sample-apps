@@ -1,6 +1,0 @@
-*.iml
-.idea/
-data/
-target/
-./*.pem
-./*.json
