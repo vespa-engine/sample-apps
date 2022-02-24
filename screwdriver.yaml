@@ -16,8 +16,15 @@ jobs:
           export LANG=C.UTF-8
           bundle install
       - add-front-matter-and-build: |
-          find . -not -path './_site/*' -name \*.md | while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
+          find . -not -path './_site/*' -name \*.md | \
+            while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
+          find . -not -path './_site/*' -name services.xml -or -name hosts.xml -or -name deployment.xml | \
+            while read f; do (echo -e "---\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
+      - generate-links-from-code-files: |
+          bundle exec jekyll build -p _plugins-linkcheck
+      - build-site: |
           bundle exec jekyll build
+          mv links-to-check.html _site
       - check-links: |
           bundle exec htmlproofer \
             --assume-extension --empty-alt-ignore \
