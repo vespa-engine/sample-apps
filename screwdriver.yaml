@@ -25,6 +25,8 @@ jobs:
       - build-site: |
           bundle exec jekyll build
           mv links-to-check.html _site
+          echo "Broken links in links-to-check.html are extracted from services/hosts/deployment.xml in the sample apps"
+          echo "Search for broken links in these files"
       - check-links: |
           bundle exec htmlproofer \
             --assume-extension --empty-alt-ignore \
