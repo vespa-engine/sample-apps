@@ -3,9 +3,6 @@
 
 <!--
   Lists the hosts that are to run this application. The hosts are referenced from services.xml.
-
-  See
-   - https://docs.vespa.ai/en/reference/hosts.html
 -->
 
 <hosts>

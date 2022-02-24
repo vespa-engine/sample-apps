@@ -2,9 +2,6 @@
 
 <!--
     deployment.xml describes where, how and when an application should be deployed.
-
-    See:
-      - Reference: https://cloud.vespa.ai/en/reference/deployment.html
 -->
 
 <deployment version="1.0">
