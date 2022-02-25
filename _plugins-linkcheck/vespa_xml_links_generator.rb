@@ -18,6 +18,11 @@ module Jekyll
                         all_links.push(link)
                     end
                 end
+                if page.name.include?".java"
+                    extract_links_javadoc(page).each do |link|
+                        all_links.push(link)
+                    end
+                end
             end
             link_file = "<!DOCTYPE html><html><head><title>links</title></head><body>\n"
             all_links.uniq.each do |link|
@@ -28,8 +33,8 @@ module Jekyll
         end
 
         def extract_links(page)
-            doc = Nokogiri::HTML(page.content)
             all_urls = []
+            doc = Nokogiri::HTML(page.content)
             comments = doc.xpath("//comment()")
             comments.each do |comment|
                 urls = comment.to_s.split(/\s+/).find_all { |u| u =~ /^https?:/ }
@@ -37,6 +42,19 @@ module Jekyll
                     all_urls.push(url)
                 end
             end
+            return all_urls
+        end
+
+        def extract_links_javadoc(page)
+            all_urls = []
+            page.content.each_line { |line|
+                if line =~ /^\s+\*\s/
+                    urls = line.gsub('"', ' ').gsub("'", ' ').split(/\s+/).find_all { |u| u =~ /^https?:/ }
+                    urls.each do |url|
+                        all_urls.push(url)
+                    end
+                end
+            }
             return all_urls
         end
 
