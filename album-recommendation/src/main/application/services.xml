@@ -21,7 +21,7 @@
 
             See:
              - Reference: https://docs.vespa.ai/en/reference/services-container.html#document-api
-             - Operations: https://docs.vespa.ai/en/document-api.html
+             - Operations: https://docs.vespa.ai/en/document-v1-api-guide.html
         -->
         <document-api/>
 
@@ -31,7 +31,7 @@
             Java components processing the query and/or result.
 
             See:
-             - Reference: https://docs.vespa.ai/en/search-api.html
+             - Reference: https://docs.vespa.ai/en/query-api.html
              - Searchers: https://docs.vespa.ai/en/searcher-development.html
         -->
         <search/>
