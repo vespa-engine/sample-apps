@@ -59,9 +59,11 @@ This extracts the text transformer model from CLIP and puts it into the
 `models` directory of the application.
 
 **Compile and run:**
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
+</pre>
 
 <pre data-test="exec">
-$ mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 vespaengine/vespa
 </pre>
@@ -72,7 +74,7 @@ $ docker run --detach --name vespa --hostname vespa-container \
 $ vespa status deploy --wait 300 --color never
 </pre>
 
-**Deploy the application and wait for it to start:**
+**Deploy the application and wait for services to start:**
 
 <pre data-test="exec" data-test-wait-for="is ready">
 $ vespa deploy --wait 300 --color never
@@ -94,7 +96,6 @@ This step take some time as each image is encoded using the CLIP model:
 <pre data-test="exec">
 $ python3 src/python/clip_feed.py
 </pre>
-
 
 **Search:**
 Run a query using curl 

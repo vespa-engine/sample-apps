@@ -7,6 +7,7 @@ import com.yahoo.prelude.query.NearestNeighborItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
+import com.yahoo.search.result.ErrorMessage;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 
@@ -23,7 +24,9 @@ public class TextEmbeddingSearcher extends Searcher {
     @Override
     public Result search(Query query, Execution execution) {
         // Get input
-        String inputString = query.properties().getString("input");
+        String inputString = query.properties().getString("input",null);
+        if(inputString == null || inputString.isBlank())
+            return new Result(query, ErrorMessage.createBadRequest("No 'input' query param"));
 
         // Tokenize input
         Tensor input = tokenizer.encode(inputString).rename("d0", "d1").expand("d0");
