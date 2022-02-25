@@ -1,0 +1,56 @@
+{
+  "name": "Image Search System Test",
+  "comment": "Test all retrieval and ranking pipelines",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single image document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/image_search/image_search/docid/2443229844_277cded27d",
+        "body": "../../sample-image-doc.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/image_search/image_search/docid/2443229844_277cded27d"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "image_file_name": "2443229844_277cded27d.jpg",
+            "vit_b_32_image":  {}
+          }
+        }
+      }
+    },
+    {
+      "name": "Search image embeddings",
+      "request": {
+        "parameters": {
+          "input": "a child playing"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "image_file_name": "2443229844_277cded27d.jpg"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

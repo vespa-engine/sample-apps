@@ -80,6 +80,12 @@ $ vespa status deploy --wait 300 --color never
 $ vespa deploy --wait 300 --color never
 </pre>
 
+Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which runs a set of basic tests to verify that the application is working as expected.
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/image-search-system-test.json 
+</pre>
+
 **Download and extract image data:**
 
 <pre data-test="exec">
@@ -88,19 +94,39 @@ $ export IMG_DIR=data/Flicker8k_Dataset/
 </pre>
 
 The full Flickr8k dataset is around 1.1GB, the feed script
-uses pyvespa to feed the image data to the running instance.
+uses [PyVespa](https://github.com/vespa-engine/pyvespa/) to feed the image data to the running instance.
 
 **Encode images and feed data:**
-This step take some time as each image is encoded using the CLIP model:
+This step take some time as each image is encoded using the CLIP model.
+Alternatively use pre-computed embeddings, see next instruction.
 
 <pre data-test="exec">
 $ python3 src/python/clip_feed.py
 </pre>
 
+Alternatively use pre-computed embeddings and feed directly with vespa-feed-client: 
+
+<pre data-test="exec">
+$ curl -L -o vespa-feed-client-cli.zip \
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+$ unzip -o vespa-feed-client-cli.zip
+</pre>
+
+<pre data-test="exec">
+$ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
+    https://data.vespa.oath.cloud/sample-apps-data/flickr-8k-clip-embeddings.jsonl.zst 
+</pre>
+
+<pre data-test="exec">
+$ zstdcat flickr-8k-clip-embeddings.jsonl.zst | \
+    ./vespa-feed-client-cli/vespa-feed-client \
+     --stdin --endpoint http://localhost:8080
+</pre>
+
 **Search:**
 Run a query using curl 
 <pre data-test="exec" data-test-assert-contains="2337919839_df83827fa0">
-$ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=1s"
+$ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=3s"
 </pre>
 
 **Shutdown and remove the container:**
