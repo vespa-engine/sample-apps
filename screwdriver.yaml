@@ -41,8 +41,8 @@ jobs:
     requires: [~pr, ~commit]
     image: vespaengine/vespa-pipeline
     annotations:
-      screwdriver.cd/cpu: HIGH
-      screwdriver.cd/ram: HIGH
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
     steps:
       - build: |
           set -e
