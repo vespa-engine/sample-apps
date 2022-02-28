@@ -2,6 +2,6 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-# Vespa sample applications - document joins
+# Vespa sample applications - Distributed joins
 
-This example is work in progress, to be documented when done
+This sample application demonstrates distributed join operations between multiple Vespa document types.
