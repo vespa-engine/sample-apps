@@ -162,7 +162,7 @@ def create_text_image_app(model_info):
                 ann=HNSW(
                     distance_metric="euclidean",
                     max_links_per_node=16,
-                    neighbors_to_explore_at_insert=500,
+                    neighbors_to_explore_at_insert=200,
                 ),
             )
         )

@@ -21,13 +21,15 @@ The other is a stand-alone Vespa application, which is more suitable for product
 
 The Python sample app includes a streamlit user interface:
 
-![Text-Image Search with Vespa](https://data.vespa.oath.cloud/sample-apps-data/image_demo.gif)
+[Animation](https://data.vespa.oath.cloud/sample-apps-data/image_demo.gif)
 
 
-## Vespa CLI
+### Vespa CLI
 
 The following instructions sets up the stand-alone Vespa application using the
-Vespa CLI, which takes a textual description and returns the file names of the
+[Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
+
+The application takes a textual description and returns the file names of the
 images that best match the description. The main difference between this app
 and the Python app, is that the transformation from text to a vector
 representation has been moved from Python and into Vespa. This includes both

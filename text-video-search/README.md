@@ -4,7 +4,7 @@
 
 Build a text-video search from scratch based on CLIP models with Vespa python API.
 
-![Text-Video Search with Vespa](https://data.vespa.oath.cloud/sample-apps-data/video_demo.gif)
+[See Animation](https://data.vespa.oath.cloud/sample-apps-data/video_demo.gif)
 
 ## Create the application from scratch in a Jupyter Notebook
 
