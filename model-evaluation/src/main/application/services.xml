@@ -11,22 +11,22 @@
     <model-evaluation />
 
     <!-- Add a handler for evaluating models without search -->
-    <handler id="ai.vespa.example.MyHandler" bundle="ai.vespa.example.model-evaluation">
+    <handler id="ai.vespa.example.MyHandler" bundle="model-inference">
         <binding>http://*/models/*</binding>
     </handler>
 
     <!-- Add searchers using model evaluation to the search chain -->
     <search>
       <chain id='mychain' inherits='vespa'>
-        <searcher id='ai.vespa.example.MySearcher' bundle="ai.vespa.example.model-evaluation" />
-        <searcher id='ai.vespa.example.MyPostProcessingSearcher' bundle="ai.vespa.example.model-evaluation" />
+        <searcher id='ai.vespa.example.MySearcher' bundle="model-inference" />
+        <searcher id='ai.vespa.example.MyPostProcessingSearcher' bundle="model-inference" />
       </chain>
     </search>
 
     <!-- Add a document processor using model evaluation to preprocess document fields -->
     <document-processing>
       <chain id="default" >
-        <documentprocessor id="ai.vespa.example.MyDocumentProcessor" bundle="ai.vespa.example.model-evaluation"/>
+        <documentprocessor id="ai.vespa.example.MyDocumentProcessor" bundle="model-inference"/>
       </chain>
     </document-processing>
     <document-api />
