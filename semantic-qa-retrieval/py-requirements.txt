@@ -1,0 +1,6 @@
+tensorflow
+tensorflow-hub
+tensorflow_text>=2.0.0rc0
+nltk 
+numpy<1.19.0
+requests

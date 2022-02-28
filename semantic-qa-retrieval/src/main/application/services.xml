@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+  <container id="container" version="1.0">
+    <document-api />
+    <search />
+    <nodes>
+      <node hostalias="node1" />
+    </nodes>
+  </container>
+
+  <content id="content" version="1.0">
+    <redundancy>2</redundancy>
+    <documents>
+      <document type="sentence" mode="index" />
+      <document type="context" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+    <search>
+      <visibility-delay>1.0</visibility-delay>
+    </search>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <requestthreads>
+                <persearch>2</persearch>
+            </requestthreads>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+
+</services>

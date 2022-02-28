@@ -4,8 +4,6 @@
 
 # Vespa sample applications
 
-
-
 ## Getting started - Basic Sample Applications
 
 ### [News search and recommendation tutorial](news)
@@ -20,7 +18,6 @@ This sample app also demonstrates use of parent-child relationships.
 This is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 There is also a version of this sample application ready for [Vespa Cloud](vespa-cloud/album-recommendation).
-
 
 
 ## Full-fledged State-of-the-Art Search, Ranking and Question Answering applications
@@ -71,7 +68,6 @@ e.g. query classification and encoding text queries to dense vector representati
 for efficient retrieval using Vespa's approximate nearest neighbor search.
 
 
-
 <!--
 [travis](travis)
 [part-purchases-demo](part-purchases-demo): A sample Vespa application to assist with with learning how to group according to the [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
@@ -95,3 +91,4 @@ Refer to the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html) fo
 [![sample-apps build](https://cd.screwdriver.cd/pipelines/7038/build-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
 
 [![sample-apps verify-guides](https://cd.screwdriver.cd/pipelines/7038/verify-guides/badge)](https://cd.screwdriver.cd/pipelines/7038/)
+
