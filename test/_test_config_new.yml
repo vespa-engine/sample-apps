@@ -13,7 +13,6 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/vespa-chinese-linguistics/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/semantic-qa-retrieval/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"

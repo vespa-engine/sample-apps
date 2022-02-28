@@ -53,21 +53,10 @@ A BERT based reader component reads the top ranking passages and produces the te
 See also [Efficient Open Domain Question Answering with Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/)
 and [Scaling Question Answering with Vespa](https://blog.vespa.ai/from-research-to-production-scaling-a-state-of-the-art-machine-learning-system/).
 
-### [Question Answering with Vector Search](semantic-qa-retrieval)
-This sample application focus on retrieval for question answering
-but without the Reader/Answering component as in the above sample app.
-It uses a pre-built dense vector model from Tensorflow hub.
-The application uses Vespa's nearest neighbor search operator
-to efficiently retrieve over a relatively small dataset from Google's Natural Questions.
-See also [Building a Question Answering app from python with vespa](https://blog.vespa.ai/build-qa-app-from-python-with-vespa/).
-This is a great introduction to Vespa's approximate nearest neighbor search support. 
-
 ### [Search as you type and search suggest](incremental-search)
 This sample application demonstrates search-as-you-type where for each keystroke of the user,
 we retrieve the best matching documents.
 It also demonstrates search suggestions (query autocompletion).
-
-
 
 ## Sample Applications
 These sample application demonstrates various Vespa features and capabilities. 

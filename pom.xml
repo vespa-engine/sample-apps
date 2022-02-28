@@ -13,7 +13,7 @@
     <modules>
         <module>album-recommendation-java</module>
         <module>examples/operations/album-recommendation-monitoring/album-recommendation-random-data</module>
-        <module>examples/boolean-search</module>
+        <module>examples/predicate-fields</module>
         <module>dense-passage-retrieval-with-ann</module>
         <module>examples/generic-request-processing</module>
         <module>examples/http-api-using-request-handlers-and-processors</module>
