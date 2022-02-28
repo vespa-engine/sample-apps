@@ -7,7 +7,7 @@
 
 ### [Vespa grouping and facets for organizing results ](part-purchases-demo)
 A sample application demonstrating Vespa grouping and faceting for query time result analytics.
-[Vespa grouping documentation](https://docs.vespa.ai/en/grouping.html)
+See [Vespa grouping documentation](https://docs.vespa.ai/en/grouping.html).
 
 ### [Vespa predicate fields](predicate-fields)
 A sample app which demonstrates how to use Vespa's [predicate field](https://docs.vespa.ai/en/predicate-fields.html) 
@@ -19,7 +19,7 @@ or "This product should only be visible in search during campaign hours".
 ### [Operations](operations)
 See _operations_ for sample applications for multinode clusters,
 deployed in various infrastructure like Kubernetes.
-Also find examples for security and monitoring .
+Also find examples for security and monitoring.
 
 ### [Vespa custom linguistics Integration](vespa-chinese-linguistics)
 This application demonstrates integrating custom linguistic processing,
@@ -35,9 +35,8 @@ This is a technical sample application demonstrating how to use multiple OSGI bu
 (searchers, handlers, renderers).
 
 ### [Joins](joins)
-_Joins_ shows possibilities for doing joins of data across nodes with customer components.
-This is for use cases where parent-child is not sufficient, and latency budgets are a bit higher.
-
+_Joins_ shows possibilities for doing distributed query joins.
+This is for use cases where [parent-child](https://docs.vespa.ai/en/parent-child.html) is not sufficient. 
 
 ### [Document processing](document-processing)
 Document-processing builds on album-recommendation to show
