@@ -21,7 +21,20 @@ various ways stateless model evaluation can be used in Vespa:
 - In searchers and document processors.
 - In a post-processing searcher to run a model in batch with the result from the content node.
 
-### Executable example
+### Quick Start 
+
+Requirements:
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS).
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+  to build the application.
 
 **Validate environment, should be minimum 6G:**
 
@@ -29,33 +42,58 @@ various ways stateless model evaluation can be used in Vespa:
 $ docker info | grep "Total Memory"
 </pre>
 
-**Check-out, compile and run:**
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
+
+<pre >
+$ brew install vespa-cli
+</pre>
+
+Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
+using target cloud.
+
+For local deployment using docker image use
 
 <pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/model-evaluation &amp;&amp; mvn clean package
+$ vespa config set target local
+</pre>
+
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+
+Pull and start the vespa docker container image:
+
+<pre data-test="exec">
+$ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
 
-**Wait for the configserver to start:**
-
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+Download this sample application
+<pre data-test="exec">
+$ vespa clone model-evaluation myapp && cd myapp
 </pre>
 
-**Deploy the application:**
-
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+Build the application package
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
 </pre>
 
-**Wait for the application to start:**
+Verify that configuration service (deploy api) is ready
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
+<pre data-test="exec">
+$ vespa status deploy --wait 300
+</pre>
+
+Deploy the application 
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
+</pre>
+
+Wait for the application endpoint to become available
+
+<pre data-test="exec">
+$ vespa status --wait 300
 </pre>
 
 **Test the application - REST API**
