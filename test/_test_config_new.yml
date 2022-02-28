@@ -2,7 +2,7 @@
 
 urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/document-processing/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/boolean-search/README.md"
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/predicate-fields/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/operations/multinode/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/generic-request-processing/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/http-api-using-request-handlers-and-processors/README.md"
