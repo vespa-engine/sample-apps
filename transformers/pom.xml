@@ -19,4 +19,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.yahoo.vespa</groupId>
+      <artifactId>linguistics-components</artifactId>
+      <scope>provided</scope>
+      <version>[7,999)</version>
+    </dependency>
+  </dependencies>
+
 </project>

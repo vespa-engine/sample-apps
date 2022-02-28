@@ -9,7 +9,7 @@ import transformers.convert_graph_to_onnx as onnx_convert
 from pathlib import Path
 
 output_file = sys.argv[1]
-model_name = "bert-base-uncased"
+model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 tokenizer = transformers.BertTokenizer.from_pretrained(model_name)
 model = transformers.BertForSequenceClassification.from_pretrained(model_name)

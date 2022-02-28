@@ -1,0 +1,56 @@
+{
+  "name": "MS Marco Ranking System Test",
+  "comment": "Test of end to end retrieve and ranking pipeline",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single document document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/msmarco/msmarco/docid/D2779191",
+        "body": "../sample-document.json"
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/msmarco/msmarco/docid/D2779191"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "id": "D2779191"
+          }
+        }
+      }
+    },
+    {
+      "name": "Run ranking",
+      "request": {
+        "parameters": {
+          "yql": "select * from msmarco where userQuery();",
+          "query": "is long term care insurance tax deductible"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "id": "D2779191"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
