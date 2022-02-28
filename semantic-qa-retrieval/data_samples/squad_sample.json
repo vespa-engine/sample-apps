@@ -1,0 +1,144 @@
+{
+    "data": [
+        {
+            "paragraphs": [
+                {
+                    "context": "The group changed their name to Destiny's Child in 1996, based upon a passage in the Book of Isaiah. In 1997, Destiny's Child released their major label debut song \"Killing Time\" on the soundtrack to the 1997 film, Men in Black. The following year, the group released their self-titled debut album, scoring their first major hit \"No, No, No\". The album established the group as a viable act in the music industry, with moderate sales and winning the group three Soul Train Lady of Soul Awards for Best R&B/Soul Album of the Year, Best R&B/Soul or Rap New Artist, and Best R&B/Soul Single for \"No, No, No\". The group released their multi-platinum second album The Writing's on the Wall in 1999. The record features some of the group's most widely known songs such as \"Bills, Bills, Bills\", the group's first number-one single, \"Jumpin' Jumpin'\" and \"Say My Name\", which became their most successful song at the time, and would remain one of their signature songs. \"Say My Name\" won the Best R&B Performance by a Duo or Group with Vocals and the Best R&B Song at the 43rd Annual Grammy Awards. The Writing's on the Wall sold more than eight million copies worldwide. During this time, Beyonc\u00e9 recorded a duet with Marc Nelson, an original member of Boyz II Men, on the song \"After All Is Said and Done\" for the soundtrack to the 1999 film, The Best Man.",
+                    "qas": [
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 215,
+                                    "text": "Men in Black"
+                                }
+                            ],
+                            "id": "56be8c8a3aeaaa14008c90a9",
+                            "question": "Which film featured Destiny's Child's first major single?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 848,
+                                    "text": "\"Say My Name\""
+                                }
+                            ],
+                            "id": "56be8c8a3aeaaa14008c90ab",
+                            "question": "For which song, did Destiny's Child take home the grammy award for best R&B performance?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 1212,
+                                    "text": "Marc Nelson"
+                                }
+                            ],
+                            "id": "56be8c8a3aeaaa14008c90ac",
+                            "question": "Who did Beyonce record with for the movie \"The Best Man?\""
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 51,
+                                    "text": "1996"
+                                }
+                            ],
+                            "id": "56bf7cb63aeaaa14008c9677",
+                            "question": "Beyonce's group changed their name to Destiny's Child in what year?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 85,
+                                    "text": "Book of Isaiah"
+                                }
+                            ],
+                            "id": "56bf7cb63aeaaa14008c9678",
+                            "question": "The name Destiny's Child was based on a quote in which book of the Bible?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 215,
+                                    "text": "Men in Black"
+                                }
+                            ],
+                            "id": "56bf7cb63aeaaa14008c9679",
+                            "question": "Debut song, \"Killing Time\" was featured on what movie's sound track?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 849,
+                                    "text": "Say My Name"
+                                }
+                            ],
+                            "id": "56bf7cb63aeaaa14008c967a",
+                            "question": "What song won Best R&B Performance in the 43 Annual Grammy Awards?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 1212,
+                                    "text": "Marc Nelson"
+                                }
+                            ],
+                            "id": "56bf7cb63aeaaa14008c967b",
+                            "question": "What singer did Beyonce record a song with for the movie, ''The Best Man\"?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 85,
+                                    "text": "Book of Isaiah."
+                                }
+                            ],
+                            "id": "56d45fcb2ccc5a1400d830f9",
+                            "question": "Where did Destiny's Child get their name from?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 215,
+                                    "text": "Men in Black."
+                                }
+                            ],
+                            "id": "56d45fcb2ccc5a1400d830fa",
+                            "question": "Destiny's Child song, Killing Time, was included in which film's soundtrack?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 330,
+                                    "text": "No, No, No"
+                                }
+                            ],
+                            "id": "56d45fcb2ccc5a1400d830fb",
+                            "question": "What was Destiny's Child's first major song hit?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 688,
+                                    "text": "1999"
+                                }
+                            ],
+                            "id": "56d45fcb2ccc5a1400d830fc",
+                            "question": "When did Destiny's Child release their second album?"
+                        },
+                        {
+                            "answers": [
+                                {
+                                    "answer_start": 1212,
+                                    "text": "Marc Nelson"
+                                }
+                            ],
+                            "id": "56d45fcb2ccc5a1400d830fd",
+                            "question": "Who did Beyonc\u00e9 sing a duet with for \"The Best Man\" film?"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
