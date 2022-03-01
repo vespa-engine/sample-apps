@@ -13,7 +13,7 @@
       "request": {
         "method": "POST",
         "uri": "/document/v1/msmarco/doc/docid/D2951578",
-        "body": "../../sample-doc.json"
+        "body": "../sample-doc.json"
       }
     },
     {
@@ -66,7 +66,7 @@
       "request": {
         "method": "PUT",
         "uri": "/document/v1/msmarco/doc/docid/D2951578",
-        "body": "../../update-doc.json"
+        "body": "../update-doc.json"
       }
     },
     {
