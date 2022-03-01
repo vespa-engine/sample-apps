@@ -35,7 +35,8 @@
       "request": {
         "parameters": {
           "yql": "select * from msmarco where userQuery();",
-          "query": "is long term care insurance tax deductible"
+          "query": "is long term care insurance tax deductible",
+          "hits": 1
         }
       },
       "response": {
