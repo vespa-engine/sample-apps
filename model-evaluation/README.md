@@ -163,7 +163,7 @@ the model.
 
 **Test the document processor**
 
-Feed in a few documents by first downloading the `vespa-feed-client` Java client:
+Feed in a few documents by first downloading the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html): 
 
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \

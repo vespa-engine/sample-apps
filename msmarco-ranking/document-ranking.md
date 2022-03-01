@@ -271,8 +271,6 @@ $ vespa test src/test/application/tests/system-test/passage-ranking-system-test.
 $ vespa test src/test/application/tests/system-test/document-ranking-system-test.json
 </pre>
 
-
-
 ## Feeding Sample Data
 Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html).
 
@@ -347,7 +345,7 @@ $ ir_datasets export msmarco-document/train docs --format jsonl | \
 </pre>
 
 
-## Doc to query document expansion
+## Document to query document expansion
 For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
 Follow the instructions at 
 [https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
@@ -378,11 +376,11 @@ Then run the script with --output_docs_path *doc_t5_query_updates.jsonl*.
 Place the output file *doc_t5_query_updates.json* in the directory of the sample app. ($SAMPLE_APP)
 
 <pre>
-$ vespa-feed-client --file all-feed.jsonl --endpoint http://localhost:8080
+$ ./vespa-feed-client-cli/vespa-feed-client --file all-feed.jsonl --endpoint http://localhost:8080
 </pre>
 
 <pre>
-$ vespa-feed-client --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
+$ ./vespa-feed-client-cli/vespa-feed-client --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
 </pre>
 
 

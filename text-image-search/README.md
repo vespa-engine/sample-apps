@@ -100,7 +100,7 @@ $ vespa test src/test/application/tests/system-test/image-search-system-test.jso
 
 **Download and extract image data:**
 
-<pre data-test="exec">
+<pre>
 $ ./src/sh/download_flickr8k.sh
 $ export IMG_DIR=data/Flicker8k_Dataset/
 </pre>
@@ -112,11 +112,12 @@ uses [PyVespa](https://github.com/vespa-engine/pyvespa/) to feed the image data 
 This step take some time as each image is encoded using the CLIP model.
 Alternatively use pre-computed embeddings, see next instruction.
 
-<pre data-test="exec">
+<pre>
 $ python3 src/python/clip_feed.py
 </pre>
 
-Alternatively use pre-computed embeddings and feed directly with vespa-feed-client: 
+Alternatively, instead of computing the embeddings, use our pre-computed embeddings and feed directly with 
+[vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html): 
 
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
