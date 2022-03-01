@@ -1,0 +1,134 @@
+{
+  "name": "Model Evaluation System Tests",
+  "comment": "Test model inference ",
+  "defaults": {
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "List available models",
+      "request": {
+        "method": "GET",
+        "uri": "/model-evaluation/v1/"
+      },
+      "response": {
+        "body":
+        {
+          "pairwise_ranker": "http://127.0.0.1:8080/model-evaluation/v1/pairwise_ranker",
+          "transformer": "http://127.0.0.1:8080/model-evaluation/v1/transformer"
+        }
+      }
+    },
+    {
+      "name": "List parameters for transformer model",
+      "request": {
+        "method": "GET",
+        "uri": "/model-evaluation/v1/transformer"
+      },
+      "response": {
+        "body": {
+          "model": "transformer"
+        },
+        "arguments": [
+          {
+            "name": "input",
+            "type": "tensor(d0[],d1[])"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Inference with transformer model using native model-evaluation api",
+      "request": {
+        "method": "GET",
+        "uri": "/model-evaluation/v1/transformer/eval",
+        "parameters": {
+          "input": "[[1,2,3]]",
+          "format.tensors": "short"
+        }
+      },
+      "response": {
+        "body":
+        {
+          "type": "tensor<float>(d0[1],d1[3],d2[16])"
+        }
+      }
+    },
+    {
+      "name": "Inference with transformer model using a custom handler",
+      "request": {
+        "method": "GET",
+        "uri": "/models/",
+        "parameters": {
+          "model": "transformer",
+          "input": "{{x:0}:1,{x:1}:2,{x:2}:3}"
+        }
+      },
+      "response": {
+        "code": 200
+      }
+    },
+    {
+      "name": "feed doc 1",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/mydoc/mydoc/docid/1",
+        "body": {
+          "fields": {
+            "id": "1",
+            "tokens": { "values": [8, 6, 5, 3, 4, 1, 2, 7, 9, 0]}
+          }
+        }
+      }
+    },
+    {
+      "name": "feed doc 2",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/mydoc/mydoc/docid/2",
+        "body": {
+          "fields": {
+            "id": "2",
+            "tokens": { "values": [3, 6, 4, 2, 0, 8, 7, 9, 5, 1]}
+          }
+        }
+      }
+    },
+    {
+      "name": "Get document 1",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/mydoc/mydoc/docid/1"
+      },
+      "response": {
+        "code": 200
+      }
+    },
+    {
+      "name": "Get document 2",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/mydoc/mydoc/docid/2"
+      },
+      "response": {
+        "code": 200
+      }
+    },
+    {
+      "name": "Inference with transformer model using a custom handler",
+      "request": {
+        "method": "GET",
+        "uri": "/search/",
+        "parameters": {
+          "searchChain": "mychain",
+          "input": "{{x:0}:1,{x:1}:2,{x:2}:3}"
+        }
+      },
+      "response": {
+        "code": 200
+      }
+    }
+  ]
+}

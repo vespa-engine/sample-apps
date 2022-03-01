@@ -96,7 +96,15 @@ Wait for the application endpoint to become available
 $ vespa status --wait 300
 </pre>
 
-**Test the application - REST API**
+**Test the application**
+
+Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which runs a set of basic tests to verify that the application is working as expected.
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-tests/model-evaluation-test.json
+</pre>
+
+**Using the REST APIs directly**
 
 List the available models:
 
@@ -113,7 +121,7 @@ $ curl -s 'http://localhost:8080/model-evaluation/v1/transformer' | python3 -m j
 Evaluating the model:
 
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format=short' | \
+$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format.tensors=short' | \
   python3 -m json.tool
 </pre>
 
