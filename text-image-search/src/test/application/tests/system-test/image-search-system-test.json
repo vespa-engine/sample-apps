@@ -13,7 +13,7 @@
       "request": {
         "method": "POST",
         "uri": "/document/v1/image_search/image_search/docid/2443229844_277cded27d",
-        "body": "../../sample-image-doc.json"
+        "body": "../sample-image-doc.json"
       }
     },
     {

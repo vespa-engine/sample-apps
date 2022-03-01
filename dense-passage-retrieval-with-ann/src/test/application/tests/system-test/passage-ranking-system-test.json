@@ -13,7 +13,7 @@
       "request": {
         "method": "POST",
         "uri": "/document/v1/wiki/wiki/docid/62",
-        "body": "../../sample-passage.json"
+        "body": "../sample-passage.json"
       }
     },
     {

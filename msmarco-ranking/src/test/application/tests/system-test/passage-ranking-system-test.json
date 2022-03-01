@@ -13,7 +13,7 @@
       "request": {
         "method": "POST",
         "uri": "/document/v1/msmarco/passage/docid/0",
-        "body": "../../sample-passage.json"
+        "body": "../sample-passage.json"
       }
     },
     {
@@ -21,7 +21,7 @@
       "request": {
         "method": "POST",
         "uri": "/document/v1/msmarco/passage/docid/1",
-        "body": "../../sample-passage2.json"
+        "body": "../sample-passage2.json"
       }
     },
     {
@@ -101,7 +101,7 @@
       "request": {
         "method": "POST",
         "uri": "/document/v1/msmarco/passage/docid/0",
-        "body": "../../sample-passage-v2.json"
+        "body": "../sample-passage-v2.json"
       }
     },
     {
