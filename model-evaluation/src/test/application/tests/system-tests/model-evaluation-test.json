@@ -14,11 +14,7 @@
         "uri": "/model-evaluation/v1/"
       },
       "response": {
-        "body":
-        {
-          "pairwise_ranker": "http://127.0.0.1:8080/model-evaluation/v1/pairwise_ranker",
-          "transformer": "http://127.0.0.1:8080/model-evaluation/v1/transformer"
-        }
+        "code": 200
       }
     },
     {
