@@ -8,4 +8,5 @@ This sample application contains the code for the text search tutorial.
 Please refer to the [text search tutorial](https://docs.vespa.ai/en/tutorials/text-search.html)
 for more information.
 
-See also [MS Marco Ranking](../msmarco-ranking) for ranking using state-of-the-art retrieval and ranking methods.
+See also the [MS Marco Ranking](../msmarco-ranking) sample application for ranking using state-of-the-art retrieval and ranking methods.
+There is also a [Ranking with Transformers](../transformers) sample application. 
