@@ -35,7 +35,7 @@
 
   <!-- Add a content cluster to searchers and document processors -->
   <content id="mycluster" version="1.0">
-    <redundancy>1</redundancy>
+    <redundancy>2</redundancy>
     <documents>
       <document type="mydoc" mode="index" />
     </documents>
