@@ -59,6 +59,15 @@ $ vespa config set target local
 
 For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
 
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa api-key
+$ vespa cert
+</pre>
+
+Where tenant-name is the tenant created when signing up for cloud. 
+
 Pull and start the vespa docker container image:
 
 <pre data-test="exec">
@@ -105,38 +114,39 @@ $ vespa test src/test/application/tests/system-tests/model-evaluation-test.json
 </pre>
 
 **Using the REST APIs directly**
+In the following examples we use vespa-cli's curl option, vespa-cli manages the endpoint url, local or cloud. It's 
+also possible to switch between the two modes and have a local deployment and a cloud deployment. 
 
 List the available models:
 
 <pre data-test="exec" data-test-assert-contains="transformer">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/' | python3 -m json.tool
+$ vespa curl /model-evaluation/v1/ 
 </pre>
 
 Details of model the `transformer` model:
 
 <pre data-test="exec" data-test-assert-contains="transformer">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer' | python3 -m json.tool
+$ vespa curl /model-evaluation/v1/transformer
 </pre>
 
 Evaluating the model:
 
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s 'http://localhost:8080/model-evaluation/v1/transformer/eval?input=%5B%5B1%2C2%2C3%5D%5D&format.tensors=short' | \
-  python3 -m json.tool
+$ vespa curl -- \
+  --data-urlencode "input=[[1,2,3]]" \
+  --data-urlencode "format.tensors=short" \
+  /model-evaluation/v1/transformer/eval
 </pre>
 
-The input here is a URL encoded Vespa tensor in
-[literal short form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
-
-```
-    [[1,2,3]]
-```
+The input here is using [literal short form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
 
 **Test the application - Java API in a handler**
 
 <pre data-test="exec" data-test-assert-contains="1.64956">
-$ curl -s 'http://localhost:8080/models/?model=transformer&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | \
-  python3 -m json.tool
+$ vespa curl -- \
+  --data-urlencode "input={{x:0}:1,{x:1}:2,{x:2}:3}" \
+  --data-urlencode "model=transformer" \
+  /models/
 </pre>
 
 The input here is
@@ -164,8 +174,10 @@ The document processor uses the `transformer` model to generate embeddings that 
 **Test the searchers**
 
 <pre data-test="exec" data-test-assert-contains="1.58892">
-$ curl -s 'http://localhost:8080/search/?searchChain=mychain&input=%7B%7Bx%3A0%7D%3A1%2C%7Bx%3A1%7D%3A2%2C%7Bx%3A2%7D%3A3%7D' | \
-  python3 -m json.tool
+$ vespa curl -- \
+  --data-urlencode "input={{x:0}:1,{x:1}:2,{x:2}:3}" \
+  --data-urlencode "searchChain=mychain" \
+  /search/
 </pre>
 
 This issues a search for the same input as above:

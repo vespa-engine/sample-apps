@@ -157,7 +157,7 @@ vespa test src/test/application/tests/system-test/document-ranking-test.json
 
 This script reads from the MS MARCO queries and issues a Vespa query:
 
-<pre data-test="exec" data-test-assert-contains="D2779191">
+<pre data-test="exec" data-test-assert-contains="children">
 $ ./src/python/evaluate.py
 </pre>
 
