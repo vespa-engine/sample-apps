@@ -359,10 +359,10 @@ the blog post [Pretrained Transformer Language Models for Search - part 4](https
 also has a section on serving performance. 
 
 
-# Reproducing this work 
+## Reproducing this work 
+
 Make sure to go read and agree to the terms and conditions of [MS Marco](https://microsoft.github.io/msmarco/) 
-before downloading the dataset.
-Note that the terms and conditions does not permit using the MS Marco Document/Passage data for commercial use.
+before downloading the dataset. Note that the terms and conditions does not permit using the MS Marco Document/Passage data for commercial use.
 
 ## Quick start
 
@@ -381,14 +381,12 @@ Requirements:
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64
-* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS). 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 11](https://openjdk.java.net/projects/jdk/11/) installed. 
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
 to build the application. 
 * zstd: `brew install zstd`
-* Operating system: macOS or Linux, Architecture: x86_64
 
 Validate Docker resource settings, should be minimum 6GB:
 

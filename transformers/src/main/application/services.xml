@@ -6,9 +6,14 @@
   <container id="default" version="1.0">
     <document-api/>
 
-    <component id="ai.vespa.tokenizer.WordPieceTokenizer" bundle="transformers">
-      <config name="ai.vespa.tokenizer.vocabulary">
-        <vocabulary>files/bert-base-uncased-vocab.txt</vocabulary>
+    <component id="com.yahoo.language.wordpiece.WordPieceEmbedder" bundle="linguistics-components">
+      <config name="language.wordpiece.word-piece">
+        <model>
+          <item>
+            <language>unknown</language>
+            <path>files/bert-base-uncased-vocab.txt</path>
+          </item>
+        </model>
       </config>
     </component>
 

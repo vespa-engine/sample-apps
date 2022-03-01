@@ -57,11 +57,10 @@ schema msmarco {
             expression: bm25(title) + bm25(body)
         }
 
-        # The output of this model is a tensor of size ["batch", 2]
-        # Use the probability of the positive sequence classification class as rank score
+        # The output of this model is a tensor of size ["batch", 1]
         second-phase {
             rerank-count: 10
-            expression: onnx(rank_model){d0:0,d1:1}
+            expression: onnx(rank_model){d0:0,d1:0}
         }
 
     }

@@ -18,22 +18,32 @@ This sample application can be used in two different ways.
 The first is by using a [Python-based search app](src/python/README.md),
 which is suitable for exploration and analysis.
 The other is a stand-alone Vespa application, which is more suitable for production (below).
-
 The Python sample app includes a streamlit user interface:
 
 [Animation](https://data.vespa.oath.cloud/sample-apps-data/image_demo.gif)
-
-
-### Vespa CLI
-
-The following instructions sets up the stand-alone Vespa application using the
-[Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
 
 The application takes a textual description and returns the file names of the
 images that best match the description. The main difference between this app
 and the Python app, is that the transformation from text to a vector
 representation has been moved from Python and into Vespa. This includes both
 tokenization and transformer model evaluation.
+
+## Quick start 
+Requirements:
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+  to build the application.
+* python3.8+ (tested with 3.8)
+
+The following instructions sets up the stand-alone Vespa application using the
+[Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
 
 **Validate environment, should be minimum 6G:**
 
