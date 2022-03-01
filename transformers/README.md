@@ -21,14 +21,12 @@ is re-ranked using the Transformer model.
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64
-* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS).
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 * python3.8+ (tested with 3.8)
-* Operating system: macOS or Linux, Architecture: x86_64
 
 **Validate environment, should be minimum 6G:**
 
