@@ -117,8 +117,11 @@ $ vespa test src/test/application/tests/system-tests/model-evaluation-test.json
 In the following examples we use vespa-cli's curl option, vespa-cli manages the endpoint url, local or cloud. It's 
 also possible to switch between the two modes and have a local deployment and a cloud deployment. 
 
-List the available models:
+<pre data-test="exec">
+$ vespa config set application tenant-name.myapp.default
+</pre>
 
+List the available models:
 <pre data-test="exec" data-test-assert-contains="transformer">
 $ vespa curl /model-evaluation/v1/ 
 </pre>
