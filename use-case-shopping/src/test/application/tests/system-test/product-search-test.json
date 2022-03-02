@@ -1,0 +1,54 @@
+{
+  "name": "Product Search",
+  "comment": "Test of end to end retrieve and read pipeline",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed product document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/item/item/docid/B00GPETBCS",
+        "body": {
+          "fields": {
+            "asin": "B00GPETBCS",
+            "title": "White SFT Style Pitching Machine Baseballs- Ideal for Atec Powerstreak",
+            "categories": [
+              "Sports & Outdoors",
+              "Sports & Outdoors|Team Sports",
+              "Sports & Outdoors|Team Sports|Baseball",
+              "Sports & Outdoors|Team Sports|Baseball|Baseballs"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/item/item/docid/B00GPETBCS"
+      },
+      "response": {
+        "body": {
+          "fields": {
+            "asin": "B00GPETBCS"
+          }
+        }
+      }
+    },
+    {
+      "name": "Run a query ",
+      "request": {
+        "parameters": {
+          "yql": "select * from item where userQuery();",
+          "query": "white baseballs powerstreak"
+        }
+      }
+    }
+  ]
+}
