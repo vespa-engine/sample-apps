@@ -118,7 +118,7 @@ $ while read -r line; do echo $line > tmp.json; vespa document tmp.json; done < 
 <pre data-test="exec" data-test-assert-contains="Ranking with XGBoost Models">
 $ vespa query \
  'yql=select * from doc where ([{"defaultIndex":"grams"}]userInput(@query))'\
- 'hits=1' \
+ 'hits=10' \
  'query=xgb'
 </pre>
 
