@@ -1,0 +1,61 @@
+{
+  "name": "Search suggestions system test",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/term/term/docid/grouping",
+        "body": {
+          "fields": {
+            "term": "grouping",
+            "corpus_count": 181,
+            "document_count": 40
+          }
+        }
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/term/term/docid/grouping"
+      },
+      "response": {
+        "body": {
+          "fields": {
+            "term": "grouping"
+          }
+        }
+      }
+    },
+    {
+      "name": "Run a prefix query",
+      "request": {
+        "parameters": {
+          "yql": "select * from term where ([{\"defaultIndex\":\"term\"}]userQuery());",
+          "query": "gr*"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "term": "grouping"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
