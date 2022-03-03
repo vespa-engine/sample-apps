@@ -8,7 +8,7 @@ The benchmarking was run with a duration of 60 seconds.
 
 ## Indexed prefix search with fast-search
 time = 60s \
-Query used: select * from sources term where term contains ([{\"prefix\":true}]\"doc\");
+Query used: select * from sources term where term contains ({prefix:true}\"doc\")
 
 | Clients  | Min        | Max        | Avg        | Q/s        | Request failed |
 | :-------:|:----------:|:----------:|:----------:|:----------:|:--------------:|
@@ -25,7 +25,7 @@ With single digit clients we can see that indexed prefix search is able to have 
 ## Streaming prefix search
 
 time = 60s \
-Query: select * from sources term where term contains “doc”;
+Query: select * from sources term where term contains “doc”
 
 | Clients  | Min        | Max        | Avg        | Q/s        | Request failed |
 | :-------:|:----------:|:----------:|:----------:|:----------:|:--------------:|

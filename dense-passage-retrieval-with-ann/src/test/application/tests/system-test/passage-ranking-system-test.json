@@ -36,7 +36,7 @@
       "name": "Ask a question",
       "request": {
         "parameters": {
-          "yql": "select * from wiki where userQuery();",
+          "yql": "select * from wiki where userQuery()",
           "query": "what is the population of achill island?"
         }
       },

@@ -36,7 +36,7 @@
       "name": "query for documents using simple BM25 ",
       "request": {
         "parameters": {
-          "yql": "select id,summaryfeatures from doc where userQuery();",
+          "yql": "select id,summaryfeatures from doc where userQuery()",
           "query": "what is ginger cooking",
           "ranking": "ltr-scrape"
         }
@@ -89,7 +89,7 @@
       "name": "query for documents using GBDT model ",
       "request": {
         "parameters": {
-          "yql": "select id,summaryfeatures from doc where userQuery();",
+          "yql": "select id,summaryfeatures from doc where userQuery()",
           "query": "what is ginger cooking",
           "ranking": "ltr"
         }

@@ -24,7 +24,7 @@ public class Categories {
                 ")" +
             ")";
 
-        yql += " | " + grouping + ";";
+        yql += " | " + grouping;
 
         SimpleQueryBuilder query = new SimpleQueryBuilder("/search/");
         query.add("query", "sddocname:item");

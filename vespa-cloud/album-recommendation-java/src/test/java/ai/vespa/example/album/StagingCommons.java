@@ -57,13 +57,13 @@ class StagingCommons {
 
     /** Warm-up query matching all "music" documents — high timeout as the fresh container needs to warm up. */
     static Map<String, String> warmupQueryForAllDocuments() {
-        return Map.of("yql", "SELECT * FROM SOURCES * WHERE sddocname CONTAINS \"music\";",
+        return Map.of("yql", "SELECT * FROM SOURCES * WHERE sddocname CONTAINS \"music\"",
                       "timeout", "5s");
     }
 
     /** Sample query for all albums after 2015, preferably pop — should return albums by Diana Krall, then Metallica. */
     static Map<String, String> queryForNewPop() {
-        return Map.of("yql", "SELECT * FROM SOURCES * WHERE year > 2015;",
+        return Map.of("yql", "SELECT * FROM SOURCES * WHERE year > 2015",
                       "ranking", "rank_albums",
                       "ranking.features.query(user_profile)", "{{cat:pop}:0.8, {cat:rock}:0.2, {cat:jazz}:0.1}");
     }

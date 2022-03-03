@@ -20,8 +20,8 @@ def handle_query_grouped(query, question_id, rank_profile, embedding, document_t
   json_request = {
     "query": query,
     "type": "any",
-    "yql": 'select * from sources sentence where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding))\
- or userQuery() | all(group(context_id) max(%i) each(each(output(summary())) as(sentences)) as(paragraphs));' % hits,
+    "yql": 'select * from sources sentence where ({"targetNumHits":100, "hnsw.exploreAdditionalHits":100}nearestNeighbor(sentence_embedding,query_embedding))\
+ or userQuery() | all(group(context_id) max(%i) each(each(output(summary())) as(sentences)) as(paragraphs))' % hits,
     "hits": 0,
     "ranking.features.query(query_embedding)": embedding,
     "ranking.profile": rank_profile
@@ -52,7 +52,7 @@ def handle_query(query, question_id, rank_profile, embedding, document_type, dat
   json_request = {
     "query": query,
     "type": "any",
-    "yql": 'select * from sources sentence where ([{"targetNumHits":100, "hnsw.exploreAdditionalHits":100}]nearestNeighbor(sentence_embedding,query_embedding)) or userQuery();',
+    "yql": 'select * from sources sentence where ({"targetNumHits":100, "hnsw.exploreAdditionalHits":100}nearestNeighbor(sentence_embedding,query_embedding)) or userQuery()',
     "hits": hits,
     "ranking.features.query(query_embedding)": embedding,
     "ranking.profile": rank_profile 

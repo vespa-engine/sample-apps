@@ -173,7 +173,7 @@ def create_yql(query, grammar_operator, ann_operator, embedding):
     if not operators:
         raise ValueError("Choose at least one match phase operator.")
 
-    yql = "select * from sources * where {};".format(" or ".join(operators))
+    yql = "select * from sources * where {}".format(" or ".join(operators))
 
     return yql
 

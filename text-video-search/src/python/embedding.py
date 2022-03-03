@@ -249,7 +249,7 @@ def create_vespa_query(query, text_processor, number_videos):
     ranking_name = valid_vespa_model_name + "_similarity"
 
     return {
-        "yql": 'select * from sources * where ([{{"targetNumHits":100}}]nearestNeighbor({},{})) | all(group(video_file_name) max({}) order(-max(relevance())) each( max(1) each(output(summary())) as(frame)) as(video));'.format(
+        "yql": 'select * from sources * where ({{"targetNumHits":100}}nearestNeighbor({},{})) | all(group(video_file_name) max({}) order(-max(relevance())) each( max(1) each(output(summary())) as(frame)) as(video))'.format(
             image_field_name, text_field_name, number_videos
         ),
         "hits": 0,

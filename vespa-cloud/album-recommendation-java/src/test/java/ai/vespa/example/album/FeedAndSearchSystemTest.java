@@ -43,7 +43,7 @@ class FeedAndSearchSystemTest {
                           "    }\n" +
                           "}\n";
 
-        String yql = "SELECT * FROM SOURCES * WHERE album CONTAINS \"Got to be there\";";
+        String yql = "SELECT * FROM SOURCES * WHERE album CONTAINS \"Got to be there\"";
 
         Result deleteResult = feedClient.remove(documentId, OperationParameters.empty()).get();
         assertEquals(Result.Type.success, deleteResult.type());

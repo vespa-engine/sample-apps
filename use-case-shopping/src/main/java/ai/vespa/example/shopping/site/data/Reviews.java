@@ -28,7 +28,7 @@ public class Reviews {
         String grouping = " all( group(stars) each(output(count())) )";
 
         SimpleQueryBuilder query = new SimpleQueryBuilder("/search/");
-        query.add("yql", select + where + orderBy + " | " + grouping + ";");
+        query.add("yql", select + where + orderBy + " | " + grouping);
         query.add("summary", "default");
         query.add("hits", 400);
 

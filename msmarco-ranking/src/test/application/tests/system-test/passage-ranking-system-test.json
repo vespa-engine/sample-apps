@@ -44,7 +44,7 @@
       "name": "query for passages using simple BM25 ",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
+          "yql": "select id from passage where userQuery()",
           "query": "what was the manhattan project?",
           "queryProfile":"sparse-bm25"
         }
@@ -72,7 +72,7 @@
       "name": "query for passages using dense embedding",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
+          "yql": "select id from passage where userQuery()",
           "query": "what was the manhattan project?",
           "queryProfile":"dense"
         }
@@ -108,7 +108,7 @@
       "name": "query for passages using dense with colbert re-ranking",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
+          "yql": "select id from passage where userQuery()",
           "query": "what was the manhattan project?",
           "queryProfile":"dense-colbert"
         }
@@ -136,7 +136,7 @@
       "name": "query for passages using dense with dense, colbert and cross re-ranking",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
+          "yql": "select id from passage where userQuery()",
           "query": "what was the manhattan project?",
           "queryProfile":"dense-colbert-cross"
         }
@@ -164,7 +164,7 @@
       "name": "query for passages using dense with dense, colbert and container re-ranking",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
+          "yql": "select id from passage where userQuery()",
           "query": "what was the manhattan project?",
           "queryProfile": "dense-colbert-container-rerank"
         }
@@ -192,7 +192,7 @@
       "name": "query for passages using sparse (bm25) and re-rank with colbert",
       "request": {
         "parameters": {
-          "yql": "select id from passage where userQuery();",
+          "yql": "select id from passage where userQuery()",
           "query": "what was the manhattan project?",
           "queryProfile":"sparse-colbert"
         }

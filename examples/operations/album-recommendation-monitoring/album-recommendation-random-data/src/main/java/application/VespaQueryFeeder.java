@@ -24,7 +24,7 @@ public class VespaQueryFeeder extends Thread {
         this.pendingQueryRequests = pendingQueryRequests;
 
         client = HttpClient.newHttpClient();
-        ImmutableQuery query = ImmutableQuery.builder().yql("SELECT * FROM SOURCES * WHERE year > 2000;").build();
+        ImmutableQuery query = ImmutableQuery.builder().yql("SELECT * FROM SOURCES * WHERE year > 2000").build();
 
          request = HttpRequest.newBuilder()
                 .uri(URI.create("http://vespa:8080/search/"))

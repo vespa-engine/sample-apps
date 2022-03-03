@@ -9,7 +9,7 @@ from msmarco import load_msmarco_queries, load_msmarco_qrels, extract_querie_rel
 
 def create_request_specific_ids(query, rankprofile, doc_ids):
     body = {
-        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
+        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery))",
         "userQuery": query,
         "hits": len(doc_ids),
         "recall": "+(" + " ".join(["id:" + str(doc) for doc in doc_ids]) + ")",
@@ -23,7 +23,7 @@ def create_request_specific_ids(query, rankprofile, doc_ids):
 def create_request_top_hits(query, rankprofile, hits):
 
     body = {
-        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery));",
+        "yql": "select id, rankfeatures from sources * where (userInput(@userQuery))",
         "userQuery": query,
         "hits": hits,
         "timeout": "15s",
