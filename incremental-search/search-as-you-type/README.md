@@ -7,9 +7,17 @@
 Uses N-grams to simulate substring search.
 
 
-## Steps
+## Quick Start 
+Requirements:
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 
-**Validate environment, must be minimum 4G:**
+**Validate environment, must be minimum 6GB:**
 
 Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
 for details and troubleshooting:
@@ -17,66 +25,94 @@ for details and troubleshooting:
 $ docker info | grep "Total Memory"
 </pre>
 
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
 
-**Clone sample apps and documentation**
-
-<pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ git clone --depth 1 https://github.com/vespa-engine/documentation.git
+<pre >
+$ brew install vespa-cli
 </pre>
 
+Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
+using target cloud.
 
-**Generate feed file**
+For local deployment using docker image use
 
-Generate _open\_index.json_ in the documentation repository and move this file to the directory for the _search-as-you-type_ application.
 <pre data-test="exec">
-$ cd documentation/
-$ bundle install
-$ bundle exec jekyll build -p _plugins-vespafeed
-$ cd ../sample-apps/incremental-search/search-as-you-type/
-$ mv ../../../documentation/open_index.json ./
+$ vespa config set target local
 </pre>
 
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
 
-**Run docker container**
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa api-key
+$ vespa cert
+</pre>
+
+Where tenant-name is the tenant created when signing up for cloud.
+
+Pull and start the vespa docker container image:
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run --detach --name vespa --hostname vespa-example \
+$ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
 
-
-**Wait for the configserver to start**
-
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+Download this sample application
+<pre data-test="exec">
+$ vespa clone incremental-search/search-as-you-type myapp && cd myapp
 </pre>
 
-
-**Build and deploy the application**
+**Download feed file**
 
 <pre data-test="exec">
-$ mvn clean package
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+$ curl -L -o search-as-you-type-index.jsonl \
+    https://data.vespa.oath.cloud/sample-apps-data/search-as-you-type-index.jsonl 
 </pre>
 
 
-**Wait for the application to start**
-
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
-</pre>
-
-
-**Feed documents to the application**
+Verify that configuration service (deploy api) is ready
 
 <pre data-test="exec">
-$ python3 feed_to_vespa.py
+$ vespa status deploy --wait 300
 </pre>
 
+Deploy the application
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
+</pre>
+
+Wait for the application endpoint to become available
+
+<pre data-test="exec">
+$ vespa status --wait 300
+</pre>
+
+**Test the application**
+
+Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which runs a set of basic tests to verify that the application is working as expected.
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/search-as-you-type-test.json
+</pre>
+
+**Feed documents**
+Feed documents using the [vespa-cli](https://docs.vespa.ai/en/vespa-cli.html):
+
+<pre data-test="exec">
+$ while read -r line; do echo $line > tmp.json; vespa document tmp.json; done < search-as-you-type-index.jsonl
+</pre>
+
+<pre data-test="exec" data-test-assert-contains="Ranking with XGBoost Models">
+$ vespa query \
+ 'yql=select * from doc where ([{"defaultIndex":"grams"}]userInput(@query))'\
+ 'hits=1' \
+ 'query=xgb'
+</pre>
 
 **Check out the website**
 
@@ -89,7 +125,7 @@ $ curl -s http://localhost:8080/site/
 
 **Shutdown and remove the Docker container**
 
-<pre data-test="after">
+<pre>
 $ docker rm -f vespa
 </pre>
 
