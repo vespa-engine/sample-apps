@@ -52,11 +52,11 @@ class StagingCommons {
 
     /** Warm-up query matching all "music" documents — high timeout as the fresh container needs to warm up. */
     static Map<String, String> warmupQueryForAllDocuments() {
-        return Map.of("yql", "SELECT * FROM SOURCES * WHERE sddocname CONTAINS 'title';", "timeout", "5s");
+        return Map.of("yql", "SELECT * FROM SOURCES * WHERE sddocname CONTAINS 'title'", "timeout", "5s");
     }
 
     static Map<String, String> queryForTitles() {
-        return Map.of("yql", "SELECT * FROM SOURCES * WHERE text contains 'generic';");
+        return Map.of("yql", "SELECT * FROM SOURCES * WHERE text contains 'generic'");
     }
 
     /** Verifies the static staging documents are searchable, ranked correctly, and render as expected. */

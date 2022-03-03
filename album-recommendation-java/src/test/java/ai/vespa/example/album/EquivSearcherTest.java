@@ -16,8 +16,8 @@ import static java.net.URLEncoder.encode;
 public class EquivSearcherTest {
 
     List<String> queries = List.of(
-            "select * from sources * where artist contains \"metallica\";",
-            "select * from sources * where artist contains \"metallica\" AND album contains \"puppets\";");
+            "select * from sources * where artist contains \"metallica\"",
+            "select * from sources * where artist contains \"metallica\" AND album contains \"puppets\"");
 
     @Test
     void testMetallica() {

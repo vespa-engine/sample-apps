@@ -5,5 +5,5 @@
   <field name="wand.hits">1000</field>
   <field name="ranking.profile">bm25</field>
   <field name="retriever">sparse</field>
-  <field name="yql">select id,text from passage where userQuery();</field>
+  <field name="yql">select id,text from passage where userQuery()</field>
 </query-profile>

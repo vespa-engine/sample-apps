@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 *    ],
 *
 * This to be used in exact matching of the substrings, example query:
-* curl "$ENDPOINT/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20producttypetokens%20contains%20%22Media%20%3E%20Music%20%26%20Sou%22%3B"
+* curl "$ENDPOINT/search/?yql=select%20%2A%20from%20sources%20%2A%20where%20producttypetokens%20contains%20%22Media%20%3E%20Music%20%26%20Sou%22"
 *
 * To deploy, modify services.xml to:
 * <documentprocessor id="ai.vespa.example.album.ProductTypeTokenizerDocProc" bundle="albums-docproc"/>

@@ -10,7 +10,7 @@ public class Promoted {
 
     static String query(int hits) {
         SimpleQueryBuilder query =  new SimpleQueryBuilder("/search/");
-        query.add("yql", "select * from sources item where userQuery() and rating_count > 5;");
+        query.add("yql", "select * from sources item where userQuery() and rating_count > 5");
         query.add("query", "sddocname:item");
         query.add("ranking", "promoted");
         query.add("summary", "default");

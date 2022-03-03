@@ -25,7 +25,7 @@ import com.yahoo.search.searchchain.Execution;
  *
  * Above example is turned into
  * select * from music where (artist contains "metallica") AND
- * ([{"filter": true, "ranked": false}]weightedSet(year, {"2015": 1, "2016": 1, "2018": 1}));
+ * ({"filter": true, "ranked": false}weightedSet(year, {"2015": 1, "2016": 1, "2018": 1}))
  *
  */
 

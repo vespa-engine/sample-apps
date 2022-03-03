@@ -13,7 +13,7 @@ public class Item {
 
     static String queryItem(Map<String, String> properties) {
         SimpleQueryBuilder query = new SimpleQueryBuilder("/search/");
-        query.add("yql", "select * from sources item where asin contains \"" + properties.get("i") + "\";");
+        query.add("yql", "select * from sources item where asin contains \"" + properties.get("i") + "\"");
         query.add("summary", "default");
         query.add("hits", 1);
         return query.toString();
@@ -29,7 +29,7 @@ public class Item {
             sj.add("asin contains \"" + asin.asText() + "\"");
         }
         SimpleQueryBuilder query = new SimpleQueryBuilder("/search/");
-        query.add("yql", "select * from sources item where " + sj.toString() + ";");
+        query.add("yql", "select * from sources item where " + sj);
         query.add("summary", "short");
         query.add("hits", 20);
         return query.toString();

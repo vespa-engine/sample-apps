@@ -34,7 +34,7 @@
       "name": "Run ranking",
       "request": {
         "parameters": {
-          "yql": "select * from msmarco where userQuery();",
+          "yql": "select * from msmarco where userQuery()",
           "query": "is long term care insurance tax deductible",
           "hits": "1"
         }

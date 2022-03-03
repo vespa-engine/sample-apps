@@ -61,8 +61,8 @@ const handleInput = (e) => {
     const query = {
       yql: `
         select * from doc
-        where ([{"defaultIndex": "default"}]userInput(@input))
-        or ([{"defaultIndex": "grams"}]userInput(@input));`,
+        where ({defaultIndex: "default"}userInput(@input))
+        or ({defaultIndex: "grams"}userInput(@input))`,
       input: e.target.value,
       hits: 128,
       ranking: "weighted_doc_rank",

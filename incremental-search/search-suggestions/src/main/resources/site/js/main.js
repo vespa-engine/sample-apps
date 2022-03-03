@@ -53,7 +53,7 @@ const handleInput = (e) => {
     const query = {
       yql: `
         select * from term
-        where default contains ([{"prefix":true}] "${e.target.value.replaceAll(/[^a-zA-Z0-9 ]/g, "")}");`,
+        where default contains ({prefix:true} "${e.target.value.replaceAll(/[^a-zA-Z0-9 ]/g, "")}")`,
       ranking: "term_rank",
       hits: 10,
       timeout: "5s",

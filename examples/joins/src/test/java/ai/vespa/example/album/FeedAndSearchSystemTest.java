@@ -36,7 +36,7 @@ class FeedAndSearchSystemTest {
                           "    }\n" +
                           "}\n";
 
-        String yql = "SELECT * FROM SOURCES * WHERE title CONTAINS 'text';";
+        String yql = "SELECT * FROM SOURCES * WHERE title CONTAINS 'text'";
 
         HttpResponse<String> deleteResult = endpoint.send(endpoint.request(documentPath).DELETE());
         assertEquals(200, deleteResult.statusCode());

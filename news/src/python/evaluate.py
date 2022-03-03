@@ -54,7 +54,7 @@ def parse_embedding(hit_json):
 
 
 def query_user_embedding(user_id):
-    yql = 'select * from sources user where user_id contains "{}";'.format(user_id)
+    yql = 'select * from sources user where user_id contains "{}"'.format(user_id)
     url = "http://localhost:8080/search/?yql={}&hits=1&timeout=10".format(urllib.parse.quote_plus(yql))  # GET
     result = json.loads(urllib.request.urlopen(url).read())
     embedding = parse_embedding(result["root"]["children"][0])
@@ -74,7 +74,7 @@ def query_news(user_vector, news_ids):
 
     data = {
         "hits": hits,
-        "yql": 'select * from sources news where {} AND ({});'.format(nn_search, news_id_filter),
+        "yql": 'select * from sources news where {} AND ({})'.format(nn_search, news_id_filter),
         "ranking.features.query(user_embedding)": str(user_vector),
         "ranking.profile": "recommendation",
         "timeout": 10

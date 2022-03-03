@@ -37,10 +37,10 @@ def vespa_search(query, rank_profile, grammar_any=False, hits=1000, offset=0):
 
     if grammar_any:
         yql = (
-            'select * from sources * where ([{"grammar": "any"}]userInput(@userQuery));'
+            'select * from sources * where ({"grammar": "any"}userInput(@userQuery))'
         )
     else:
-        yql = "select * from sources * where (userInput(@userQuery));"
+        yql = "select * from sources * where (userInput(@userQuery))"
 
     body = {
         "yql": yql,

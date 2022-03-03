@@ -42,7 +42,7 @@ public class SearchResults {
         String groupingCategories = "all(group(categories) order(-count()) each(output(count())))";
         String groupingPrice = "all( group(predefined(price,bucket[0,10>,bucket[10,25>,bucket[25,50>,bucket[50,100>,bucket[100,200>,bucket[200,500>,bucket[500,inf>)) order(min(price)) each(output(max(price),min(price),count())))";
         String grouping = String.format("all( %s %s %s %s )", groupingBrand, groupingCategories, groupingStars, groupingPrice);
-        yql += " | " + grouping + ";";
+        yql += " | " + grouping;
 
         query.add("yql", yql);
         query.add("summary", "short");

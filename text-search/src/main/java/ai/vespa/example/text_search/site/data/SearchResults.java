@@ -13,7 +13,7 @@ public class SearchResults {
         SimpleQueryBuilder query = new SimpleQueryBuilder("/search/");
 
         String q = properties.get("q");
-        String yql = "select * from sources msmarco where userInput(\"" + q + "\");";
+        String yql = "select * from sources msmarco where userInput(\"" + q + "\")";
 
         query.add("yql", yql);
         query.add("summary", properties.getOrDefault("s", "default"));

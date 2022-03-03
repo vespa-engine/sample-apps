@@ -52,7 +52,7 @@ class MetalSearcherTest {
     @BeforeEach
     void initQuery() {
         metalQuery = new Query("/search/?yql=" +
-                encode("select * from sources * where artist contains \"hetfield\" and album contains\"master of puppets\";",
+                encode("select * from sources * where artist contains \"hetfield\" and album contains\"master of puppets\"",
                         StandardCharsets.UTF_8));
         metalQuery.setTraceLevel(6);
     }

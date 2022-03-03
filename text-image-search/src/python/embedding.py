@@ -198,7 +198,7 @@ def create_vespa_query(query, text_processor):
     ranking_name = valid_vespa_model_name + "_similarity"
 
     return {
-        "yql": 'select * from sources * where ([{{"targetNumHits":100}}]nearestNeighbor({},{}));'.format(
+        "yql": 'select * from sources * where ({{"targetNumHits":100}}nearestNeighbor({},{}))'.format(
             image_field_name, text_field_name
         ),
         "hits": 100,

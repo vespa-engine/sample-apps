@@ -48,9 +48,9 @@ class TestYQL(unittest.TestCase):
         ann_operator = "title_body"
         self.assertEqual(
             create_yql(query, grammar_operator, ann_operator, embedding),
-            'select * from sources * where ([{"targetNumHits": 1000}]weakAnd(default contains "this", '
+            'select * from sources * where ({"targetNumHits": 1000}weakAnd(default contains "this", '
             'default contains "is", default contains "a", default contains "query")) or '
-            '([{"targetNumHits": 1000, "label": "nns"}]nearestNeighbor(title_gse, tensor_gse)) or '
-            '([{"targetNumHits": 1000, "label": "nns"}]nearestNeighbor(body_gse, tensor_gse));',
+            '({"targetNumHits": 1000, "label": "nns"}nearestNeighbor(title_gse, tensor_gse)) or '
+            '({"targetNumHits": 1000, "label": "nns"}nearestNeighbor(body_gse, tensor_gse))',
         )
         # create_yql(query, None, None, embedding)

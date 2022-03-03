@@ -16,7 +16,7 @@ def get_result(query):
     'hits': args.hits,
     'type': 'any',
     'presentation.summary':'id',
-    'yql': "select id from sources * where userQuery();",
+    'yql': "select id from sources * where userQuery()",
     'query': query,
     'queryProfile': args.query_profile
   }
