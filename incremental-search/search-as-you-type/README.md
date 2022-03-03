@@ -9,7 +9,7 @@ Uses N-grams to simulate substring search.
 
 ## Quick Start 
 Requirements:
-* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
@@ -17,7 +17,7 @@ Requirements:
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 
-**Validate environment, must be minimum 6GB:**
+**Validate environment, must be minimum 4GB:**
 
 Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
 for details and troubleshooting:

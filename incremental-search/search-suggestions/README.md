@@ -43,7 +43,7 @@ a real application could implement a more sophisticated ranking for better sugge
 
 ## Quick start
 Requirements:
-* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
@@ -54,7 +54,7 @@ Requirements:
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 
-**Validate environment, must be minimum 6GB:**
+**Validate environment, must be minimum 4GB:**
 
 Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
 for details and troubleshooting:
