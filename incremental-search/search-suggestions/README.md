@@ -42,8 +42,19 @@ a real application could implement a more sophisticated ranking for better sugge
 
 
 ## Quick start
+Requirements:
+* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+  to build the application.
 
-**Validate environment, must be minimum 4G:**
+**Validate environment, must be minimum 6GB:**
 
 Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
 for details and troubleshooting:
@@ -51,108 +62,70 @@ for details and troubleshooting:
 $ docker info | grep "Total Memory"
 </pre>
 
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
 
-**Clone sample-apps and go to search-suggestions**
-
-<pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/incremental-search/search-suggestions
+<pre >
+$ brew install vespa-cli
 </pre>
 
+Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
+using target cloud.
 
-**Start the docker container**
+For local deployment using docker image use
+
+<pre data-test="exec">
+$ vespa config set target local
+</pre>
+
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa api-key
+$ vespa cert
+</pre>
+
+Where tenant-name is the tenant created when signing up for cloud.
+
+Pull and start the vespa docker container image:
 
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
-$ docker run --detach --name vespa --hostname vespa-example \
+$ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
 
-
-**Wait for a 200 OK response** 
-
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+Download this sample application
+<pre data-test="exec">
+$ vespa clone incremental-search/search-suggestions myapp && cd myapp
 </pre>
 
-
-**Build the application**
+Verify that configuration service (deploy api) is ready
 
 <pre data-test="exec">
-$ mvn clean package
+$ vespa status deploy --wait 300
 </pre>
 
+Deploy the application
 
-**Deploy the application**
-
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ curl --header Content-Type:application/zip --data-binary @target/application.zip \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
 </pre>
 
+Wait for the application endpoint to become available
 
-**Check if application is ready**
-
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
+<pre data-test="exec">
+$ vespa status --wait 300
 </pre>
-
 
 **Feed the example documents**
+Feed documents using the [vespa-cli](https://docs.vespa.ai/en/vespa-cli.html):
 
 <pre data-test="exec">
-$ curl -L -o vespa-feed-client-cli.zip \
-    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
-$ unzip vespa-feed-client-cli.zip
-$ ./vespa-feed-client-cli/vespa-feed-client --file example_feed.json --endpoint http://localhost:8080
+$ while read -r line; do echo $line > tmp.json; vespa document tmp.json; done < example_feed.jsonl
 </pre>
-
-
-**Generating bootstrapped search terms**
-
-<pre data-test="exec">
-$ cd ../../..
-$ git clone --depth 1 https://github.com/vespa-engine/documentation.git
-$ cd documentation
-$ bundle install
-$ bundle exec jekyll build -p _plugins-vespafeed
-$ cd ../sample-apps/incremental-search/search-suggestions
-$ cp ../../../documentation/open_index.json .
-$ python3 count_terms.py open_index.json feed_terms.json 2 top100en.txt
-</pre>
-
-
-**Feeding bootstrapped search terms**
-<!-- It is hard to assert on no failures in the feed, assert later in term lookup query -->
-<pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client --verbose --file feed_terms.json --endpoint http://localhost:8080
-</pre>
-
-
-**Generate set of accepted terms**
-
-<pre data-test="exec">
-$ python3 accepted_words.py open_index.json top100en.txt
-</pre>
-
-
-**Generate terms from query log**
-
-Access logs are assumed to be in *logs/*.
-<pre>
-$ unzstd -c -r logs/ | grep '"uri":"/search/' | grep 'jsoncallback' \
-  | jq '{ term: .uri | scan("(?&lt;=input=)[^&]*") | ascii_downcase | sub("(%..|[^a-z0-9]| )+"; " "; "g") | sub("^ | $"; ""; "g"), hits: .search.hits }' \
-  | jq '{update: ("id:term:term::" + (.term | sub(" "; "/"; "g"))), create: true, fields: { term: { assign: .term }, query_count: { increment: 1 }, query_hits: { assign: .hits } } }' > feed_queries.json
-</pre>
-
-
-**Feed terms from query log**
-
-<pre>
-$ vespa-feed-client --verbose --file feed_queries.json --endpoint http://localhost:8080
-</pre>
-
 
 **Check the website, write queries and view suggestions**
 
@@ -163,13 +136,23 @@ $ curl -s http://localhost:8080/site/
 </pre>
 
 
-**Do a term lookup**
-
-<pre data-test="exec" data-test-assert-contains="id:term:term::doc">
-$ curl --data-urlencode 'yql=select * from sources * where term contains "doc"' \
-  http://localhost:8080/search/
+**Do a prefix query**
+Using [YQL](https://docs.vespa.ai/en/query-language.html) using *contains* with prefix annotation:
+<pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
+$ vespa query 'yql=select term from sources term where term contains ([{"prefix":true}]"stre");'
 </pre>
 
+YQL with userQuery() and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
+
+<pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
+vespa query 'yql=select term from sources term where ([{"defaultIndex":"term"}]userQuery());' 'query=str*'
+</pre>
+
+Using regular expression [YQL](https://docs.vespa.ai/en/query-language.html) with *matches* instead of *contains*:
+
+<pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
+$ vespa query 'yql=select term from sources term where term matches "stre"'
+</pre>
 
 **Shutdown and remove the docker container**
 
@@ -178,8 +161,7 @@ $ docker rm -f vespa
 </pre>
 
 
-
-## General
+## Appendix 
 
 ### Indexed prefix search
 

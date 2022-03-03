@@ -1,0 +1,80 @@
+{
+  "name": "Search as you type system test",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/open/doc/docid/open/en/xgboost.html",
+        "body": {
+          "fields": {
+            "path": "/en/xgboost.html",
+            "namespace": "open",
+            "title": "Ranking with XGBoost Models",
+            "content": "If you have models that are trained in XGBoost, Vespa can import the models and use them directly. See Learning to Rank for examples of using XGBoost models for ranking"
+          }
+        }
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/open/doc/docid/open/en/xgboost.html"
+      },
+      "response": {
+        "body": {
+          "fields": {
+            "title": "Ranking with XGBoost Models"
+          }
+        }
+      }
+    },
+    {
+      "name": "Run a query with 3 characters",
+      "request": {
+        "parameters": {
+          "yql": "select * from doc where ([{\"defaultIndex\":\"default\"}]userQuery()) or ([{\"defaultIndex\":\"grams\"}]userInput(@query));",
+          "query": "xgb"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "title": "Ranking with XGBoost Models"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Run a query with 1 character",
+      "request": {
+        "parameters": {
+          "yql": "select * from doc where ([{\"defaultIndex\":\"default\"}]userQuery()) or ([{\"defaultIndex\":\"grams\"}]userInput(@query));",
+          "query": "x"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": {
+              "totalCount": 0
+            }
+          }
+        }
+      }
+    }
+  ]
+}
