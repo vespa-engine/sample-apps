@@ -144,19 +144,19 @@ $ curl -s http://localhost:8080/site/
 **Do a prefix query**
 Using [YQL](https://docs.vespa.ai/en/query-language.html) using *contains* with prefix annotation:
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
-$ vespa query 'yql=select term from sources term where term contains ([{"prefix":true}]"stre");'
+$ vespa query 'yql=select documentid,term from sources term where term contains ([{"prefix":true}]"stre");'
 </pre>
 
 YQL with userQuery() and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
 
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
-vespa query 'yql=select term from sources term where ([{"defaultIndex":"term"}]userQuery());' 'query=str*'
+vespa query 'yql=select documentid,term from sources term where ([{"defaultIndex":"term"}]userQuery());' 'query=str*'
 </pre>
 
 Using regular expression [YQL](https://docs.vespa.ai/en/query-language.html) with *matches* instead of *contains*:
 
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
-$ vespa query 'yql=select term from sources term where term matches "stre"'
+$ vespa query 'yql=select documentid,term from sources term where term matches "stre"'
 </pre>
 
 **Shutdown and remove the docker container**
