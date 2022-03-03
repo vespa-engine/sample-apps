@@ -1,0 +1,32 @@
+{"update": "id:term:term::grouping", "create": true, "fields": {"term": {"assign": "grouping"}, "corpus_count": {"assign": 181}, "document_count": {"assign": 40}}}
+{"update": "id:term:term::docker", "create": true, "fields": {"term": {"assign": "docker"}, "corpus_count": {"assign": 165}, "document_count": {"assign": 30}}}
+{"update": "id:term:term::document/processing", "create": true, "fields": {"term": {"assign": "document processing"}, "corpus_count": {"assign": 94}, "document_count": {"assign": 27}}}
+{"update": "id:term:term::grouped/cluster", "create": true, "fields": {"term": {"assign": "grouped cluster"}, "corpus_count": {"assign": 1}, "document_count": {"assign": 1}}}
+{"update": "id:term:term::processing/chains", "create": true, "fields": {"term": {"assign": "processing chains"}, "corpus_count": {"assign": 3}, "document_count": {"assign": 3}}}
+{"update": "id:term:term::distributor/node", "create": true, "fields": {"term": {"assign": "distributor node"}, "corpus_count": {"assign": 2}, "document_count": {"assign": 2}}}
+{"update": "id:term:term::gorilla", "create": true, "fields": {"term": {"assign": "gorilla"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::chimpanzee", "create": true, "fields": {"term": {"assign": "chimpanzee"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::gibbon", "create": true, "fields": {"term": {"assign": "gibbon"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::not/gibbon", "create": true, "fields": {"term": {"assign": "not gibbon"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::not/gorilla", "create": true, "fields": {"term": {"assign": "not gorilla"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::orangutan", "create": true, "fields": {"term": {"assign": "orangutan"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::grouping", "create": true, "fields": {"term": {"assign": "grouping"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::bm25", "create": true, "fields": {"term": {"assign": "bm25"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::add/document", "create": true, "fields": {"term": {"assign": "add document"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::document/processing", "create": true, "fields": {"term": {"assign": "document processing"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::docker", "create": true, "fields": {"term": {"assign": "docker"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::document/api", "create": true, "fields": {"term": {"assign": "document api"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::term weight", "create": true, "fields": {"term": {"assign": "term weight"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::term weight", "create": true, "fields": {"term": {"assign": "term weight"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::filter", "create": true, "fields": {"term": {"assign": "filter"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::vespa/cluster", "create": true, "fields": {"term": {"assign": "vespa cluster"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::restart/vespa", "create": true, "fields": {"term": {"assign": "restart vespa"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::restart", "create": true, "fields": {"term": {"assign": "restart"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::streaming/search", "create": true, "fields": {"term": {"assign": "streaming search"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::streaming", "create": true, "fields": {"term": {"assign": "streaming"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::nearest/neighbour", "create": true, "fields": {"term": {"assign": "nearest neighbour"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::feed/rate", "create": true, "fields": {"term": {"assign": "feed rate"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::searcher", "create": true, "fields": {"term": {"assign": "searcher"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::query/tracing", "create": true, "fields": {"term": {"assign": "query tracing"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::ranking", "create": true, "fields": {"term": {"assign": "ranking"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
+{"update": "id:term:term::term", "create": true, "fields": {"term": {"assign": "term"}, "query_count": {"increment": 1}, "query_hits": {"assign": 10}}}
