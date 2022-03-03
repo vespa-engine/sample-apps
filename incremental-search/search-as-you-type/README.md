@@ -16,6 +16,9 @@ Requirements:
 * Architecture: x86_64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+  to build the application.
 
 **Validate environment, must be minimum 4GB:**
 
@@ -63,6 +66,11 @@ $ docker run --detach --name vespa --hostname vespa-container \
 Download this sample application
 <pre data-test="exec">
 $ vespa clone incremental-search/search-as-you-type myapp && cd myapp
+</pre>
+
+Build the application package
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
 </pre>
 
 **Download feed file**
@@ -124,10 +132,10 @@ $ curl -s http://localhost:8080/site/
 
 
 **Shutdown and remove the Docker container**
-
-<pre>
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>
+
 
 
 ## Details
