@@ -72,13 +72,6 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-<pre data-test="exec">
-$ docker pull vespaengine/vespa
-$ docker run --detach --name vespa --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
-  vespaengine/vespa
-</pre>
-
 Verify that configuration service (deploy api) is ready
 
 <pre data-test="exec">
