@@ -15,8 +15,6 @@ but you can download other data from the site above and use the scripts to conve
 ### Quick Start 
 
 Requirements:
-
-Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
