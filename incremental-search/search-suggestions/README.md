@@ -102,6 +102,11 @@ Download this sample application
 $ vespa clone incremental-search/search-suggestions myapp && cd myapp
 </pre>
 
+Build the application package
+<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
+$ mvn clean package -U
+</pre>
+
 Verify that configuration service (deploy api) is ready
 
 <pre data-test="exec">
