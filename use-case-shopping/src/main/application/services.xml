@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-
-<services version="1.0">
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
 
   <container id="container" version="1.0">
     <document-api />
     <search />
-
     <document-processing>
       <chain id="default">
         <documentprocessor id="ai.vespa.example.shopping.ReviewProcessor" bundle="use-case-shopping" />
