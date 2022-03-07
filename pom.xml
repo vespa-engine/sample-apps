@@ -30,8 +30,6 @@
         <module>transformers</module>
         <module>use-case-shopping</module>
         <module>examples/vespa-chinese-linguistics</module>
-        <module>vespa-cloud/album-recommendation-java</module>
-        <module>vespa-cloud/album-recommendation-prod-tests</module>
         <module>examples/document-processing</module>
         <module>examples/joins</module>
     </modules>
