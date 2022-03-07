@@ -1,6 +1,6 @@
 {
     "name": "Feed and query test",
-    "comment": "This field is not part of the test specification, and is therfore ignored, and can be used for comments.",
+    "comment": "This field is not part of the test specification, and is therefore ignored, and can be used for comments.",
     "defaults": {
         "cluster": "default",
         "parameters": {

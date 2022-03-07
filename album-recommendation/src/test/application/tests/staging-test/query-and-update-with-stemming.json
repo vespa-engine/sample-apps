@@ -7,7 +7,7 @@
     "steps": [
         {
             "name": "query before album update",
-            "comment": "If the document was fed with deafult stemming, this step fails. For a non-upgrade scenario, remove this step, and the next.",
+            "comment": "If the document was fed with default stemming, this step fails. For a non-upgrade scenario, remove this step, and the next.",
             "request": {
                 "parameters": "../query.json"
             },
