@@ -1,3 +1,0 @@
-{
-    "yql": "select * from sources * where album contains \"fighter\""
-}
