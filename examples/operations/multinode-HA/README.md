@@ -321,7 +321,7 @@ $ curl http://localhost:19108/state/v1/health
 ```
 
 Inspect the content node _process_ metrics using `/state/v1/metrics`:
-<pre data-test="exec" data-test-wait-for='"metrics":  '>
+<pre data-test="exec" data-test-wait-for='"metrics":'>
 $ curl http://localhost:19108/state/v1/metrics
 </pre>
 ```json
