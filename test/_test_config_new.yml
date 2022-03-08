@@ -17,8 +17,6 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
-    #
-    # Text image search is currently failing in mvn clean package:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/text-image-search/README.md"
     #
     # ToDo: move to other repo
