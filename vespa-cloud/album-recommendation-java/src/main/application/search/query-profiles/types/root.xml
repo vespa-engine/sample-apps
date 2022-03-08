@@ -1,0 +1,13 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+<!--
+    A query profile type is referenced (optionally) from a query profile and defines the types for query parameters.
+    This is generally just a help to do type chedcking but is required when using query tensors to specify their
+    type.
+    See
+      - https://docs.vespa.ai/en/query-profiles.html#query-profile-types
+-->
+
+<query-profile-type id="root" inherits="native">
+    <field name="ranking.features.query(user_profile)" type="tensor&lt;float&gt;(cat{})" />
+</query-profile-type>

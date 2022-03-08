@@ -1,0 +1,15 @@
+{
+    "name": "Feed prior to upgrade",
+    "comment": "The setup steps are run against the test deployment before it is upgraded.",
+    "steps": [
+        {
+            "name": "feed foo",
+            "request": {
+                "cluster": "default",
+                "method": "POST",
+                "uri": "/document/v1/test/music/docid/foo",
+                "body": "../foo.json"
+            }
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ai.vespa.cloud.example</groupId>
+    <artifactId>albums</artifactId>  <!-- Note: When changing this, also change bundle names in services.xml -->
+    <version>1.0.0</version>
+
+    <!-- The Java code in this module should be built as an OSGi bundle deployable to Vespa container clusters -->
+    <packaging>container-plugin</packaging>
+
+    <parent>
+        <groupId>com.yahoo.vespa</groupId>
+        <artifactId>cloud-tenant-base</artifactId>
+        <version>[7,999)</version>  <!-- Use the latest Vespa release on each build -->
+        <relativePath />
+    </parent>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tenant>vespa-team</tenant>
+        <application>album-rec-java</application>
+        <instance>default</instance>
+    </properties>
+
+    <!-- To change build settings, e.g. allow builds with warnings,
+         copy the <build> section from https://github.com/vespa-engine/vespa/blob/master/hosted-tenant-base/pom.xml
+         and override configuration here -->
+</project>
