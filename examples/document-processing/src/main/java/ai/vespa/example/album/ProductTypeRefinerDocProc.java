@@ -36,8 +36,4 @@ public class ProductTypeRefinerDocProc extends DocumentProcessor {
                 document.getFieldValue(PRODUCT_TYPE_FIELD_NAME).toString().replace('>','|'));
     }
 
-    @Override
-    public void deconstruct() {
-        super.deconstruct();  // no need for other deconstruction here
-    }
 }
