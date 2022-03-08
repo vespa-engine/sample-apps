@@ -17,6 +17,7 @@ This sample app also demonstrates use of parent-child relationships.
 ### [Basic album-recommendation](album-recommendation)
 This is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
+There is also a version of this sample application ready for [Vespa Cloud](vespa-cloud/album-recommendation).
 
 
 ## Full-fledged State-of-the-Art Search, Ranking and Question Answering applications

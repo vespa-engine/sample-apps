@@ -1,0 +1,12 @@
+{
+    "name": "Verify production metrics",
+    "comment": "Authentication not yet supported for production tests.",
+    "steps": [
+        {
+            "name": "check custom service",
+            "request": {
+                "uri": "https://my.custom.service/is-app-ok"
+            }
+        }
+    ]
+}

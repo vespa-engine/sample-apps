@@ -1,0 +1,12 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
+<!--
+    A query profile is a bundle of parameter settings that can be selected in a query using queryProfile=[id].
+    They can be made to vary by dimensions (such as e.g markets or devices), inherit and reference each other etc,
+    and are optionally typed.
+
+    See
+      - https://docs.vespa.ai/en/query-profiles.html
+-->
+
+<query-profile id="default" type="root" />
