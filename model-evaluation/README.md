@@ -110,7 +110,7 @@ $ vespa status --wait 300
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
 which runs a set of basic tests to verify that the application is working as expected.
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa test src/test/application/tests/system-tests/model-evaluation-test.json
+$ vespa test src/test/application/tests/system-test/model-evaluation-test.json
 </pre>
 
 **Using the REST APIs directly**
