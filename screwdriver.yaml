@@ -45,8 +45,8 @@ jobs:
     requires: [~pr, ~commit]
     image: vespaengine/vespa-pipeline
     annotations:
-      screwdriver.cd/cpu: TURBO
-      screwdriver.cd/ram: TURBO
+      screwdriver.cd/cpu: HIGH
+      screwdriver.cd/ram: HIGH
     steps:
       - build: |
           set -e
@@ -54,7 +54,7 @@ jobs:
           export MAVEN_OPTS="-Xms128m -Xmx4096m"
           mvn -DargLine="-Xmx4096m" -V --batch-mode --no-snapshot-updates install
 
-  verify-guides-new:
+  verify-guides:
     requires: [~commit]
     secrets:
       - VESPA_TEAM_API_KEY
@@ -67,7 +67,7 @@ jobs:
       screwdriver.cd/dockerEnabled: true
       screwdriver.cd/dockerCpu: TURBO
       screwdriver.cd/dockerRam: TURBO
-      screwdriver.cd/timeout: 180
+      screwdriver.cd/timeout: 60 # Normally takes 30 minutes
       screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
     steps:
       - install-deps: |
@@ -80,4 +80,32 @@ jobs:
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -v -c $SD_SOURCE_DIR/test/_test_config_new.yml
+          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
+
+  verify-guides-big:
+    requires: [~commit]
+    secrets:
+      - VESPA_TEAM_API_KEY
+    image: buildpack-deps
+    environment:
+      USER_SHELL_BIN: bash
+    annotations:
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
+      screwdriver.cd/timeout: 30
+      screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
+    steps:
+      - install-deps: |
+          apt update
+          apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
+          python3 -m pip install -qqq -r test/requirements.txt --user
+          VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
+            curl -fsSL https://github.com/vespa-engine/vespa/releases/download/v${VESPA_CLI_VERSION}/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64.tar.gz | tar -zxf - -C /opt && \
+            ln -sf /opt/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64/bin/vespa /usr/local/bin/
+      - run-tests: |
+          export VESPA_TEAM_API_KEY
+          cd $SD_DIND_SHARE_PATH
+          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config_big.yml
