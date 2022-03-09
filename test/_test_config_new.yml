@@ -31,7 +31,7 @@ urls:
     # see https://docs.screwdriver.cd/user-guide/configuration/annotations
     # The test works when running locally using
     # test/test.py examples/operations/multinode-HA/README.md
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/operations/multinode-HA/README.md"
+    # - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/operations/multinode-HA/README.md"
 
     # operations/album-recommendation-monitoring is tested in
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
