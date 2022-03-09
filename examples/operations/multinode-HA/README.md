@@ -13,7 +13,7 @@ This is a guide for functional testing, deployed on one host for simplicity.
 Refer to the [mTLS guide](/examples/operations/secure-vespa-with-mtls) for a multinode configuration,
 set up on multiple hosts using Docker Swarm.
 See the [reference documentation](https://docs.vespa.ai/en/reference/metrics.html)
-for use of `/state/v1/health` and `/state/v1/metrics` APIs used in this guide.
+for use of state and metrics APIs used in this guide.
 
 There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
@@ -26,15 +26,15 @@ See [services.xml](src/main/application/services.xml) for the configuration -
 in this guide:
 
 * the config cluster is built from 3 config server nodes, node[0,1,2].
-  See the `admin` section in services.xml.
-* the admin server node that hosts the log server is hosted on node4.
-  See the `admin` section in services.xml.
+  See the `admin` section.
+* the admin server node that hosts the log server is hosted on node3.
+  See the `admin` section.
 * the stateless java container cluster that hosts the _stateless_ nodes for _feed_ processing on node[4,5].
-  See `container` section in services.xml.
+  See `container` section with id="feed".
 * the stateless java container cluster that hosts the _stateless_ nodes for _query_ processing on node[6,7].
-  See `container` section in services.xml.
+  See `container` section with id="query".
 * the content cluster that hosts the _stateful_ content nodes on node[8,9].
-  See `content` section in services.xml.
+  See `content` section.
 
 See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
@@ -74,7 +74,7 @@ e.g. batch writes with high throughput vs. user-driven queries.
 
 
 ## Start the config server cluster
-Config servers are normally started first,
+Config servers must be started first,
 as the other Vespa nodes depend on config servers for startup:
 <pre data-test="exec">
 $ docker run --detach --name node0 --hostname node0.vespanet \
@@ -116,7 +116,8 @@ This because `services` has node infrastructure, e.g. log forwarding.
 At this point, nothing other than config server cluster runs.
 Wait for last config server to start -
 checking for 19071 on config server nodes is useful for that
-(find the port mappings in the illustration above):
+(find the port mappings in the illustration above) -
+this checks the config server on node2:
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:19073/ApplicationStatus
 </pre>
@@ -137,11 +138,11 @@ $ (cd src/main/application && zip -r - .) | \
 </pre>
 
 As the Docker start script will start both the config server and services,
-we expect to find responses on 19100 (`slobrok`) and 19050 (`cluster-controller`).
+we expect to find responses on 19100 (`slobrok`), 19092 (`metrics-proxy`) and 19050 (`cluster-controller`).
 
 **Important note:** Vespa has a feature to not enable `services` before 50% of the nodes are up,
 see [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
-Meaning, here we have started only 3/10, so `slobrok` and `cluster-controller` are not started yet -
+Meaning, here we have started only 3/10, so `slobrok`, `metrics-proxy` and `cluster-controller` are not started yet -
 find log messages like
 
     $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
@@ -163,9 +164,9 @@ $ docker run --detach --name node3 --hostname node3.vespanet \
 
 Notes:
 * See  _services_ argument to start script - a config server is not started on this node.
-* The log server can be disk intensive, as vespa.log is rotated and forwarded here.
-  It is normally a good idea to run this on a separate node, like here, for this reason -
-  a full disk will not hit the other nodes then. 
+* The log server can be disk intensive, as all nodes' _vespa.log_ is rotated and forwarded here.
+  For this reason, it is normally a good idea to run this on a separate node, like here -
+  a full disk will not impact other nodes.
 
 
 
@@ -209,10 +210,10 @@ As these are nodes 5 and 6 of 10, 60% of services is started:
       INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node5.vespanet -> OK: both ways connectivity verified
       INFO    : config-sentinel  sentinel.sentinel.connectivity Enough connectivity checks OK, proceeding with service startup
 
-We hence expect the `metric proxy` (runs on all service nodes) to be up - and others:
+We hence expect the `metrics-proxy` (runs on all service nodes) to be up - and others:
 
-    $ curl http://localhost:20095/state/v1/   # metrics proxy on node3
-    $ curl http://localhost:19100/state/v1/   # slobok on node0
+    $ curl http://localhost:20095/state/v1/   # metrics-proxy on node3
+    $ curl http://localhost:19100/state/v1/   # slobrok on node0
     $ curl http://localhost:19051/state/v1/   # cluster-controller on node1
 
 In short, checking `/state/v1/` for services is useful to validate that services are up.
@@ -292,6 +293,37 @@ Again, wait for OK startup:
 $ curl -s --head http://localhost:8083/ApplicationStatus
 </pre>
 
+At this point, inspect the differences in the "handlers" section
+for the "feed": http://localhost:8081/ApplicationStatus and
+"query": http://localhost:8082/ApplicationStatus container clusters.
+Feed:
+```json
+{
+    "id": "com.yahoo.document.restapi.resource.DocumentV1ApiHandler",
+    "class": "com.yahoo.document.restapi.resource.DocumentV1ApiHandler",
+    "bundle": "vespaclient-container-plugin:7.553.2",
+    "serverBindings": [
+        "http://*/document/v1/*",
+        "http://*/document/v1/*/"
+    ],
+    "clientBindings": [ ]
+}
+```
+Query:
+```json
+{
+    "id": "com.yahoo.search.handler.SearchHandler",
+    "class": "com.yahoo.search.handler.SearchHandler",
+    "bundle": "container-search-and-docproc:7.553.2",
+    "serverBindings": [
+        "http://*/search/*"
+    ],
+    "clientBindings": [ ]
+}
+```
+These are the different endpoints for the document write and query APIs.
+This view is good to explore the different VESPA API endpoints.
+
 
 
 ## Start the content cluster:
@@ -308,6 +340,7 @@ $ docker run --detach --name node9 --hostname node9.vespanet \
     vespaengine/vespa services
 </pre>
 
+Note that the content nodes do not expose the ApplicationStatus endpoint.
 Check for content node startup using `/state/v1/health`:
 <pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl http://localhost:19108/state/v1/health
@@ -364,15 +397,6 @@ $ curl http://localhost:20101/metrics/v1/values
         "metrics": [
 ```
 
-Dump the content node _node_ metrics, in Prometheus format:
-<pre data-test="exec" data-test-wait-for='vespa_searchnode'>
-$ curl http://localhost:20101/prometheus/v1/values
-</pre>
-    # HELP memory_virt
-    # TYPE memory_virt untyped
-    memory_virt{metrictype="system",instance="distributor",vespaVersion="7.531.17",vespa_service="vespa_distributor",} 3.39165184E8 1643286737000
-    memory_virt{metrictype="system",instance="logd",vespaVersion="7.531.17",vespa_service="vespa_logd",} 1.29429504E8 1643286737000
-
 Test metrics from all nodes using `/metrics/v2/values`:
 <pre data-test="exec" data-test-wait-for='"services":'>
 curl http://localhost:8083/metrics/v2/values
@@ -390,6 +414,16 @@ curl http://localhost:8083/metrics/v2/values
                     "status": {
 ```
 
+Same as previous, in Prometheus format:
+<pre data-test="exec" data-test-wait-for='vespa_searchnode'>
+$ curl http://localhost:8083/prometheus/v1/values
+</pre>
+    # HELP memory_virt
+    # TYPE memory_virt untyped
+    memory_virt{metrictype="system",instance="distributor",vespaVersion="7.531.17",vespa_service="vespa_distributor",} 3.39165184E8 1643286737000
+    memory_virt{metrictype="system",instance="logd",vespaVersion="7.531.17",vespa_service="vespa_logd",} 1.29429504E8 1643286737000
+
+
 ## Process overview
 Notes:
 * [Config sentinel](https://docs.vespa.ai/en/config-sentinel.html)
@@ -406,8 +440,8 @@ Notes:
 
 
 
-## Test endpoints
-Feed 5 documents, using the document-API endpoint in the _feed_ container cluster on 8080/8081:
+## Test feed and query endpoints
+Feed 5 documents, using the document-API endpoint in the _feed_ container cluster, here mapped to 8080/8081:
 <pre data-test="exec">
 $ i=0; (for doc in $(ls ../../../album-recommendation/src/test/resources); \
   do \
@@ -422,7 +456,7 @@ List IDs of all documents (this can be run on any node in the cluster):
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 </pre>
 
-Run a query, using the query-API endpoint in the _query_ container cluster on 8082/8083::
+Run a query, using the query-API endpoint in the _query_ container cluster, here mapped to 8082/8083:
 <pre data-test="exec" data-test-wait-for='"totalCount":5'>
 $ curl --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
   http://localhost:8082/search/
