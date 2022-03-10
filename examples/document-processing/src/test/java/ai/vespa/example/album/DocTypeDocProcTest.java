@@ -35,12 +35,12 @@ public class DocTypeDocProcTest {
      */
     @Test
     public void testCreateOperationFromJson() {
-        DocTypeDocumentProcessor docProc = new DocTypeDocumentProcessor();
+
         DocumentType docType = createMusicDocumentType();
         DocumentTypeManager typeMgr = new DocumentTypeManager(new DocumentmanagerConfig.Builder().build());
         typeMgr.registerDocumentType(docType);
+        DocTypeDocumentProcessor docProc = new DocTypeDocumentProcessor(typeMgr);
         DocumentOperation op = docProc.createDocFromJson(typeMgr,"id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::a-head-full-of-dreams");
-
         assertEquals("put of document id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::a-head-full-of-dreams", op.toString());
     }
 

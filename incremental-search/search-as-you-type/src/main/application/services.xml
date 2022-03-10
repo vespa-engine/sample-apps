@@ -6,7 +6,7 @@
         <document-api/>
         <search/>
 
-        <handler id="ai.vespa.example.typesearch.SiteHandler" bundle="vespaexample-typesearch">
+        <handler id="ai.vespa.example.typesearch.SiteHandler" bundle="search-as-you-type">
             <binding>http://*/site/*</binding>
             <binding>http://*/site</binding>
             <config name="ai.vespa.example.typesearch.site-handler">

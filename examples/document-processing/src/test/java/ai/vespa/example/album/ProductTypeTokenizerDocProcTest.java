@@ -1,11 +1,9 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
-import com.yahoo.docproc.CallStack;
-import com.yahoo.docproc.DocprocService;
+
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
-import com.yahoo.docproc.jdisc.metric.NullMetric;
 import com.yahoo.document.DataType;
 import com.yahoo.document.Document;
 import com.yahoo.document.DocumentOperation;
@@ -21,15 +19,6 @@ import static ai.vespa.example.album.ProductTypeTokenizerDocProc.PRODUCT_TYPE_TO
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProductTypeTokenizerDocProcTest {
-
-    private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new NullMetric());
-        stack.addLast(processor);
-        DocprocService service = new DocprocService("default");
-        service.setCallStack(stack);
-        service.setInService(true);
-        return service;
-    }
 
     private static Processing getProcessing(DocumentOperation... operations) {
         Processing processing = new Processing();
@@ -52,9 +41,8 @@ class ProductTypeTokenizerDocProcTest {
         doc.setFieldValue(PRODUCT_TYPE_FIELD_NAME,
                 new StringFieldValue("Media > Music & Sound Recordings > Music Cassette Tapes"));
 
-        Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new ProductTypeTokenizerDocProc());
-        service.getExecutor().process(p);
+        DocumentProcessor docproc = new ProductTypeTokenizerDocProc();
+        docproc.process(getProcessing(new DocumentPut(doc)));
 
         Array<?> tokens = (Array<?>)doc.getFieldValue(PRODUCT_TYPE_TOKENS_FIELD_NAME);
         assertEquals(55, tokens.size());

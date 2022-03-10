@@ -6,11 +6,8 @@ import ai.vespa.TokenizerFactory;
 import ai.vespa.embedding.EmbeddingConfig;
 import ai.vespa.embedding.DenseEmbedder;
 import ai.vespa.models.evaluation.ModelsEvaluator;
-import com.yahoo.docproc.CallStack;
-import com.yahoo.docproc.DocprocService;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
-import com.yahoo.docproc.jdisc.metric.NullMetric;
 import com.yahoo.document.*;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.datatypes.TensorFieldValue;
@@ -31,15 +28,6 @@ public class DenseDocumentEmbedderTest {
         builder.max_document_length(256).max_query_length(32);
         builder.model_name("dense_encoder");
         embedder = new DenseEmbedder(evaluator, TokenizerFactory.getEmbedder(), builder.build());
-    }
-
-    private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new NullMetric());
-        stack.addLast(processor);
-        DocprocService service = new DocprocService("default");
-        service.setCallStack(stack);
-        service.setInService(true);
-        return service;
     }
 
     private static Processing getProcessing(DocumentOperation... operations) {
@@ -65,8 +53,8 @@ public class DenseDocumentEmbedderTest {
         doc.setFieldValue("text", new
                 StringFieldValue("Britney Jean Spears (born December 2, 1981) is an American singer."));
         Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new DenseDocumentEmbedder(embedder));
-        service.getExecutor().process(p);
+        DocumentProcessor docproc = new DenseDocumentEmbedder(embedder);
+        docproc.process(p);
         TensorFieldValue embedding = (TensorFieldValue) doc.getFieldValue("mini_document_embedding");
         assertNotNull(embedding, "Embedding should not be null");
 
@@ -76,7 +64,7 @@ public class DenseDocumentEmbedderTest {
         doc.setFieldValue("text", new
                 StringFieldValue("This is the text "));
         p = getProcessing(new DocumentPut(doc));
-        service.getExecutor().process(p);
+        docproc.process(p);
         TensorFieldValue newEmbedding = (TensorFieldValue) doc.getFieldValue("mini_document_embedding");
         assertNotNull(newEmbedding, "Embedding should not be null");
         assertNotEquals(embedding,newEmbedding);
@@ -97,8 +85,8 @@ public class DenseDocumentEmbedderTest {
         TensorFieldValue embedding = new TensorFieldValue(builder.build());
         doc.setFieldValue("mini_document_embedding", embedding);
         Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new DenseDocumentEmbedder(embedder));
-        service.getExecutor().process(p);
+        DocumentProcessor docproc = new DenseDocumentEmbedder(embedder);
+        docproc.process(p);
         TensorFieldValue newEmbedding = (TensorFieldValue) doc.getFieldValue("mini_document_embedding");
         assertNotNull(newEmbedding, "Embedding should not be null");
         assertEquals(embedding,newEmbedding, "Embedding should not be touched");

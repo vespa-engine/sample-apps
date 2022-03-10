@@ -2,11 +2,7 @@
 package ai.vespa.processor;
 
 import com.yahoo.config.FileReference;
-import com.yahoo.docproc.CallStack;
-import com.yahoo.docproc.DocprocService;
-import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
-import com.yahoo.docproc.jdisc.metric.NullMetric;
 import com.yahoo.document.DataType;
 import com.yahoo.document.Document;
 import com.yahoo.document.DocumentOperation;
@@ -34,14 +30,6 @@ public class QADocumentProcessorTest {
 
     private static WordPieceEmbedder embedder = getEmbedder();
 
-    private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new NullMetric());
-        stack.addLast(processor);
-        DocprocService service = new DocprocService("default");
-        service.setCallStack(stack);
-        service.setInService(true);
-        return service;
-    }
 
     private static Processing getProcessing(DocumentOperation... operations) {
         Processing processing = new Processing();
@@ -66,9 +54,8 @@ public class QADocumentProcessorTest {
         doc.setFieldValue("title", new StringFieldValue("Britney_spears"));
         doc.setFieldValue("text", new StringFieldValue("Britney Jean Spears (born December 2, 1981) is an American singer, songwriter, dancer, and actress."));
         Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new QADocumentProcessor(embedder));
-        service.getExecutor().process(p);
-
+        QADocumentProcessor processor = new QADocumentProcessor(embedder);
+        processor.process(p);
         TensorFieldValue title_tensor = (TensorFieldValue)doc.getFieldValue("title_token_ids");
         TensorFieldValue text_tensor = (TensorFieldValue)doc.getFieldValue("text_token_ids");
         assertNotNull(title_tensor);
@@ -81,7 +68,7 @@ public class QADocumentProcessorTest {
     public void testEmptyProcessing() throws Exception  {
         Document doc = new Document(new DocumentType("query"), "id:foo:query::0");
         Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new QADocumentProcessor(embedder));
-        service.getExecutor().process(p);
+        QADocumentProcessor processor = new QADocumentProcessor(embedder);
+        processor.process(p);
     }
 }

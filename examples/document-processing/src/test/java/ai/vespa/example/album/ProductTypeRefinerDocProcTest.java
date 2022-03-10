@@ -1,11 +1,9 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.album;
 
-import com.yahoo.docproc.CallStack;
-import com.yahoo.docproc.DocprocService;
+
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
-import com.yahoo.docproc.jdisc.metric.NullMetric;
 import com.yahoo.document.DataType;
 import com.yahoo.document.Document;
 import com.yahoo.document.DocumentOperation;
@@ -19,15 +17,6 @@ import static ai.vespa.example.album.ProductTypeRefinerDocProc.PRODUCT_TYPE_FIEL
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProductTypeRefinerDocProcTest {
-
-    private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new NullMetric());
-        stack.addLast(processor);
-        DocprocService service = new DocprocService("default");
-        service.setCallStack(stack);
-        service.setInService(true);
-        return service;
-    }
 
     private static Processing getProcessing(DocumentOperation... operations) {
         Processing processing = new Processing();
@@ -49,10 +38,8 @@ class ProductTypeRefinerDocProcTest {
         doc.setFieldValue(PRODUCT_TYPE_FIELD_NAME,
                 new StringFieldValue("Media > Music & Sound Recordings > Music Cassette Tapes"));
 
-        Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new ProductTypeRefinerDocProc());
-        service.getExecutor().process(p);
-
+        DocumentProcessor processor = new ProductTypeRefinerDocProc();
+        processor.process(getProcessing(new DocumentPut(doc)));
         assertEquals("Media | Music & Sound Recordings | Music Cassette Tapes",
                 doc.getFieldValue(PRODUCT_TYPE_FIELD_NAME).toString());
     }
