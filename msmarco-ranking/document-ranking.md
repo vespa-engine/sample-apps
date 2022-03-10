@@ -200,7 +200,7 @@ For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
 <pre>
 $ vespa config set target cloud
 $ vespa config set application tenant-name.myapp.default
-$ vespa api-key
+$ vespa auth login 
 $ vespa cert
 </pre>
 
