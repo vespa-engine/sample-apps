@@ -2,6 +2,7 @@
 package ai.vespa.example.album;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.google.inject.Inject;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
 import com.yahoo.document.Document;
@@ -26,6 +27,12 @@ public class DocTypeDocumentProcessor extends DocumentProcessor {
     protected static final String MUSIC_DOCUMENT_TYPE = "music";
     protected static final String ARTIST_FIELD_NAME   = "artist";
 
+    private DocumentTypeManager typeManager;
+    @Inject
+    public DocTypeDocumentProcessor(DocumentTypeManager typeManager) {
+        this.typeManager = typeManager;
+    }
+
     @Override
     public Progress process(Processing processing) {
         for (DocumentOperation op : processing.getDocumentOperations()) {
@@ -35,7 +42,7 @@ public class DocTypeDocumentProcessor extends DocumentProcessor {
                 if (document.getDataType().isA(MUSIC_DOCUMENT_TYPE)) {
                     logger.info("Before processing: " + document.toJson());
 
-                    Document documentFromJson = createDocFromJson(processing.getService().getDocumentTypeManager(),
+                    Document documentFromJson = createDocFromJson(typeManager,
                             "id:mynamespace:" + MUSIC_DOCUMENT_TYPE + "::2").getDocument();
                     document.setFieldValue(ARTIST_FIELD_NAME, documentFromJson.getFieldValue(ARTIST_FIELD_NAME));
 

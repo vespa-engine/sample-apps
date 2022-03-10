@@ -3,11 +3,8 @@
 package ai.vespa.docproc;
 
 import com.yahoo.config.FileReference;
-import com.yahoo.docproc.CallStack;
-import com.yahoo.docproc.DocprocService;
 import com.yahoo.docproc.DocumentProcessor;
 import com.yahoo.docproc.Processing;
-import com.yahoo.docproc.jdisc.metric.NullMetric;
 import com.yahoo.document.*;
 import com.yahoo.document.datatypes.StringFieldValue;
 import com.yahoo.document.datatypes.TensorFieldValue;
@@ -30,15 +27,6 @@ public class DocumentTensorizerTest {
 
     private static WordPieceEmbedder embedder = getEmbedder();
 
-    private static DocprocService setupDocprocService(DocumentProcessor processor) {
-        CallStack stack = new CallStack("default", new NullMetric());
-        stack.addLast(processor);
-        DocprocService service = new DocprocService("default");
-        service.setCallStack(stack);
-        service.setInService(true);
-        return service;
-    }
-
     private static Processing getProcessing(DocumentOperation... operations) {
         Processing processing = new Processing();
         for (DocumentOperation op : operations) {
@@ -59,11 +47,9 @@ public class DocumentTensorizerTest {
         Document doc = new Document(createDocType(), "id:msmarco:passage::0");
         doc.setFieldValue("text", new
                 StringFieldValue("Britney Jean Spears (born December 2, 1981) is an American singer, songwriter, dancer, and actress."));
-        Processing p = getProcessing(new DocumentPut(doc));
-        DocprocService service = setupDocprocService(new DocumentTensorizer(embedder));
-        service.getExecutor().process(p);
+        DocumentProcessor processor = new DocumentTensorizer(embedder);
+        processor.process(getProcessing(new DocumentPut(doc)));
         TensorFieldValue text_tensor = (TensorFieldValue) doc.getFieldValue("text_token_ids");
         assertNotNull(text_tensor);
-
     }
 }
