@@ -1,6 +1,7 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
+    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/text-image-search/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/document-processing/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/predicate-fields/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/operations/multinode/README.md"
@@ -13,7 +14,6 @@ urls:
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-as-you-type/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/incremental-search/search-suggestions/README.md"
     - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/transformers/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/text-image-search/README.md"
     #
     # ToDo: move to other repo
     # Test queries to https://api.cord19.vespa.ai/search/?query=sars-cov-2

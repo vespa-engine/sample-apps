@@ -53,11 +53,31 @@ for details and troubleshooting:
 $ docker info | grep "Total Memory"
 </pre>
 
-**Check-out:**
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
+
+<pre >
+$ brew install vespa-cli
+</pre>
 
 <pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ cd sample-apps/text-image-search
+$ vespa config set target local
+</pre>
+
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.myapp.default
+$ vespa auth login 
+$ vespa cert
+</pre>
+
+Where `tenant-name` is a tenant that you have an account registered with.
+
+Checkout this sample app :
+
+<pre data-test="exec">
+$ vespa clone text-image-search myapp && cd myapp 
 </pre>
 
 **Set up transformer model:**
@@ -88,8 +108,8 @@ $ vespa status deploy --wait 600 --color never
 
 **Deploy the application and wait for services to start:**
 
-<pre data-test="exec" data-test-wait-for="is ready">
-$ vespa deploy --wait 300 --color never
+<pre data-test="exec" data-test-wait-for="is ready" data-test-timeout="600">
+$ vespa deploy --wait 600 --color never
 </pre>
 
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
