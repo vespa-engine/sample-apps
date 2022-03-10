@@ -108,7 +108,7 @@ $ vespa status deploy --wait 600 --color never
 
 **Deploy the application and wait for services to start:**
 
-<pre data-test="exec" data-test-wait-for="is ready">
+<pre data-test="exec" data-test-wait-for="is ready" data-test-timeout="600">
 $ vespa deploy --wait 600 --color never
 </pre>
 
