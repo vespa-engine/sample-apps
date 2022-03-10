@@ -82,7 +82,7 @@ $ docker run --detach --name vespa --hostname vespa-container \
 
 **Wait for the configserver to start:**
 
-<pre data-test="exec" data-test-wait-for="is ready">
+<pre data-test="exec" data-test-wait-for="is ready" data-test-timeout="600">
 $ vespa status deploy --wait 300 --color never
 </pre>
 
