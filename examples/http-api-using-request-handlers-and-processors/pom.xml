@@ -48,9 +48,6 @@
                     <optimize>true</optimize>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
-                    <jdkToolchain>
-                        <version>11</version>
-                    </jdkToolchain>
                     <release>11</release>
                     <compilerArgs>
                         <arg>-Xlint:all</arg>
