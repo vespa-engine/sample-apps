@@ -6,6 +6,8 @@ import com.yahoo.prelude.query.NearestNeighborItem;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
+import com.yahoo.search.result.FeatureData;
+import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
 
@@ -19,7 +21,7 @@ public class UserProfileSearcher extends Searcher {
         if (userIdProperty != null) {
 
             // Retrieve user embedding by doing a search for the user_id and extract the tensor
-            Tensor userEmbedding = retrieveUserEmbedding(userIdProperty.toString(), execution);
+            Tensor userEmbedding = retrieveUserEmbedding(userIdProperty.toString(), execution, query);
 
             // Create a new search using the user's embedding tensor
             NearestNeighborItem nn = new NearestNeighborItem("embedding", "user_embedding");
@@ -39,18 +41,19 @@ public class UserProfileSearcher extends Searcher {
         return execution.search(query);
     }
 
-    private Tensor retrieveUserEmbedding(String userId, Execution execution) {
+    private Tensor retrieveUserEmbedding(String userId, Execution execution,Query originalQuery) {
         Query query = new Query();
+        originalQuery.attachContext(query);
         query.getModel().setRestrict("user");
         query.getModel().getQueryTree().setRoot(new WordItem(userId, "user_id"));
         query.setHits(1);
-
+        query.getRanking().setProfile("single-phase-user-fetch");
         Result result = execution.search(query);
-        execution.fill(result); // This is needed to get the actual summary data
-
         if (result.getTotalHitCount() == 0)
             throw new RuntimeException("User id " + userId + " not found...");
-        return (Tensor) result.hits().get(0).getField("embedding");
+        Hit hit = result.hits().get(0);
+        FeatureData featureData = (FeatureData)hit.getField("matchfeatures");
+        return featureData.getTensor("attribute(embedding)");
     }
 
 }

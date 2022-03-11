@@ -17,5 +17,7 @@ schema user {
         }
 
     }
-
+    rank-profile single-phase-user-fetch {
+        match-features: attribute(embedding)
+    }
 }
