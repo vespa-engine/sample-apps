@@ -79,7 +79,7 @@ jobs:
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
+          $SD_SOURCE_DIR/test/test.py -v -c $SD_SOURCE_DIR/test/_test_config.yml
 
   verify-guides-big:
     requires: [~commit]
