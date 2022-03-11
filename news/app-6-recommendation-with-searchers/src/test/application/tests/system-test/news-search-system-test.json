@@ -1,0 +1,45 @@
+{
+  "name": "News and recommendation system test",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed single news document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/news/news/docid/N2435",
+        "body": {
+          "fields": {
+            "news_id": "N2435",
+            "category": "sports",
+            "subcategory": "football_nfl",
+            "title": "Amari Cooper wants to play through latest injury against Eagles",
+            "abstract": "With an extremely important divisional game this weekend, it is no surprise Cooper is doing everything he can to get on the field.",
+            "url": "https://www.msn.com/en-us/sports/football_nfl/amari-cooper-wants-to-play-through-latest-injury-against-eagles/ar-AAIWmmk?ocid=chopendata",
+            "date": 20191106,
+            "clicks": 0,
+            "impressions": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/news/news/docid/N2435"
+      },
+      "response": {
+        "body": {
+          "fields":  {
+            "news_id": "N2435"
+          }
+        }
+      }
+    }
+  ]
+}
