@@ -102,14 +102,14 @@ $ docker run --detach --name vespa --hostname vespa-container \
 
 **Wait for the configserver to start:**
 
-<pre data-test="exec" data-test-wait-for="is ready" data-test-timeout="600">
-$ vespa status deploy --wait 600 --color never
+<pre data-test="exec" data-test-assert-contains="is ready">
+$ vespa status deploy --wait 300 --color never
 </pre>
 
 **Deploy the application and wait for services to start:**
 
-<pre data-test="exec" data-test-wait-for="is ready" data-test-timeout="120">
-$ vespa deploy --wait 100 --color never
+<pre data-test="exec" data-test-assert-contains="is ready">
+$ vespa deploy --wait 300 --color never
 </pre>
 
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
