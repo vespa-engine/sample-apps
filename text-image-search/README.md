@@ -108,7 +108,7 @@ $ vespa status deploy --wait 300 --color never
 
 **Deploy the application and wait for services to start:**
 
-<pre data-test="exec" data-test-assert-contains="is ready">
+<pre data-test="exec">
 $ vespa deploy --wait 300 --color never
 </pre>
 
