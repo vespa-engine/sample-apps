@@ -51,8 +51,7 @@ jobs:
       - build: |
           set -e
           source /etc/profile.d/jdk-env.sh
-          export MAVEN_OPTS="-Xms128m -Xmx4096m"
-          mvn -DargLine="-Xmx4096m" -V --batch-mode --no-snapshot-updates install
+          mvn -V --batch-mode --no-snapshot-updates install
 
   verify-guides:
     requires: [~commit]
@@ -80,7 +79,7 @@ jobs:
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
+          $SD_SOURCE_DIR/test/test.py -v -c $SD_SOURCE_DIR/test/_test_config.yml
 
   verify-guides-big:
     requires: [~commit]

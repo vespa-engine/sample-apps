@@ -39,7 +39,7 @@ def print_cmd_header(cmd, extra="", print_header=True):
 def exec_wait(cmd, pty):
     command = cmd["$"]
     expect = cmd["wait-for"]
-    max_wait = 300  # todo: max this configurable
+    max_wait = 300 if not ("timeout" in cmd) else int(cmd["timeout"])
     try_interval = 5  # todo: max this configurable too
     print_cmd_header(command, "Waiting for '{0}'".format(expect))
 
@@ -156,7 +156,13 @@ def parse_cmd(cmd, attrs):
         return None
 
     if "data-test-wait-for" in attrs:
-        return {"$": cmd, "type": "wait", "wait-for": attrs["data-test-wait-for"]}
+        if "data-test-timeout" in attrs:
+            return {"$": cmd,
+                    "type": "wait",
+                    "wait-for": attrs["data-test-wait-for"],
+                    "timeout": attrs["data-test-timeout"]}
+        else:
+            return {"$": cmd, "type": "wait", "wait-for": attrs["data-test-wait-for"]}
     if "data-test-assert-contains" in attrs:
         return {"$": cmd, "type": "assert", "contains": attrs["data-test-assert-contains"]}
     if "data-test-expect" in attrs:

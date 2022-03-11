@@ -3,13 +3,11 @@ package com.mydomain.demo;
 
 import com.google.inject.Inject;
 import com.yahoo.component.provider.ListenableFreezableClass;
-import com.yahoo.docproc.DocprocService;
-import com.yahoo.docproc.DocumentProcessor.Progress;
 import com.yahoo.docproc.Processing;
-import com.yahoo.docproc.jdisc.DocumentProcessingHandler;
 import com.yahoo.document.Document;
 import com.yahoo.document.DocumentPut;
 import com.yahoo.document.DocumentType;
+import com.yahoo.document.DocumentTypeManager;
 import com.yahoo.processing.Processor;
 import com.yahoo.processing.Request;
 import com.yahoo.processing.Response;
@@ -19,6 +17,7 @@ import com.yahoo.processing.response.Data;
 import com.yahoo.processing.response.DataList;
 import com.yahoo.yolean.chain.After;
 import com.yahoo.yolean.chain.Provides;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,16 +55,16 @@ public class DataProcessor extends Processor {
     }
 
     private final DemoComponent termChecker;
-    private final DocumentProcessingHandler docHandler;
     private final DemoFreezableComponent docApiClient;
     private final DocumentType musicType;
 
     @Inject
-    public DataProcessor(DemoComponent termChecker, DemoFreezableComponent docApiClient, DocumentProcessingHandler docHandler) {
+    public DataProcessor(DemoComponent termChecker,
+                         DemoFreezableComponent docApiClient,
+                         DocumentTypeManager documentTypeManager) {
         this.termChecker = termChecker;
-        this.docHandler = docHandler;
         this.docApiClient = docApiClient;
-        this.musicType = docHandler.getDocumentTypeManager().getDocumentType("music");
+        this.musicType = documentTypeManager.getDocumentType("music");
     }
 
     @Override
@@ -103,22 +102,12 @@ public class DataProcessor extends Processor {
                 newDocuments.add(new Document(this.musicType, "id:default:music::" + normalized));
             }
         }
-
-        // Now lets send those Document down the Document pipeline
-        Processing processing = new com.yahoo.docproc.Processing();
+        Processing processing = new Processing();
         for (Document document : newDocuments) {
             DocumentPut docPut = new DocumentPut(document);
             processing.addDocumentOperation(docPut);
         }
-
-        // NOTE: I'm not sure if this is needed, seems to work without it
-        DocprocService docProcService = this.docHandler.getDocprocServiceRegistry()
-            .getComponent("default");
-        processing.setDocprocServiceRegistry(this.docHandler.getDocprocServiceRegistry());
-
-        if ( docProcService.getExecutor().processUntilDone(processing).equals(Progress.DONE))
-            docApiClient.syncProcess(processing);
-
+        docApiClient.syncProcess(processing);
         return r;
     }
 
