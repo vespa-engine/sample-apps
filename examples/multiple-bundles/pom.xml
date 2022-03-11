@@ -125,9 +125,6 @@
                     <optimize>true</optimize>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
-                    <jdkToolchain>
-                        <version>${jdk.version}</version>
-                    </jdkToolchain>
                     <release>${jdk.version}</release>
                 </configuration>
             </plugin>
