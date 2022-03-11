@@ -165,5 +165,9 @@ $ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=3s"
 **Shutdown and remove the container:**
 
 <pre data-test="after">
+$ docker exec vespa sh -c '/opt/vespa/bin/vespa-logfmt'
+</pre>
+
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>
