@@ -705,3 +705,9 @@ Model training and offline text to tensor processing
 Further reading:
 * https://docs.vespa.ai/en/vespa-quick-start.html
 * https://docs.vespa.ai/en/getting-started.html
+
+#### Notebook test
+Ignore this. This is for CI testing of sample-apps.
+<pre data-test="exec" data-test-assert-contains="1 passed">
+$ pytest --nbmake src/main/python/model-exporting.ipynb 
+</pre>
