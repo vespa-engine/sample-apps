@@ -54,7 +54,7 @@ jobs:
           mvn -V --batch-mode --no-snapshot-updates install
 
   verify-guides:
-    requires: [~commit]
+    requires: [~pr, ~commit]
     secrets:
       - VESPA_TEAM_API_KEY
     image: buildpack-deps
@@ -80,7 +80,7 @@ jobs:
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
+          $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR -c $SD_SOURCE_DIR/test/_test_config.yml
 
   verify-guides-big:
     requires: [~pr, ~commit]
@@ -109,4 +109,4 @@ jobs:
       - run-tests: |
           export VESPA_TEAM_API_KEY
           cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config_big.yml
+          $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR -c $SD_SOURCE_DIR/test/_test_config_big.yml

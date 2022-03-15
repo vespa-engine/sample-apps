@@ -1,8 +1,8 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/operations/multinode-HA/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/passage-ranking.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/msmarco-ranking/document-ranking.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/dense-passage-retrieval-with-ann/README.md"
-    - "https://raw.githubusercontent.com/vespa-engine/sample-apps/master/use-case-shopping/README.md"
+    - examples/operations/multinode-HA/README.md
+    - msmarco-ranking/passage-ranking.md
+    - msmarco-ranking/document-ranking.md
+    - dense-passage-retrieval-with-ann/README.md
+    - use-case-shopping/README.md
