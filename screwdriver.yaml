@@ -83,7 +83,7 @@ jobs:
           $SD_SOURCE_DIR/test/test.py -c $SD_SOURCE_DIR/test/_test_config.yml
 
   verify-guides-big:
-    requires: [~commit]
+    requires: [~pr, ~commit]
     secrets:
       - VESPA_TEAM_API_KEY
     image: buildpack-deps
