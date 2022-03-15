@@ -709,5 +709,5 @@ Further reading:
 #### Notebook test
 Ignore this. This is for CI testing of sample-apps.
 <pre data-test="exec" data-test-assert-contains="1 passed">
-$ pytest --nbmake src/main/python/model-exporting.ipynb 
+$ python3 -m pytest  --nbmake src/main/python/model-exporting.ipynb 
 </pre>
