@@ -77,5 +77,5 @@ $ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=wh
 ### Delete container
 Remove app and data:
 <pre data-test="after">
-$ docker rm -f vespa
+$ docker rm -f vespa-msmarco
 </pre>
