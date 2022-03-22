@@ -72,5 +72,10 @@ $ ./vespa-feed-client-cli/vespa-feed-client \
 $ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=what is dad bod' 
 </pre>
 
+[Use custom search front-end](http://localhost:8080/site/search/?q=what+is+a+dad+bod&profile=default)
 
-[Use custom front-end](http://localhost:8080/site/search/?q=what+is+a+dad+bod&profile=default)
+### Delete container
+Remove app and data:
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
