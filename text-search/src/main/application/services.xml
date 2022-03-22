@@ -32,22 +32,12 @@
     </handler>
 
     <nodes>
-      <jvm options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=*:8998" />
       <node hostalias="node1" />
     </nodes>
 
   </container>
 
   <content id="msmarco" version="1.0">
-
-    <!-- Config for search result snippets -->
-    <config name="vespa.config.search.summary.juniperrc">
-      <max_matches>2</max_matches>
-      <length>1000</length>
-      <surround_max>500</surround_max>
-      <min_length>300</min_length>
-    </config>
-
     <redundancy>2</redundancy>
     <documents>
       <document type='msmarco' mode="index"/>
