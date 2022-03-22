@@ -10,18 +10,17 @@ schema msmarco {
         field title type string {
             indexing: index | summary
             index: enable-bm25
-            stemming: best
         }
 
         field url type string {
             indexing: index | summary
+            index: enable-bm25
         }
 
         field body type string {
             indexing: index | summary
-            index: enable-bm25
             summary: dynamic
-            stemming: best
+            index: enable-bm25
         }
 
         field title_word2vec type tensor<float>(x[500]) {
@@ -66,7 +65,7 @@ schema msmarco {
 
     rank-profile bm25 inherits default {
         first-phase {
-            expression: bm25(title) + bm25(body)
+            expression: bm25(title) + bm25(body)  
         }
     }
 
