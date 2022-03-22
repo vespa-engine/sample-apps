@@ -2,6 +2,7 @@
 
 urls:
     - text-image-search/README.md
+    - text-search/README.md
     - examples/document-processing/README.md
     - examples/predicate-fields/README.md
     - examples/operations/multinode/README.md
