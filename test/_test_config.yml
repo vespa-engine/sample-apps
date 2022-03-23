@@ -15,15 +15,6 @@ urls:
     - incremental-search/search-as-you-type/README.md
     - incremental-search/search-suggestions/README.md
     - transformers/README.md
-    #
-    # ToDo: move to other repo
-    # Test queries to https://api.cord19.vespa.ai/search/?query=sars-cov-2
-    - https://raw.githubusercontent.com/vespa-cloud/cord-19-search/master/README.md
-    # Test self-hosted deployment of cord-19. ToDo: feed a few sample documents
-    - https://raw.githubusercontent.com/vespa-cloud/cord-19-search/master/experiment-yourself.md
-    #
-    # ToDo: Move to other repo
-    - https://raw.githubusercontent.com/vespa-cloud/vespa-documentation-search/master/README.md
 
     # examples/operations/album-recommendation-monitoring is tested in
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
