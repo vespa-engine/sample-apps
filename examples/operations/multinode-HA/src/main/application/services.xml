@@ -24,7 +24,7 @@
 
     <container id="feed" version="1.0">
         <document-api/>
-        <search/>
+        <document-processing/>
         <nodes>
             <jvm options="-Xms32M -Xmx128M"/> <!-- Added only to shrink memory for testing - remove before real use -->
             <node hostalias="node4" />
@@ -45,6 +45,7 @@
         <redundancy>2</redundancy>
         <documents>
             <document type="music" mode="index" />
+            <document-processing cluster="feed" />            
         </documents>
         <nodes>
             <node hostalias="node8" distribution-key="0" />
