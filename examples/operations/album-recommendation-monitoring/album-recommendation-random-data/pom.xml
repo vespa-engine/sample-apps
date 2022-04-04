@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <vespa_version>7.567.26</vespa_version>
+        <vespa_version>7.569.71</vespa_version>
     </properties>
 
     <dependencies>
