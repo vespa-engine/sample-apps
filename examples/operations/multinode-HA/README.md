@@ -12,8 +12,6 @@ Also see the smaller and simpler [multinode](../multinode) sample application.
 This is a guide for functional testing, deployed on one host for simplicity.
 Refer to the [mTLS guide](/examples/operations/secure-vespa-with-mtls) for a multinode configuration,
 set up on multiple hosts using Docker Swarm.
-See the [reference documentation](https://docs.vespa.ai/en/reference/metrics.html)
-for use of state and metrics APIs used in this guide.
 
 There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
@@ -70,6 +68,9 @@ exporting ports to be able to observe and validate that the application is fully
 Note that this application uses two container clusters - one for feeding and one for queries.
 This allows independent scaling, as reads and writes often have different load characteristics,
 e.g. batch writes with high throughput vs. user-driven queries.
+
+For ports and mappings:
+See the [state and metrics API reference](https://docs.vespa.ai/en/reference/metrics.html).
 
 
 
