@@ -38,7 +38,7 @@ $ brew install vespa-cli
 </pre>
 
 <pre data-test="exec">
-$ vespa clone -f text-search text-search && cd text-search
+$ vespa clone text-search text-search && cd text-search
 </pre>
 
 <pre data-test="exec">
