@@ -1,0 +1,5 @@
+pyvespa
+pandas
+beir
+tensorflow
+tensorflow_ranking
