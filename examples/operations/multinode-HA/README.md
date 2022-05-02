@@ -431,7 +431,7 @@ Notes:
   is useful to understand processes running,
   and also the [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
   Note that in the startup sequence, order not strictly needed as in this sample app.
-* [Config servers](https://docs.vespa.ai/en/cloudconfig/configuration-server.html) are normally started first,
+* [Config servers](https://docs.vespa.ai/en/configuration-server.html) are normally started first,
   then application deployment - make sure to get this right before troubleshooting other services.
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
 * The [cluster controller](https://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
