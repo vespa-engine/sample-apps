@@ -1,7 +1,0 @@
-package=ai.vespa.example.album
-
-# The schema ("type") for an application specified config type
-# See
-#  - https://docs.vespa.ai/en/reference/config-files.html
-
-metalWords[] string
