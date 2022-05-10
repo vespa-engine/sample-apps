@@ -13,6 +13,8 @@ this guide will help understand why, and alternatives.
 This is a guide for functional testing, deployed on one host for simplicity.
 Refer to the [mTLS guide](/examples/operations/secure-vespa-with-mtls) for a multinode configuration,
 set up on multiple hosts using Docker Swarm.
+The [configuration server operations](https://docs.vespa.ai/en/operations/configuration-server.html)
+guide is a good resource.
 
 The guide goes through the use of [Apache ZooKeeper](https://zookeeper.apache.org/)
 by the Vespa clustercontrollers. Summary:
@@ -40,7 +42,7 @@ Also remove annotated memory-settings in [services.xml](src/main/application/ser
 
 ## Example cluster setup
 Prerequisites:
-* Docker with 16G Memory
+* Docker with 12G Memory
 * Git
 
 <pre data-test="exec">
@@ -123,7 +125,7 @@ $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
 
 
 
-## Deploy a 3-node Vespa application
+## Deploy a three-node Vespa application
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ (cd src/main/application && zip -r - .) | \
   curl --header Content-Type:application/zip --data-binary @- \
@@ -131,7 +133,7 @@ $ (cd src/main/application && zip -r - .) | \
 </pre>
 
 Using Docker for Mac, observe each Docker container uses 2.9G memory, just as part of bootstrap -
-This increases little with use, hence the 16G Docker requirement in this guide.
+This increases little with use, hence the 12G Docker requirement in this guide.
 Wait for services to start:
 <pre data-test="exec" data-test-wait-for="200 OK">
 $ curl -s --head http://localhost:8082/ApplicationStatus
@@ -206,7 +208,7 @@ By default, clustercontrollers use a ZooKeeper cluster running on the config ser
 
 <img src="img/multinode-zk.svg" width="405" height="auto" alt="Config Servers with a ZooKeeper cluster" />
 
-With config server on node0 and node1 out, the ZooKeeper cluster quorum (the red part in the illustration) is broken -
+With config server on node0 and node1 out, the ZooKeeper cluster quorum (the green part in the illustration) is broken -
 the clustercontrollers will not update the cluster state.
 This can be observed on node2's clustercontroller status page,
 where the current cluster state lags what node2's clustercontroller is observing
