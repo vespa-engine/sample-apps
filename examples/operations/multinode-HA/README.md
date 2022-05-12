@@ -444,9 +444,9 @@ Notes:
 ## Test feed and query endpoints
 Feed 5 documents, using the document-API endpoint in the _feed_ container cluster, here mapped to 8080/8081:
 <pre data-test="exec">
-$ i=0; (for doc in $(ls ../../../album-recommendation/src/test/resources); \
+$ i=0; (for doc in $(ls ../../../album-recommendation/ext); \
   do \
-    curl -H Content-Type:application/json -d @../../../album-recommendation/src/test/resources/$doc \
+    curl -H Content-Type:application/json -d @../../../album-recommendation/ext/$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
     i=$(($i + 1)); echo; \
   done)
