@@ -23,11 +23,11 @@ for ((i=0; i<NB_CONTAINERS; i++)); do
     CONTAINERS=$CONTAINERS"$line"
 done
 
-cat templates/services.xml | sed "s|CONTAINER|$CONTAINERS|g" | sed "s|CONTENT|$CONTENTS|g" > ./src/main/application/services.xml
+cat templates/services.xml | sed "s|CONTAINER|$CONTAINERS|g" | sed "s|CONTENT|$CONTENTS|g" > ./services.xml
 
-echo '<?xml version="1.0" encoding="utf-8" ?>' > ./src/main/application/hosts.xml
-echo '<hosts>' >> ./src/main/application/hosts.xml
-echo "  <host name='vespa-0.vespa-internal.default.svc.cluster.local'><alias>admin0</alias><alias>container</alias><alias>content</alias></host>" >> ./src/main/application/hosts.xml
-for ((i=0; i<NB_CONTENTS; i++)); do echo "  <host name='vespa-content-$i.vespa-internal.default.svc.cluster.local'><alias>content$i</alias></host>" >> ./src/main/application/hosts.xml; done
-for ((i=0; i<NB_CONTAINERS; i++)); do echo "  <host name='vespa-container-$i.vespa-internal.default.svc.cluster.local'><alias>container$i</alias></host>" >> ./src/main/application/hosts.xml; done
-echo '</hosts>' >> ./src/main/application/hosts.xml
+echo '<?xml version="1.0" encoding="utf-8" ?>' > ./hosts.xml
+echo '<hosts>' >> ./hosts.xml
+echo "  <host name='vespa-0.vespa-internal.default.svc.cluster.local'><alias>admin0</alias><alias>container</alias><alias>content</alias></host>" >> ./hosts.xml
+for ((i=0; i<NB_CONTENTS; i++)); do echo "  <host name='vespa-content-$i.vespa-internal.default.svc.cluster.local'><alias>content$i</alias></host>" >> ./hosts.xml; done
+for ((i=0; i<NB_CONTAINERS; i++)); do echo "  <host name='vespa-container-$i.vespa-internal.default.svc.cluster.local'><alias>container$i</alias></host>" >> ./hosts.xml; done
+echo '</hosts>' >> ./hosts.xml
