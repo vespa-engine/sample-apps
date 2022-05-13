@@ -5,8 +5,10 @@ services:
     image: vespaengine/vespa
     hostname: "config0-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_CONFIGSERVER_JVMARGS: -Xms32M -Xmx128M
+      VESPA_CONFIGPROXY_JVMARGS: -Xms32M -Xmx32M
     ports:
       - target: 19071
         published: 19071
@@ -25,8 +27,10 @@ services:
     image: vespaengine/vespa
     hostname: "config1-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_CONFIGSERVER_JVMARGS: -Xms32M -Xmx128M
+      VESPA_CONFIGPROXY_JVMARGS: -Xms32M -Xmx32M
     networks:
       net:
        ipv4_address: 10.0.10.11
@@ -41,8 +45,10 @@ services:
     image: vespaengine/vespa
     hostname: "config2-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_CONFIGSERVER_JVMARGS: -Xms32M -Xmx128M
+      VESPA_CONFIGPROXY_JVMARGS: -Xms32M -Xmx32M
     networks:
       net:
         ipv4_address: 10.0.10.12
@@ -58,8 +64,8 @@ services:
     command: services
     hostname: "container0-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
       - target: 8080
         published: 8080
@@ -82,8 +88,8 @@ services:
     command: services
     hostname: "container1-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
       - target: 8080
         published: 8081
@@ -106,8 +112,8 @@ services:
     command: services
     hostname: "container2-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
     ports:
       - target: 8080
         published: 8082
@@ -130,8 +136,8 @@ services:
     command: services
     hostname: "content0-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
       net:
         ipv4_address: 10.0.10.16
@@ -147,8 +153,8 @@ services:
     command: services
     hostname: "content1-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
       net:
         ipv4_address: 10.0.10.17
@@ -164,8 +170,8 @@ services:
     command: services
     hostname: "content2-vespa-net"
     environment:
-      - VESPA_TLS_CONFIG_FILE=/var/tls/tls.json
-      - VESPA_CONFIGSERVERS=config0-vespa-net,config1-vespa-net,config2-vespa-net
+      VESPA_TLS_CONFIG_FILE: /var/tls/tls.json
+      VESPA_CONFIGSERVERS: config0-vespa-net,config1-vespa-net,config2-vespa-net
     networks:
       net:
         ipv4_address: 10.0.10.18
