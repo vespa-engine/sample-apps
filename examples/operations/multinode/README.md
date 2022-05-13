@@ -36,7 +36,7 @@ Note that this guide is configured for minimum memory use for easier testing, ad
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
 
 to `docker run` commands. For real production use cases, do not do this.
-Also remove annotated memory-settings in [services.xml](src/main/application/services.xml).
+Also remove annotated memory-settings in [services.xml](services.xml).
 
 
 
@@ -93,7 +93,7 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
 
 Notes:
 * Use fully qualified hostnames.
-* VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](src/main/application/hosts.xml)
+* VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 
 Wait for last config server to start:
 <pre data-test="exec" data-test-wait-for="200 OK">
@@ -127,7 +127,7 @@ $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|808[0,1,2]|1909[2,3,4]' | sort
 
 ## Deploy a three-node Vespa application
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ (cd src/main/application && zip -r - .) | \
+$ zip -r - . -x "img/*" README.md .gitignore | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
@@ -259,7 +259,7 @@ Use [vespa-visit](https://docs.vespa.ai/en/content/visiting.html) to validate al
 $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 </pre>
 
-The redundancy configuration in [services.xml](src/main/application/services.xml) is 3 replicas,
+The redundancy configuration in [services.xml](services.xml) is 3 replicas,
 i.e. one replica per node.
 Using [Vespa metrics](https://docs.vespa.ai/en/reference/metrics.html), expect 5 documents per node:
 <pre data-test="exec" data-test-assert-contains="content.proton.documentdb.documents.total.last">
