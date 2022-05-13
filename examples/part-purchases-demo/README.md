@@ -53,7 +53,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 **Generate sample from csv**
 
 <pre>
-$ ext/parts.py -f ext/purchase.csv > ext/purchase.json
+$ python3 ext/parts.py -f ext/purchase.csv > ext/purchase.json
 </pre>
 
 
