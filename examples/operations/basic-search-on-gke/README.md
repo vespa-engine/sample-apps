@@ -25,7 +25,7 @@ see [troubleshooting](/examples/operations/README.md#troubleshooting).
 ### Executable example
 **Check-out the example repository:**
 <pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APP=`pwd`/sample-apps/examples/operations/basic-search-on-gke
 </pre>
 
