@@ -20,7 +20,7 @@ Use this app as a reference for how to distribute nodes and how to validate the 
 
 ![Vespa-HA topology](img/vespa-HA.svg)
 
-See [services.xml](src/main/application/services.xml) for the configuration -
+See [services.xml](services.xml) for the configuration -
 in this guide:
 
 * the config cluster is built from 3 config server nodes, node[0,1,2].
@@ -50,7 +50,7 @@ Note that this guide is configured for minimum memory use for easier testing, ad
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
 
 to `docker run` commands. For real production use cases, do not do this.
-Also remove annotated memory-settings in [services.xml](src/main/application/services.xml).
+Also remove annotated memory-settings in [services.xml](services.xml).
 
 Get the app and create the local network:
 
@@ -103,8 +103,7 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
 
 Notes:
 * Use fully qualified hostnames.
-* VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in
-  [hosts.xml](src/main/application/hosts.xml)
+* VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 * Refer to the
   [Docker start script](https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh)
   for details.
@@ -133,7 +132,7 @@ $ curl -s --head http://localhost:19073/ApplicationStatus
 ## Deploy the Vespa application configuration
 <!-- ToDo: vespa-cli -->
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ (cd src/main/application && zip -r - .) | \
+$ zip -r - . -x "img/*" README.md .gitignore | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
