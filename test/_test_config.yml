@@ -20,5 +20,4 @@ urls:
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
 
     # TBD:
-    # - operations/secure-vespa-with-mtls
     # - operations/basic-search-on-gke

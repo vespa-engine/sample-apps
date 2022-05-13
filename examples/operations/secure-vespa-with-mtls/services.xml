@@ -9,6 +9,16 @@
       <configserver hostalias="config1" />
       <configserver hostalias="config2" />
     </configservers>
+    <cluster-controllers>
+      <cluster-controller hostalias="config0" jvmargs="-Xms32M -Xmx64M" /> <!-- jvmargs added only to shrink memory for testing - remove before real use -->
+      <cluster-controller hostalias="config1" jvmargs="-Xms32M -Xmx64M" />
+      <cluster-controller hostalias="config2" jvmargs="-Xms32M -Xmx64M" />
+    </cluster-controllers>
+    <slobroks>
+      <slobrok hostalias="config0" />
+      <slobrok hostalias="config1" />
+      <slobrok hostalias="config2" />
+    </slobroks>
   </admin>
 
   <container id="container" version="1.0">
@@ -16,7 +26,7 @@
     <document-processing/>
     <search />
     <nodes>
-      <jvm options="-Xms512m -Xmx512m" />
+      <jvm options="-Xms32M -Xmx128M"/> <!-- Added only to shrink memory for testing - remove before real use -->
       <node hostalias="container0" />
     </nodes>
     <http>

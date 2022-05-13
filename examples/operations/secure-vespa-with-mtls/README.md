@@ -25,14 +25,15 @@ The example below must be run on one of the master nodes.
 **Validate environment, Docker containers should have minimum 6G:**
 
 Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-  for details and troubleshooting.
-<pre>
-$ docker info | grep "Total Memory"
+for details and troubleshooting.
+<pre data-test="exec">
+$ docker info | grep "Total Memory" && \
+  docker swarm init
 </pre>
 
 **Check-out the example repository:**
 <pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ VESPA_SAMPLE_APP=`pwd`/sample-apps/examples/operations/secure-vespa-with-mtls
 </pre>
 
@@ -53,7 +54,7 @@ $ $VESPA_SAMPLE_APP/scripts/wait_until_all_stack_services_running.sh
 
 **Generate the hosts.xml file based on running containers:**
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/src/main/application/hosts.xml
+$ $VESPA_SAMPLE_APP/scripts/generate_hosts_xml.sh | tee $VESPA_SAMPLE_APP/hosts.xml
 </pre>
 
 **Wait for the configuration server to start (should return 200 OK):**
@@ -109,3 +110,16 @@ On all nodes:
     -e VESPA_CONFIGSERVERS=hostname1,hostname2 \
     --publish 8081:8080 --publish 19071:19071 --publish 19050:19050 --publish 19092:19092 \
     vespaengine/vespa
+
+
+## Memory settings
+For real use, remove settings like
+
+    VESPA_CONFIGSERVER_JVMARGS: -Xms32M -Xmx128M
+    VESPA_CONFIGPROXY_JVMARGS: -Xms32M -Xmx32M
+
+from [docker-compose.yml](docker-compose.yml) and
+
+    jvmargs="-Xms32M -Xmx64M"
+
+from [services.xml](services.xml) - these are only added to shrink memory footprint for this guide.

@@ -10,6 +10,5 @@ while  ! $MYDIR/client-curl.sh -s "https://localhost:8443/search/?query=bad" | p
     sleep 5
 done
 
-$MYDIR/client-curl.sh -s -L -H "Content-Type:application/json" --data-binary @../music-data-1.json "https://localhost:8443/document/v1/music/music/docid/1" | python3 -m json.tool
-$MYDIR/client-curl.sh -s -L -H "Content-Type:application/json" --data-binary @../music-data-2.json "https://localhost:8443/document/v1/music/music/docid/2" | python3 -m json.tool
-
+$MYDIR/client-curl.sh -s -L -H "Content-Type:application/json" --data-binary @../ext/music-data-1.json "https://localhost:8443/document/v1/music/music/docid/1" | python3 -m json.tool
+$MYDIR/client-curl.sh -s -L -H "Content-Type:application/json" --data-binary @../ext/music-data-2.json "https://localhost:8443/document/v1/music/music/docid/2" | python3 -m json.tool
