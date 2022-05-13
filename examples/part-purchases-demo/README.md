@@ -37,8 +37,8 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 **Deploy the application:**
 
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ tar -C src/main/application -cf - . | gzip | \
-  curl --header Content-Type:application/x-gzip --data-binary @- \
+$ zip -r - . -x README.md .gitignore "ext/*" "vespa-feed-client-cli/*" | \
+  curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
@@ -53,7 +53,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 **Generate sample from csv**
 
 <pre>
-$ python3 ./parts.py -f purchase.csv > purchase.json
+$ ext/parts.py -f ext/purchase.csv > ext/purchase.json
 </pre>
 
 
@@ -61,10 +61,10 @@ $ python3 ./parts.py -f purchase.csv > purchase.json
 
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
-    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
+    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.585.20/vespa-feed-client-cli-7.585.20-zip.zip
 $ unzip vespa-feed-client-cli.zip
 $ ./vespa-feed-client-cli/vespa-feed-client \
-    --verbose --file purchase.json --endpoint http://localhost:8080
+    --verbose --file ext/purchase.json --endpoint http://localhost:8080
 </pre>
 
 
