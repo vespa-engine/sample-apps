@@ -37,7 +37,7 @@ $ curl -s --head http://localhost:19071/ApplicationStatus
 **Deploy the application:**
 
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x README.md .gitignore "ext/*" "vespa-feed-client-cli/*" | \
+$ zip -r - . -x README.md .gitignore "ext/*" "vespa-feed-client-cli*" | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
