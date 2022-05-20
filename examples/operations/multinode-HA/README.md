@@ -132,7 +132,7 @@ $ curl -s --head http://localhost:19073/ApplicationStatus
 ## Deploy the Vespa application configuration
 <!-- ToDo: vespa-cli -->
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x "img/*" README.md .gitignore | \
+$ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
@@ -510,18 +510,18 @@ tls
 ```
 
 Run the helper script to generate these credentials - inspect the `pki` and `tls` directories at will:
-```
+<pre data-test="exec">
 ./scripts/generate-cert-chains.sh
-```
+</pre>
 
 Start Docker network:
-```
+<pre data-test="exec">
 $ docker swarm init
 $ docker network create --driver overlay --subnet 10.0.10.0/24 --attachable vespanet
-```
+</pre>
 
 Start config servers:
-```
+<pre data-test="exec">
 $ docker run --detach --name node0 --hostname node0.vespanet \
   -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
   -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
@@ -554,15 +554,15 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
   --volume `pwd`/tls/:/var/tls/ \
   --ip 10.0.10.12 \
   vespaengine/vespa
-```
+</pre>
 
 Check config server cluster startup, using the health API, now over https:
-```
-$ for port in 19071 19072 19073; do
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
+$ ( for port in 19071 19072 19073; do \
     curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:$port/state/v1/health | head -5
-  done
-```
+    https://localhost:$port/state/v1/health; \
+  done | head -5 )
+</pre>
 
 Deploy the application, now with a [ TLSconfig change](https://docs.vespa.ai/en/jdisc/http-server-and-filters.html#tls)
 for https ports for container clusters for secure client access:
@@ -579,18 +579,20 @@ for https ports for container clusters for secure client access:
     </server>
 </http>
 ```
-```
+<pre data-test="exec">
 $ mv services.xml services.xml.open
 $ mv services.xml.secure services.xml
+</pre>
+<pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ zip -r - . -x "tls/*" "pki/*" "scripts/*" "img/*" README.md .gitignore services.xml.open | \
     curl \
       --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
       --header Content-Type:application/zip --data-binary @- \
       https://localhost:19071/application/v2/tenant/default/prepareandactivate
-```
+</pre>
 
 Start the admin node:
-```
+<pre data-test="exec">
 $ docker run --detach --name node3 --hostname node3.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -599,10 +601,10 @@ $ docker run --detach --name node3 --hostname node3.vespanet \
     --volume `pwd`/tls/:/var/tls/ \
     --ip 10.0.10.13 \
     vespaengine/vespa services
-```
+</pre>
 
 Start the _feed_ container cluster:
-```
+<pre data-test="exec">
 $ docker run --detach --name node4 --hostname node4.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -619,13 +621,13 @@ $ docker run --detach --name node5 --hostname node5.vespanet \
     --volume `pwd`/tls/:/var/tls/ \
     --ip 10.0.10.15 \
     vespaengine/vespa services
-```
+</pre>
 
 Now we can check due to more than 50% nodes up - check health admin node metrics proxy:
-```
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8080/state/v1/health | head -5
-```
+    https://localhost:20095/state/v1/health | head -5
+</pre>
 
 Check the _feed_ container cluster health - also using client certificates as configured in `services.xml`:
 ```
@@ -640,8 +642,18 @@ $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/
     https://localhost:8444/state/v1/health | head -5
 ```
 
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
+$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
+    https://localhost:8080/state/v1/health | head -5
+</pre>
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
+$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
+    https://localhost:8443/state/v1/health | head -5
+</pre>
+
+
 Start the _query_ container cluster:
-```
+<pre data-test="exec">
 $ docker run --detach --name node6 --hostname node6.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -658,7 +670,7 @@ $ docker run --detach --name node7 --hostname node7.vespanet \
     --volume `pwd`/tls/:/var/tls/ \
     --ip 10.0.10.17 \
     vespaengine/vespa services
-```
+</pre>
 
 Check the _query_ container cluster health:
 ```
@@ -672,10 +684,18 @@ $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/
 $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:8446/state/v1/health | head -5
 ```
+<pre data-test="exec" data-test-wait-for='"code" : "initializing"'>
+$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
+    https://localhost:8082/state/v1/health | head -5
+</pre>
+<pre data-test="exec" data-test-wait-for='"code" : "initializing"'>
+$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
+    https://localhost:8445/state/v1/health | head -5
+</pre>
 
 The containers will respond "initializing" until the content cluster is started.
 Start the content cluster:
-```
+<pre data-test="exec">
 $ docker run --detach --name node8 --hostname node8.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -692,15 +712,17 @@ $ docker run --detach --name node9 --hostname node9.vespanet \
     --volume `pwd`/tls/:/var/tls/ \
     --ip 10.0.10.19 \
     vespaengine/vespa services
-```
+</pre>
 
 Check health:
-```
+<pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:19107/state/v1/health | head -5
+</pre>
+<pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:19108/state/v1/health | head -5
-```
+</pre>
 
 
 
@@ -801,4 +823,5 @@ tcp46      0      0  *.8083                 *.*                    LISTEN
 <pre data-test="after">
 $ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7 node8 node9
 $ docker network rm vespanet
+$ docker swarm leave --force
 </pre>
