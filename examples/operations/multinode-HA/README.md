@@ -559,8 +559,7 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
 <pre data-test="exec">
 $ whoami
 $ ls -l /
-$ ls -l /tmp
-$ ls -l /tmp/tls
+$ find /sd
 $ sleep 60; docker exec node0 /opt/vespa/bin/vespa-logfmt
 </pre>
 
