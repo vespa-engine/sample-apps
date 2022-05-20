@@ -529,7 +529,7 @@ $ docker run --detach --name node0 --hostname node0.vespanet \
   -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
   --network vespanet \
   --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 20092:19092 \
-  --volume `pwd`/tls/:/var/tls/ \
+  --volume `pwd`/tls/:/tmp/tls/ \
   --ip 10.0.10.10 \
   vespaengine/vespa
 
@@ -540,7 +540,7 @@ $ docker run --detach --name node1 --hostname node1.vespanet \
   -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
   --network vespanet \
   --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 20093:19092 \
-  --volume `pwd`/tls/:/var/tls/ \
+  --volume `pwd`/tls/:/tmp/tls/ \
   --ip 10.0.10.11 \
   vespaengine/vespa
 
@@ -551,7 +551,7 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
   -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
   --network vespanet \
   --publish 19073:19071 --publish 19102:19100 --publish 19052:19050 --publish 20094:19092 \
-  --volume `pwd`/tls/:/var/tls/ \
+  --volume `pwd`/tls/:/tmp/tls/ \
   --ip 10.0.10.12 \
   vespaengine/vespa
 </pre>
@@ -559,8 +559,8 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
 <pre data-test="exec">
 $ whoami
 $ ls -l /
-$ ls -l /var
-$ ls -l /var/tls
+$ ls -l /tmp
+$ ls -l /tmp/tls
 $ sleep 60; docker exec node0 /opt/vespa/bin/vespa-logfmt
 </pre>
 

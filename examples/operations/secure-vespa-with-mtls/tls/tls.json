@@ -1,7 +1,7 @@
 {
     "files": {
-      "private-key": "/var/tls/host.key",
-      "ca-certificates": "/var/tls/ca-vespa.pem",
-      "certificates": "/var/tls/host.pem"
+      "private-key": "/tmp/tls/host.key",
+      "ca-certificates": "/tmp/tls/ca-vespa.pem",
+      "certificates": "/tmp/tls/host.pem"
     }
 }
