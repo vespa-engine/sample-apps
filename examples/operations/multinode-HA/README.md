@@ -556,6 +556,10 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
   vespaengine/vespa
 </pre>
 
+<pre data-test="exec">
+$ sleep 60; docker exec node0 /opt/vespa/bin/vespa-logfmt
+</pre>
+
 Check config server cluster startup, using the health API, now over https:
 <pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ ( for port in 19071 19072 19073; do \

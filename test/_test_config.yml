@@ -1,20 +1,7 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - text-image-search/README.md
-    - text-search/README.md
-    - examples/document-processing/README.md
     - examples/predicate-fields/README.md
-    - examples/operations/multinode/README.md
-    - examples/generic-request-processing/README.md
-    - examples/http-api-using-request-handlers-and-processors/README.md
-    - examples/multiple-bundles/README.md
-    - model-evaluation/README.md
-    - examples/part-purchases-demo/README.md
-    - examples/vespa-chinese-linguistics/README.md
-    - incremental-search/search-as-you-type/README.md
-    - incremental-search/search-suggestions/README.md
-    - transformers/README.md
 
     # examples/operations/album-recommendation-monitoring is tested in
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
