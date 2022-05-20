@@ -511,7 +511,12 @@ tls
 
 Run the helper script to generate these credentials - inspect the `pki` and `tls` directories at will:
 <pre data-test="exec">
-./scripts/generate-cert-chains.sh
+$ ./scripts/generate-cert-chains.sh
+</pre>
+<pre data-test="exec">
+$ ls -l pki/vespa
+$ chmod 644 pki/vespa/host.key
+$ ls -l pki/vespa
 </pre>
 
 Start Docker network:
