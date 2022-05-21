@@ -2,6 +2,10 @@
 
 urls:
     - examples/operations/multinode-HA/README.md
+    - msmarco-ranking/passage-ranking.md
+    - msmarco-ranking/document-ranking.md
+    - dense-passage-retrieval-with-ann/README.md
+    - use-case-shopping/README.md
 
 # do not test yet, config server does not start
 #     - examples/operations/secure-vespa-with-mtls/README.md
