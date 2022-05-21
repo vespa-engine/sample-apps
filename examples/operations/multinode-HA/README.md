@@ -513,10 +513,11 @@ Run the helper script to generate these credentials - inspect the `pki` and `tls
 <pre data-test="exec">
 $ ./scripts/generate-cert-chains.sh
 </pre>
+
+In some environments, this file is only readable by owner and subsequent reads inside the Docker container fails.
+Make readable to everyone inside the Docker container as a workaround:
 <pre data-test="exec">
-$ ls -l tls
 $ chmod 644 tls/host.key
-$ ls -l tls/host.key
 </pre>
 
 Start Docker network:
@@ -559,14 +560,6 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
   --volume `pwd`/tls/:/var/tls/ \
   --ip 10.0.10.12 \
   vespaengine/vespa
-</pre>
-
-<pre data-test="exec">
-$ docker exec node0 whoami
-$ docker exec node0 ls /
-$ docker exec node0 ls -l /var
-$ docker exec node0 ls -l /var/tls
-$ sleep 60; docker exec node0 /opt/vespa/bin/vespa-logfmt
 </pre>
 
 Check config server cluster startup, using the health API, now over https:
@@ -643,18 +636,6 @@ $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/
 </pre>
 
 Check the _feed_ container cluster health - also using client certificates as configured in `services.xml`:
-```
-$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8080/state/v1/health | head -5
-$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8443/state/v1/health | head -5
-
-$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8081/state/v1/health | head -5
-$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8444/state/v1/health | head -5
-```
-
 <pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:8080/state/v1/health | head -5
@@ -686,17 +667,6 @@ $ docker run --detach --name node7 --hostname node7.vespanet \
 </pre>
 
 Check the _query_ container cluster health:
-```
-$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8082/state/v1/health | head -5
-$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8445/state/v1/health | head -5
-
-$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8083/state/v1/health | head -5
-$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:8446/state/v1/health | head -5
-```
 <pre data-test="exec" data-test-wait-for='"code" : "initializing"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:8082/state/v1/health | head -5
@@ -731,10 +701,6 @@ Check health:
 <pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:19107/state/v1/health | head -5
-</pre>
-<pre data-test="exec" data-test-wait-for='"code":"up"'>
-$ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-    https://localhost:19108/state/v1/health | head -5
 </pre>
 
 
