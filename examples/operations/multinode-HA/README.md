@@ -152,7 +152,7 @@ Notes:
   a full disk will not impact other nodes.
 
 Check that the [config sentinel](https://docs.vespa.ai/en/config-sentinel.html) is started:
-<pre data-test="exec">
+<pre data-test="exec" data-test-wait-for='FAILED connectivity check'>
 $ curl -s http://localhost:19098/state/v1/health
 </pre>
 ```json
