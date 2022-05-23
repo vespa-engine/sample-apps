@@ -113,41 +113,24 @@ Normally config servers run both the `config server` _and_ `services`, other nod
 This because `services` has node infrastructure, e.g. log forwarding.
 
 At this point, nothing other than config server cluster runs.
-Wait for last config server to start -
-checking for 19071 on config server nodes is useful for that
-(find the port mappings in the illustration above) -
-this checks the config server on node2:
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19073/ApplicationStatus
+Wait for the config servers to start,
+using [state/v1/health](https://docs.vespa.ai/en/reference/metrics.html#state-v1-health):
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
+$ ( for port in 19071 19072 19073; do \
+    curl -s http://localhost:$port/state/v1/health; \
+    done | head -5 )
 </pre>
 
-    HTTP/1.1 200 OK
-    Date: Tue, 02 Nov 2021 10:20:10 GMT
-    Content-Type: application/json
-    Content-Length: 13109
+Later in this guide, only one of the nodes in each cluster is checked, to keep the guide short.
 
 
 
 ## Deploy the Vespa application configuration
-<!-- ToDo: vespa-cli -->
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore | \
   curl --header Content-Type:application/zip --data-binary @- \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
-
-As the Docker start script will start both the config server and services,
-we expect to find responses on 19100 (`slobrok`), 19092 (`metrics-proxy`) and 19050 (`cluster-controller`).
-
-**Important note:** Vespa has a feature to not enable `services` before 50% of the nodes are up,
-see [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup).
-Meaning, here we have started only 3/10, so `slobrok`, `metrics-proxy` and `cluster-controller` are not started yet -
-find log messages like
-
-    $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
-
-      WARNING : config-sentinel  sentinel.sentinel.connectivity Only 3 of 10 nodes are up and OK, 30.0% (min is 50%)
-      WARNING : config-sentinel  sentinel.sentinel.env Bad network connectivity (try 71)
 
 
 
@@ -157,15 +140,42 @@ This is essentially the log server:
 $ docker run --detach --name node3 --hostname node3.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     --network vespanet \
-    --publish 20095:19092 \
+    --publish 20095:19092 --publish 19098:19098 \
     vespaengine/vespa services
 </pre>
 
 Notes:
-* See  _services_ argument to start script - a config server is not started on this node.
+* See  _services_ argument to `docker run` - a config server is not started on this node -
+  see the [Docker start script](https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh).
 * The log server can be disk intensive, as all nodes' _vespa.log_ is rotated and forwarded here.
   For this reason, it is normally a good idea to run this on a separate node, like here -
   a full disk will not impact other nodes.
+
+Check that the [config sentinel](https://docs.vespa.ai/en/config-sentinel.html) is started:
+<pre data-test="exec">
+$ curl -s http://localhost:19098/state/v1/health
+</pre>
+```json
+{
+    "status": {
+        "code":"down",
+        "message":"FAILED connectivity check"
+    }
+}
+```
+
+This means, the Vespa infrastructure is started, but none of the services.
+Checking logs:
+
+    $ docker exec -it node3 opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5
+
+      WARNING : config-sentinel  sentinel.sentinel.connectivity	Only 4 of 10 nodes are up and OK, 40.0% (min is 50%)
+
+**Important note:**
+This is the [startup sequence](https://docs.vespa.ai/en/config-sentinel.html#cluster-startup) kicking in -
+container and content nodes are not started before 50% (configurable) of nodes have started.
+Meaning, here we have started only 4/10, so `logserver`, `slobrok`, `metrics-proxy` and `cluster-controller`
+are not started yet.
 
 
 
@@ -184,30 +194,16 @@ $ docker run --detach --name node5 --hostname node5.vespanet \
     vespaengine/vespa services
 </pre>
 
-Check for OK startup - this can take a minute or so:
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8081/ApplicationStatus
+As these are nodes 5 and 6 of 10, 60% of services is started, check feed container health
+- this can take a minute or so:
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
+$ curl -s http://localhost:8080/state/v1/health | head -5
 </pre>
-
-    HTTP/1.1 200 OK
-    Date: Wed, 19 Jan 2022 08:29:23 GMT
-    Content-Type: application/json
-    Content-Length: 5213
 
 As this is also the cluster where custom components for document processing are loaded,
 inspecting the `/ApplicationStatus` endpoint is useful:
 
     $ curl http://localhost:8080/ApplicationStatus
-
-As these are nodes 5 and 6 of 10, 60% of services is started:
-
-    $ docker exec -it node0 sh -c "opt/vespa/bin/vespa-logfmt | grep config-sentinel | tail -5"
-
-      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node8.vespanet'
-      WARNING : config-sentinel  sentinel.vespalib.net.async_resolver could not resolve host name: 'node9.vespanet'
-      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node4.vespanet -> OK: both ways connectivity verified
-      INFO    : config-sentinel  sentinel.sentinel.connectivity Connectivity check details: node5.vespanet -> OK: both ways connectivity verified
-      INFO    : config-sentinel  sentinel.sentinel.connectivity Enough connectivity checks OK, proceeding with service startup
 
 We now expect the `metrics-proxy` (runs on all service nodes) to be up - and others:
 
@@ -219,7 +215,7 @@ In short, checking `/state/v1/` for services is useful to validate that services
 At this point it is useful to inspect the application using
 [vespa-model-inspect](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-model-inspect):
 ```sh
-$ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect hosts"
+$ docker exec -it node0 /opt/vespa/bin/vespa-model-inspect hosts
 node0.vespanet
 node1.vespanet
 node2.vespanet
@@ -231,7 +227,7 @@ node7.vespanet
 node8.vespanet
 node9.vespanet
 
-$ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect services"
+$ docker exec -it node0 /opt/vespa/bin/vespa-model-inspect services
 config-sentinel
 configproxy
 configserver
@@ -247,7 +243,7 @@ slobrok
 storagenode
 transactionlogserver
 
-$ docker exec -it node0 sh -c "/opt/vespa/bin/vespa-model-inspect service container"
+$ docker exec -it node0 /opt/vespa/bin/vespa-model-inspect service container
 container @ node4.vespanet : 
 default/container.0
     tcp/node4.vespanet:8080 (STATE EXTERNAL QUERY HTTP)
@@ -287,9 +283,9 @@ $ docker run --detach --name node7 --hostname node7.vespanet \
     vespaengine/vespa services
 </pre>
 
-Again, wait for OK startup:
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8083/ApplicationStatus
+Check the _query_ container cluster health  - the containers will respond with "initializing":
+<pre data-test="exec" data-test-wait-for='"code" : "initializing"'>
+$ curl -s http://localhost:8083/state/v1/health | head -5
 </pre>
 
 At this point, inspect the differences in the "handlers" section for the container clusters:
@@ -338,8 +334,8 @@ $ docker run --detach --name node9 --hostname node9.vespanet \
     vespaengine/vespa services
 </pre>
 
-Note that the content nodes do not expose the ApplicationStatus endpoint.
-Check for content node startup using `/state/v1/health`:
+
+Check for content node startup:
 <pre data-test="exec" data-test-wait-for='"code":"up"'>
 $ curl http://localhost:19108/state/v1/health
 </pre>
@@ -350,6 +346,12 @@ $ curl http://localhost:19108/state/v1/health
     }
 }
 ```
+
+Once the content nodes are up, the _query_ container cluster should be up as well:
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
+$ curl -s http://localhost:8083/state/v1/health | head -5
+</pre>
+
 
 Inspect the content node _process_ metrics using `/state/v1/metrics`:
 <pre data-test="exec" data-test-wait-for='"metrics":'>
@@ -451,7 +453,7 @@ $ i=0; (for doc in $(ls ../../../album-recommendation/ext); \
 
 List IDs of all documents (this can be run on any node in the cluster):
 <pre data-test="exec" data-test-wait-for="id:mynamespace:music::4">
-$ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
+$ docker exec node0 /opt/vespa/bin/vespa-visit -i
 </pre>
 
 Run a query, using the query-API endpoint in the _query_ container cluster, here mapped to 8082/8083:
@@ -704,6 +706,9 @@ $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/
     https://localhost:8445/state/v1/health | head -5
 </pre>
 
+It is not possible to feed and query the application, using the client security credentials.
+
+
 
 ## Appendix
 
@@ -770,18 +775,19 @@ Normal deploy output in this guide, as the service nodes are not started yet:
 ### Ports
 Ports mapped in this guide:
 ```sh
-$ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|2009[2,3,4,5,6,7,8,9]|2010[0,1]|1910[0,1,2]|808[0,1,2,3]|1910[7,8]' | sort
+$ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|19098|2009[2,3,4,5,6,7,8,9]|2010[0,1]|1910[0,1,2]|808[0,1,2,3]|1910[7,8]' | sort
 tcp46      0      0  *.19050                *.*                    LISTEN     
 tcp46      0      0  *.19051                *.*                    LISTEN     
 tcp46      0      0  *.19052                *.*                    LISTEN     
 tcp46      0      0  *.19071                *.*                    LISTEN     
 tcp46      0      0  *.19072                *.*                    LISTEN     
 tcp46      0      0  *.19073                *.*                    LISTEN     
+tcp46      0      0  *.19098                *.*                    LISTEN 
 tcp46      0      0  *.19100                *.*                    LISTEN     
 tcp46      0      0  *.19101                *.*                    LISTEN     
 tcp46      0      0  *.19102                *.*                    LISTEN     
 tcp46      0      0  *.19107                *.*                    LISTEN     
-tcp46      0      0  *.19108                *.*                    LISTEN     
+tcp46      0      0  *.19108                *.*                    LISTEN
 tcp46      0      0  *.20092                *.*                    LISTEN     
 tcp46      0      0  *.20093                *.*                    LISTEN     
 tcp46      0      0  *.20094                *.*                    LISTEN     
