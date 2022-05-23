@@ -11,10 +11,8 @@ config servers are most often run on separate nodes,
 this guide will help understand why, and alternatives.
 
 This is a guide for functional testing, deployed on one host for simplicity.
-Refer to the [mTLS guide](/examples/operations/secure-vespa-with-mtls) for a multinode configuration,
-set up on multiple hosts using Docker Swarm.
 The [configuration server operations](https://docs.vespa.ai/en/operations/configuration-server.html)
-guide is a good resource.
+guide is a good resource for troubleshooting.
 
 The guide goes through the use of [Apache ZooKeeper](https://zookeeper.apache.org/)
 by the Vespa clustercontrollers. Summary:

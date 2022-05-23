@@ -28,17 +28,14 @@ for support follow-up - i.e. run this application first.
 
 ### [Multinode High Availability](multinode-HA)
 Use this application as a starting point for high-availability multi-node applications.
-The example deploys 8 nodes using one host, and is a good example of a full-fledged multinode application -
+The example deploys 10 nodes on one base host, and is a good example of a full-fledged multinode application -
 use this as a template.
+This example includes securing the application using mTLS.
 
 
 ### [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke)
 This sample application demonstrates deploying a simple Vespa application on Kubernetes.
 
-
-### [Secure Vespa with mTLS](secure-vespa-with-mtls)
-This sample demonstrates configuring Vespa with mTLS.
-It is also deployed on multiple hosts, and a good example to look at 
 
 
 ## Monitoring
