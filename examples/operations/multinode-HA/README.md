@@ -707,11 +707,11 @@ $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/
 </pre>
 
 Now the query containers will respond with "up":
-<pre data-test="exec" data-test-wait-for='"code" : "initializing"'>
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:8082/state/v1/health | head -5
 </pre>
-<pre data-test="exec" data-test-wait-for='"code" : "initializing"'>
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
     https://localhost:8445/state/v1/health | head -5
 </pre>
