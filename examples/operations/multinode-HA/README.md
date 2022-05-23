@@ -84,6 +84,7 @@ $ docker run --detach --name node0 --hostname node0.vespanet \
     --network vespanet \
     --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 20092:19092 \
     vespaengine/vespa
+
 $ docker run --detach --name node1 --hostname node1.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
@@ -91,6 +92,7 @@ $ docker run --detach --name node1 --hostname node1.vespanet \
     --network vespanet \
     --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 20093:19092 \
     vespaengine/vespa
+
 $ docker run --detach --name node2 --hostname node2.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
@@ -187,6 +189,7 @@ $ docker run --detach --name node4 --hostname node4.vespanet \
     --network vespanet \
     --publish 8080:8080 --publish 20096:19092 \
     vespaengine/vespa services
+
 $ docker run --detach --name node5 --hostname node5.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     --network vespanet \
@@ -194,8 +197,8 @@ $ docker run --detach --name node5 --hostname node5.vespanet \
     vespaengine/vespa services
 </pre>
 
-As these are nodes 5 and 6 of 10, 60% of services is started, check feed container health
-- this can take a minute or so:
+As these are nodes 5 and 6 of 10, 60% of services is started, check feed container health -
+this can take a minute or so:
 <pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s http://localhost:8080/state/v1/health | head -5
 </pre>
@@ -205,7 +208,7 @@ inspecting the `/ApplicationStatus` endpoint is useful:
 
     $ curl http://localhost:8080/ApplicationStatus
 
-We now expect the `metrics-proxy` (runs on all service nodes) to be up - and others:
+We now expect the `metrics-proxy` (runs on all service nodes) to be up - and others - examples:
 
     $ curl http://localhost:20095/state/v1/   # metrics-proxy on node3
     $ curl http://localhost:19100/state/v1/   # slobrok on node0
@@ -276,6 +279,7 @@ $ docker run --detach --name node6 --hostname node6.vespanet \
     --network vespanet \
     --publish 8082:8080 --publish 20098:19092 \
     vespaengine/vespa services
+
 $ docker run --detach --name node7 --hostname node7.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     --network vespanet \
@@ -327,6 +331,7 @@ $ docker run --detach --name node8 --hostname node8.vespanet \
     --network vespanet \
     --publish 19107:19107 --publish 20100:19092 \
     vespaengine/vespa services
+
 $ docker run --detach --name node9 --hostname node9.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     --network vespanet \
@@ -347,7 +352,7 @@ $ curl http://localhost:19108/state/v1/health
 }
 ```
 
-Once the content nodes are up, the _query_ container cluster should be up as well:
+Once the content nodes are up, the _query_ container cluster should be "up" as well:
 <pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s http://localhost:8083/state/v1/health | head -5
 </pre>
@@ -489,14 +494,14 @@ Use _http://node0.vespanet:19071_ as the config server endpoint:
 
 ## Secure Vespa with mutually authenticated TLS
 This section secures the application using [mTLS](https://docs.vespa.ai/en/mtls.html).
-
-To configure Vespa with mTLS for inter-process communication:
-* Set `VESPA_TLS_CONFIG_FILE=/var/tls/tls.json` - the existence of this environment variable
-  will start Vespa in secure mode, using configuration in `/var/tls/tls.json`.
+Configure Vespa with mTLS for inter-process communication - in this guide:
+* Set `VESPA_TLS_CONFIG_FILE=/var/tls/tls.json`.
+  The existence of this environment variable will start Vespa in secure mode,
+  using configuration in `/var/tls/tls.json`.
   In this example,`tls.json` is mapped into the Docker container using `--volume $(pwd)/tls/:/var/tls/`
 * The _vespanet_ network is set up using overlay, and each node is assigned an IPv4 address
 
-mTLS configuration files:
+Configuration files:
 ```
 tls
 ├── ca-client.pem
@@ -512,8 +517,9 @@ Run the helper script to generate these credentials - inspect the `pki` and `tls
 $ ./scripts/generate-cert-chains.sh
 </pre>
 
-In some environments, this file is only readable by owner and subsequent reads inside the Docker container fails.
-Make readable to everyone inside the Docker container as a workaround:
+**Workaround:** In some environments, this file is only readable by owner
+and subsequent reads inside the Docker container fails.
+Make readable to everyone as a workaround:
 <pre data-test="exec">
 $ chmod 644 tls/host.key
 </pre>
@@ -571,7 +577,7 @@ $ ( for port in 19071 19072 19073; do \
 Deploy the application, now with a [TLS config change](https://docs.vespa.ai/en/jdisc/http-server-and-filters.html#tls)
 for https ports for container clusters for secure client access:
 <pre data-test="exec">
-$ mv services.xml services.xml.open && mv services.xml.secure services.xml
+$ mv services.xml services.xml.open; mv services.xml.secure services.xml
 </pre>
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ zip -r - . -x "tls/*" "pki/*" "scripts/*" "img/*" README.md .gitignore services.xml.open | \
@@ -605,6 +611,7 @@ $ docker run --detach --name node3 --hostname node3.vespanet \
     --volume $(pwd)/tls/:/var/tls/ \
     --ip 10.0.10.13 \
     vespaengine/vespa services
+
 $ docker run --detach --name node4 --hostname node4.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -613,6 +620,7 @@ $ docker run --detach --name node4 --hostname node4.vespanet \
     --volume $(pwd)/tls/:/var/tls/ \
     --ip 10.0.10.14 \
     vespaengine/vespa services
+
 $ docker run --detach --name node5 --hostname node5.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -650,6 +658,7 @@ $ docker run --detach --name node6 --hostname node6.vespanet \
     --volume $(pwd)/tls/:/var/tls/ \
     --ip 10.0.10.16 \
     vespaengine/vespa services
+
 $ docker run --detach --name node7 --hostname node7.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -680,6 +689,7 @@ $ docker run --detach --name node8 --hostname node8.vespanet \
     --volume $(pwd)/tls/:/var/tls/ \
     --ip 10.0.10.18 \
     vespaengine/vespa services
+
 $ docker run --detach --name node9 --hostname node9.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_TLS_CONFIG_FILE=/var/tls/tls.json \
@@ -706,7 +716,30 @@ $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/
     https://localhost:8445/state/v1/health | head -5
 </pre>
 
-It is not possible to feed and query the application, using the client security credentials.
+
+
+## Test feed and query endpoints
+Feed 5 documents, using the document-API endpoint in the _feed_ container cluster, here mapped to 8080/8081:
+<pre data-test="exec">
+$ i=0; (for doc in $(ls ../../../album-recommendation/ext); do \
+    curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
+      -H Content-Type:application/json -d @../../../album-recommendation/ext/$doc \
+      https://localhost:8443/document/v1/mynamespace/music/docid/$i; \
+    i=$(($i + 1)); echo; \
+  done)
+</pre>
+
+List IDs of all documents (this can be run on any node in the cluster):
+<pre data-test="exec" data-test-wait-for="id:mynamespace:music::4">
+$ docker exec node0 /opt/vespa/bin/vespa-visit -i
+</pre>
+
+Run a query, using the query-API endpoint in the _query_ container cluster, here mapped to 8082/8083:
+<pre data-test="exec" data-test-wait-for='"totalCount":5'>
+$ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
+    --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
+    https://localhost:8445/search/
+</pre>
 
 
 
