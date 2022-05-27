@@ -11,7 +11,7 @@ The *SPANN* is described in
 
 SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search. 
 
-This sample app demonstrates how SPANN can be represented using Vespa:
+This sample app demonstrates how `SPANN` can be represented using Vespa:
 
 * Randomly select 20% of the vector data to represent centroids. As demonstrated in the paper, random selection works
 reasonably well but using offline clustering can improve recall and performance. 
@@ -98,7 +98,7 @@ $ vespa clone billion-scale-vector-search myapp && cd myapp
 ## Download Vector Data
 
 This sample app uses the Microsoft SPACEV vector dataset from 
-[https://big-ann-benchmarks.com/](https://big-ann-benchmarks.com/]) 
+[https://big-ann-benchmarks.com/](https://big-ann-benchmarks.com/) 
 
 This quick start uses the first 10M vectors of the 100M slice sample. 
 
