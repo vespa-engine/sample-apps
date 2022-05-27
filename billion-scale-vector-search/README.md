@@ -69,8 +69,10 @@ See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-s
 to switch between local deployment and cloud deployment by changing the `config target`.
 
 <pre style="display:none" data-test="exec">
-$ pwd && ls
-$ cd sample-apps/billion-scale-vector-search
+$ git clone git@github.com:vespa-engine/sample-apps.git
+$ cd sample-apps
+$ git checkout jobergum/spann
+$ cd billion-scale-vector-search
 </pre>
 
 Pull and start the vespa docker container image:
