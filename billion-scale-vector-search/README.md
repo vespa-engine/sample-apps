@@ -68,6 +68,11 @@ $ vespa cert
 See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
 to switch between local deployment and cloud deployment by changing the `config target`.
 
+<pre style="display:none" data-test="exec">
+$ pwd && ls
+$ cd sample-apps/billion-scale-vector-search
+</pre>
+
 Pull and start the vespa docker container image:
 
 <pre data-test="exec">
@@ -89,9 +94,6 @@ Download this sample application
 $ vespa clone billion-scale-vector-search myapp && cd myapp
 </pre>
 
-<pre style="display:none" data-test="exec">
-$ cd billion-scale-vector-search
-</pre>
 
 ## Download Vector Data
 
