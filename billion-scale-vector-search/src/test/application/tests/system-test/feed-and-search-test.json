@@ -1,0 +1,69 @@
+{
+    "name": "Feed and query test",
+    "defaults": {
+        "cluster": "default",
+        "parameters": {
+            "timeout": "2s"
+        }
+    },
+    "steps": [
+        {
+            "name": "feed centroid vector",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/spann/vector/docid/3",
+                "body": "../graph-vector.json"
+            }
+        },
+        {
+            "name": "feed if vector",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/spann/vector/docid/0",
+                "body": "../if-vector.json"
+            }
+        },
+        {
+            "name": "query vector ",
+            "request": {
+                "method": "GET",
+                "uri": "/search/",
+                "parameters": {
+                    "input.query(q)": "[5, 5, 17, -3, 0, -4, -6, -4, 9, 22, -7, -13, -9, 10, 4, 16, -5, 11, -11, 14, 9, -7, -2, -23, 15, -18, -11, 1, -23, 7, 25, -3, -16, 13, -4, 1, -8, 1, 1, -7, -13, 1, -9, 2, -3, 16, -17, -4, 0, 17, -24, 6, 20, -10, -14, 15, 14, 1, 22, -10, 12, -22, 10, 0, -4, -20, -7, 12, -11, -13, -25, 16, -27, -1, 2, 18, -6, 4, -11, 14, 2, 2, -25, -11, 9, 21, 4, 1, 0, 15, 3, 2, 0, -22, 9, 0, 19, -5, -1, -6]",
+                    "summary": "default"
+                }
+            },
+            "response": {
+                "body": {
+                    "root": {
+                        "children": [
+                            {
+                                "fields": {
+                                    "id": 3,
+                                    "in_graph": true
+                                },
+                                "source": "graph"
+                            },
+                            {
+                                "fields": {
+                                    "id": 0,
+                                    "in_graph": false,
+                                    "neighbors": [
+                                        {
+                                            "item": "3",
+                                            "weight": 749
+                                        }
+                                    ]
+                                },
+                                "source": "if"
+                            }
+                        ],
+                        "coverage": {
+                            "results": 2
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

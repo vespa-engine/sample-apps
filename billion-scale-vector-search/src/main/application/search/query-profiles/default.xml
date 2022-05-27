@@ -1,0 +1,7 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
+<query-profile id="default" >
+ <field name="presentation.timing">true</field>
+ <field name="presentation.format.tensors">short</field>
+ <field name="presentation.summary">id</field>
+ <field name="timeout">1s</field>
+</query-profile>

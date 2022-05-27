@@ -1,0 +1,89 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
+<?xml version="1.0" encoding="utf-8" ?>
+<services version='1.0' xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+  <container id='default' version='1.0'>
+    <nodes count='1'/>
+    <nodes deploy:environment='perf' count='2'/>
+    <nodes deploy:environment='prod' count='[2,4]'/>
+    <component id='ai.vespa.ClusteringComponent' bundle='bigann'/>
+    <search>
+      <chain id='default' inherits='vespa'>
+        <searcher id='ai.vespa.searcher.SPANNSearcher' bundle='bigann'/>
+      </chain>
+    </search>
+  </container>
+
+  <container id='feed' version='1.0'>
+    <nodes count='1'/>
+    <nodes deploy:environment='perf' count='4'/>
+    <nodes deploy:environment='prod' count='[4,8]'/>
+    <config name="config.docproc.docproc">
+      <numthreads>24</numthreads>
+    </config>
+    <component id='ai.vespa.ClusteringComponent' bundle='bigann'/>
+    <document-processing>
+      <chain id='neighbor-assigner' inherits='indexing'>
+        <documentprocessor id='ai.vespa.docproc.AssignNeighborsDocProc' bundle='bigann'/>
+      </chain>
+    </document-processing>
+    <search/>
+    <document-api/>
+  </container>
+
+  <content id='graph' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='vector' selection='vector.in_graph==true'/>
+      <document-processing cluster='feed' chain='neighbor-assigner' />
+    </documents>
+    <nodes count='1'/>
+    <nodes deploy:environment='perf' count='1' groups='1'>
+      <resources memory='128GB' vcpu='16' disk='200Gb' storage-type='remote'/>
+    </nodes>
+    <nodes deploy:environment='prod' count='2' groups='2'>
+      <resources memory='128GB' vcpu='16' disk='200Gb' storage-type='remote'/>
+    </nodes>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+
+  <content id='if' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='vector' selection='vector.in_graph==false'/>
+      <document-processing cluster='feed' chain='neighbor-assigner' />
+    </documents>
+
+    <nodes count='1'/>
+    <nodes deploy:environment='perf' count='4' groups='1'>
+      <resources memory='32Gb' vcpu='8' disk='300Gb' storage-type='local'/>
+    </nodes>
+    <nodes deploy:environment='prod' count='8' groups='2'>
+      <resources memory='32Gb' vcpu='8' disk='300Gb' storage-type='local'/>
+    </nodes>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <requestthreads>
+              <persearch>2</persearch>
+            </requestthreads>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+</services>

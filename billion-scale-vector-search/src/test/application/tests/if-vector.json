@@ -1,0 +1,10 @@
+{
+  "put": "id:spann:vector::0",
+  "fields": {
+    "id": 0,
+    "in_graph": false,
+    "vector": {
+      "values": "0bf901ff1000fef4140efefdfffdf3ec0004ecf2f3f51df5f9fffafeec000011fae80a1100100df11101fb00080e09f7040a08000bf5f613f216f904ff160100fdfb09fdf301f8f203ec1012eaeaecf7f901ea03ed06f1ec0d06f3ecf30901feef0ef303"
+    }
+  }
+}
