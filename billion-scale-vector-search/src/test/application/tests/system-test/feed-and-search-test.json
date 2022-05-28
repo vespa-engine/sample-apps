@@ -64,6 +64,28 @@
                     }
                 }
             }
+        },
+        {
+            "name": "clear existing documents",
+            "request": {
+                "method": "DELETE",
+                "uri": "/document/v1/",
+                "parameters": {
+                    "cluster": "graph",
+                    "selection": "true"
+                }
+            }
+        },
+        {
+            "name": "clear existing documents",
+            "request": {
+                "method": "DELETE",
+                "uri": "/document/v1/",
+                "parameters": {
+                    "cluster": "if",
+                    "selection": "true"
+                }
+            }
         }
     ]
 }

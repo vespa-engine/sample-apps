@@ -139,6 +139,13 @@ Wait for the application endpoint to become available
 $ vespa status --wait 300
 </pre>
 
+Test basic functionality
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa test src/test/application/tests/system-test/feed-and-search-test.json
+</pre>
+
+
 Feed the vector using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 
 <pre data-test="exec">
@@ -180,10 +187,6 @@ and key needs to be provided:
 python3 src/main/python/recall.py --endpoint https://app.tenant.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
  --query_file query.i8bin --query_gt_file GT_10M/msspacev-10M \ 
  --certificate data-plane-public-cert.pem --key data-plane-private-key.pem
-</pre>
-
-<pre data-test="exec" data-test-assert-contains="Success">
-$ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
 
 ## Shutdown and remove the Docker container:
