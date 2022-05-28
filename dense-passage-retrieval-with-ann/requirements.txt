@@ -1,5 +1,5 @@
-protobuf==3.20.0
 torch==1.7.1
 transformers==4.10.3
 onnx
 onnxruntime
+protobuf==3.20.0

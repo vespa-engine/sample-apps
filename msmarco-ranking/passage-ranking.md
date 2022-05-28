@@ -709,10 +709,6 @@ Further reading:
 
 #### Notebook test
 Ignore this. This is for CI testing of sample-apps.
-<pre data-test="exec">
-pip3 show protobuf
-</pre>
-
 <pre data-test="exec" data-test-assert-contains="1 passed">
 $ python3 -m pytest  --nbmake src/main/python/model-exporting.ipynb 
 </pre>
