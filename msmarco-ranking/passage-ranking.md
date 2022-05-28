@@ -622,6 +622,7 @@ There are no run time python dependencies in Vespa, but to run the evaluation th
 $ pip3 install torch numpy ir_datasets requests tqdm
 </pre>
 
+
 Note that the ir_datasets utility will download MS Marco query evaluation data,
 so the first run will take some time to complete. 
 
@@ -708,6 +709,10 @@ Further reading:
 
 #### Notebook test
 Ignore this. This is for CI testing of sample-apps.
+<pre data-test="exec">
+pip3 show protobuf
+</pre>
+
 <pre data-test="exec" data-test-assert-contains="1 passed">
 $ python3 -m pytest  --nbmake src/main/python/model-exporting.ipynb 
 </pre>
