@@ -11,17 +11,25 @@ The *SPANN* is described in
 
 SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search. 
 
-This sample app demonstrates how `SPANN` can be represented using Vespa:
+This sample app demonstrates how the `SPANN` algorithm can be represented using Vespa. 
 
-* Randomly select 20% of the vector data to represent centroids. As demonstrated in the paper, random selection works
-reasonably well but using offline clustering can improve recall and performance. 
-The huge benefit of random selection is that it just need one pass through the dataset
-and avoids resource intensive offline clustering. 
-* Index the vectors which are assigned centroids using Vespa's HNSW indexing support in a dedicated 
-content cluster. This content cluster is scaled using instance types with high memory since HNSW indexing
-require the vector data to be in-memory for best indexing and search performance.  
-* 
+### Indexing 
+
+* Randomly select 20% of the vector data points to represent cluster centroids. 
+The huge advantage of random selection is that it need one pass through the dataset
+and avoids resource intensive clustering for large vector datasets. 
+* Index the vectors selected as centroids using Vespa's [HNSW](https://docs.vespa.ai/en/approximate-nn-hnsw.html) support. 
+This content cluster indexing the centroids is scaled using instance types with high memory since `HNSW` indexing
+require that the vector data is in-memory.  
+* The remaining 80% of the vector data point is indexed in a dedicated content cluster with instance types using fast storage.
+* During indexing of the remaining vector data, the HNSW graph is searched for the K approximate nearest centroids and the
+id of the centroid is stored and indexed using classic inverted index. Searching the graph during indexing is performed in 
+custom document processor [AssignNeighborsDocProc.java](src/main/java/ai/vespa/docproc/AssignNeighborsDocProc.java). The 
+docproc uses an injectable component [ClusteringComponent](src/main/java/ai/vespa/ClusteringComponent.java).
+
   
+
+
 Requirements:
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
@@ -49,7 +57,9 @@ $ brew install vespa-cli
 </pre>
 
 Set target env, it's also possible to deploy this app to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
+using target cloud. For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html) 
+replace the [src/main/application/services.xml](src/main/application/services.xml) with 
+[src/main/application/services.xml](src/main/application/cloud-services.xml). 
 
 For local deployment using docker image use
 
@@ -65,8 +75,7 @@ $ vespa auth login
 $ vespa cert
 </pre>
 
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
-to switch between local deployment and cloud deployment by changing the `config target`.
+See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
 
 <pre style="display:none" data-test="exec">
 $ git clone -b jobergum/spann --depth 1 https://github.com/vespa-engine/sample-apps.git
@@ -114,6 +123,12 @@ This step creates two feed files:
 
 * `graph-vectors.jsonl`
 * `if-vectors.jsonl`
+
+Install python dependencies 
+
+<pre data-test="exec">
+$ pip3 install numpy requests tqdm 
+</pre>
 
 <pre data-test="exec">
 $ python3 src/main/python/create-vespa-feed.py spacev10m_base.i8bin
