@@ -62,7 +62,7 @@ public class AssignNeighborsDocProc extends DocumentProcessor {
 
     private Progress assignNeighbors(Tensor tensor, Document doc) {
         Execution execution = this.factory.newExecution(this.searchChain);
-        ClusteringComponent.CentroidResult result = clustering.getCentroids(tensor, 12,32, execution);
+        ClusteringComponent.CentroidResult result = clustering.getCentroids(tensor, 12,36, execution);
         if (result.isEmpty()) {
             return Progress.LATER;
         }

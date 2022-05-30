@@ -6,31 +6,16 @@
 
 This sample application demonstrates how to represent *SPANN* (Space Partitioned ANN) using Vespa.ai. 
 
-The *SPANN* is described in
+The *SPANN* approach for approximate nearest neighbor search is described in
 [SPANN: Highly-efficient Billion-scale Approximate Nearest Neighbor Search](https://arxiv.org/abs/2111.08566). 
 
 SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search. 
 
 This sample app demonstrates how the `SPANN` algorithm can be represented using Vespa. 
-
-### Indexing 
-
-* Randomly select 20% of the vector data points to represent cluster centroids. 
-The huge advantage of random selection is that it need one pass through the dataset
-and avoids resource intensive clustering for large vector datasets. 
-* Index the vectors selected as centroids using Vespa's [HNSW](https://docs.vespa.ai/en/approximate-nn-hnsw.html) support. 
-This content cluster indexing the centroids is scaled using instance types with high memory since `HNSW` indexing
-require that the vector data is in-memory.  
-* The remaining 80% of the vector data point is indexed in a dedicated content cluster with instance types using fast storage.
-* During indexing of the remaining vector data, the HNSW graph is searched for the K approximate nearest centroids and the
-id of the centroid is stored and indexed using classic inverted index. Searching the graph during indexing is performed in 
-custom document processor [AssignNeighborsDocProc.java](src/main/java/ai/vespa/docproc/AssignNeighborsDocProc.java). The 
-docproc uses an injectable component [ClusteringComponent](src/main/java/ai/vespa/ClusteringComponent.java).
-
-  
+See [blog post](https://blog.vespa.ai/) for details on how `SPANN` is represented with Vespa. 
 
 
-Requirements:
+**Requirements:**
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)

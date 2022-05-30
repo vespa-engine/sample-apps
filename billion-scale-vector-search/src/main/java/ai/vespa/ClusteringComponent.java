@@ -104,16 +104,15 @@ public class ClusteringComponent extends AbstractComponent {
     }
 
     /**
-     * Closure clustering assignment
+     * Query-aware dynamic pruning
      *
-     * Only retain cluster centroids which are relatively close to query
-     * compared to the closest centroid
+     * Instead of searching closest K
+     * posting lists (centroids) for all queries, we dynamically decide a posting list to be searched only if the distance
+     * between its centroid and query is almost the same as the distance between query and the closest
+     * centroid:
      *
-     * Always retain the closest centroid, if next centroids are further
-     * away than <b>factor</b> which is a double between 0 and 1 inclusive.
-     *
-     * @param centroids the k nearest centroids from HNSW graph
-     * @param factor hyper-parameter for max distance, 0 means no filter, 1 means prune all except nearest
+     * @param centroids the k nearest centroids
+     * @param factor, range [0,1]. 1.0 only retain the closest, 0 retain all k.
      * @return
      */
 
@@ -136,7 +135,7 @@ public class ClusteringComponent extends AbstractComponent {
     /**
      *
      * @param k the k nearest neighbors
-     * @param extraK - Improve accuracy
+     * @param extraK - Improve graph accuracy
      * @param queryVector - The document vector used to search the graph
      * @return Query instance with nearest neighbor search item
      */
