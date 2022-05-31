@@ -111,7 +111,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Global Unique Documents",
+      "title": "Content Node Documents",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -129,7 +129,7 @@
         {
           "$$hashKey": "object:702",
           "format": "short",
-          "label": "unique docs",
+          "label": "documents",
           "logBase": 1,
           "max": null,
           "min": null,
