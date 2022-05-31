@@ -12,7 +12,7 @@ The *SPANN* approach for approximate nearest neighbor search is described in
 SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search. 
 
 This sample app demonstrates how the `SPANN` algorithm can be represented using Vespa. 
-See [blog post](https://blog.vespa.ai/) for details on how `SPANN` is represented with Vespa. 
+See the [blog post](https://blog.vespa.ai/) for details on how `SPANN` is represented with Vespa. 
 
 
 **Requirements:**
@@ -26,7 +26,7 @@ See [blog post](https://blog.vespa.ai/) for details on how `SPANN` is represente
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
 * Python3 and numpy to process the vector dataset 
-* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
+* [Apache Maven](https://maven.apache.org/install.html) - this sample app uses custom Java components and Maven is used
   to build the application. 
 
 Verify Docker Memory Limits:
@@ -35,7 +35,7 @@ Verify Docker Memory Limits:
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 
 <pre >
 $ brew install vespa-cli
@@ -44,15 +44,15 @@ $ brew install vespa-cli
 Set target env, it's also possible to deploy this app to [Vespa Cloud](https://cloud.vespa.ai/)
 using target cloud. For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html) 
 replace the [src/main/application/services.xml](src/main/application/services.xml) with 
-[src/main/application/services.xml](src/main/application/cloud-services.xml). 
+[src/main/application/cloud-services.xml](src/main/application/cloud-services.xml). 
 
-For local deployment using docker image use
+For local deployment using docker image use:
 
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
 <pre>
 $ vespa config set target cloud
 $ vespa config set application tenant-name.myapp.default
@@ -76,13 +76,13 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
+Verify that the configuration service (deploy api) is ready:
 
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application
+Download this sample application:
 
 <pre>
 $ vespa clone billion-scale-vector-search myapp && cd myapp
@@ -92,11 +92,10 @@ $ vespa clone billion-scale-vector-search myapp && cd myapp
 ## Download Vector Data
 
 This sample app uses the Microsoft SPACEV vector dataset from 
-[https://big-ann-benchmarks.com/](https://big-ann-benchmarks.com/) 
+[https://big-ann-benchmarks.com/](https://big-ann-benchmarks.com/).
 
-This quick start uses the first 10M vectors of the 100M slice sample. 
-
-This sample file is about 1GB (10M vectors)
+It uses the first 10M vectors of the 100M slice sample.
+This sample file is about 1GB (10M vectors):
 
 <pre data-test="exec">
 $ curl -L -o spacev10m_base.i8bin \
@@ -109,7 +108,7 @@ This step creates two feed files:
 * `graph-vectors.jsonl`
 * `if-vectors.jsonl`
 
-Install python dependencies 
+Install python dependencies:
 
 <pre data-test="exec">
 $ pip3 install numpy requests tqdm 
@@ -121,7 +120,7 @@ $ python3 src/main/python/create-vespa-feed.py spacev10m_base.i8bin
 
 ## Build and deploy Vespa app 
 
-Build the sample app 
+Build the sample app:
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
@@ -133,20 +132,20 @@ Deploy the application. This step deploys the application package built in the p
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available
+Wait for the application endpoint to become available:
 
 <pre data-test="exec">
 $ vespa status --wait 300
 </pre>
 
-Test basic functionality
+Test basic functionality:
 
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
 
 
-Feed the vector using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Get the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 
 <pre data-test="exec">
 $ curl -L -o vespa-feed-client-cli.zip \
@@ -154,7 +153,7 @@ $ curl -L -o vespa-feed-client-cli.zip \
 $ unzip -o vespa-feed-client-cli.zip
 </pre>
 
-The graph vectors must be feed before the if vectors:
+The _graph_ vectors must be feed before the _if_ vectors:
 
 <pre data-test="exec">
 $ ./vespa-feed-client-cli/vespa-feed-client \
@@ -164,29 +163,29 @@ $ ./vespa-feed-client-cli/vespa-feed-client \
 </pre>
 
 ## Recall Evaluation
-Download the query vectors and the ground truth for the 10M first vectors 
+Download the query vectors and the ground truth for the 10M first vectors:
 <pre data-test="exec">
 $ curl -L -o query.i8bin \
-https://comp21storage.blob.core.windows.net/publiccontainer/comp21/spacev1b/query.i8bin
+  https://comp21storage.blob.core.windows.net/publiccontainer/comp21/spacev1b/query.i8bin
 $ curl -L -o spacev10m_gt100.i8bin \
   https://data.vespa.oath.cloud/sample-apps-data/spacev10m_gt100.i8bin
 </pre>
 
-Run first 1K queries and evaluate recall@10. Higher number of clusters gives higher recall 
+Run first 1K queries and evaluate recall@10. Higher number of clusters gives higher recall:
 
 <pre data-test="exec">
 $ python3 src/main/python/recall.py --endpoint http://localhost:8080/search/ \
---query_file query.i8bin \
---query_gt_file spacev10m_gt100.i8bin  --clusters 12 --queries 1000
+  --query_file query.i8bin \
+  --query_gt_file spacev10m_gt100.i8bin  --clusters 12 --queries 1000
 </pre>
 
 To evaluate recall using a deployment in Vespa Cloud perf zone the data plane certificate
 and key needs to be provided:
 
 <pre>
-python3 src/main/python/recall.py --endpoint https://app.tenant.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
- --query_file query.i8bin --query_gt_file GT_10M/msspacev-10M \ 
- --certificate data-plane-public-cert.pem --key data-plane-private-key.pem
+$ python3 src/main/python/recall.py --endpoint https://app.tenant.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
+  --query_file query.i8bin --query_gt_file GT_10M/msspacev-10M \
+  --certificate data-plane-public-cert.pem --key data-plane-private-key.pem
 </pre>
 
 ## Shutdown and remove the Docker container:
