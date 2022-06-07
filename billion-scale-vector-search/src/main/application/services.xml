@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version='1.0' xmlns:deploy="vespa" xmlns:preprocess="properties">
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
+  <container id='default' version='1.0'>
+    <nodes count='1'/>
+    <component id='ai.vespa.ClusteringComponent' bundle='bigann'/>
+    <search>
+      <chain id='default' inherits='vespa'>
+        <searcher id='ai.vespa.searcher.SPANNSearcher' bundle='bigann'/>
+      </chain>
+    </search>
+    <document-processing>
+      <chain id='neighbor-assigner' inherits='indexing'>
+        <documentprocessor id='ai.vespa.docproc.AssignNeighborsDocProc' bundle='bigann'/>
+      </chain>
+    </document-processing>
+    <document-api/>
+  </container>
+
+  <content id='graph' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='vector' selection='vector.in_graph==true'/>
+      <document-processing cluster='default' chain='neighbor-assigner' />
+    </documents>
+    <nodes count='1'/>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+
+  <content id='if' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='vector' selection='vector.in_graph==false'/>
+      <document-processing cluster='default' chain='neighbor-assigner' />
+    </documents>
+    <nodes count='1'/>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <requestthreads>
+              <persearch>2</persearch>
+            </requestthreads>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+</services>

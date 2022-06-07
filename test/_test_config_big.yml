@@ -1,6 +1,7 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
+    - billion-scale-vector-search/README.md
     - examples/operations/multinode-HA/README.md
     - msmarco-ranking/passage-ranking.md
     - msmarco-ranking/document-ranking.md

@@ -1,0 +1,62 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+schema vector {
+
+  document vector {
+
+    field id type int {
+      indexing: attribute
+    }
+
+    field vector type tensor<int8>(x[100]) {
+      indexing: attribute | index
+      index {
+        hnsw {
+          max-links-per-node: 18
+          neighbors-to-explore-at-insert: 100
+        }
+     }
+    }
+
+    field neighbors type weightedset<string> {
+      indexing: summary | index
+      match:word
+      stemming:none
+    }
+
+    field disk_vector type tensor<int8>(x[100]) {
+      indexing: attribute
+      attribute: paged
+    }
+
+    field in_graph type bool {
+      indexing: summary | attribute
+    }
+  }
+
+  rank-profile graph  {
+    num-threads-per-search: 1
+    inputs {
+      query(q) tensor<int8>(x[100])
+    }
+    first-phase  {
+      expression: closeness(field, vector)
+    }
+    match-features: attribute(id) closeness(field, vector) distance(field,vector)
+  }
+
+  rank-profile default inherits graph {
+      num-threads-per-search: 2
+      function L2() {
+        expression: sqrt(sum(map(query(q) - attribute(disk_vector), f(x)(x * x))))
+      }
+      first-phase {
+        expression: rawScore(neighbors)
+      }
+      second-phase {
+       rerank-count: 1000
+       expression: 1/(1 + L2)
+      }
+      match-features: attribute(id)
+    }
+
+}
