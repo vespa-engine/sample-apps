@@ -12,8 +12,11 @@ The *SPANN* approach for approximate nearest neighbor search is described in
 SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search. 
 
 This sample app demonstrates how the `SPANN` algorithm can be represented using Vespa. 
-See the [blog post](https://blog.vespa.ai/) for details on how `SPANN` is represented with Vespa. 
+See the [Billion-scale vector search using hybrid HNSW-IF](https://blog.vespa.ai/vespa-hybrid-billion-scale-vector-search/) for details on how `SPANN` 
+is represented with Vespa. 
 
+These reproducing steps, demonstrates the functionality using a smaller subset of the 1B vector dataset, suitable
+for reproducing on a laptop. 
 
 **Requirements:**
 
