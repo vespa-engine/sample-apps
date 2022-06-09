@@ -3,13 +3,23 @@ shared:
     email:
       addresses: [kraune@yahooinc.com,bergum@yahooinc.com]
       statuses: [SUCCESS, FAILURE]
+  environment:
+    USER_SHELL_BIN: bash
+  annotations:
+    install-deps: &install-deps
+      install-deps: |
+        apt update
+        apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
+        python3 -m pip install -qqq -r test/requirements.txt --user
+        python3 -m pip install -qqq pytest nbmake --user
+        VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
+          curl -fsSL https://github.com/vespa-engine/vespa/releases/download/v${VESPA_CLI_VERSION}/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64.tar.gz | tar -zxf - -C /opt && \
+          ln -sf /opt/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64/bin/vespa /usr/local/bin/
 
 jobs:
   link-checker-sample-apps:
     requires: [~pr, ~commit]
     image: ruby:2.6
-    environment:
-      USER_SHELL_BIN: bash
     annotations:
       screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
     steps:
@@ -58,8 +68,6 @@ jobs:
   verify-guides:
     requires: [~pr, ~commit]
     image: buildpack-deps
-    environment:
-      USER_SHELL_BIN: bash
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
@@ -69,14 +77,7 @@ jobs:
       screwdriver.cd/timeout: 60 # Normally takes 30 minutes
       screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
     steps:
-      - install-deps: |
-          apt update
-          apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
-          python3 -m pip install -qqq -r test/requirements.txt --user
-          python3 -m pip install -qqq pytest nbmake --user
-          VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
-            curl -fsSL https://github.com/vespa-engine/vespa/releases/download/v${VESPA_CLI_VERSION}/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64.tar.gz | tar -zxf - -C /opt && \
-            ln -sf /opt/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64/bin/vespa /usr/local/bin/
+      - *install-deps
       - run-tests: |
           cd $SD_DIND_SHARE_PATH
           $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR -c $SD_SOURCE_DIR/test/_test_config.yml
@@ -84,8 +85,6 @@ jobs:
   verify-guides-big:
     requires: [~pr, ~commit]
     image: buildpack-deps
-    environment:
-      USER_SHELL_BIN: bash
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
@@ -95,14 +94,7 @@ jobs:
       screwdriver.cd/timeout: 180
       screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
     steps:
-      - install-deps: |
-          apt update
-          apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
-          python3 -m pip install -qqq -r test/requirements.txt --user
-          python3 -m pip install -qqq pytest nbmake --user
-          VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
-            curl -fsSL https://github.com/vespa-engine/vespa/releases/download/v${VESPA_CLI_VERSION}/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64.tar.gz | tar -zxf - -C /opt && \
-            ln -sf /opt/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64/bin/vespa /usr/local/bin/
+      - *install-deps
       - run-tests: |
           cd $SD_DIND_SHARE_PATH
           $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR -c $SD_SOURCE_DIR/test/_test_config_big.yml
