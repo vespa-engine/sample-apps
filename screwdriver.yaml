@@ -9,7 +9,7 @@ shared:
     install-deps: &install-deps
       install-deps: |
         apt update
-        apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler openjdk-17-jdk
+        apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
         python3 -m pip install -qqq -r test/requirements.txt --user
         python3 -m pip install -qqq pytest nbmake --user
         VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
