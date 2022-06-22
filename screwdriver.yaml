@@ -55,14 +55,13 @@ jobs:
 
   build-apps:
     requires: [~pr, ~commit]
-    image: vespaengine/vespa-pipeline
+    image: vespaengine/vespa-build-centos-stream8:latest
     annotations:
       screwdriver.cd/cpu: HIGH
       screwdriver.cd/ram: HIGH
     steps:
       - build: |
           set -e
-          source /etc/profile.d/jdk-env.sh
           mvn -V --batch-mode --no-snapshot-updates install
 
   verify-guides:
