@@ -69,13 +69,13 @@ public class ReRankingSearcher extends Searcher {
         long start = System.currentTimeMillis();
         BertModelBatchInput input = buildModelInput(queryTokens,
                 result,maxSequenceLength,TENSOR_TOKEN_FIELD_NAME);
-        if(result.getQuery().isTraceable(1))
+        if(result.getQuery().getTrace().isTraceable(1))
             result.getQuery().trace("Prepare batch input took "
                     + (System.currentTimeMillis() - start)  + " ms",1);
 
         start = System.currentTimeMillis();
         batchInference(input);
-        if(result.getQuery().isTraceable(1))
+        if(result.getQuery().getTrace().isTraceable(1))
             result.getQuery().trace("Inference batch took "
                     + (System.currentTimeMillis() - start)  + " ms",1);
         result.hits().sort();
