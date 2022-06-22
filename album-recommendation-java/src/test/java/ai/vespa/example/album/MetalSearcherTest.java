@@ -54,7 +54,7 @@ class MetalSearcherTest {
         metalQuery = new Query("/search/?yql=" +
                 encode("select * from sources * where artist contains \"hetfield\" and album contains\"master of puppets\"",
                         StandardCharsets.UTF_8));
-        metalQuery.setTraceLevel(6);
+        metalQuery.getTrace().setLevel(6);
     }
 
 
@@ -91,7 +91,7 @@ class MetalSearcherTest {
     void testWithMockBackendProducingHits() {
         DocumentSourceSearcher docSource = new DocumentSourceSearcher();
         Query testQuery = new Query();
-        testQuery.setTraceLevel(6);
+        testQuery.getTrace().setLevel(6);
         testQuery.getModel().getQueryTree().setRoot(new WordItem("drum","album"));
 
         Result mockResult = new Result(testQuery);
