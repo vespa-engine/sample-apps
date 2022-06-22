@@ -27,7 +27,7 @@ public class EquivSearcherTest {
 
         for (String yql: queries) {
             Query query = new Query("/search/?yql=" + encode(yql, StandardCharsets.UTF_8));
-            query.setTraceLevel(6);
+            query.getTrace().setLevel(6);
             Result result = execution.search(query);
             System.out.println(result.getContext(false).getTrace());
         }
