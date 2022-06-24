@@ -8,8 +8,8 @@ shared:
   annotations:
     install-deps: &install-deps
       install-deps: |
-        apt update
-        apt install -y docker.io zstd maven zip unzip python3-pip net-tools bundler
+        dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+        dnf -y install docker-ce --nobest
         python3 -m pip install -qqq -r test/requirements.txt --user
         python3 -m pip install -qqq pytest nbmake --user
         VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
@@ -66,7 +66,7 @@ jobs:
 
   verify-guides:
     requires: [~pr, ~commit]
-    image: buildpack-deps
+    image: vespaengine/vespa-build-centos-stream8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
@@ -83,7 +83,7 @@ jobs:
 
   verify-guides-big:
     requires: [~pr, ~commit]
-    image: buildpack-deps
+    image: vespaengine/vespa-build-centos-stream8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
