@@ -50,8 +50,7 @@
                                     "in_graph": false,
                                     "neighbors": [
                                         {
-                                            "item": "3",
-                                            "weight": 749
+                                            "3": 749
                                         }
                                     ]
                                 },
