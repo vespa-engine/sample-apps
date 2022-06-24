@@ -9,9 +9,9 @@
             <configserver hostalias="node2" />
         </configservers>
         <cluster-controllers>
-            <cluster-controller hostalias="node0" jvmargs="-Xms32M -Xmx64M" /> <!-- jvmargs added only to shrink memory for testing - remove before real use -->
-            <cluster-controller hostalias="node1" jvmargs="-Xms32M -Xmx64M" />
-            <cluster-controller hostalias="node2" jvmargs="-Xms32M -Xmx64M" />
+            <cluster-controller hostalias="node0" jvm-options="-Xms32M -Xmx64M" /> <!-- jvm-options added only to shrink memory for testing - remove before real use -->
+            <cluster-controller hostalias="node1" jvm-options="-Xms32M -Xmx64M" />
+            <cluster-controller hostalias="node2" jvm-options="-Xms32M -Xmx64M" />
         </cluster-controllers>
         <slobroks>
             <slobrok hostalias="node0" />
