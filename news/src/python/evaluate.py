@@ -46,11 +46,7 @@ def read_impressions_file(file_name):
 
 
 def parse_embedding(hit_json):
-    embedding_json = hit_json["fields"]["embedding"]["cells"]
-    embedding_vector = [0.0] * len(embedding_json)
-    for val in embedding_json:
-        embedding_vector[int(val["address"]["d0"])] = val["value"]
-    return embedding_vector
+    return hit_json["fields"]["embedding"]["values"]
 
 
 def query_user_embedding(user_id):
