@@ -2,3 +2,4 @@ numpy
 scikit-learn
 torch
 transformers
+setuptools-rust
