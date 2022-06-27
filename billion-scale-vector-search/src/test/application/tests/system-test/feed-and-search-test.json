@@ -48,11 +48,10 @@
                                 "fields": {
                                     "id": 0,
                                     "in_graph": false,
-                                    "neighbors": [
+                                    "neighbors":
                                         {
                                             "3": 749
                                         }
-                                    ]
                                 },
                                 "source": "if"
                             }
