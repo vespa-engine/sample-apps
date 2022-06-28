@@ -77,8 +77,8 @@ schema wiki {
     }
 
     match-features {
-      onnxModel(reader).start_logits
-      onnxModel(reader).end_logits
+      onnx(reader).start_logits
+      onnx(reader).end_logits
       input_ids # The input sequence with special tokens (CLS/SEP)
     }
 

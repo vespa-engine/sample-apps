@@ -55,9 +55,9 @@ public class QASearcher extends Searcher {
         Hit bestReaderHit = result.hits().get(0);
         double readerScore = bestReaderHit.getRelevance().getScore();
 
-        Tensor input = getTensor(bestReaderHit, "rankingExpression(input_ids)");
-        Tensor startLogits = getTensor(bestReaderHit, "onnxModel(reader).start_logits");
-        Tensor endLogits = getTensor(bestReaderHit, "onnxModel(reader).end_logits");
+        Tensor input = getTensor(bestReaderHit, "input_ids");
+        Tensor startLogits = getTensor(bestReaderHit, "onnx(reader).start_logits");
+        Tensor endLogits = getTensor(bestReaderHit, "onnx(reader).end_logits");
         Span bestSpan = QuestionAnswering.getSpan(startLogits,endLogits,input, readerScore, tokenizer);
         bestSpan.setContext((String)bestReaderHit.getField("text"));
         bestSpan.setContextTitle((String)bestReaderHit.getField("title"));
