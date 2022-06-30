@@ -77,7 +77,7 @@ For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
 $ vespa config set target cloud
 $ vespa config set application tenant-name.myapp.default
 $ vespa auth login 
-$ vespa cert
+$ vespa auth cert
 </pre>
 
 See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
