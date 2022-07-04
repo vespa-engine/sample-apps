@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <vespa_version>8.8.35</vespa_version>
+        <vespa_version>8.11.15</vespa_version>
     </properties>
 
     <dependencies>
