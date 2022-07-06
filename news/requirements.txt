@@ -3,3 +3,4 @@ scikit-learn
 torch
 transformers
 setuptools_rust
+requests
