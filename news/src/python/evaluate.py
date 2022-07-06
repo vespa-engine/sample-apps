@@ -7,7 +7,8 @@ import sys
 import csv
 import json
 import random
-import urllib.parse, urllib.request
+import urllib.parse 
+import requests
 
 from metrics import ndcg, mrr, group_auc
 
@@ -48,40 +49,31 @@ def read_impressions_file(file_name):
 def parse_embedding(hit_json):
     return hit_json["fields"]["embedding"]["values"]
 
-
 def query_user_embedding(user_id):
     yql = 'select * from sources user where user_id contains "{}"'.format(user_id)
-    url = "http://localhost:8080/search/?yql={}&hits=1&timeout=10".format(urllib.parse.quote_plus(yql))  # GET
-    result = json.loads(urllib.request.urlopen(url).read())
-    embedding = parse_embedding(result["root"]["children"][0])
-    return embedding
-
+    url = 'http://localhost:8080/search/?yql={}&hits=1'.format(urllib.parse.quote_plus(yql))  
+    result = requests.get(url).json()
+    return parse_embedding(result["root"]["children"][0])
 
 def query_news(user_vector, news_ids):
     hits = len(news_ids)
     nn_annotations = [
-        '"targetHits":{}'.format(hits)
+        'targetHits:{}'.format(hits)
     ]
-    nn_annotations = "{" + ",".join(nn_annotations) + "}"
-    nn_search = "([{}]nearestNeighbor(embedding, user_embedding))".format(nn_annotations)
+    nn_annotations = '{' + ','.join(nn_annotations) + '}'
+    nn_search = "({}nearestNeighbor(embedding, user_embedding))".format(nn_annotations)
 
     news_id_filter = [ 'news_id contains "{}"'.format(i) for i in news_ids ]
     news_id_filter = " OR ".join(news_id_filter)
 
     data = {
-        "hits": hits,
-        "yql": 'select * from sources news where {} AND ({})'.format(nn_search, news_id_filter),
-        "ranking.features.query(user_embedding)": str(user_vector),
-        "ranking.profile": "recommendation",
-        "timeout": 10
+        'hits': hits,
+        'yql': 'select * from sources news where {} AND ({})'.format(nn_search, news_id_filter),
+        'ranking.features.query(user_embedding)': str(user_vector),
+        'ranking.profile': 'recommendation',
+        'timeout': 10
     }
-    req = urllib.request.Request("http://localhost:8080/search/", data=str(data).encode('utf-8'))  # POST
-    req.add_header('Content-Type', 'application/json')
-    try:
-        return json.loads(urllib.request.urlopen(req).read())
-    except urllib.error.HTTPError as e:
-        return json.loads(e.read())
-
+    return requests.post('http://localhost:8080/search/', json=data).json()
 
 def find_hit(hits, news_id):
     for child in hits["root"]["children"]:

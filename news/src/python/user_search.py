@@ -3,40 +3,33 @@
 
 import sys
 import json
-import urllib.parse, urllib.request
+import urllib.parse
+import requests
 
 
 def parse_embedding(hit_json):
     return hit_json["fields"]["embedding"]["values"]
 
-
 def query_user_embedding(user_id):
     yql = 'select * from sources user where user_id contains "{}"'.format(user_id)
-    url = "http://localhost:8080/search/?yql={}&hits=1".format(urllib.parse.quote_plus(yql))  # GET
-    result = json.loads(urllib.request.urlopen(url).read())
-    embedding = parse_embedding(result["root"]["children"][0])
-    return embedding
-
+    url = 'http://localhost:8080/search/?yql={}&hits=1'.format(urllib.parse.quote_plus(yql))  
+    result = requests.get(url).json()
+    return parse_embedding(result["root"]["children"][0])
 
 def query_news(user_vector, hits, filter):
     nn_annotations = [
-        '"targetHits":{}'.format(hits)
+        'targetHits:{}'.format(hits)
         ]
-    nn_annotations = "{" + ",".join(nn_annotations) + "}"
-    nn_search = "([{}]nearestNeighbor(embedding, user_embedding))".format(nn_annotations)
+    nn_annotations = '{' + ','.join(nn_annotations) + '}'
+    nn_search = '({}nearestNeighbor(embedding, user_embedding))'.format(nn_annotations)
 
     data = {
-        "hits": hits,
-        "yql": 'select * from sources news where {} {}'.format(nn_search, filter),
-        "ranking.features.query(user_embedding)": str(user_vector),
-        "ranking.profile": "recommendation"
+        'hits': hits,
+        'yql': 'select * from sources news where {} {}'.format(nn_search, filter),
+        'ranking.features.query(user_embedding)': str(user_vector),
+        'ranking.profile': 'recommendation'
     }
-    req = urllib.request.Request("http://localhost:8080/search/", data=str(data).encode('utf-8'))  # POST
-    req.add_header('Content-Type', 'application/json')
-    try:
-        return json.loads(urllib.request.urlopen(req).read())
-    except urllib.error.HTTPError as e:
-        return json.loads(e.read())
+    return requests.post('http://localhost:8080/search/', json=data).json()
 
 
 def main():
