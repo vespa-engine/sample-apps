@@ -23,7 +23,7 @@ is re-ranked using the Transformer model.
 * Architecture: x86_64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
-* [Java 11](https://openjdk.java.net/projects/jdk/11/) installed.
+* [Java 17](https://openjdk.java.net/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 * python3.8+ (tested with 3.8)
