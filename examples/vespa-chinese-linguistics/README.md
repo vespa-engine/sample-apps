@@ -15,8 +15,8 @@ Solr, Elasticsearch, QihooVerticalSearch (based on Lucene) and so on.
 
 
 ### Requirements
-* JDK (>= 11)
-* maven
+* [Java 17](https://openjdk.java.net/projects/jdk/17/) installed. 
+* [Apache Maven](https://maven.apache.org/install.html) 
 
 
 ### Build
