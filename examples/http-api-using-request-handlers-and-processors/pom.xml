@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.yahoo.demo</groupId>
+    <groupId>ai.vespa.examples</groupId>
     <artifactId>http-api-using-request-handlers-and-processors</artifactId>
     <version>1.0.1</version>
     <packaging>container-plugin</packaging>  <!-- Use Vespa packaging -->
