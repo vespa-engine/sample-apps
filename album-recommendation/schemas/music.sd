@@ -26,6 +26,10 @@ schema music {
 
     }
 
+    fieldset default {
+        fields: artist, album
+    }
+
     # Rank profiles defines what to compute over the data, and how to use the computation result to order them
     # They can be selected at query time (ranking.profile=[name]), and can be everything from simple handwritten
     # expressions as below to references to large machine-learned models.
