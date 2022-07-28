@@ -4,11 +4,11 @@ import com.qihoo.language.config.DictsLocConfig;
 import com.yahoo.language.Language;
 import com.yahoo.language.process.StemMode;
 import com.yahoo.language.process.Token;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author bratseth
