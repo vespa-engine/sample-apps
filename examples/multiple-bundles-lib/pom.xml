@@ -15,7 +15,7 @@
         <test.hide>true</test.hide>
         <junit.version>5.7.1</junit.version>
         <vespa_version>8.24.3</vespa_version>
-        <jdk.version>11</jdk.version>
+        <jdk.version>17</jdk.version>
     </properties>
 
     <dependencies>
