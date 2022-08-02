@@ -11,7 +11,7 @@
   <parent>
     <groupId>com.yahoo.vespa</groupId>
     <artifactId>cloud-tenant-base</artifactId>
-    <version>[8,999)</version>  <!-- Use the latest Vespa release on each build -->
+    <version>[8,9)</version>  <!-- Use the latest Vespa release on each build -->
     <relativePath/>
   </parent>
 
