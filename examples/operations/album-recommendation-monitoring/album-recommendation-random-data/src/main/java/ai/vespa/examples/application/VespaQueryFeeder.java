@@ -1,5 +1,5 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package application;
+package ai.vespa.examples.application;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import json.ImmutableQuery;
+import ai.vespa.examples.json.ImmutableQuery;
 
 public class VespaQueryFeeder extends Thread {
 

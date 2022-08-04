@@ -1,11 +1,11 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package application;
+package ai.vespa.examples.application;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import json.Album;
+import ai.vespa.examples.json.Album;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
