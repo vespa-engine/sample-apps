@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class SubqueriesSearcherTest {
     @Test
-    public void hit_is_added() throws Exception {
+    public void testHitIsAdded() throws Exception {
         try (Application app = Application.fromApplicationPackage(
                 Paths.get("src/test/application"),
                 Networking.disable))
