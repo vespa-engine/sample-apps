@@ -18,13 +18,13 @@
 
     <document-processing>
       <chain id="transformer-processing" inherits="indexing">
-        <documentprocessor id="ai.vespa.processor.TransformerProcessor" bundle="transformers"/>
+        <documentprocessor id="ai.vespa.examples.processor.TransformerProcessor" bundle="transformers"/>
       </chain>
     </document-processing>
 
     <search>
       <chain id="transformer" inherits="vespa">
-        <searcher id="ai.vespa.searcher.TransformerSearcher" bundle="transformers"/>
+        <searcher id="ai.vespa.examples.searcher.TransformerSearcher" bundle="transformers"/>
       </chain>
     </search>
   </container>
