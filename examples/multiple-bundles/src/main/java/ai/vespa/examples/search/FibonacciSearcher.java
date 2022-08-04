@@ -1,10 +1,12 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package com.mydomain.search;
+package ai.vespa.examples.search;
 
-import com.yahoo.search.*;
+import ai.vespa.examples.lib.FibonacciProducer;
+import com.yahoo.search.Query;
+import com.yahoo.search.Result;
+import com.yahoo.search.Searcher;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
-import com.mydomain.lib.FibonacciProducer;
 
 import java.util.logging.Logger;
 
