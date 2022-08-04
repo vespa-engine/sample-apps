@@ -1,5 +1,5 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package application;
+package ai.vespa.examples.application;
 
 import ai.vespa.feed.client.DocumentId;
 import ai.vespa.feed.client.FeedClient;
@@ -8,9 +8,9 @@ import ai.vespa.feed.client.FeedException;
 import ai.vespa.feed.client.OperationParameters;
 import ai.vespa.feed.client.Result;
 import com.google.gson.Gson;
-import json.Album;
-import json.ImmutableTopLevelPut;
-import json.TopLevelPut;
+import ai.vespa.examples.json.Album;
+import ai.vespa.examples.json.ImmutableTopLevelPut;
+import ai.vespa.examples.json.TopLevelPut;
 
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;

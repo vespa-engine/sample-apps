@@ -1,5 +1,5 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package application;
+package ai.vespa.examples.application;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
-import json.Album;
-import json.Category;
-import json.CategoryScores;
-import json.Cell;
-import json.ImmutableAlbum;
-import json.ImmutableCategory;
-import json.ImmutableCategoryScores;
-import json.ImmutableCell;
+import ai.vespa.examples.json.Album;
+import ai.vespa.examples.json.Category;
+import ai.vespa.examples.json.CategoryScores;
+import ai.vespa.examples.json.Cell;
+import ai.vespa.examples.json.ImmutableAlbum;
+import ai.vespa.examples.json.ImmutableCategory;
+import ai.vespa.examples.json.ImmutableCategoryScores;
+import ai.vespa.examples.json.ImmutableCell;
 
 
 public class RandomAlbumGenerator {
