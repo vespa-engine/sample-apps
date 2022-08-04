@@ -18,7 +18,7 @@
       </config>
     </component>
 
-    <component id="ai.vespa.tokenizer.BertTokenizer" bundle="dense-passage-retrieval-with-ann">
+    <component id="ai.vespa.examples.tokenizer.BertTokenizer" bundle="dense-passage-retrieval-with-ann">
       <config name="ai.vespa.tokenizer.bert-model">
         <max_input>256</max_input>
         <vocabulary>files/bert-base-uncased-vocab.txt</vocabulary>
@@ -27,20 +27,20 @@
 
     <document-processing>
       <chain id="bert-tensorizer" inherits="indexing">
-        <documentprocessor id="ai.vespa.processor.QADocumentProcessor" bundle="dense-passage-retrieval-with-ann"/>
+        <documentprocessor id="ai.vespa.examples.processor.QADocumentProcessor" bundle="dense-passage-retrieval-with-ann"/>
       </chain>
     </document-processing>
 
     <model-evaluation/>
     <search>
       <chain id="qa" inherits="vespa">
-        <searcher id="ai.vespa.searcher.RetrieveModelSearcher" bundle="dense-passage-retrieval-with-ann"/>
-        <searcher id="ai.vespa.searcher.QASearcher" bundle="dense-passage-retrieval-with-ann"/>
+        <searcher id="ai.vespa.examples.searcher.RetrieveModelSearcher" bundle="dense-passage-retrieval-with-ann"/>
+        <searcher id="ai.vespa.examples.searcher.QASearcher" bundle="dense-passage-retrieval-with-ann"/>
       </chain>
     </search>
     <document-api/>
 
-    <handler id="ai.vespa.frontend.FrontendHandler" bundle="dense-passage-retrieval-with-ann">
+    <handler id="ai.vespa.examples.frontend.FrontendHandler" bundle="dense-passage-retrieval-with-ann">
       <binding>http://*/frontend/*</binding>
     </handler>
 

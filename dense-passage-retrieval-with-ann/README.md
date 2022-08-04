@@ -508,11 +508,11 @@ The application has 4 custom plugins:
 * A BERT Tokenizer component which maps text to BERT vocabulary token_ids.
   This is a shared component used by both the custom Searcher and Document processor.
 * A custom Document Processor which does BERT tokenization during indexing:
-  [QADocumentProcessor.java](src/main/java/ai/vespa/processor/QADocumentProcessor.java)
+  [QADocumentProcessor.java](src/main/java/ai/vespa/examples/processor/QADocumentProcessor.java)
 * A custom Searcher which controls the Retrieval logic (sparse, dense, hybrid)
   and uses the BERT Tokenizer to convert the question string to a tensor of token_ids:
-  [RetrieveModelSearcher.java](src/main/java/ai/vespa/searcher/RetrieveModelSearcher.java)
+  [RetrieveModelSearcher.java](src/main/java/ai/vespa/examples/searcher/RetrieveModelSearcher.java)
 * A custom Searcher which reads the outputs of the reader model for the best ranking hit from the retriever phase
   (Vespa second phase ranking) and maps the best matching answer span
   to an textual answer which is returned as the predicted answer:
-  [QASearcher.java](src/main/java/ai/vespa/searcher/QASearcher.java)
+  [QASearcher.java](src/main/java/ai/vespa/examples/searcher/QASearcher.java)

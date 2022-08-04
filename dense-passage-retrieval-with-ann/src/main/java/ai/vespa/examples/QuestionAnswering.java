@@ -1,9 +1,9 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
-package ai.vespa;
+package ai.vespa.examples;
 
 
-import ai.vespa.tokenizer.BertTokenizer;
+import ai.vespa.examples.tokenizer.BertTokenizer;
 import com.yahoo.search.Query;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorAddress;
