@@ -19,7 +19,7 @@
         <module>examples/http-api-using-request-handlers-and-processors</module>
         <module>incremental-search/search-as-you-type</module>
         <module>incremental-search/search-suggestions</module>
-        <module>model-evaluation</module>
+        <module>model-inference</module>
         <module>msmarco-ranking</module>
         <module>examples/multiple-bundles-lib</module>
         <module>examples/multiple-bundles</module>
