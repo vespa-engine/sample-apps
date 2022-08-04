@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ExampleProcessorTest {
 
     @Test
-    public void requireThatResultContainsHelloWorld() {
+    public void testThatResultContainsHelloWorld() {
         ExampleProcessorConfig.Builder config = new ExampleProcessorConfig.Builder().message("Hello, processor!");
         Processor processor = new ExampleProcessor(new ExampleProcessorConfig(config));
 
