@@ -5,7 +5,7 @@
   <container id='default' version='1.0'>
     <search>
       <chain id="default" inherits="vespa">
-        <searcher id="com.yahoo.example.SubqueriesSearcher" bundle="predicate-fields"/>
+        <searcher id="ai.vespa.examples.SubqueriesSearcher" bundle="predicate-fields"/>
       </chain>
     </search>
     <document-api />
