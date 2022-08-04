@@ -57,7 +57,7 @@ It also demonstrates search suggestions (query autocompletion).
 ## Sample Applications
 These sample application demonstrates various Vespa features and capabilities. 
 
-### [Vespa as ML inference server (model-evaluation)](model-evaluation)
+### [Vespa as ML inference server (model-inference)](model-inference)
 A sample Vespa application which demonstrates using Vespa as a stateless ML model inference server
 where Vespa takes care of distributing ML models to multiple serving containers,
 offering horizontal scaling and safe deployment.
