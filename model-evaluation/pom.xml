@@ -6,7 +6,7 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ai.vespa.examples</groupId>
-    <artifactId>model-inference</artifactId>
+    <artifactId>model-evaluation</artifactId>
     <version>1.0.1</version>
     <packaging>container-plugin</packaging>  <!-- Use Vespa packaging -->
     <parent>

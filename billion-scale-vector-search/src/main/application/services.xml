@@ -3,15 +3,15 @@
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
   <container id='default' version='1.0'>
     <nodes count='1'/>
-    <component id='ai.vespa.ClusteringComponent' bundle='bigann'/>
+    <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
     <search>
       <chain id='default' inherits='vespa'>
-        <searcher id='ai.vespa.searcher.SPANNSearcher' bundle='bigann'/>
+        <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-vector-search'/>
       </chain>
     </search>
     <document-processing>
       <chain id='neighbor-assigner' inherits='indexing'>
-        <documentprocessor id='ai.vespa.docproc.AssignNeighborsDocProc' bundle='bigann'/>
+        <documentprocessor id='ai.vespa.examples.docproc.AssignNeighborsDocProc' bundle='billion-scale-vector-search'/>
       </chain>
     </document-processing>
     <document-api/>

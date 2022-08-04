@@ -32,5 +32,6 @@
         <module>examples/vespa-chinese-linguistics</module>
         <module>examples/document-processing</module>
         <module>examples/joins</module>
+        <module>billion-scale-vector-search</module>
     </modules>
 </project>

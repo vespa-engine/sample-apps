@@ -50,7 +50,7 @@ See [index search tunings](https://docs.vespa.ai/en/reference/services-content.h
 
 We perform the experiments on a single content node with 2 x Xeon Gold 6240 2.60GHz (36 core, 72 threads with hyperthread). 
 We also use a 16 v-cpu instance to run the stateless container node where the custom 
-[searcher logic](src/main/java/ai/vespa/searcher/colbert/ColBERTSearcher.java) is implemented.
+[searcher logic](src/main/java/ai/vespa/examples/searcher/colbert/ColBERTSearcher.java) is implemented.
 The system is deployed as an instance in [cloud.vespa.ai](https://cloud.vespa.ai/).
 
 The performance might differ on different cpu models depending on what type of instructions they support (e.g avx512 availability) as 

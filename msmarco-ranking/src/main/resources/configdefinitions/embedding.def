@@ -1,4 +1,4 @@
-package=ai.vespa.embedding
+package=ai.vespa.examples.embedding
 
 max_query_length int
 max_document_length int
