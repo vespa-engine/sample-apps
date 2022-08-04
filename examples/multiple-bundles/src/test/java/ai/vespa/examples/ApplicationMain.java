@@ -1,5 +1,5 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-package com.mydomain.demo;
+package ai.vespa.examples;
 
 import com.yahoo.application.Networking;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * After running main you can e.g open
+ * After running main you can e.g. open
  * http://localhost:8080/search/?query=foo&tracelevel=2
  * in a browser.
  */
