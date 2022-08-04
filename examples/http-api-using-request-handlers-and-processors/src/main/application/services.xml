@@ -4,8 +4,8 @@
     <container id="default" version="1.0">
         <processing>
             <chain id="default">
-                <processor id="com.mydomain.demo.AnnotatingProcessor" bundle="http-api-using-request-handlers-and-processors">
-                    <config name="com.mydomain.demo.demo">
+                <processor id="ai.vespa.examples.AnnotatingProcessor" bundle="http-api-using-request-handlers-and-processors">
+                    <config name="ai.vespa.examples.demo">
                         <demo>
                             <item>
                                 <term>smurf</term>
@@ -13,20 +13,20 @@
                         </demo>
                     </config>
                 </processor>
-                <processor id="com.mydomain.demo.DataProcessor" bundle="http-api-using-request-handlers-and-processors" />
+                <processor id="ai.vespa.examples.DataProcessor" bundle="http-api-using-request-handlers-and-processors" />
             </chain>
-            <renderer id="demo" class="com.mydomain.demo.DemoRenderer" bundle="http-api-using-request-handlers-and-processors" />
+            <renderer id="demo" class="ai.vespa.examples.DemoRenderer" bundle="http-api-using-request-handlers-and-processors" />
         </processing>
         <document-processing>
           <chain id="default">
-            <documentprocessor id="com.mydomain.demo.DemoDocumentProcessor" bundle="http-api-using-request-handlers-and-processors"/>
+            <documentprocessor id="ai.vespa.examples.DemoDocumentProcessor" bundle="http-api-using-request-handlers-and-processors"/>
           </chain>
         </document-processing>
-        <handler id="com.mydomain.demo.DemoHandler" bundle="http-api-using-request-handlers-and-processors">
+        <handler id="ai.vespa.examples.DemoHandler" bundle="http-api-using-request-handlers-and-processors">
             <binding>http://*/demo</binding>
         </handler>
-        <component id="com.mydomain.demo.DemoComponent" bundle="http-api-using-request-handlers-and-processors"/>
-        <component id="com.mydomain.demo.DemoFreezableComponent" bundle="http-api-using-request-handlers-and-processors"/>
+        <component id="ai.vespa.examples.DemoComponent" bundle="http-api-using-request-handlers-and-processors"/>
+        <component id="ai.vespa.examples.DemoFreezableComponent" bundle="http-api-using-request-handlers-and-processors"/>
         <document-api/>
         <nodes>
             <node hostalias="node1"/>
