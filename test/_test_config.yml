@@ -9,7 +9,7 @@ urls:
     - examples/generic-request-processing/README.md
     - examples/http-api-using-request-handlers-and-processors/README.md
     - examples/multiple-bundles/README.md
-    - model-evaluation/README.md
+    - model-inference/README.md
     - examples/part-purchases-demo/README.md
     - examples/vespa-chinese-linguistics/README.md
     - incremental-search/search-as-you-type/README.md
