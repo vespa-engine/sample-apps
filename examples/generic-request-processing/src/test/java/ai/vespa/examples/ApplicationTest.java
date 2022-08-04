@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ApplicationTest {
 
     @Test
-    public void requireThatResultContainsHelloWorld() {
+    public void testThatResultContainsHelloWorld() {
         try (Application app = Application.fromApplicationPackage(
                 FileSystems.getDefault().getPath("src/main/application"),
                 Networking.disable)) {
