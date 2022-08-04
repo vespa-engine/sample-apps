@@ -19,7 +19,7 @@
       </config>
     </component>
 
-    <component id="ai.vespa.embedding.DenseEmbedder" bundle="msmarco">
+    <component id="ai.vespa.examples.embedding.DenseEmbedder" bundle="msmarco-ranking">
       <config name="ai.vespa.embedding.embedding">
         <model_name>dense_encoder</model_name>
         <max_query_length>32</max_query_length>
@@ -29,8 +29,8 @@
 
     <document-processing>
       <chain id="bert-tensorizer" inherits="indexing">
-        <documentprocessor id="ai.vespa.docproc.DocumentTensorizer" bundle="msmarco"/>
-        <documentprocessor id="ai.vespa.docproc.DenseDocumentEmbedder" bundle="msmarco"/>
+        <documentprocessor id="ai.vespa.examples.docproc.DocumentTensorizer" bundle="msmarco-ranking"/>
+        <documentprocessor id="ai.vespa.examples.docproc.DenseDocumentEmbedder" bundle="msmarco-ranking"/>
       </chain>
     </document-processing>
 
@@ -57,32 +57,32 @@
     <!-- Search chains -->
     <search>
       <chain id="docranking" inherits="vespa">
-        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.examples.searcher.RetrievalModelSearcher" bundle="msmarco-ranking"/>
       </chain>
 
       <chain id="passageranking" inherits="vespa">
-        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
-        <searcher id="ai.vespa.searcher.QueryEncodingSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.examples.searcher.RetrievalModelSearcher" bundle="msmarco-ranking"/>
+        <searcher id="ai.vespa.examples.searcher.QueryEncodingSearcher" bundle="msmarco-ranking"/>
       </chain>
       <!-- Chain for re-ranking in the stateless container layer -->
       <chain id="passagereranking" inherits="vespa">
-        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
-        <searcher id="ai.vespa.searcher.QueryEncodingSearcher" bundle="msmarco"/>
-        <searcher id="ai.vespa.searcher.ReRankingSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.examples.searcher.RetrievalModelSearcher" bundle="msmarco-ranking"/>
+        <searcher id="ai.vespa.examples.searcher.QueryEncodingSearcher" bundle="msmarco-ranking"/>
+        <searcher id="ai.vespa.examples.searcher.ReRankingSearcher" bundle="msmarco-ranking"/>
       </chain>
 
       <chain id="passagerankingsimple" inherits="vespa">
-        <searcher id="ai.vespa.searcher.RetrievalModelSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.examples.searcher.RetrievalModelSearcher" bundle="msmarco-ranking"/>
       </chain>
 
       <!-- Sub-chain invoked by QueryEncodingSearcher -->
       <chain id="embedding">
-        <searcher id="ai.vespa.searcher.QueryEmbeddingSearcher" bundle="msmarco"/>
+        <searcher id="ai.vespa.examples.searcher.QueryEmbeddingSearcher" bundle="msmarco-ranking"/>
       </chain>
 
       <!-- Sub-chain invoked by QueryEncodingSearcher -->
       <chain id="colbert">
-        <searcher id="ai.vespa.searcher.colbert.ColBERTSearcher" bundle="msmarco">
+        <searcher id="ai.vespa.examples.searcher.colbert.ColBERTSearcher" bundle="msmarco-ranking">
           <config name="ai.vespa.colbert.colbert">
             <max_query_length>32</max_query_length>
             <dim>32</dim>

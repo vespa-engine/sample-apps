@@ -6,10 +6,10 @@
     <nodes count='1'/>
     <nodes deploy:environment='perf' count='2'/>
     <nodes deploy:environment='prod' count='[2,4]'/>
-    <component id='ai.vespa.ClusteringComponent' bundle='bigann'/>
+    <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
     <search>
       <chain id='default' inherits='vespa'>
-        <searcher id='ai.vespa.searcher.SPANNSearcher' bundle='bigann'/>
+        <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-vector-search'/>
       </chain>
     </search>
   </container>
@@ -21,10 +21,10 @@
     <config name="config.docproc.docproc">
       <numthreads>24</numthreads>
     </config>
-    <component id='ai.vespa.ClusteringComponent' bundle='bigann'/>
+    <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
     <document-processing>
       <chain id='neighbor-assigner' inherits='indexing'>
-        <documentprocessor id='ai.vespa.docproc.AssignNeighborsDocProc' bundle='bigann'/>
+        <documentprocessor id='ai.vespa.examples.docproc.AssignNeighborsDocProc' bundle='billion-scale-vector-search'/>
       </chain>
     </document-processing>
     <search/>

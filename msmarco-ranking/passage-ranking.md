@@ -324,11 +324,11 @@ and their tensor output is used when searching (approximate nearest neighbor sea
 
 The following models are evaluated in the stateless container cluster:
 
-- Single representation model [QueryEmbeddingSearcher](src/main/java/ai/vespa/searcher/QueryEmbeddingSearcher.java)
-- ColBERT representation model [ColBERTSearcher](src/main/java/ai/vespa/searcher/colbert/ColBERTSearcher.java)
+- Single representation model [QueryEmbeddingSearcher](src/main/java/ai/vespa/examples/searcher/QueryEmbeddingSearcher.java)
+- ColBERT representation model [ColBERTSearcher](src/main/java/ai/vespa/examples/searcher/colbert/ColBERTSearcher.java)
 
 These two encoders are evaluated in parallel and invoked by
-[QueryEncodingSearcher](src/main/java/ai/vespa/searcher/QueryEncodingSearcher.java) 
+[QueryEncodingSearcher](src/main/java/ai/vespa/examples/searcher/QueryEncodingSearcher.java) 
 
 ## Scaling and Serving Performance
 
