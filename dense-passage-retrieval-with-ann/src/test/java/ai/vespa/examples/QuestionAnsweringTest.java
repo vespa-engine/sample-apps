@@ -1,9 +1,9 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
-package ai.vespa;
+package ai.vespa.examples;
 
-import ai.vespa.tokenizer.BertModelConfig;
-import ai.vespa.tokenizer.BertTokenizer;
+import ai.vespa.examples.tokenizer.BertModelConfig;
+import ai.vespa.examples.tokenizer.BertTokenizer;
 import com.yahoo.language.simple.SimpleLinguistics;
 import com.yahoo.tensor.Tensor;
 import org.junit.jupiter.api.Test;

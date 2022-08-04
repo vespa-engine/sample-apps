@@ -1,10 +1,10 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
-package ai.vespa.searcher;
+package ai.vespa.examples.searcher;
 
-import ai.vespa.QuestionAnswering;
-import ai.vespa.tokenizer.BertTokenizer;
-import ai.vespa.QuestionAnswering.Span;
+import ai.vespa.examples.QuestionAnswering;
+import ai.vespa.examples.tokenizer.BertTokenizer;
+import ai.vespa.examples.QuestionAnswering.Span;
 import com.google.inject.Inject;
 import com.yahoo.component.chain.dependencies.Provides;
 import com.yahoo.search.Query;
