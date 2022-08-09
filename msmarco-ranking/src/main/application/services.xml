@@ -20,7 +20,7 @@
     </component>
 
     <component id="ai.vespa.examples.embedding.DenseEmbedder" bundle="msmarco-ranking">
-      <config name="ai.vespa.embedding.embedding">
+      <config name="ai.vespa.examples.embedding.embedding">
         <model_name>dense_encoder</model_name>
         <max_query_length>32</max_query_length>
         <max_document_length>256</max_document_length>
@@ -83,7 +83,7 @@
       <!-- Sub-chain invoked by QueryEncodingSearcher -->
       <chain id="colbert">
         <searcher id="ai.vespa.examples.searcher.colbert.ColBERTSearcher" bundle="msmarco-ranking">
-          <config name="ai.vespa.colbert.colbert">
+          <config name="ai.vespa.examples.colbert.colbert">
             <max_query_length>32</max_query_length>
             <dim>32</dim>
           </config>

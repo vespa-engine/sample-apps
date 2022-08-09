@@ -19,7 +19,7 @@
     </component>
 
     <component id="ai.vespa.examples.tokenizer.BertTokenizer" bundle="dense-passage-retrieval-with-ann">
-      <config name="ai.vespa.tokenizer.bert-model">
+      <config name="ai.vespa.examples.tokenizer.bert-model">
         <max_input>256</max_input>
         <vocabulary>files/bert-base-uncased-vocab.txt</vocabulary>
       </config>
