@@ -58,7 +58,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>application.Application</mainClass>
+                            <mainClass>ai.vespa.examples.application.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -80,7 +80,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>application.Application</mainClass>
+                            <mainClass>ai.vespa.examples.application.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
