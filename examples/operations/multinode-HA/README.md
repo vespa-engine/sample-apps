@@ -37,6 +37,9 @@ See [Process overview](#process-overview) below for more details,
 why the clusters and services are configured in this way.
 Also see [troubleshooting](/examples/operations/README.md#troubleshooting).
 
+
+
+## Memory usage
 This guide is tested with Docker using 12G Memory:
 
 <pre data-test="exec">
@@ -51,6 +54,9 @@ Note that this guide is configured for minimum memory use for easier testing, ad
 to `docker run` commands. For real production use cases, do not do this.
 Also remove annotated memory-settings in [services.xml](services.xml).
 
+
+
+## Get started
 Get the app and create the local network:
 
 <pre data-test="exec">
@@ -416,7 +422,6 @@ $ curl http://localhost:8083/metrics/v2/values
                 {
                     "name": "vespa.container",
                     "timestamp": 1643289142,
-                    "status": {
 ```
 
 Same as previous, in Prometheus format:
