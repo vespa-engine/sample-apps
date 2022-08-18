@@ -111,9 +111,7 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
 Notes:
 * Use fully qualified hostnames.
 * VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
-* Refer to the
-  [Docker start script](https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh)
-  for details.
+* Refer to [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
 
 Vespa separates between starting config servers and service nodes,
 see [Vespa start/stop](https://docs.vespa.ai/en/reference/files-processes-and-ports.html#vespa-start-stop).
