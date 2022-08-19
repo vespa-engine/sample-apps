@@ -13,6 +13,10 @@ This is a guide for functional testing, deployed on one host for simplicity.
 The first part of this example sets up a multinode application of multiple container and content node clusters.
 The second part secures the application using [mTLS](https://docs.vespa.ai/en/mtls.html).
 
+**Troubleshooting:** The [troubleshooting-startup-multinode](https://vespa.ai/resources#troubleshooting-startup-multinode)
+training video goes through various issues to help setting up a multinode cluster.
+See this if getting problems during the procedures below.
+
 There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
 and describes the important elements and integration points.
