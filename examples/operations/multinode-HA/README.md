@@ -142,6 +142,7 @@ $ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore | \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
+Ignore the `Unable to lookup IP address of host` messages from the deploy output.
 
 
 ## Start the admin server
