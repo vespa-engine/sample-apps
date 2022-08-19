@@ -475,6 +475,9 @@ $ curl --data-urlencode 'yql=select * from sources * where sddocname contains "m
   http://localhost:8082/search/
 </pre>
 
+See the [Query Builder](https://github.com/vespa-engine/vespa/tree/master/client/js/app#query-builder)
+for a GUI to build and run queries.
+
 
 
 ## Clean up after testing
