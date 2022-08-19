@@ -127,8 +127,8 @@ Wait for the config servers to start,
 using [state/v1/health](https://docs.vespa.ai/en/reference/metrics.html#state-v1-health):
 <pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ ( for port in 19071 19072 19073; do \
-    curl -s http://localhost:$port/state/v1/health; \
-    done | head -5 )
+    curl -s http://localhost:$port/state/v1/health | head -5; \
+    done )
 </pre>
 
 Later in this guide, only one of the nodes in each cluster is checked, to keep the guide short.
