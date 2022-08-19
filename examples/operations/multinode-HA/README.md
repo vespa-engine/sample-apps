@@ -157,7 +157,7 @@ $ docker run --detach --name node3 --hostname node3.vespanet \
 
 Notes:
 * See  _services_ argument to `docker run` - a config server is not started on this node -
-  see the [Docker start script](https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh).
+  see [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
 * The log server can be disk intensive, as all nodes' _vespa.log_ is rotated and forwarded here.
   For this reason, it is normally a good idea to run this on a separate node, like here -
   a full disk will not impact other nodes.
