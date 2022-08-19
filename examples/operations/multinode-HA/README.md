@@ -13,6 +13,10 @@ This is a guide for functional testing, deployed on one host for simplicity.
 The first part of this example sets up a multinode application of multiple container and content node clusters.
 The second part secures the application using [mTLS](https://docs.vespa.ai/en/mtls.html).
 
+**Troubleshooting:** The [troubleshooting-startup-multinode](https://vespa.ai/resources#troubleshooting-startup-multinode)
+training video goes through various issues to help setting up a multinode cluster.
+See this if getting problems during the procedures below.
+
 There are multiple ways of deploying multinode applications, on multiple platforms.
 This application is a set of basic Docker containers,
 and describes the important elements and integration points.
@@ -123,8 +127,8 @@ Wait for the config servers to start,
 using [state/v1/health](https://docs.vespa.ai/en/reference/metrics.html#state-v1-health):
 <pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ ( for port in 19071 19072 19073; do \
-    curl -s http://localhost:$port/state/v1/health; \
-    done | head -5 )
+    curl -s http://localhost:$port/state/v1/health | head -5; \
+    done )
 </pre>
 
 Later in this guide, only one of the nodes in each cluster is checked, to keep the guide short.
@@ -135,9 +139,10 @@ Later in this guide, only one of the nodes in each cluster is checked, to keep t
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore | \
   curl --header Content-Type:application/zip --data-binary @- \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+  http://localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
+Ignore the `Unable to lookup IP address of host` messages from the deploy output.
 
 
 ## Start the admin server
@@ -152,7 +157,7 @@ $ docker run --detach --name node3 --hostname node3.vespanet \
 
 Notes:
 * See  _services_ argument to `docker run` - a config server is not started on this node -
-  see the [Docker start script](https://github.com/vespa-engine/docker-image/blob/master/include/start-container.sh).
+  see [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
 * The log server can be disk intensive, as all nodes' _vespa.log_ is rotated and forwarded here.
   For this reason, it is normally a good idea to run this on a separate node, like here -
   a full disk will not impact other nodes.
@@ -469,6 +474,9 @@ Run a query, using the query-API endpoint in the _query_ container cluster, here
 $ curl --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
   http://localhost:8082/search/
 </pre>
+
+See the [Query Builder](https://github.com/vespa-engine/vespa/tree/master/client/js/app#query-builder)
+for a GUI to build and run queries.
 
 
 
