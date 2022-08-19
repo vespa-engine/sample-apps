@@ -139,7 +139,7 @@ Later in this guide, only one of the nodes in each cluster is checked, to keep t
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
 $ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore | \
   curl --header Content-Type:application/zip --data-binary @- \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
+  http://localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
 Ignore the `Unable to lookup IP address of host` messages from the deploy output.
