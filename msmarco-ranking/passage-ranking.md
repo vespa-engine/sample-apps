@@ -461,7 +461,7 @@ script used is found [here](src/main/bash/download_models.sh).
 $ mvn clean package -U
 </pre>
 
-Make sure that the used Java version is 11.
+Make sure that the used Java version is 17.
 The above mvn command will download models, build and package the vespa application package. 
 
 Deploy the application. This step deploys the application package built in the previous step:
