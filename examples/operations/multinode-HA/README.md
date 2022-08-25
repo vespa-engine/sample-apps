@@ -117,11 +117,10 @@ Notes:
 * Use fully qualified hostnames.
 * VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 * Refer to [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
-
-Vespa separates between starting config servers and service nodes,
-see [Vespa start/stop](https://docs.vespa.ai/en/reference/files-processes-and-ports.html#vespa-start-stop).
-Normally config servers run both `configserver` _and_ `services`, other nodes run `services` only.
-This because `services` has node infrastructure, e.g. log forwarding.
+* Vespa separates between starting config servers and service nodes,
+  see [Vespa start/stop](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-start-configserver).
+  Normally config servers run both `configserver` _and_ `services`, other nodes run `services` only.
+  This because `services` has node infrastructure, e.g. log forwarding.
 
 At this point, nothing other than config server cluster runs.
 Wait for the config servers to start,

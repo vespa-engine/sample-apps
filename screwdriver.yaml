@@ -47,6 +47,7 @@ jobs:
       - check-links: |
           bundle exec htmlproofer \
             --assume-extension --empty-alt-ignore \
+            --check-html --check-external-hash \
             --typhoeus '{"connecttimeout": 10, "timeout": 30}' \
             --hydra '{"max_concurrency": 1}' \
             --directory-index-file README.html \
