@@ -119,7 +119,7 @@ Notes:
 * Refer to [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
 * Vespa separates between starting config servers and service nodes,
   see [Vespa start/stop](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-start-configserver).
-  Normally config servers run both `configserver` _and_ `services`, other nodes run `services` only.
+  Normally config servers run both `configserver` and `services`, other nodes run `services` only.
   This because `services` has node infrastructure, e.g. log forwarding.
 
 At this point, nothing other than config server cluster runs.
