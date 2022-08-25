@@ -24,7 +24,7 @@ This README contains the following:
 - [Experiments](#experiments) and [results](#results)
 
 <figure>
-<p align="center"><img src="img/retriever-reader.png" /></p>
+<p align="center"><img src="img/retriever-reader.png" alt="Open-Domain Question Answering overview"/></p>
 </figure>
 
 ## Quick start
@@ -327,7 +327,7 @@ it will not  match the golden answers which are *14 December 1972 UTC* or *Decem
 -->
 
 <figure>
-<p align="center"><img width="90%" src="img/two-towers-embedding.png" /></p>
+<p align="center"><img width="90%" src="img/two-towers-embedding.png" alt="DPR Two Tower Embedding Architecture" /></p>
 </figure>
 
 
