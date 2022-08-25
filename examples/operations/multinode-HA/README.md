@@ -66,6 +66,7 @@ Get the app and create the local network:
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/examples/operations/multinode-HA
+$ docker pull vespaengine/vespa
 $ docker network create --driver bridge vespanet
 </pre>
 
@@ -93,7 +94,7 @@ $ docker run --detach --name node0 --hostname node0.vespanet \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespanet \
     --publish 19071:19071 --publish 19100:19100 --publish 19050:19050 --publish 20092:19092 \
-    vespaengine/vespa
+    vespaengine/vespa configserver,services
 
 $ docker run --detach --name node1 --hostname node1.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
@@ -101,7 +102,7 @@ $ docker run --detach --name node1 --hostname node1.vespanet \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespanet \
     --publish 19072:19071 --publish 19101:19100 --publish 19051:19050 --publish 20093:19092 \
-    vespaengine/vespa
+    vespaengine/vespa configserver,services
 
 $ docker run --detach --name node2 --hostname node2.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
@@ -109,18 +110,17 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespanet \
     --publish 19073:19071 --publish 19102:19100 --publish 19052:19050 --publish 20094:19092 \
-    vespaengine/vespa
+    vespaengine/vespa configserver,services
 </pre>
 
 Notes:
 * Use fully qualified hostnames.
 * VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 * Refer to [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
-
-Vespa separates between starting config servers and service nodes,
-see [Vespa start/stop](https://docs.vespa.ai/en/reference/files-processes-and-ports.html#vespa-start-stop).
-Normally config servers run both the `config server` _and_ `services`, other nodes run `services` only.
-This because `services` has node infrastructure, e.g. log forwarding.
+* Vespa separates between starting config servers and service nodes,
+  see [Vespa start/stop](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-start-configserver).
+  Normally config servers run both `configserver` and `services`, other nodes run `services` only.
+  This because `services` has node infrastructure, e.g. log forwarding.
 
 At this point, nothing other than config server cluster runs.
 Wait for the config servers to start,
@@ -156,7 +156,7 @@ $ docker run --detach --name node3 --hostname node3.vespanet \
 </pre>
 
 Notes:
-* See  _services_ argument to `docker run` - a config server is not started on this node -
+* See  `services` argument to `docker run` - a config server is not started on this node -
   see [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
 * The log server can be disk intensive, as all nodes' _vespa.log_ is rotated and forwarded here.
   For this reason, it is normally a good idea to run this on a separate node, like here -
