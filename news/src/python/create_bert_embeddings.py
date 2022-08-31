@@ -7,8 +7,10 @@ import sys
 import csv
 import time
 
-from transformers import BertTokenizer, BertModel
+from transformers import logging, BertTokenizer, BertModel
 
+
+logging.set_verbosity_error()
 
 data_dir = sys.argv[1]
 doc_type = "mind"
