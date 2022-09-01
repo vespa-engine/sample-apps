@@ -8,7 +8,7 @@ A sample application showcasing a simple e-commerce site built with Vespa.
 Refer to [Use Case - shopping](https://docs.vespa.ai/en/use-case-shopping.html).
 
 Included scripts to convert data from Julian McAuley's Amazon product data set
-(http://jmcauley.ucsd.edu/data/amazon/links.html) to a Vespa data feed.
+(https://cseweb.ucsd.edu/~jmcauley/datasets.html) to a Vespa data feed.
 This repository contains a small sample of this data from the sports and outdoor category,
 but you can download other data from the site above and use the scripts to convert.
 
