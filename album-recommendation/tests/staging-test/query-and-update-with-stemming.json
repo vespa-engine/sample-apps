@@ -7,7 +7,8 @@
     "steps": [
         {
             "name": "query before album update",
-            "comment": "If the document was fed with default stemming, this step fails. For a non-upgrade scenario, remove this step, and the next.",
+            "comment": [ "If the document in the staging-setup step was fed with default stemming, one document will be matched here.",
+                         "If the document was instead fed with no stemming, zero documents will match. Try it out!" ],
             "request": {
                 "parameters": "../query.json"
             },
@@ -15,7 +16,7 @@
                 "body": {
                     "root": {
                         "fields": {
-                            "totalCount": 0
+                            "totalCount": 1
                         }
                     }
                 }

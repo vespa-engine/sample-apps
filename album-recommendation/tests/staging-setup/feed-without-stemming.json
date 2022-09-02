@@ -1,6 +1,6 @@
 {
     "name": "Feed prior to upgrade",
-    "comment": "Deploy with 'stemming: none' for the album field, then run this.",
+    "comment": "Deploy with 'stemming: none' for the album field, then run this, to have the staging test fail.",
     "steps": [
         {
             "name": "feed foo",
