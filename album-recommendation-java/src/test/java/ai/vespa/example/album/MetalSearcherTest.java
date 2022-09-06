@@ -6,6 +6,7 @@ import com.yahoo.application.Networking;
 import com.yahoo.application.container.Search;
 import com.yahoo.component.ComponentSpecification;
 import com.yahoo.component.chain.Chain;
+import com.yahoo.metrics.simple.MetricReceiver;
 import com.yahoo.prelude.query.CompositeItem;
 import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.OrItem;
@@ -64,7 +65,8 @@ class MetalSearcherTest {
         builder.metalWords(Arrays.asList("hetfield", "metallica", "pantera"));
         MetalNamesConfig config = new MetalNamesConfig(builder);
 
-        Chain<Searcher> myChain = new Chain<>(new MinimalQueryInserter(), new MetalSearcher(config));  // added to chain in this order
+        Chain<Searcher> myChain = new Chain<>(new MinimalQueryInserter(),  // added to chain in this order
+                new MetalSearcher(config, new MetricReceiver.MockReceiver()));
         Execution.Context context = Execution.Context.createContextStub();
         Execution execution = new Execution(myChain, context);
 
