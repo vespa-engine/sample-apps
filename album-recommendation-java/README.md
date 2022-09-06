@@ -37,7 +37,7 @@ for how to implement unit tests.
 
 Run a query like:
 
-    vespa query "select * from music where album contains 'metallica'" "searchChain=metalchain"
+    $ vespa query "select * from music where album contains 'metallica'" searchChain=metalchain
 
 to see the custom metric in
 <a href="http://localhost:19092/metrics/v1/values?consumer=my-metrics" data-proofer-ignore>
