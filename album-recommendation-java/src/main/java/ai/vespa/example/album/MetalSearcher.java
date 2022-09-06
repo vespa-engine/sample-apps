@@ -2,8 +2,9 @@
 package ai.vespa.example.album;
 
 import com.google.inject.Inject;
+import com.yahoo.metrics.simple.Counter;
+import com.yahoo.metrics.simple.MetricReceiver;
 import com.yahoo.prelude.query.IndexedItem;
-import com.yahoo.prelude.query.Item;
 import com.yahoo.prelude.query.OrItem;
 import com.yahoo.prelude.query.WordItem;
 import com.yahoo.search.Query;
@@ -14,7 +15,6 @@ import com.yahoo.search.searchchain.Execution;
 import com.yahoo.yolean.chain.After;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,6 +26,7 @@ import java.util.List;
 public class MetalSearcher extends Searcher {
 
     private final List<String> metalWords;
+    private final Counter metalQueriesMetric;
 
     /**
      * Annotating the constructor with @Inject tells the container to use this constructor
@@ -39,17 +40,20 @@ public class MetalSearcher extends Searcher {
      *  - https://docs.vespa.ai/en/reference/config-files.html#config-definition-files
      * 
      * @param config the configuration object injected by the container.
+     * @param metricReceiver endpoint for custom metrics
      */
     @Inject
-    public MetalSearcher(MetalNamesConfig config) {
-        metalWords = config.metalWords();
+    public MetalSearcher(MetalNamesConfig config, MetricReceiver metricReceiver) {
+        this.metalWords = config.metalWords();
+        this.metalQueriesMetric = metricReceiver.declareCounter("metal_queries");
     }
 
     /**
      * Default constructor typically used for tests, etc.
      */
     public MetalSearcher() {
-        metalWords = new ArrayList<>();
+        this.metalWords = new ArrayList<>();
+        this.metalQueriesMetric = null;
     }
 
     /**
@@ -61,6 +65,7 @@ public class MetalSearcher extends Searcher {
     public Result search(Query query, Execution execution) {
         if ( ! isMetalQuery(query)) return execution.search(query);
 
+        metalQueriesMetric.add(1);
         QueryTree tree = query.getModel().getQueryTree();
         OrItem orItem = new OrItem();
         orItem.addItem(tree.getRoot());
