@@ -5,7 +5,7 @@
   <admin version="2.0">
     <adminserver hostalias="node1" />
     <metrics>
-      <consumer id="my-metric-set">
+      <consumer id="my-metrics">
         <metric id="metal_queries.count" />
       </consumer>
     </metrics>
