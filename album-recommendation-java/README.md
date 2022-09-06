@@ -35,6 +35,14 @@ into a `consumer` that can be used in the [metrics APIs](https://docs.vespa.ai/e
 Also see [MetalSearcherTest](src/test/java/ai/vespa/example/album/MetalSearcherTest.java)
 for how to implement unit tests.
 
+Run a query like:
+
+    vespa query "select * from music where album contains 'metallica'" "searchChain=metalchain"
+
+to see the custom metric in
+<a href="http://localhost:19092/metrics/v1/values?consumer=my-metrics" data-proofer-ignore>
+http://localhost:19092/metrics/v1/values?consumer=my-metrics</a>
+
 This code uses a [Counter](https://github.com/vespa-engine/vespa/blob/master/container-core/src/main/java/com/yahoo/metrics/simple/Counter.java) -
 A [Gauge](https://github.com/vespa-engine/vespa/blob/master/container-core/src/main/java/com/yahoo/metrics/simple/Gauge.java)
 example, with a dimension could be like:
