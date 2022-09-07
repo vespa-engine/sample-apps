@@ -23,7 +23,7 @@ is re-ranked using the Transformer model.
 * Architecture: x86_64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
-* [Java 17](https://openjdk.java.net/projects/jdk/17/) installed.
+* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 * python3.8+ (tested with 3.8)
@@ -88,9 +88,8 @@ This downloads the transformer model, converts it to an ONNX model and puts it
 in the `files` directory. 
 
 For this sample application, we use a [fine-tuned MiniLM](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
-model with 6 layers and 22 million parameters. However other
-[Transformers models](https://huggingface.co/transformers/index.html) can be
-used. 
+model with 6 layers and 22 million parameters.
+However, other [Transformers models](https://huggingface.co/docs/transformers/index) can be used.
 
 To export other models, for instance DistilBERT or ALBERT, change the
 code in "src/python/setup-model.py". However, this sample application

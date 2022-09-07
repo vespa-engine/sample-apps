@@ -47,7 +47,7 @@ jobs:
       - check-links: |
           bundle exec htmlproofer \
             --assume-extension --check-html --check-external-hash \
-            --typhoeus '{"connecttimeout": 10, "timeout": 30}' \
+            --typhoeus '{"connecttimeout": 10, "timeout": 30, "followlocation": false}' \
             --hydra '{"max_concurrency": 1}' \
             --directory-index-file README.html \
             --url-ignore 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/,src/main/application/search/query-profiles' \
