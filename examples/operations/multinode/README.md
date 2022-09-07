@@ -131,7 +131,7 @@ $ zip -r - . -x "img/*" README.md .gitignore | \
 </pre>
 
 Wait for services to start:
-<pre data-test="exec" data-test-wait-for="200 OK">
+<pre data-test="exec" data-test-wait-for='"code" : "up"'>
 $ curl -s http://localhost:8082/state/v1/health
 </pre>
 
