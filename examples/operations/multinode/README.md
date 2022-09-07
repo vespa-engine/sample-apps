@@ -5,10 +5,8 @@
 # Multinode testing and observability
 
 This is a guide into some aspects of how a multi-node Vespa cluster works.
-This example uses three nodes, all configured equally.
-Note that this is not the setup one normally will use,
-config servers are most often run on separate nodes,
-this guide will help understand why, and alternatives.
+This example uses three nodes - this is a simplified setup and not a template for multinode systems.
+See [multinode-HA](/examples/operations/multinode-HA) for a template.
 
 This is a guide for functional testing, deployed on one host for simplicity.
 The [configuration server operations](https://docs.vespa.ai/en/operations/configuration-server.html)
@@ -41,7 +39,8 @@ Also remove annotated memory-settings in [services.xml](services.xml).
 ## Example cluster setup
 Prerequisites:
 * Docker with 12G Memory
-* Git
+* git
+* zip
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
@@ -72,26 +71,27 @@ $ docker run --detach --name node0 --hostname node0.vespanet \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespanet \
     --publish 8080:8080 --publish 19071:19071 --publish 19050:19050 --publish 19092:19092 \
-    vespaengine/vespa
+    vespaengine/vespa configserver,services
 $ docker run --detach --name node1 --hostname node1.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespanet \
     --publish 8081:8080 --publish 19072:19071 --publish 19051:19050 --publish 19093:19092 \
-    vespaengine/vespa
+    vespaengine/vespa configserver,services
 $ docker run --detach --name node2 --hostname node2.vespanet \
     -e VESPA_CONFIGSERVERS=node0.vespanet,node1.vespanet,node2.vespanet \
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
     --network vespanet \
     --publish 8082:8080 --publish 19073:19071 --publish 19052:19050 --publish 19094:19092 \
-    vespaengine/vespa
+    vespaengine/vespa configserver,services
 </pre>
 
 Notes:
 * Use fully qualified hostnames.
-* VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
+* [VESPA_CONFIGSERVERS](https://docs.vespa.ai/en/reference/files-processes-and-ports.html#environment-variables)
+  lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 
 Wait for last config server to start:
 <pre data-test="exec" data-test-wait-for="200 OK">
@@ -130,11 +130,9 @@ $ zip -r - . -x "img/*" README.md .gitignore | \
   localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 
-Using Docker for Mac, observe each Docker container uses 2.9G memory, just as part of bootstrap -
-This increases little with use, hence the 12G Docker requirement in this guide.
 Wait for services to start:
 <pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8082/ApplicationStatus
+$ curl -s http://localhost:8082/state/v1/health
 </pre>
 
 
@@ -259,7 +257,7 @@ $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 
 The redundancy configuration in [services.xml](services.xml) is 3 replicas,
 i.e. one replica per node.
-Using [Vespa metrics](https://docs.vespa.ai/en/reference/metrics.html), expect 5 documents per node:
+Using [metrics](https://docs.vespa.ai/en/operations/metrics.html), expect 5 documents per node:
 <pre data-test="exec" data-test-assert-contains="content.proton.documentdb.documents.total.last">
 $ (for port in 19092 19093 19094; \
     do \
@@ -297,7 +295,7 @@ $ curl --data-urlencode 'yql=select * from sources * where sddocname contains "m
 We see that the last clustercontroller is still up.
 Count documents on the content node:
 <pre>
-$ docker exec node0 bash -c "/opt/vespa/bin/vespa-proton-cmd --local getState"
+$ docker exec node0 /opt/vespa/bin/vespa-proton-cmd --local getState
 ...
 "onlineDocs", "5"
 </pre>
@@ -318,7 +316,7 @@ due to missing ZooKeeper quorum.
 
 
 ## Single-node clustercontroller
-It is possible to set up clusters with only one clustercontroller - changes:
+It is possible to set up clusters with only _one_ clustercontroller - changes:
 <pre>
 &lt;host name="node3.vespanet"&gt;
     &lt;alias&gt;node3&lt;/alias&gt;
