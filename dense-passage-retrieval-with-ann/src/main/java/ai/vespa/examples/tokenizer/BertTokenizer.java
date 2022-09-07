@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 /**
  * Adopted from
- * https://github.com/eclipse/deeplearning4j/blob/master/deeplearning4j/deeplearning4j-nlp-parent/deeplearning4j-nlp/src/main/java/org/deeplearning4j/text/tokenization/tokenizer/BertWordPieceTokenizer.java
+ * https://github.com/deeplearning4j/deeplearning4j/tree/master/deeplearning4j/deeplearning4j-nlp-parent/deeplearning4j-nlp/src/main/java
  */
 
 public class BertTokenizer extends AbstractComponent {

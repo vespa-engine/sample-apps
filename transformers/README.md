@@ -88,9 +88,8 @@ This downloads the transformer model, converts it to an ONNX model and puts it
 in the `files` directory. 
 
 For this sample application, we use a [fine-tuned MiniLM](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
-model with 6 layers and 22 million parameters. However other
-[Transformers models](https://huggingface.co/transformers/index.html) can be
-used. 
+model with 6 layers and 22 million parameters.
+However, other [Transformers models](https://huggingface.co/docs/transformers/index) can be used.
 
 To export other models, for instance DistilBERT or ALBERT, change the
 code in "src/python/setup-model.py". However, this sample application
