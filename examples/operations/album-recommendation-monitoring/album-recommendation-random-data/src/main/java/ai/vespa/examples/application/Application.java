@@ -1,14 +1,16 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.examples.application;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ai.vespa.examples.json.Album;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
+import javax.net.ssl.SSLContext;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,48 +19,40 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Application {
-    private final Logger logger = Logger.getLogger(Application.class.getName());
+    private static final Logger logger = Logger.getLogger(Application.class.getName());
     private static final int RUNS_PER_SECOND = 100;
+    static String ENDPOINT = "https://grafana-pov.vespa-team.aws-us-east-1c.dev.z.vespa-app.cloud";
+
     private final Random random = new Random();
-    private final AtomicInteger pendingQueryRequests;
-    RandomAlbumGenerator albumGenerator;
-    BlockingQueue<Album> queue;
-    VespaDataFeeder dataFeeder;
-    VespaQueryFeeder queryFeeder;
+    private final AtomicInteger pendingQueryRequests = new AtomicInteger(0);
+    private final RandomAlbumGenerator albumGenerator = new RandomAlbumGenerator();
+    private final BlockingQueue<Album> queue = new LinkedBlockingQueue<>();
+
+    private VespaDataFeeder dataFeeder;
+    private VespaQueryFeeder queryFeeder;
     private double pushProbability = 0.05;
     private double queryProbability = 0.05;
     private boolean isGrowing = true;
 
-    Application() {
-        albumGenerator = new RandomAlbumGenerator();
-        queue = new LinkedBlockingQueue<>();
-        pendingQueryRequests = new AtomicInteger(0);
+    private void createFeeders(SSLContext sslContext) {
+        dataFeeder = new VespaDataFeeder(queue, sslContext);
+        queryFeeder = new VespaQueryFeeder(pendingQueryRequests, sslContext);
     }
 
-    private void createFeeders() {
-        dataFeeder = new VespaDataFeeder(queue);
-        queryFeeder = new VespaQueryFeeder(pendingQueryRequests);
-    }
-
-    private boolean isConnection200(URL url) {
+    private boolean isConnection200(HttpClient client) {
         try {
-            return ((HttpURLConnection) url.openConnection()).getResponseCode() == 200;
-        } catch (IOException e) {
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ENDPOINT + "/ApplicationStatus/")).build();
+            return client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode() == 200;
+        } catch (Exception e) {
             return false;
         }
-
     }
 
-    private void waitForVespa() {
+    private void waitForVespa(SSLContext sslContext) {
         int attempts = 0;
-        URL vespa = null;
-        try {
-            vespa = new URL("http://vespa:8080/ApplicationStatus");
-        } catch (MalformedURLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            System.exit(1);
-        }
-        boolean success = isConnection200(vespa);
+        HttpClient client = HttpClient.newBuilder().sslContext(sslContext).build();
+
+        boolean success = isConnection200(client);
         while (!success) {
             logger.info("Unable to connect to Vespa, trying again in 20 seconds");
             attempts++;
@@ -72,15 +66,17 @@ public class Application {
                 logger.log(Level.SEVERE, e.getMessage());
                 Thread.currentThread().interrupt();
             }
-            success = isConnection200(vespa);
+            success = isConnection200(client);
         }
     }
 
     public void start() {
+        SSLContext sslContext = SSLContextUtils.sslContext(
+                Path.of("/Users/leandroalves/.vespa/vespa-team.grafana-pov.default/data-plane-private-key.pem"),
+                Path.of("/Users/leandroalves/.vespa/vespa-team.grafana-pov.default/data-plane-public-cert.pem"));
 
-        waitForVespa();
-
-        createFeeders();
+        waitForVespa(sslContext);
+        createFeeders(sslContext);
 
         dataFeeder.start();
         queryFeeder.start();

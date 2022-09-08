@@ -12,22 +12,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ai.vespa.examples.json.ImmutableQuery;
 
+import javax.net.ssl.SSLContext;
+
+import static ai.vespa.examples.application.Application.ENDPOINT;
+
 public class VespaQueryFeeder extends Thread {
 
+    private static final Logger logger = Logger.getLogger(VespaQueryFeeder.class.getName());
+
     private final AtomicInteger pendingQueryRequests;
-    Logger logger = Logger.getLogger(VespaQueryFeeder.class.getName());
-    HttpClient client;
-    HttpRequest request;
+    private final HttpClient client;
+    private final HttpRequest request;
     private volatile boolean shouldRun = true;
 
-    VespaQueryFeeder(AtomicInteger pendingQueryRequests) {
+    VespaQueryFeeder(AtomicInteger pendingQueryRequests, SSLContext sslContext) {
         this.pendingQueryRequests = pendingQueryRequests;
+        this.client = HttpClient.newBuilder().sslContext(sslContext).build();
 
-        client = HttpClient.newHttpClient();
         ImmutableQuery query = ImmutableQuery.builder().yql("SELECT * FROM SOURCES * WHERE year > 2000").build();
-
-         request = HttpRequest.newBuilder()
-                .uri(URI.create("http://vespa-container:8080/search/"))
+        this.request = HttpRequest.newBuilder()
+                .uri(URI.create(ENDPOINT + "/search/"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(query)))
                 .build();
