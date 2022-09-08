@@ -44,8 +44,7 @@ public class AssignNeighborsDocProc extends DocumentProcessor {
     @Override
     public Progress process(Processing processing) {
         for (DocumentOperation op : processing.getDocumentOperations()) {
-            if (op instanceof DocumentPut) {
-                DocumentPut put = (DocumentPut) op;
+            if (op instanceof DocumentPut put) {
                 Document doc = put.getDocument();
 
                 TensorFieldValue vector = (TensorFieldValue) doc.getFieldValue("vector");
@@ -86,8 +85,8 @@ public class AssignNeighborsDocProc extends DocumentProcessor {
 
                 // Assign `neighbors` from search result
                 WeightedSet<StringFieldValue> clusters = new WeightedSet<>(DataType.getWeightedSet(DataType.STRING));
-                for(ClusteringComponent.Centroid c: result.getCentroids())
-                    clusters.put(new StringFieldValue(c.getId().toString()),c.getIntCloseness());
+                for (var c : result.getCentroids())
+                    clusters.put(new StringFieldValue(c.getId().toString()), c.getIntCloseness());
                 doc.setFieldValue("neighbors", clusters);
 
                 // Clear vector and replace with `disk_vector`
