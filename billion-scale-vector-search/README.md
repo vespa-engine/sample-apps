@@ -27,7 +27,7 @@ for reproducing on a laptop.
 * Architecture: x86_64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
-* [Java 17](https://openjdk.java.net/projects/jdk/17/) installed.
+* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * Python3 and numpy to process the vector dataset 
 * [Apache Maven](https://maven.apache.org/install.html) - this sample app uses custom Java components and Maven is used
   to build the application. 
