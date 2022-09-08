@@ -30,7 +30,7 @@ public class VespaDataFeeder extends Thread {
     private final Logger logger = Logger.getLogger(VespaDataFeeder.class.getName());
 
     VespaDataFeeder(BlockingQueue<Album> queue) {
-        this.feedClient = FeedClientBuilder.create(URI.create("http://vespa:8080")).build();
+        this.feedClient = FeedClientBuilder.create(URI.create("http://vespa-container:8080")).build();
         this.queue = queue;
     }
 
