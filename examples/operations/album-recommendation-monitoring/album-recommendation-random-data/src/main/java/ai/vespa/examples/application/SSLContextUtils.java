@@ -43,6 +43,7 @@ public class SSLContextUtils {
 
             char[] password = new char[0];
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(null);
             keyStore.setKeyEntry("key", privateKey, password, new Certificate[]{ certificate });
 
             return new SSLContextBuilder()

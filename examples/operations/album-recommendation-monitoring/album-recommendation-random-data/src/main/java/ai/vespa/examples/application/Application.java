@@ -41,7 +41,7 @@ public class Application {
 
     private boolean isConnection200(HttpClient client) {
         try {
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ENDPOINT + "/ApplicationStatus/")).build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ENDPOINT + "/ApplicationStatus")).build();
             return client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode() == 200;
         } catch (Exception e) {
             return false;
