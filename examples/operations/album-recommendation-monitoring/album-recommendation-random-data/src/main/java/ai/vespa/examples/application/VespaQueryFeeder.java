@@ -27,7 +27,7 @@ public class VespaQueryFeeder extends Thread {
         ImmutableQuery query = ImmutableQuery.builder().yql("SELECT * FROM SOURCES * WHERE year > 2000").build();
 
          request = HttpRequest.newBuilder()
-                .uri(URI.create("http://vespa:8080/search/"))
+                .uri(URI.create("http://vespa-container:8080/search/"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(query)))
                 .build();
