@@ -50,12 +50,12 @@ public class AssignNeighborsDocProc extends DocumentProcessor {
 
                 TensorFieldValue vector = (TensorFieldValue) doc.getFieldValue("vector");
                 if(vector.getTensor().isEmpty()) {
-                    return Progress.PERMANENT_FAILURE.withReason("No 'vector' tensor field in document");
+                    return Progress.FAILED.withReason("No 'vector' tensor field in document");
                 }
 
                 BoolFieldValue inGraph = (BoolFieldValue)doc.getFieldValue("in_graph");
                 if(inGraph == null)
-                    return Progress.PERMANENT_FAILURE.withReason("No 'in_graph' field ");
+                    return Progress.FAILED.withReason("No 'in_graph' field ");
 
                 if(inGraph.getBoolean()) {
                     //Just forward to content cluster selection which
