@@ -24,7 +24,7 @@ The following is for deploying the end to end application including a custom fro
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 * python 3 
-* [Java 17](https://openjdk.java.net/projects/jdk/17/) installed.
+* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) Maven is used
 
 ## Installing vespa-cli
