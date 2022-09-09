@@ -140,9 +140,10 @@ Alternatively, instead of computing the embeddings, use our pre-computed embeddi
 [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html): 
 
 <pre data-test="exec">
-$ curl -L -o vespa-feed-client-cli.zip \
-    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
-$ unzip -o vespa-feed-client-cli.zip
+$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
+	&& FEED_CLI_VER=`curl --silent "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;latest&gt;\(.*\)&lt;.*&gt;/\1/p'` \
+	&& curl -L -o vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
+	&& unzip -o vespa-feed-client-cli.zip
 </pre>
 
 <pre data-test="exec">
