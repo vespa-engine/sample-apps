@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Application {
     private static final Logger logger = Logger.getLogger(Application.class.getName());
     private static final int RUNS_PER_SECOND = 100;
-    static String ENDPOINT = "https://grafana-pov.vespa-team.aws-us-east-1c.dev.z.vespa-app.cloud";
+    static String ENDPOINT = "https://vespa-app-01.grafana-pov.aws-us-east-1c.dev.z.cd.vespa-app.cloud";
 
     private final Random random = new Random();
     private final AtomicInteger pendingQueryRequests = new AtomicInteger(0);
@@ -72,8 +72,8 @@ public class Application {
 
     public void start() {
         SSLContext sslContext = SSLContextUtils.sslContext(
-                Path.of("/Users/leandroalves/.vespa/vespa-team.grafana-pov.default/data-plane-private-key.pem"),
-                Path.of("/Users/leandroalves/.vespa/vespa-team.grafana-pov.default/data-plane-public-cert.pem"));
+                Path.of("/Users/leandroalves/.vespa/grafana-pov.vespa-app-01.default/data-plane-private-key.pem"),
+                Path.of("/Users/leandroalves/.vespa/grafana-pov.vespa-app-01.default/data-plane-public-cert.pem"));
 
         waitForVespa(sslContext);
         createFeeders(sslContext);
