@@ -1,64 +1,56 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.examples.application;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ai.vespa.examples.json.Album;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Application {
-    private final Logger logger = Logger.getLogger(Application.class.getName());
+    private static final Logger logger = Logger.getLogger(Application.class.getName());
     private static final int RUNS_PER_SECOND = 100;
+    static String ENDPOINT = "http://vespa-container:8080";
+
     private final Random random = new Random();
-    private final AtomicInteger pendingQueryRequests;
-    RandomAlbumGenerator albumGenerator;
-    BlockingQueue<Album> queue;
-    VespaDataFeeder dataFeeder;
-    VespaQueryFeeder queryFeeder;
+    private final AtomicInteger pendingQueryRequests = new AtomicInteger(0);
+    private final RandomAlbumGenerator albumGenerator = new RandomAlbumGenerator();
+    private final BlockingQueue<Album> queue = new LinkedBlockingQueue<>();
+
+    private VespaDataFeeder dataFeeder;
+    private VespaQueryFeeder queryFeeder;
     private double pushProbability = 0.05;
     private double queryProbability = 0.05;
     private boolean isGrowing = true;
-
-    Application() {
-        albumGenerator = new RandomAlbumGenerator();
-        queue = new LinkedBlockingQueue<>();
-        pendingQueryRequests = new AtomicInteger(0);
-    }
 
     private void createFeeders() {
         dataFeeder = new VespaDataFeeder(queue);
         queryFeeder = new VespaQueryFeeder(pendingQueryRequests);
     }
 
-    private boolean isConnection200(URL url) {
+    private boolean isConnection200(HttpClient client) {
         try {
-            return ((HttpURLConnection) url.openConnection()).getResponseCode() == 200;
-        } catch (IOException e) {
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ENDPOINT + "/ApplicationStatus")).build();
+            return client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode() == 200;
+        } catch (Exception e) {
             return false;
         }
-
     }
 
     private void waitForVespa() {
         int attempts = 0;
-        URL vespa = null;
-        try {
-            vespa = new URL("http://vespa:8080/ApplicationStatus");
-        } catch (MalformedURLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            System.exit(1);
-        }
-        boolean success = isConnection200(vespa);
+        HttpClient client = HttpClient.newBuilder().build();
+
+        boolean success = isConnection200(client);
         while (!success) {
             logger.info("Unable to connect to Vespa, trying again in 20 seconds");
             attempts++;
@@ -72,14 +64,12 @@ public class Application {
                 logger.log(Level.SEVERE, e.getMessage());
                 Thread.currentThread().interrupt();
             }
-            success = isConnection200(vespa);
+            success = isConnection200(client);
         }
     }
 
     public void start() {
-
         waitForVespa();
-
         createFeeders();
 
         dataFeeder.start();
@@ -90,8 +80,8 @@ public class Application {
             public void run() {
                 if (shouldPush()) queue.add(albumGenerator.getRandomAlbum());
             }},
-                (long) 30 * 1000,
-                (long) (1000.0 / (double) RUNS_PER_SECOND)
+                30_000,
+                (long) (1000d / RUNS_PER_SECOND)
         );
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -99,8 +89,8 @@ public class Application {
                 public void run() {
                     if (shouldQuery()) pendingQueryRequests.incrementAndGet();
                 }},
-                (long) 60 * 1000,
-                (long) (1000.0 / (double) RUNS_PER_SECOND)
+                60_000,
+                (long) (1000d / RUNS_PER_SECOND)
         );
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -109,8 +99,8 @@ public class Application {
                 updatePushProbability();
                 updateQueryProbability();
             }},
-                (long) 10*1000,
-                (long) 10*1000
+                10_000,
+                10_000
         );
     }
 

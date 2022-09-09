@@ -1,7 +1,9 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.examples.application;
 
+import ai.vespa.examples.json.ImmutableQuery;
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,24 +12,25 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ai.vespa.examples.json.ImmutableQuery;
+
+import static ai.vespa.examples.application.Application.ENDPOINT;
 
 public class VespaQueryFeeder extends Thread {
 
+    private static final Logger logger = Logger.getLogger(VespaQueryFeeder.class.getName());
+
     private final AtomicInteger pendingQueryRequests;
-    Logger logger = Logger.getLogger(VespaQueryFeeder.class.getName());
-    HttpClient client;
-    HttpRequest request;
+    private final HttpClient client;
+    private final HttpRequest request;
     private volatile boolean shouldRun = true;
 
     VespaQueryFeeder(AtomicInteger pendingQueryRequests) {
         this.pendingQueryRequests = pendingQueryRequests;
+        this.client = HttpClient.newBuilder().build();
 
-        client = HttpClient.newHttpClient();
         ImmutableQuery query = ImmutableQuery.builder().yql("SELECT * FROM SOURCES * WHERE year > 2000").build();
-
-         request = HttpRequest.newBuilder()
-                .uri(URI.create("http://vespa-container:8080/search/"))
+        this.request = HttpRequest.newBuilder()
+                .uri(URI.create(ENDPOINT + "/search/"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(query)))
                 .build();

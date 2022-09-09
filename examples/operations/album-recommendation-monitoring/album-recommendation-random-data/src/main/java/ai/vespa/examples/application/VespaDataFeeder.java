@@ -1,6 +1,9 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.examples.application;
 
+import ai.vespa.examples.json.Album;
+import ai.vespa.examples.json.ImmutableTopLevelPut;
+import ai.vespa.examples.json.TopLevelPut;
 import ai.vespa.feed.client.DocumentId;
 import ai.vespa.feed.client.FeedClient;
 import ai.vespa.feed.client.FeedClientBuilder;
@@ -8,9 +11,6 @@ import ai.vespa.feed.client.FeedException;
 import ai.vespa.feed.client.OperationParameters;
 import ai.vespa.feed.client.Result;
 import com.google.gson.Gson;
-import ai.vespa.examples.json.Album;
-import ai.vespa.examples.json.ImmutableTopLevelPut;
-import ai.vespa.examples.json.TopLevelPut;
 
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
@@ -19,18 +19,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static ai.vespa.examples.application.Application.ENDPOINT;
+
 public class VespaDataFeeder extends Thread {
 
-    private final FeedClient feedClient;
-    private final Gson gson = new Gson();
-    private final BlockingQueue<Album> queue;
+    private static final Logger logger = Logger.getLogger(VespaDataFeeder.class.getName());
     private static final String ID_FORMAT = "id:mynamespace:music::%d";
+
+    private final Gson gson = new Gson();
     private final AtomicInteger pending = new AtomicInteger(0);
+    private final FeedClient feedClient;
+    private final BlockingQueue<Album> queue;
     private volatile boolean shouldRun = true;
-    private final Logger logger = Logger.getLogger(VespaDataFeeder.class.getName());
 
     VespaDataFeeder(BlockingQueue<Album> queue) {
-        this.feedClient = FeedClientBuilder.create(URI.create("http://vespa-container:8080")).build();
+        this.feedClient = FeedClientBuilder.create(URI.create(ENDPOINT)).build();
         this.queue = queue;
     }
 
