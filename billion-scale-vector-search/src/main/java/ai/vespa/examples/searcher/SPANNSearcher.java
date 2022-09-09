@@ -12,6 +12,8 @@ import com.yahoo.search.result.FeatureData;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
+
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +42,7 @@ public class SPANNSearcher extends Searcher {
                 optionalTensor.get(),
                 clusters,
                 hnswExploreHits,
+                Duration.ofSeconds(5),
                 execution
         );
 

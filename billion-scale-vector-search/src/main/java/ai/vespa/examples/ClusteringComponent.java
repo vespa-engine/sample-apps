@@ -9,6 +9,8 @@ import com.yahoo.search.result.FeatureData;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.tensor.Tensor;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -84,8 +86,8 @@ public class ClusteringComponent extends AbstractComponent {
      * @return A centroid result
      */
 
-    public CentroidResult getCentroids(Tensor queryTensor, int k, int extraK, Execution execution) {
-        Result result = execution.search(buildNNQuery(k,extraK,queryTensor));
+    public CentroidResult getCentroids(Tensor queryTensor, int k, int extraK, Duration timeout, Execution execution) {
+        Result result = execution.search(buildNNQuery(k,extraK,queryTensor, timeout));
         List<Centroid> centroids = new ArrayList<>(k);
         CentroidResult centroidResult = new CentroidResult(centroids,result);
         if(result.getConcreteHitCount() == 0) {
@@ -140,13 +142,13 @@ public class ClusteringComponent extends AbstractComponent {
      * @return Query instance with nearest neighbor search item
      */
 
-    private Query buildNNQuery(int k, int extraK, Tensor queryVector) {
+    private Query buildNNQuery(int k, int extraK, Tensor queryVector, Duration timeout) {
         NearestNeighborItem nn = new NearestNeighborItem("vector", "q");
         nn.setAllowApproximate(true);
         nn.setTargetNumHits(k);
         nn.setHnswExploreAdditionalHits(extraK);
         Query query = new Query();
-        query.setTimeout(5000); //ms
+        query.setTimeout(timeout.toMillis());
         query.setHits(k);
         query.getModel().getQueryTree().setRoot(nn);
         query.getRanking().setProfile("graph");
