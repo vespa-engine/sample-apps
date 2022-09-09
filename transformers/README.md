@@ -137,9 +137,10 @@ $ ./bin/convert-msmarco.sh
 **Feed data:**
 
 <pre data-test="exec">
-$ curl -L -o vespa-feed-client-cli.zip \
-    https://search.maven.org/remotecontent?filepath=com/yahoo/vespa/vespa-feed-client-cli/7.527.20/vespa-feed-client-cli-7.527.20-zip.zip
-$ unzip vespa-feed-client-cli.zip
+$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
+	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
+	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
+	&& unzip -o vespa-feed-client-cli.zip
 $ ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file msmarco/vespa.json --endpoint http://localhost:8080
 </pre>
