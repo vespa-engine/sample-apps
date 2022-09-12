@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Application {
     private static final Logger logger = Logger.getLogger(Application.class.getName());
     private static final int RUNS_PER_SECOND = 100;
-    static String ENDPOINT = "https://vespa-app-01.grafana-pov.aws-us-east-1c.dev.z.cd.vespa-app.cloud";
+    static String ENDPOINT = "https://vespa-app-01.grafana-pov.aws-us-east-1c.z.cd.vespa-app.cloud";
 
     private final Random random = new Random();
     private final AtomicInteger pendingQueryRequests = new AtomicInteger(0);
