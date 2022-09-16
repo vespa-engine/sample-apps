@@ -44,8 +44,8 @@ torch.onnx.export(colbert_query_encoder,
   input_names = input_names,
   output_names = output_names,
   dynamic_axes = {
-    "input_ids": {0: "batch"},
-    "attention_mask": {0: "batch"},
-    "contextual": {0: "batch"},
+    "input_ids": {0: "batch", 1: "batch"},
+    "attention_mask": {0: "batch", 1:"batch"},
+    "contextual": {0: "batch", 1:"batch"},
   },
   opset_version=11)

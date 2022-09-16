@@ -6,7 +6,8 @@
 
 This sample application demonstrates how to efficiently represent three different ways of applying pretrained Transformer
 models for text ranking in Vespa.
-The three methods are described in detail in  these blog posts:
+
+The methods are described in detail in these blog posts:
 
 * [Pretrained language models for search - part 1 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/)
 * [Pretrained language models for search - part 2 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/)
@@ -18,7 +19,6 @@ With this sample application you can reproduce the submission made by the Vespa 
 submission which currently ranks #15, above many huge ensemble models using large Transformer models.
 
 ![MS Marco Leaderboard](img/leaderboard.png)
-
 
 ## Transformers for Ranking 
 ![Colbert overview](img/colbert_illustration.png)
@@ -36,9 +36,9 @@ This sample application demonstrates:
   It demonstrates how to also embed the query encoder model which convert the query text to dense vector representation.
   This model is a representation model. Illustrated in figure **a**. 
 - Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model
-  where the ColBERT query encoder is also embedded in the Vespa serving stack.
+  where the ColBERT query and document encoder is also embedded in the Vespa serving stack.
   A Vespa tensor expressions is used to calculate the *MaxSim*. This method is illustrated in figure **d**. 
-- Re-ranking using all to all cross attention between the query and document.
+- Re-ranking using a *cross-encoder* with cross attention between the query and document terms.
   This is the most effective model (ranking accuracy)
   but also the most computationally complex model due to the increased input sequence length (query + passage).
   This method is illustrated in figure **c**.
@@ -49,21 +49,21 @@ This sample application demonstrates:
 - Accelerated [Stateless ML model evaluation](https://blog.vespa.ai/stateless-model-evaluation/)
   for transformer based query encoding and final ranking phase using transformer batch re-ranking. 
 
-
   
 
 ### Transformer Models 
-This sample application uses pre-trained Transformer models fine-tuned for MS Marco passage ranking from
+This sample application uses pre-trained Transformer models fine-tuned using MS Marco passage ranking labels from
 [Huggingface 🤗](https://huggingface.co/).
 
 All three Transformer based models used in this sample application are based on
 [MiniLM](https://arxiv.org/abs/2002.10957) which is a distilled BERT model
 which can be used as a drop in replacement for BERT. 
+
 It uses the same sub word tokenization routine and shares the vocabulary with the original BERT base model.
 The MiniLM model has roughly the same accuracy as the more known big brother *bert-base-uncased* on many tasks,
 but with fewer parameters which lowers the computational complexity significantly.  
  
-The original MiniLM has 12 layers, this work uses 6 layer versions with only about 22.7M trainable parameters.
+The original MiniLM has 12 layers, this work uses 6 layer versions with only 22M parameters.
 
 The sample application uses the following three models:
 
@@ -74,12 +74,15 @@ The sample application uses the following three models:
   The L2 normalization stage is added to the ONNX execution graph.
   Using innerproduct saves computations compared to angular distance during the approximate nearest neighbor search. 
 - Contextualized late interaction (COLBert) [vespa-engine/col-minilm 🤗](https://huggingface.co/vespa-engine/col-minilm).
-- Cross all to all encoder [cross-encoder/ms-marco-MiniLM-L-6-v2 🤗](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2). 
+- Cross-Encoder [cross-encoder/ms-marco-MiniLM-L-6-v2 🤗](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2). 
   Sometimes also referred to as BERT-mono or BERT-cat in scientific literature.
-  This is a model which take both the query and the passage as input. 
+  This is a model which take both the query and the passage as input. The sample application supports both applying
+  this model at the content nodes or at the stateless container nodes. The latter approach allows removing duplicates
+  or business constraints before applying the compute intensive model. 
  
 Code to export these models to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa.ai
 is available in the [model export notebook](src/main/python/model-exporting.ipynb).
+
 All three models are [quantized](https://onnxruntime.ai/docs/performance/quantization.html)
 for accelerated inference on CPU using int8 weights. 
 The quantized model versions are hosted on S3 and are free to download and import into the sample application.
@@ -121,16 +124,15 @@ schema passage {
 
   document passage {
 
+    field id type int {
+      indexing: summary |attribute
+    }
+
     field text type string {
       indexing: summary | index
       index: enable-bm25
     }
-    
-    field text_token_ids type tensor&lt;float&gt;(d0[128])  {
-      indexing: summary | attribute
-      attribute:paged
-    }
-    
+
     field dt type tensor&lt;bfloat16&gt;(dt{}, x[32]){
       indexing: summary | attribute
     }
@@ -147,15 +149,18 @@ schema passage {
         }
       }
     }
-    field id type int {
-      indexing: summary |attribute
-    }
+    
   }
-} 
+  field text_token_ids type tensor<float>(d0[128])  {
+    indexing: input text | embed tokenizer | attribute | summary
+    attribute: paged
+  }
+}
 </pre> 
 
-The *text* field indexes the original passage text
-and the *dt* tensor field stores the contextual multi-term embedding from the ColBERT model. 
+The *text* field indexes the original passage text with support for BM25 ranking. 
+
+The *dt* (document term) tensor field stores the contextual multi-term embedding from the ColBERT model. 
 *dt* is an example of a mixed tensor which mixes sparse/mapped ("dt") dimension and dense "x". 
 Using a mixed sparse/dense tensor allows storing variable length text where the number of terms is not fixed. 
 
@@ -169,7 +174,7 @@ The *id* field is the passage id from the dataset.
 
 The *text_token_ids* contains the BERT token vocabulary ids
 and is only used by the final cross all to all interaction re-ranking model. 
-Storing the tokenized subword token ids from the BERT vocabulary avoids passage side tokenization at query serving time. 
+Storing the tokenized sub-word token ids from the BERT vocabulary avoids passage side tokenization at query serving time. 
 
 The *text_token_ids* is also an example of a
 [paged tensor attribute](https://docs.vespa.ai/en/attributes.html#paged-attributes). 
@@ -178,8 +183,9 @@ at the cost of potentially slower access time,
 depending on memory pressure and document access locality.
 As this field is only used during re-ranking, the number of page-ins are limited by the re-ranking depth. 
 
-The *mini_document_embedding* field is the dense vector produced by the sentence encoder model.
+The *mini_document_embedding* field is the dense vector produced by the bi-encoder model.
 HNSW indexing is enabled for efficient fast approximate nearest neighbor search.
+
 The hnsw settings controls vector accuracy versus speed, 
 see more on [hnsw indexing in Vespa](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
 
@@ -380,7 +386,7 @@ Requirements:
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed. 

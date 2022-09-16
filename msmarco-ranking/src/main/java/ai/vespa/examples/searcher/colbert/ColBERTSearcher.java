@@ -2,7 +2,7 @@
 package ai.vespa.examples.searcher.colbert;
 
 import ai.vespa.examples.colbert.ColbertConfig;
-import ai.vespa.examples.searcher.QueryTensorInput;
+import ai.vespa.examples.searcher.TensorInput;
 import ai.vespa.models.evaluation.Model;
 import ai.vespa.models.evaluation.ModelsEvaluator;
 import com.google.inject.Inject;
@@ -62,7 +62,7 @@ public class ColBERTSearcher extends Searcher {
         int MASK_TOKEN_ID = 103; // [MASK]
         int Q_TOKEN_ID = 1; // [unused0] token id used during training to differentiate query versus document.
 
-        QueryTensorInput helper = QueryTensorInput.getFrom(originalQuery.properties());
+        TensorInput helper = TensorInput.getFrom(originalQuery.properties());
         List<Integer> tokenIds = helper.getQueryTokenIds();
         if(tokenIds.size() > query_max_length -3)
             tokenIds = tokenIds.subList(0,query_max_length-3);
@@ -86,27 +86,26 @@ public class ColBERTSearcher extends Searcher {
         for (int i = 0; i < padding; i++)
             attention_mask.add(0);
 
-        Tensor input_ids_batch = helper.getTensorRepresentation(input_ids,"d1").
+        Tensor input_ids_batch = TensorInput.getTensorRepresentation(input_ids,"d1").
                 multiply(BATCH_TENSOR);
-        Tensor attention_mask_batch = helper.getTensorRepresentation(attention_mask,"d1").
+        Tensor attention_mask_batch = TensorInput.getTensorRepresentation(attention_mask,"d1").
                 multiply(BATCH_TENSOR);
 
         return this.colbertModel.evaluatorOf().
                 bind("input_ids",input_ids_batch).
                 bind("attention_mask",attention_mask_batch).evaluate();
-
     }
 
     /**
      * Removes the batch dimension ("d0") from batched output and converts
-     * from dense dense representation to sparse, dense
+     * from dense dense representation to mixed sparse dense
      * @param embedding the Tensor from query encoding with batch dimension
      */
     private Tensor rewriteTensor(Tensor embedding) {
         Tensor t = embedding.reduce(Reduce.Aggregator.min, "d0");
         Tensor.Builder builder = Tensor.Builder.of(colbertTensorType);
         for (int i = 0; i < query_max_length; i++)
-            for (int j = 0; j< dim; j++)
+            for (int j = 0; j < dim; j++)
                 builder.cell(TensorAddress.of(i, j), t.get(TensorAddress.of(i, j)));
         return builder.build();
     }

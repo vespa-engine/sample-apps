@@ -3,4 +3,5 @@
 package=ai.vespa.examples.colbert
 
 max_query_length int
+max_document_length int
 dim int

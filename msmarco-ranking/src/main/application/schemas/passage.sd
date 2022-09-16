@@ -9,14 +9,9 @@ schema passage {
       index: enable-bm25
     }
 
-    field text_token_ids type tensor<float>(d0[128])  {
-      indexing: summary | attribute
-      attribute: paged
-    }
-
     field dt type tensor<bfloat16>(dt{}, x[32]){
       indexing: summary | attribute
-      attribute: fast-search
+      attribute: fast-rank
     }
 
     field mini_document_embedding type tensor<float>(d0[384]) {
@@ -37,6 +32,12 @@ schema passage {
       attribute: fast-search
       dictionary: hash
     }
+
+  }
+
+  field text_token_ids type tensor<float>(d0[128])  {
+    indexing: input text | embed tokenizer | attribute | summary
+    attribute: paged
   }
 
   document-summary id {

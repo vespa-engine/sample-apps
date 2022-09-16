@@ -4,7 +4,8 @@
   "defaults": {
     "cluster": "default",
     "parameters": {
-      "timeout": "5s"
+      "timeout": "5s",
+      "fieldSet": "[all]"
     }
   },
   "steps": [
@@ -35,7 +36,8 @@
           "fields":  {
             "id": 0,
             "text_token_ids":{},
-            "mini_document_embedding":  {}
+            "mini_document_embedding":  {},
+            "dt": {}
           }
         }
       }
@@ -55,12 +57,12 @@
             "children": [
               {
                 "fields": {
-                  "id": 0
+                  "id": 1
                 }
               },
               {
                 "fields": {
-                  "id": 1
+                  "id": 0
                 }
               }
             ]
@@ -97,14 +99,6 @@
       }
     },
     {
-      "name": "Update document with colbert tensor",
-      "request": {
-        "method": "POST",
-        "uri": "/document/v1/msmarco/passage/docid/0",
-        "body": "../sample-passage-v2.json"
-      }
-    },
-    {
       "name": "query for passages using dense with colbert re-ranking",
       "request": {
         "parameters": {
@@ -119,12 +113,12 @@
             "children": [
               {
                 "fields": {
-                  "id": 0
+                  "id": 1
                 }
               },
               {
                 "fields": {
-                  "id": 1
+                  "id": 0
                 }
               }
             ]
@@ -147,12 +141,12 @@
             "children": [
               {
                 "fields": {
-                  "id": 0
+                  "id": 1
                 }
               },
               {
                 "fields": {
-                  "id": 1
+                  "id": 0
                 }
               }
             ]
@@ -175,12 +169,12 @@
             "children": [
               {
                 "fields": {
-                  "id": 0
+                  "id": 1
                 }
               },
               {
                 "fields": {
-                  "id": 1
+                  "id": 0
                 }
               }
             ]
@@ -203,12 +197,12 @@
             "children": [
               {
                 "fields": {
-                  "id": 0
+                  "id": 1
                 }
               },
               {
                 "fields": {
-                  "id": 1
+                  "id": 0
                 }
               }
             ]

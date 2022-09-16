@@ -26,12 +26,13 @@ public class ColbertSearcherTest {
     private static WordPieceEmbedder tokenizer;
 
     private static final int DIM = 32;
-    private static final int MAX_QUERY_LENGHT = 32;
+    private static final int MAX_QUERY_LENGTH = 32;
+    private static final int MAX_DOC_LENGTH = 180;
 
     static {
         tokenizer = TokenizerFactory.getEmbedder();
         ColbertConfig.Builder colbertBuilder = new ColbertConfig.Builder();
-        colbertBuilder.dim(DIM).max_query_length(MAX_QUERY_LENGHT);
+        colbertBuilder.dim(DIM).max_query_length(MAX_QUERY_LENGTH).max_document_length(MAX_DOC_LENGTH);
         colbertConfig = colbertBuilder.build();
     }
 

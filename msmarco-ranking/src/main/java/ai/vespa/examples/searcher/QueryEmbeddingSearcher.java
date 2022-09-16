@@ -43,7 +43,7 @@ public class QueryEmbeddingSearcher extends Searcher {
     }
 
     protected Tensor getEmbedding(Query originalQuery)  {
-        QueryTensorInput queryTensorInput = QueryTensorInput.getFrom(originalQuery.properties());
+        TensorInput queryTensorInput = TensorInput.getFrom(originalQuery.properties());
         List<Integer> queryTokenIds = queryTensorInput.getQueryTokenIds();
         Optional<Tensor> result = embedder.embed(queryTokenIds,maxLength);
         if(result.isEmpty())
