@@ -60,12 +60,6 @@ public class ReRankingSearcherTest {
         assertEquals(10, result.hits().size());
         Hit best = result.hits().get(0);
         assertEquals(7, (int) best.getField("id"));
-        for (Hit h : result.hits()) {
-            String text = (String) h.getField("text");
-            text = text.substring(0, 50).concat(" ...");
-            System.out.format("Passage id=%d, score=%.2f, text=%s\n",
-                    h.getField("id"), h.getRelevance().getScore(), text);
-        }
     }
 
     @Test

@@ -49,9 +49,9 @@ public class RetrievalModelSearcher extends Searcher {
         if(bertTokenIds.size() > MAX_QUERY_LENGTH)
             bertTokenIds = bertTokenIds.subList(0,MAX_QUERY_LENGTH);
 
-        QueryTensorInput queryTensorInput = new QueryTensorInput(bertTokenIds);
-        QueryTensorInput.setTo(query.properties(),queryTensorInput);
-        Tensor queryTensor = queryTensorInput.getTensorRepresentation(
+        TensorInput queryTensorInput = new TensorInput(bertTokenIds);
+        TensorInput.setTo(query.properties(),queryTensorInput);
+        Tensor queryTensor = TensorInput.getTensorRepresentation(
                 queryTensorInput.getQueryTokenIdsPadded(MAX_QUERY_LENGTH,0),"d0");
         query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, queryTensor);
         query.getRanking().setRerankCount(query.properties().getInteger("rerank-count", 1000));

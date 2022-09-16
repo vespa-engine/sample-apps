@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
- <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
 
   <container id="default" version="1.0">
 
@@ -8,7 +8,8 @@
       <node hostalias="node1"/>
     </nodes>
 
-    <component id="com.yahoo.language.wordpiece.WordPieceEmbedder" bundle="linguistics-components">
+    <component id="tokenizer" class="com.yahoo.language.wordpiece.WordPieceEmbedder"
+               bundle="linguistics-components">
       <config name="language.wordpiece.word-piece">
         <model>
           <item>
@@ -23,14 +24,20 @@
       <config name="ai.vespa.examples.embedding.embedding">
         <model_name>dense_encoder</model_name>
         <max_query_length>32</max_query_length>
-        <max_document_length>256</max_document_length>
+        <max_document_length>180</max_document_length>
       </config>
     </component>
 
     <document-processing>
       <chain id="bert-tensorizer" inherits="indexing">
-        <documentprocessor id="ai.vespa.examples.docproc.DocumentTensorizer" bundle="msmarco-ranking"/>
         <documentprocessor id="ai.vespa.examples.docproc.DenseDocumentEmbedder" bundle="msmarco-ranking"/>
+        <documentprocessor id="ai.vespa.examples.docproc.ColBERTDocumentProcessor" bundle="msmarco-ranking">
+          <config name="ai.vespa.examples.colbert.colbert">
+            <max_query_length>32</max_query_length>
+            <max_document_length>180</max_document_length>
+            <dim>32</dim>
+          </config>
+        </documentprocessor>
       </chain>
     </document-processing>
 
@@ -85,6 +92,7 @@
         <searcher id="ai.vespa.examples.searcher.colbert.ColBERTSearcher" bundle="msmarco-ranking">
           <config name="ai.vespa.examples.colbert.colbert">
             <max_query_length>32</max_query_length>
+            <max_document_length>180</max_document_length>
             <dim>32</dim>
           </config>
         </searcher>

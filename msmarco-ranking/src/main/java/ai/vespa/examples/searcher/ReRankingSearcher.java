@@ -61,7 +61,7 @@ public class ReRankingSearcher extends Searcher {
     private Result reRank(Result result) {
         if(result.getConcreteHitCount() == 0)
             return result;
-        List<Integer> queryTokens = QueryTensorInput.getFrom(result.getQuery().
+        List<Integer> queryTokens = TensorInput.getFrom(result.getQuery().
                 properties()).getQueryTokenIds();
         int maxSequenceLength = result.getQuery().
                 properties().getInteger("rerank.sequence-length", 128);

@@ -79,9 +79,6 @@ public class DenseDocumentEmbedderTest {
         TensorType type = new TensorType.Builder(TensorType.Value.FLOAT).
                 indexed("d0", 384).build();
         IndexedTensor.Builder builder = IndexedTensor.Builder.of(type);
-        for (int i = 0; i < 384; ++i) {
-            builder.cell(i,i);
-        }
         TensorFieldValue embedding = new TensorFieldValue(builder.build());
         doc.setFieldValue("mini_document_embedding", embedding);
         Processing p = getProcessing(new DocumentPut(doc));

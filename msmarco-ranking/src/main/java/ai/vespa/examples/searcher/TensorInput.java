@@ -15,7 +15,7 @@ import com.yahoo.tensor.TensorType;
  */
 
 
-public class QueryTensorInput {
+public class TensorInput {
 
     protected static final String NAME = "QueryTensorInput";
     private final List<Integer> queryTokenIds;
@@ -23,7 +23,7 @@ public class QueryTensorInput {
     /**
      * @param queryTokenIds The parsed bert token_ids of the query
      */
-    public QueryTensorInput(List<Integer> queryTokenIds) {
+    public TensorInput(List<Integer> queryTokenIds) {
         this.queryTokenIds = queryTokenIds;
     }
 
@@ -53,28 +53,28 @@ public class QueryTensorInput {
     }
     /**
      * Convert List to dense representation with length input.size()
-     * @param queryTokenIds the List of integers to convert to dense tensor representation
+     * @param tokens the List of integers to convert to dense tensor representation
      * @return Indexed Dense Tensor with dims queryTokenIds.size()
      */
 
-    public IndexedTensor getTensorRepresentation(List<Integer> queryTokenIds,String dimension)  {
-        int size = queryTokenIds.size();
+    public static IndexedTensor getTensorRepresentation(List<Integer> tokens,String dimension)  {
+        int size = tokens.size();
         TensorType type = new TensorType.Builder(TensorType.Value.FLOAT).
                 indexed(dimension, size).build();
         IndexedTensor.Builder builder = IndexedTensor.Builder.of(type);
         for (int i = 0; i < size; ++i) {
-            builder.cell(queryTokenIds.get(i), i);
+            builder.cell(tokens.get(i), i);
         }
         return builder.build();
     }
 
-    public static void setTo(Properties properties, QueryTensorInput value) {
+    public static void setTo(Properties properties, TensorInput value) {
         properties.set(NAME, value);
     }
 
     @SuppressWarnings("unchecked")
-    public static QueryTensorInput getFrom(Properties properties) {
-        return (QueryTensorInput) properties.get(NAME);
+    public static TensorInput getFrom(Properties properties) {
+        return (TensorInput) properties.get(NAME);
     }
 
 }
