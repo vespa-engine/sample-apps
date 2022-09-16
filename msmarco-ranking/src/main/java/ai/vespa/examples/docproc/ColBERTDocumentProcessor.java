@@ -83,7 +83,7 @@ public class ColBERTDocumentProcessor extends DocumentProcessor {
         final int CLS_TOKEN_ID = 101;
         final int SEP_TOKEN_ID = 102;
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(title != null)
             buffer.append(title.getString());
         if(text != null)
