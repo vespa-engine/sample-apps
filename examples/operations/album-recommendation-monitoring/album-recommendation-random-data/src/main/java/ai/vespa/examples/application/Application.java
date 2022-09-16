@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Application {
     private static final Logger logger = Logger.getLogger(Application.class.getName());
     private static final int RUNS_PER_SECOND = 100;
-    static String ENDPOINT = "https://vespa-app-01.grafana-pov.aws-us-east-1c.z.cd.vespa-app.cloud";
+    private final String endpoint;
+    private final SSLContext sslContext;
 
     private final Random random = new Random();
     private final AtomicInteger pendingQueryRequests = new AtomicInteger(0);
@@ -34,21 +35,26 @@ public class Application {
     private double queryProbability = 0.05;
     private boolean isGrowing = true;
 
-    private void createFeeders(SSLContext sslContext) {
-        dataFeeder = new VespaDataFeeder(queue, sslContext);
-        queryFeeder = new VespaQueryFeeder(pendingQueryRequests, sslContext);
+    Application(String endpoint, Path privateKey, Path publicCert) {
+        this.endpoint = endpoint;
+        this.sslContext = SSLContextUtils.sslContext(privateKey, publicCert);
+    }
+
+    private void createFeeders() {
+        dataFeeder = new VespaDataFeeder(queue, endpoint, sslContext);
+        queryFeeder = new VespaQueryFeeder(pendingQueryRequests, endpoint, sslContext);
     }
 
     private boolean isConnection200(HttpClient client) {
         try {
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ENDPOINT + "/ApplicationStatus")).build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(endpoint + "/ApplicationStatus")).build();
             return client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode() == 200;
         } catch (Exception e) {
             return false;
         }
     }
 
-    private void waitForVespa(SSLContext sslContext) {
+    private void waitForVespa() {
         int attempts = 0;
         HttpClient client = HttpClient.newBuilder().sslContext(sslContext).build();
 
@@ -71,12 +77,8 @@ public class Application {
     }
 
     public void start() {
-        SSLContext sslContext = SSLContextUtils.sslContext(
-                Path.of("/Users/leandroalves/.vespa/grafana-pov.vespa-app-01.default/data-plane-private-key.pem"),
-                Path.of("/Users/leandroalves/.vespa/grafana-pov.vespa-app-01.default/data-plane-public-cert.pem"));
-
-        waitForVespa(sslContext);
-        createFeeders(sslContext);
+        waitForVespa();
+        createFeeders();
 
         dataFeeder.start();
         queryFeeder.start();
@@ -133,8 +135,7 @@ public class Application {
         return random.nextDouble() < queryProbability;
     }
 
-
     public static void main(String[] args) {
-        new Application().start();
+        new Application(args[0], Path.of(args[1]), Path.of(args[2])).start();
     }
 }

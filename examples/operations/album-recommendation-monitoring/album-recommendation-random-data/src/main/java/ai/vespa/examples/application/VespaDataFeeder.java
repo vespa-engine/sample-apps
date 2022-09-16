@@ -20,8 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static ai.vespa.examples.application.Application.ENDPOINT;
-
 public class VespaDataFeeder extends Thread {
 
     private static final Logger logger = Logger.getLogger(VespaDataFeeder.class.getName());
@@ -33,8 +31,8 @@ public class VespaDataFeeder extends Thread {
     private final BlockingQueue<Album> queue;
     private volatile boolean shouldRun = true;
 
-    VespaDataFeeder(BlockingQueue<Album> queue, SSLContext sslContext) {
-        this.feedClient = FeedClientBuilder.create(URI.create(ENDPOINT))
+    VespaDataFeeder(BlockingQueue<Album> queue, String endpoint, SSLContext sslContext) {
+        this.feedClient = FeedClientBuilder.create(URI.create(endpoint))
                 .setSslContext(sslContext)
                 .build();
         this.queue = queue;
