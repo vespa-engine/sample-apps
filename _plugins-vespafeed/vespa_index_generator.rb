@@ -10,6 +10,7 @@ module Jekyll
         priority :lowest
 
         def generate(site)
+            puts "generating ..."
             namespace = site.config["search"]["namespace"]
             operations = []
             site.pages.each do |page|
