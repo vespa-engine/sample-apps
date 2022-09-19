@@ -251,9 +251,10 @@ before retrieving and ranking passages.
 The query tensor hold the per term contextual embeddings.
 The *attribute(dt)* expression reads the document tensor which stores the per term contextual embedding. 
 
-The **cell_cast** is used to cast from bfloat16 format in memory to float,
+[cell_cast](https://docs.vespa.ai/en/reference/ranking-expressions.html#cell_cast)
+is used to cast from bfloat16 format in memory to float,
 this helps the search core to recognize the tensor expression 
-and HW accelerate the inner dot products using vector instructions.
+and HW-accelerate the inner dot products using vector instructions.
 
 The query tensor type is defined in the application package in
 [search/query-profiles/types/root.xml](src/main/application/search/query-profiles/types/root.xml):
