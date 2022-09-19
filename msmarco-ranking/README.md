@@ -11,7 +11,7 @@ We express both passage and document ranking in the same Vespa application packa
 using three document types (passage, doc and query).  
 
 # MS Marco Passage Ranking using ColBERT
-See [Passage Ranking](passage-ranking.md) to reproduce Vespa.ai runs on MS Marco Passage Ranking Leaderboard
+See [Passage Ranking](passage-ranking-README.md) to reproduce Vespa.ai runs on MS Marco Passage Ranking Leaderboard
 
 # Document Ranking using doc to query and GBDT model
-See [Document Ranking](document-ranking.md) to reproduce Vespa.ai runs on MS Marco Document Ranking Leaderboard
+See [Document Ranking](document-ranking-README.md) to reproduce Vespa.ai runs on MS Marco Document Ranking Leaderboard
