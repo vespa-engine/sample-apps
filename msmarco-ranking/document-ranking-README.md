@@ -228,7 +228,7 @@ Download this sample application
 $ vespa clone msmarco-ranking myapp && cd myapp
 </pre>
 
-Download GBDT model which is used by [document ranking](document-ranking.md),
+Download GBDT model which is used by [document ranking](document-ranking-README.md),
 this step is required since both passage and document ranking is represented
 in the same sample application.
 
