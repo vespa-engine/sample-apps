@@ -506,7 +506,8 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 Download the sample data:
 
 <pre data-test="exec">
-$ curl -L -o sample-feed/colmini-passage-feed-sample.jsonl.zst \
+$ mkdir -p sample-feed && \
+  curl -L -o sample-feed/colmini-passage-feed-sample.jsonl.zst \
     https://data.vespa.oath.cloud/colbert_data/colmini-passage-feed-sample.jsonl.zst
 </pre>
 
