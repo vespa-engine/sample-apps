@@ -23,7 +23,7 @@ path or URL as an argument and that test will be run.
 
 ## Test elements
 Use &lt;pre&gt; elements for commands to be tested.
-The script also supports &lt;div&gt; - this is because the code highligher (optional) inserts newlines in some cases.
+The script also supports &lt;div&gt; - this is because the code highlighter (optional) inserts newlines in some cases.
 
 
 #### Code block
