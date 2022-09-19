@@ -70,15 +70,15 @@ The sample application uses the following three models:
 - Dense retrieval using bi-encoder [sentence-transformers/msmarco-MiniLM-L-6-v3 🤗](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3)
   The original model uses mean pooling over the last layer of the MiniLM model.
   A simple L2 normalization is used to normalize vectors to unit length (1) so that
-  one can use innerproduct distance metric instead of angular distance metric.
+  one can use inner product distance metric instead of angular distance metric.
   The L2 normalization stage is added to the ONNX execution graph.
-  Using innerproduct saves computations compared to angular distance during the approximate nearest neighbor search. 
+  Using inner product saves computations compared to angular distance during the approximate nearest neighbor search.
 - Contextualized late interaction (COLBert) [vespa-engine/col-minilm 🤗](https://huggingface.co/vespa-engine/col-minilm).
 - Cross-Encoder [cross-encoder/ms-marco-MiniLM-L-6-v2 🤗](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2). 
   Sometimes also referred to as BERT-mono or BERT-cat in scientific literature.
   This is a model which take both the query and the passage as input. The sample application supports both applying
   this model at the content nodes or at the stateless container nodes. The latter approach allows removing duplicates
-  or business constraints before applying the compute intensive model. 
+  or business constraints before applying the compute-intensive model.
  
 Code to export these models to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa.ai
 is available in the [model export notebook](src/main/python/model-exporting.ipynb).
@@ -151,7 +151,7 @@ schema passage {
     }
     
   }
-  field text_token_ids type tensor<float>(d0[128])  {
+  field text_token_ids type tensor&lt;float&gt;(d0[128])  {
     indexing: input text | embed tokenizer | attribute | summary
     attribute: paged
   }
@@ -251,9 +251,10 @@ before retrieving and ranking passages.
 The query tensor hold the per term contextual embeddings.
 The *attribute(dt)* expression reads the document tensor which stores the per term contextual embedding. 
 
-The **cell_cast** is used to cast from bfloat16 format in memory to float,
+[cell_cast](https://docs.vespa.ai/en/reference/ranking-expressions.html#cell_cast)
+is used to cast from bfloat16 format in memory to float,
 this helps the search core to recognize the tensor expression 
-and HW accelerate the inner dotproducts using vector instructions.  
+and HW-accelerate the inner dot products using vector instructions.
 
 The query tensor type is defined in the application package in
 [search/query-profiles/types/root.xml](src/main/application/search/query-profiles/types/root.xml):
@@ -382,19 +383,19 @@ For the full dataset to reproduce the submission to the MS Marco Passage ranking
 
 Requirements:
 
-* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 6 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
- a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed. 
-* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
-to build the application. 
+* [Apache Maven](https://maven.apache.org/install.html).
+  This sample app uses custom Java components and Maven is used to build the application.
 * zstd: `brew install zstd`
 
-Validate Docker resource settings, should be minimum 6GB:
+Validate Docker resource settings, should be minimum 6 GB:
 
 <pre>
 $ docker info | grep "Total Memory"
@@ -505,7 +506,8 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 Download the sample data:
 
 <pre data-test="exec">
-$ curl -L -o sample-feed/colmini-passage-feed-sample.jsonl.zst \
+$ mkdir -p sample-feed && \
+  curl -L -o sample-feed/colmini-passage-feed-sample.jsonl.zst \
     https://data.vespa.oath.cloud/colbert_data/colmini-passage-feed-sample.jsonl.zst
 </pre>
 
@@ -525,17 +527,12 @@ For example do a query for *what was the Manhattan Project*:
 In this case using dense retrieval and ColBERT re-ranking: 
 
 <pre>
-$ cat sample-feed/query.json
+$ curl -H 'Content-Type: application/json' --data '
 {
   "query": "what was the manhattan project?",
   "hits": 5,
   "queryProfile": "dense-colbert"
-}
-</pre>
-
-<pre data-test="exec" data-test-assert-contains="29.545">
-$ curl -H Content-Type:application/json --data @sample-feed/query.json \
-    http://localhost:8080/search/ | python3 -m json.tool
+}'   http://localhost:8080/search/ | python3 -m json.tool
 </pre>
 
 
@@ -701,7 +698,7 @@ Model training and offline text to tensor processing
   [ColBERT repository](https://github.com/stanford-futuredata/ColBERT) 
   using the MS Marco Passage training set.
   The *bert-base-uncased* is replaced with the *MiniLM-L6*. 
-  The model was trained using cosine similarity (innerproduct as the vectors are unit length normalized).
+  The model was trained using cosine similarity (inner product as the vectors are unit length normalized).
 * The dimensionality of the token tensor is reduced from 384 (MiniLM hidden dimensionality)
   to 32 dimensions by a linear layer.
 * A GPU powered indexing routine from the mentioned *ColBERT repository*
