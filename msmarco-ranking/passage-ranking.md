@@ -526,17 +526,12 @@ For example do a query for *what was the Manhattan Project*:
 In this case using dense retrieval and ColBERT re-ranking: 
 
 <pre>
-$ cat sample-feed/query.json
+$ curl -H 'Content-Type: application/json' --data '
 {
   "query": "what was the manhattan project?",
   "hits": 5,
   "queryProfile": "dense-colbert"
-}
-</pre>
-
-<pre data-test="exec" data-test-assert-contains="29.545">
-$ curl -H Content-Type:application/json --data @sample-feed/query.json \
-    http://localhost:8080/search/ | python3 -m json.tool
+}'   http://localhost:8080/search/ | python3 -m json.tool
 </pre>
 
 
