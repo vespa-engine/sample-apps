@@ -19,9 +19,9 @@ jobs:
 
     - name: Generate feed-file (add empty frontmatter to README files first)
       run: |
-        find . -not -path './_site/*' -not -path './test/*' -name \*.md
+        find . -not -path './_site/*' -not -path './test/*' -not -path './vendor/*' -name \*.md
         echo "endfind"
-        find . -not -path './_site/*' -not -path './test/*' -name \*.md | \
+        find . -not -path './_site/*' -not -path './test/*' -not -path './vendor/*' -name \*.md | \
           while read f; do (echo -e "---\nrender_with_liquid: false\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
         bundle exec jekyll build -p _plugins-vespafeed
 
