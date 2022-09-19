@@ -14,12 +14,12 @@ module Jekyll
             namespace = site.config["search"]["namespace"]
             operations = []
             site.pages.each do |page|
+                puts page.url
                 appname = page.url[1..page.url.index("README.html")-2]  # from /use-case-shopping/README.html to use-case-shopping
                 if appname == "README.html"
                     appname = "" # ugly workaround for index page
                 end
                 puts appname
-                puts page.url
                 if page.data["index"] == true
                     operations.push({
                         :fields => {
