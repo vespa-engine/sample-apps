@@ -17,6 +17,8 @@ module Jekyll
                 if appname == "README.html"
                     appname = "" # ugly workaround for index page
                 end
+                puts appname
+                puts page.url
                 if page.data["index"] == true
                     operations.push({
                         :fields => {
