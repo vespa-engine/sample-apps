@@ -13,7 +13,12 @@ module Jekyll
             namespace = site.config["search"]["namespace"]
             operations = []
             site.pages.each do |page|
-                path = page.url[0..page.url.rindex("/")]
+                if page.url.include?("-README.html")
+                    path = page.url.sub(/README.html/, "README.md")
+                else
+                    path = page.url[0..page.url.rindex("/")]  # link to repo dir instead of README.md
+                end
+
                 title = page.url[0..page.url.rindex("README.html")-1].gsub(/(\/|-)$/, "")
                 if title.empty?
                     title = "Vespa Sample Applications"
