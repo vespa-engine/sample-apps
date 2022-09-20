@@ -361,7 +361,7 @@ for more on sizing and scaling Vespa search.
  
 ![Vespa Serving Overview](img/overview.png)
 
-See also [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling.md) and 
+See also [Scaling and performance evaluation of ColBERT on Vespa.ai](colbert-performance-scaling-README.md) and 
 the blog post [Pretrained Transformer Language Models for Search - part 4](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/)
 also has a section on serving performance. 
 
