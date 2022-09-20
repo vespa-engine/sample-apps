@@ -13,16 +13,20 @@ module Jekyll
             namespace = site.config["search"]["namespace"]
             operations = []
             site.pages.each do |page|
-                appname = page.url[1..page.url.index("README.html")-2]  # from /use-case-shopping/README.html to use-case-shopping
-                if appname == "README.html"
-                    appname = "" # ugly workaround for index page
+                path = page.url[0..page.url.rindex("/")]
+                title = page.url[0..page.url.rindex("README.html")-1].gsub(/(\/|-)$/, "")
+                if title.empty?
+                    title = "Vespa Sample Applications"
+                else
+                    title = "Vespa Sample Applications: " + title
                 end
+
                 if page.data["index"] == true
                     operations.push({
                         :fields => {
-                            :path => "/" + appname,
+                            :path => path,
                             :namespace => namespace,
-                            :title => "Vespa Sample Applications: " + appname,
+                            :title => title,
                             :content => extract_text(page)
                         }
                     })
