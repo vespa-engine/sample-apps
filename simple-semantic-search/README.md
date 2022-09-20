@@ -8,7 +8,7 @@ A minimal semantic search application:
 - Query and document text is converted to embeddings by the application. 
 - Search by embedding and/or text match.
 
-Requested at least Vespa 8.54.61.
+Requires at least Vespa 8.54.61.
 
 ## To try this
 
