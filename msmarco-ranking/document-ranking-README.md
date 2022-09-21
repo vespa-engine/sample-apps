@@ -285,6 +285,8 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 ### Download sample feed files
 
 <pre data-test="exec">
+$ mkdir -p sample-feed
+
 $ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
     https://data.vespa.oath.cloud/sample-apps-data/sample_regular_fields.jsonl.zst 
 
@@ -312,14 +314,12 @@ Now all the data is in place and one can play around with the query interface (T
 
 View a sample document:
 <pre data-test="exec" data-test-assert-contains="what is machacado">
-$ curl -s http://localhost:8080/document/v1/msmarco/doc/docid/D1840066 | \
-    python3 -m json.tool
+$ vespa document get id:msmarco:doc::D1840066
 </pre>
 
 Do a query:
 <pre data-test="exec" data-test-assert-contains="0.153">
-$ curl -s "http://localhost:8080/search/?query=what%20is%20the%20definition%20of%20business%20law?&ranking=ltr&restrict=doc" | \
-    python3 -m json.tool
+$ vespa query query="what is the definition of business law" ranking=ltr restrict=doc
 </pre>
 
 The data set is small, but one gets a feel for how the data and how the document to query expansion work. 
