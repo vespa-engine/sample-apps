@@ -31,3 +31,9 @@ vespa query "yql=select * from doc where {targetHits: 100}nearestNeighbor(embedd
 vespa query "yql=select * from doc where text contains 'boat'"
 vespa query "yql=select * from doc where {targetHits: 100}nearestNeighbor(embedding, e) AND text contains 'boat'" "input.query(e)=embed(exchanging information by sound)"
 </pre>
+
+## Ready for production
+
+The [model included in this sample application](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
+is suitable for production use and will produce good results in many domains without fine-tuning,
+especially when combined with text match features such as bm25.
