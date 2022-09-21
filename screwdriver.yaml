@@ -34,7 +34,7 @@ jobs:
             while read f; do (echo -e "---\nrender_with_liquid: false\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
           find . -not -path './_site/*' -name services.xml -or -name hosts.xml -or -name deployment.xml | \
             while read f; do (echo -e "---\nrender_with_liquid: false\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
-          find . -not -path './_site/*' -name \*.java | \
+          find . -not -path './_site/*' -name \*.java -or -not -path './_site/*' -name \*.sd | \
             while read f; do (echo -e "---\nrender_with_liquid: false\n---\n"; cat ${f})>${f}.new; mv ${f}.new ${f}; done
       - generate-links-from-code-files: |
           bundle exec jekyll build -p _plugins-linkcheck
