@@ -285,6 +285,8 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 ### Download sample feed files
 
 <pre data-test="exec">
+$ mkdir -p sample-feed
+
 $ curl -L -o sample-feed/sample_regular_fields.jsonl.zst \
     https://data.vespa.oath.cloud/sample-apps-data/sample_regular_fields.jsonl.zst 
 
