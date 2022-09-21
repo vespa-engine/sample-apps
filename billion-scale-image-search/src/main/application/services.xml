@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version='1.0' xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+  <container id='default' version='1.0'>
+    <nodes count='1'/>
+    <component id='ai.vespa.examples.Centroids' bundle='billion-scale-vector-search'/>
+    <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-vector-search'/>
+    <component id="ai.vespa.examples.BPETokenizer" bundle='billion-scale-vector-search'>
+      <config name="ai.vespa.examples.bpe-tokenizer">
+        <contextlength>77</contextlength>
+        <vocabulary>files/bpe_simple_vocab_16e6.txt.gz</vocabulary>
+      </config>
+    </component>
+    <model-evaluation>
+      <onnx>
+        <models>
+          <model name="text_transformer">
+            <intraop-threads>1</intraop-threads>
+          </model>
+          <model name="vespa_innerproduct_ranker">
+            <intraop-threads>1</intraop-threads>
+          </model>
+        </models>
+      </onnx>
+    </model-evaluation>
+    <search>
+      <chain id='default' inherits='vespa'>
+        <searcher id='ai.vespa.examples.searcher.DeDupingSearcher' bundle='billion-scale-vector-search'/>
+        <searcher id='ai.vespa.examples.searcher.RankingSearcher' bundle='billion-scale-vector-search'/>
+        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-scale-vector-search"/>
+        <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-vector-search'/>
+      </chain>
+    </search>
+    <document-api/>
+    <document-processing>
+      <chain id='neighbor-assigner' inherits='indexing'>
+        <documentprocessor id='ai.vespa.examples.docproc.DimensionReductionDocProc'
+                           bundle='billion-scale-vector-search'/>
+        <documentprocessor id='ai.vespa.examples.docproc.AssignCentroidsDocProc'
+                           bundle='billion-scale-vector-search'/>
+      </chain>
+    </document-processing>
+  </container>
+
+  <content id='graph' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='centroid'/>
+      <document-processing cluster='feed' chain='neighbor-assigner'/>
+    </documents>
+    <nodes count='1'/>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+
+  <content id='if' version='1.0'>
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode='index' type='image'/>
+      <document-processing cluster='feed' chain='neighbor-assigner'/>
+    </documents>
+    <nodes count='1'/>
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <requestthreads>
+              <persearch>2</persearch>
+            </requestthreads>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+            <summary>
+              <io>
+                <read>directio</read>
+              </io>
+              <store>
+                <cache>
+                  <maxsize-percent>5</maxsize-percent>
+                  <compression>
+                    <type>lz4</type>
+                  </compression>
+                </cache>
+                <logstore>
+                  <chunk>
+                    <maxsize>16384</maxsize>
+                    <compression>
+                      <type>zstd</type>
+                      <level>3</level>
+                    </compression>
+                  </chunk>
+                </logstore>
+              </store>
+            </summary>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+</services>
