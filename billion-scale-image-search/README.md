@@ -132,9 +132,9 @@ $ vespa auth cert
 See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
 
 <pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git && cd sample-apps
 $ git checkout jobergum/billion-scale-image-search 
-$ cd sampe-apps/billion-scale-image-search
+$ cd billion-scale-image-search
 </pre>
 
 Pull and start the vespa docker container image:
