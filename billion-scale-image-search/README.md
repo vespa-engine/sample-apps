@@ -133,7 +133,8 @@ See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-s
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git && cd sample-apps
-$ git checkout -b jobergum/billion-scale-image-search 
+$ git fetch origin && git checkout origin/jobergum/billion-scale-image-search 
+$ ls
 $ cd billion-scale-image-search
 </pre>
 
