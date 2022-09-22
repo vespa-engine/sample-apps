@@ -1,7 +1,7 @@
 {
-    "put": "id:laion:centroid::-4290552400729848435",
+    "put": "id:laion:centroid::123456789",
     "fields": {
-        "id": -4290552400729848435,
+        "id": 123456789,
         "vector": {
             "type": "tensor<bfloat16>(x[768])",
             "values": [
