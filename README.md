@@ -6,6 +6,15 @@
 
 ## Getting started - Basic Sample Applications
 
+### [Basic album-recommendation](album-recommendation)
+This is the intro application to Vespa.
+Learn how to configure the schema for simple recommendation and search use cases.
+
+## [Simple semantic search](simple-semantic-search)
+A simple application demonstrating vector ANN search through HNSW, 
+creating embedding vectors from a language model inside Vespa, and hybrid
+text and semantic ranking.
+
 ### [News search and recommendation tutorial](news)
 This is the sample application used in the [Vespa tutorial](https://docs.vespa.ai/en/tutorials/news-1-getting-started.html).
 Please follow the tutorial. This application demonstrates basic search functionality.
@@ -14,9 +23,6 @@ where approximate nearest neighbor search in a shared user/item embedding space
 is used to retrieve recommended content for a user.
 This sample app also demonstrates use of parent-child relationships.
 
-### [Basic album-recommendation](album-recommendation)
-This is the intro application to Vespa.
-Learn how to configure the schema for simple recommendation and search use cases.
 
 
 ## Full-fledged State-of-the-Art Search, Ranking and Question Answering applications
