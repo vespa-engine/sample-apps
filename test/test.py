@@ -24,6 +24,7 @@ verbose = False
 workdir = "."
 project_root = os.getcwd()
 work_dir = os.path.join(project_root, "_work")
+liquid_transforms = {}
 
 
 def print_cmd_header(cmd, extra="", print_header=True):
@@ -171,18 +172,21 @@ def parse_cmd(cmd, attrs):
     return {"$": cmd, "type": "default"}
 
 
+def process_liquid(command):
+    for key, value in liquid_transforms.items():
+        command = re.sub(key, value, command)
+
+    return command
+
+
 def parse_cmds(pre, attrs):
     cmds = []
     line_continuation = ""
     line_continuation_delimiter = "\\"
 
-    # Remove liquid macros, if present, e.g:
-    # {% highlight shell %}       {% endhighlight %}
-    # {% raw %}                   {% endraw %}
-    sanitized     = re.sub(r"{%\s*.*highlight\s*.*%}", "", pre)
-    sanitized_pre = re.sub(r"{%\s*.*raw\s*%}", "", sanitized)
+    sanitized_cmd = process_liquid(pre)
 
-    for line in sanitized_pre.split("\n"):
+    for line in sanitized_cmd.split("\n"):
         cmd = "{0} {1}".format(line_continuation, line.strip())
         if cmd.endswith(line_continuation_delimiter):
             line_continuation = cmd[:-len(line_continuation_delimiter)]
@@ -316,9 +320,10 @@ def run_with_arguments():
             verbose = True
         elif opt in "-c":
             config_file = arg
-
         elif opt in "-w":
             workdir = arg
+
+    load_liquid_transforms()
 
     if len(config_file):
         run_config(config_file)
@@ -326,6 +331,32 @@ def run_with_arguments():
         run_file(args[0])
     else:
         run_config("_test_config.yml")
+
+
+def load_liquid_transforms():
+    global liquid_transforms
+    global workdir
+    site_config_file = "_config.yml"
+
+    if not os.path.isfile(site_config_file):
+        site_config = os.path.join("../", site_config_file)
+    if not os.path.isfile(site_config):
+        site_config = os.path.join(workdir, site_config_file)
+    if not os.path.isfile(site_config):
+        raise RuntimeError("Could not find " + site_config_file)
+
+    # Transforms for site variables like {{site.variables.vespa_version}}
+    with open(site_config, "r") as f:
+        config = yaml.safe_load(f)
+        if "variables" in config:
+            for key, value in config["variables"].items():
+                liquid_transforms[r"{{\s*site.variables."+key+r"\s*}}"] = value
+
+    # Remove liquid macros, e.g.:
+    # {% highlight shell %}       {% endhighlight %}
+    # {% raw %}                   {% endraw %}
+    liquid_transforms[r"{%\s*.*highlight\s*.*%}"] = ""
+    liquid_transforms[r"{%\s*.*raw\s*%}"] = ""
 
 
 def main():
