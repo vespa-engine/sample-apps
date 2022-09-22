@@ -248,7 +248,7 @@ Basic verfication
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
 which runs a set of basic tests to verify that the application is working as expected.
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa test feed-and-search-test.json
+$ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
 
 
