@@ -66,7 +66,7 @@
     <redundancy>1</redundancy>
     <documents>
       <document mode='index' type='image'/>
-      <document-processing cluster='feed' chain='neighbor-assigner'/>
+      <document-processing cluster='default' chain='neighbor-assigner'/>
     </documents>
     <nodes count='1'/>
     <engine>
