@@ -132,9 +132,8 @@ $ vespa auth cert
 See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
 
 <pre data-test="exec">
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git && cd sample-apps
-$ git fetch origin && git checkout origin/jobergum/billion-scale-image-search 
-$ ls
+$ pwd
+$ ls 
 $ cd billion-scale-image-search
 </pre>
 
