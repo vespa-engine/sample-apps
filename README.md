@@ -10,7 +10,7 @@
 This is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
-## [Simple semantic search](simple-semantic-search)
+### [Simple semantic search](simple-semantic-search)
 A simple application demonstrating vector ANN search through HNSW, 
 creating embedding vectors from a language model inside Vespa, and hybrid
 text and semantic ranking.
