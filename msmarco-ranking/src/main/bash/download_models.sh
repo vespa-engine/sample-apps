@@ -16,4 +16,4 @@ https://data.vespa.oath.cloud/onnx_models/sentence-msmarco-MiniLM-L-6-v3-quantiz
 
 echo "Downloading https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-dynamic-quantized.onnx"
 curl -L -o $DIR/colbert_encoder.onnx \
-https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-quantized.onnx
+https://data.vespa.oath.cloud/onnx_models/vespa-colMiniLM-L-6-dynamic-quantized.onnx
