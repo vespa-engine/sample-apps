@@ -12,7 +12,10 @@ import com.yahoo.tensor.*;
 import com.yahoo.vespa.model.container.ml.ModelsEvaluatorTester;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 public class ColBERTDocumentProcessorTest {
 
