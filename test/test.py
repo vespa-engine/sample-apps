@@ -216,6 +216,39 @@ def parse_file(pre, attrs):
     return {"type": "file", "content": content, "path": path}
 
 
+def get_macro(macro):
+    if re.search("\s*init-deploy", macro):
+        app_name = re.sub("\s*init-deploy\s*", "", macro).strip()
+        if len(app_name) == 0:
+            raise ValueError("Missing application name for macro 'init-deploy'")
+        cmds = [
+            {
+                "$": "vespa config set target local",
+                "type": "default"
+            },
+            {
+                "$": "docker run --detach --name vespa --hostname vespa-container --publish 8080:8080 --publish 19071:19071 vespaengine/vespa",
+                "type": "default"
+            },
+            {
+                "$": "vespa status deploy --wait 300",
+                "type": "default"
+            },
+            {
+                "$": "vespa clone {} myapp && cd myapp".format(app_name),
+                "type": "default"
+            },
+            {
+                "$": "vespa deploy --wait 300",
+                "type": "default"
+            }
+        ]
+    else:
+        raise ValueError("{} is not a valid macro".format(macro))
+
+    return cmds
+
+
 def parse_page(html):
     script = {
         "before": [],
@@ -225,18 +258,24 @@ def parse_page(html):
 
     soup = BeautifulSoup(html, "html.parser")
 
-    for pre in soup.find_all(lambda tag: (tag.name == "pre" or tag.name == "div") and tag.has_attr("data-test")):
-        if pre.attrs["data-test"] == "before":
-            script["before"].extend(parse_cmds(pre.string, pre.attrs))
+    for tag in soup.find_all(lambda tag: (tag.name == "pre" or tag.name == "div" or tag.name == "p") and tag.has_attr("data-test")):
+        attr = tag.attrs["data-test"]
 
-        if pre.attrs["data-test"] == "exec":
-            script["steps"].extend(parse_cmds(pre.string, pre.attrs))
+        if attr == "before":
+            script["before"].extend(parse_cmds(tag.string, tag.attrs))
 
-        if pre.attrs["data-test"] == "file":
-            script["steps"].append(parse_file(pre.contents, pre.attrs))
+        if attr == "exec":
+            script["steps"].extend(parse_cmds(tag.string, tag.attrs))
 
-        if pre.attrs["data-test"] == "after":
-            script["after"].extend(parse_cmds(pre.string, pre.attrs))
+        if attr == "file":
+            script["steps"].append(parse_file(tag.contents, tag.attrs))
+
+        if attr == "after":
+            script["after"].extend(parse_cmds(tag.string, tag.attrs))
+
+        if re.search("^run-macro", attr):
+            macro = re.sub("run-macro\s?", "", attr)
+            script["steps"].extend(get_macro(macro))
 
     return script
 
