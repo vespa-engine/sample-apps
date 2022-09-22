@@ -165,14 +165,14 @@ These instruction uses the first split file (0000) of a total of 2314 files in t
 
 Download the vector data file:
 
-<pre>
+<pre data-test="exec">
 $ wget \
   https://mystic.the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
 </pre>
 
 Download the meta data file:
 
-<pre>
+<pre data-test="exec">
 $ wget  \
   https://mystic.the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
 </pre>
