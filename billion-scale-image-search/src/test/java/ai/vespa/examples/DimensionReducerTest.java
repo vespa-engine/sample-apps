@@ -22,6 +22,5 @@ public class DimensionReducerTest {
         assertEquals(128, reduced.size());
         String stringType = reduced.toAbbreviatedString().split(":")[0];
         assertEquals("tensor<float>(x[128])", stringType);
-        System.out.println(reduced);
     }
 }

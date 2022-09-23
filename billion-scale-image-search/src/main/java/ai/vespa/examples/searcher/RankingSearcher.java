@@ -36,7 +36,7 @@ public class RankingSearcher extends Searcher {
         //Execute first protocol phase
         Result result = execution.search(query);
         //Execute fill phase if not done before - gets query.getHits vectors
-        ensureFilled(result, null, execution);
+        ensureFilled(result, "vector-summary", execution);
         Optional<Tensor> q = query.getRanking().getFeatures().getTensor("query(q)");
         if(q.isEmpty()) //No vector query
             return result;

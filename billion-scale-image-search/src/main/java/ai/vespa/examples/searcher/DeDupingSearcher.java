@@ -34,8 +34,8 @@ public class DeDupingSearcher extends Searcher {
         Result result = execution.search(query);
 
         if (query.properties().getBoolean("collapse.enable", true)){
-            ensureFilled(result, null, execution);
-            result = dedup(result);
+            ensureFilled(result, "vector-summary", execution);
+            result = dedup(result, userHits);
         }
         result.hits().trim(0,userHits);
         if (!userWantsVector) { //User did not ask for it - remove it.
@@ -45,7 +45,14 @@ public class DeDupingSearcher extends Searcher {
         return result;
     }
 
-    public Result dedup(Result result){
+    /**
+     * Deduping based on vector similarity
+     * @param result the result to dedupe
+     * @param userHits the number of hits requested by the user
+     * @return
+     */
+
+    public Result dedup(Result result, int userHits){
         if(result.getTotalHitCount() == 0 || result.hits().getError() != null)
             return result;
 
@@ -70,6 +77,8 @@ public class DeDupingSearcher extends Searcher {
             }
             if (maxSim < similarityThreshold) {
                 uniqueHits.add(result.hits().get(i));
+                if(uniqueHits.size() == userHits)
+                    break;
             }
         }
         result.setHits(uniqueHits);
