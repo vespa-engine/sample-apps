@@ -28,8 +28,10 @@
             "request": {
                 "method": "GET",
                 "uri": "/search/",
-                "prompt": "a french cat",
-                "yql": "select documentid, matchfeatures, caption, url from image where nsfw contains \"UNLIKELY\""
+                "parameters": {
+                  "prompt": "a french cat",
+                  "yql": "select documentid, matchfeatures, caption, url from image where nsfw contains \"UNLIKELY\""
+                }
             },
             "response": {
                 "body": {
