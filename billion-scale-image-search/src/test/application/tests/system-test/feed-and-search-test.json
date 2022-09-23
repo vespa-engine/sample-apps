@@ -39,7 +39,7 @@
                         "children": [
                             {
                                 "fields": {
-                                    "id": 1
+                                    "documentid": "id:laion:image::1" 
                                 },
                                 "source": "if"
                             }
