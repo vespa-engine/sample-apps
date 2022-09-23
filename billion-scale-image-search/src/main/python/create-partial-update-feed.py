@@ -8,7 +8,7 @@ dataset = load_dataset("ChristophSchuhmann/improved_aesthetics_6plus")
 for row in dataset['train']:
   hash = row['hash']
   punsafe = int(100*row['punsafe'])
-  aesthetic = int(100*row['AESTHETIC_SCORE'])
+  aesthetic = int(10*row['AESTHETIC_SCORE'])
   update = {
     "update": "id:laion:image::%i" % hash,
       "fields": {

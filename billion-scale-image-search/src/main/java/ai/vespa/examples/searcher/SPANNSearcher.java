@@ -36,9 +36,7 @@ public class SPANNSearcher extends Searcher {
     public Result search(Query query, Execution execution) {
         Optional<Tensor> optionalTensor = query.getRanking().getFeatures().getTensor("query(q)");
         if (optionalTensor.isEmpty())
-            return new Result(query,
-                    ErrorMessage.createBadRequest("No query tensor 'query(q)' in input request"));
-
+            return execution.search(query);
         Tensor reducedQueryTensor = reducer.reduce(optionalTensor.get());
         query.getRanking().getFeatures().put("query(q_reduced)", reducedQueryTensor);
 
