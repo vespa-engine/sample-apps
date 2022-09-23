@@ -3,7 +3,6 @@
     "fields": {
         "id": 123456789,
         "vector": {
-            "type": "tensor<bfloat16>(x[768])",
             "values": [
                 0.00982666015625,
                 0.0390625,

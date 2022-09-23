@@ -2,7 +2,6 @@
     "put": "id:laion:image::1",
     "fields": {
         "vector": {
-            "type": "tensor<bfloat16>(x[768])",
             "values": [
                 0.0069580078125,
                 0.025390625,
