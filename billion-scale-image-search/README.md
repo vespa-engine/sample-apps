@@ -93,7 +93,7 @@ for reproducing on a laptop.
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
-* [Java 17](https://openjdk.java.net/projects/jdk/17/) installed.
+* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * Python3 and numpy to process the vector dataset 
 * [Apache Maven](https://maven.apache.org/install.html) - this sample app uses custom Java components and Maven is used
   to build the application. 
@@ -113,7 +113,7 @@ $ brew install vespa-cli
 Set target env, it's also possible to deploy this app to [Vespa Cloud](https://cloud.vespa.ai/)
 using target cloud. For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html) 
 replace the [src/main/application/services.xml](src/main/application/services.xml) with 
-[src/main/application/cloud-services.xml](src/main/application/cloud-services.xml). 
+[src/main/application/services-cloud.xml](src/main/application/services-cloud.xml). 
 
 For local deployment using docker image use:
 
