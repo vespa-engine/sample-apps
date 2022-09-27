@@ -2,10 +2,10 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-# Scalable Ultra-Large Vector Search 
+# Billion-scale Image Search
 
 This sample application combines two sample applications to implement 
-cost-efficient large scale vector search over multimodal AI powered vector representations; 
+cost-efficient large scale image search over multi-modal AI powered vector representations; 
 [text-image-search](https://github.com/vespa-engine/sample-apps/tree/master/text-image-search) and 
 [billion-scale-vector-search](https://github.com/vespa-engine/sample-apps/tree/master/billion-scale-vector-search).
 
@@ -29,14 +29,15 @@ Note the following about the dataset
 > Keep in mind that the un-curated nature of the dataset means that collected 
 > links may lead to strongly discomforting and disturbing content for a human viewer.
 
-The released dataset does not contain image data itself, but CLIP vector representations and meta data like `url` and `caption`.
+The released dataset does not contain image data itself, 
+but CLIP vector representations and metadata like `url` and `caption`.
 
 # Use cases 
 
 The app can be used to implement several use cases over the LAION dataset:
 
-- Search the free text `caption` or `url` fields in the LAION dataset using Vespa's standard text-matching functionality.
-- Vector search, given a text prompt, search the image vector representations (CLIP ViT-L/14), for example 'french cat'. 
+- Search with a free text prompt over the `caption` or `url` fields in the LAION dataset using Vespa's standard text-matching functionality.
+- CLIP retrieval, using vector search, given a text prompt, search the image vector representations (CLIP ViT-L/14), for example for 'french cat'. 
 - Given an image vector representation, search for similar images in the dataset. This can for example
 be used to take the output image of StableDiffusion to find similar images in the training dataset. 
 
@@ -50,7 +51,7 @@ The sample application demonstrates many Vespa primitives:
 - Importing a [ONNX](https://onnx.ai/) exported version of [CLIP ViT-L/14](https://github.com/openai/CLIP) 
 for [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/) 
 in [Vespa stateless](https://docs.vespa.ai/en/overview.html) containers. 
-The CLIP model allows mapping free text prompt to a joint image-text vector space with 768 dimensions.
+The CLIP model allows mapping a free text prompt to a joint image-text vector space with 768 dimensions.
 - [HNSW](https://docs.vespa.ai/en/approximate-nn-hnsw.html) indexing of vector centroids drawn
 from the dataset, and combination with classic Inverted File as described in 
 [Billion-scale vector search using hybrid HNSW-IF](https://blog.vespa.ai/vespa-hybrid-billion-scale-vector-search/).
@@ -60,12 +61,16 @@ Moving the majority of the vector compute to the stateless layer allows for fast
 The full precision vectors are stored in Vespa's summary log store, using lossless compression (zstd). 
 - Dimension reduction with PCA - The centroid vectors are compressed from 768 dimensions to 128 dimensions. This allows indexing 6x more
 centroids on the same instance type due to the reduced memory footprint. With Vespa's support for distributed search, coupled with powerful 
-high memory instances, this allows Vespa to scale cost efficiently to trillion sized vector datasets. 
+high memory instances, this allows Vespa to scale cost efficiently to trillion-sized vector datasets. 
 - The trained PCA matrix matmul operation which projects the 768 dim vector to 128 dims is 
 evaluated in Vespa using accelerated inference, both at indexing time and at query time. The PCA weights are represented also using ONNX.  
-- Phased ranking. The image vectors are reduced as well to 128 dimensions with semi-fast access using `paged` tensor attributes, while full 
-precision vectors are on disk. The first-phase course search ranks vectors in the reduced vector space and results are merged from all nodes before
-the final ranking phase in the stateless layer. The second phase is implemented in the stateless container layer using [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/) 
+- Phased ranking. 
+The image embedding vectors are also projected to 128 dimensions, stored using 
+memory mapped [paged attribute tensors](https://docs.vespa.ai/en/attributes.html#paged-attributes). 
+Full precision vectors are on stored on disk in Vespa summary store. 
+The first-phase course search ranks vectors in the reduced vector space and results are merged from all nodes before
+the final ranking phase in the stateless layer. 
+The second phase is implemented in the stateless container layer using [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/) 
 - Combining approximate nearest neighbor search with [filters](https://blog.vespa.ai/constrained-approximate-nearest-neighbor-search/), filtering
 can be on url, caption, image height, width, safety probability, nswf label and more. 
 - Hybrid ranking, both textual sparse matching features and the CLIP similarity can be used when ranking images. 
@@ -77,12 +82,19 @@ accelerated by stateless model inference.
 - Scale, from a single node deployment to multi-node deployment using managed [Vespa Cloud](https://cloud.vespa.ai/), 
 or self-hosted on-premise. 
 
+## Stateless components 
 
+- [RankingSearcher](src/main/java/ai/vespa/examples/searcher/RankingSearcher.java) implements the last stage ranking using
+full-precision vectors using a ONNX model. 
+- [DedupingSearcher](src/main/java/ai/vespa/examples/searcher/DeDupingSearcher.java) implements run-time de-duping after Ranking, using 
+document to document similarity matrix, using a ONNX model. 
+- [DimensionReducer](src/main/java/ai/vespa/examples/DimensionReducer.java) PCA dimension reducing vectors from 768-dims to 128-dims.
+
+
+## Deploying this app  
 
 These reproducing steps, demonstrates the functionality using a smaller subset of the 5B vector dataset, suitable
 for reproducing on a laptop. 
-
-# Reproducing 
 
 **Requirements:**
 
@@ -154,7 +166,6 @@ $ vespa status deploy --wait 300
 
 Download this sample application:
 
-#TODO 
 <pre>
 $ vespa clone billion-scale-image-search myapp && cd myapp
 </pre>
@@ -217,7 +228,7 @@ In addition to the CLIP text encoder, the model directory contains three small O
 - `vespa_innerproduct_ranker.onnx` which is used to perform vector similarity (inner dot product) between the query and the vectors
 in the stateless container.
 - `vespa_pairwise_similarity.onnx` which is used to perform matrix multiplication between the top retrieved vectors.
-- `pca_transformer.onnx` which is used for dimension reduction, projecting the orginal 768 dim vector space to a 128 dimensional space. 
+- `pca_transformer.onnx` which is used for dimension reduction, projecting the 768-dim vector space to a 128-dimensional space. 
 
 These `ONNX` model files are generated by specifying the compute operation using `torch` and using torch's
 ability to export the model to ONNX format:
