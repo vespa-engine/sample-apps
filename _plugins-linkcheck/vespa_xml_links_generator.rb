@@ -23,6 +23,11 @@ module Jekyll
                         all_links.push(link)
                     end
                 end
+                if page.name.include?".sd"
+                    extract_links_sd(page).each do |link|
+                        all_links.push(link)
+                    end
+                end
             end
             link_file = "<!DOCTYPE html><html><head><title>links</title></head><body>\n"
             all_links.uniq.each do |link|
@@ -50,6 +55,19 @@ module Jekyll
             page.content.each_line { |line|
                 if line =~ /^\s+\*\s/
                     urls = line.gsub('"', ' ').gsub("'", ' ').split(/\s+/).find_all { |u| u =~ /^https?:/ }
+                    urls.each do |url|
+                        all_urls.push(url)
+                    end
+                end
+            }
+            return all_urls
+        end
+
+        def extract_links_sd(page)
+            all_urls = []
+            page.content.each_line { |line|
+                if line =~ /#/
+                    urls = line.split(/\s+/).find_all { |u| u =~ /^https?:/ }
                     urls.each do |url|
                         all_urls.push(url)
                     end

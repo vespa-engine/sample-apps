@@ -1,6 +1,7 @@
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
+    - simple-semantic-search/README.md
     - text-image-search/README.md
     - text-search/README.md
     - examples/document-processing/README.md
@@ -15,6 +16,11 @@ urls:
     - incremental-search/search-as-you-type/README.md
     - incremental-search/search-suggestions/README.md
     - transformers/README.md
+    - examples/operations/multinode-HA/README.md
+    - msmarco-ranking/passage-ranking-README.md
+    - msmarco-ranking/document-ranking-README.md
+    - dense-passage-retrieval-with-ann/README.md
+    - use-case-shopping/README.md
 
     # examples/operations/album-recommendation-monitoring is tested in
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana

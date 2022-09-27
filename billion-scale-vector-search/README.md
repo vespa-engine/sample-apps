@@ -93,7 +93,6 @@ $ vespa clone billion-scale-vector-search myapp && cd myapp
 
 
 ## Download Vector Data
-
 This sample app uses the Microsoft SPACEV vector dataset from 
 [https://big-ann-benchmarks.com/](https://big-ann-benchmarks.com/).
 
@@ -121,8 +120,8 @@ $ pip3 install numpy requests tqdm
 $ python3 src/main/python/create-vespa-feed.py spacev10m_base.i8bin
 </pre>
 
-## Build and deploy Vespa app 
 
+## Build and deploy Vespa app 
 Build the sample app:
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
@@ -166,6 +165,7 @@ $ ./vespa-feed-client-cli/vespa-feed-client \
   --file if-vectors.jsonl --endpoint http://localhost:8080/
 </pre>
 
+
 ## Recall Evaluation
 Download the query vectors and the ground truth for the 10M first vectors:
 <pre data-test="exec">
@@ -192,8 +192,8 @@ $ python3 src/main/python/recall.py --endpoint https://app.tenant.aws-us-east-1c
   --certificate data-plane-public-cert.pem --key data-plane-private-key.pem
 </pre>
 
-## Shutdown and remove the Docker container:
 
+## Shutdown and remove the Docker container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
