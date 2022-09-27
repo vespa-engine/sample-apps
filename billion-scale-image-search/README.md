@@ -48,7 +48,7 @@ All this combined using [Vespa's query language](https://docs.vespa.ai/en/query-
 
 The sample application demonstrates many Vespa primitives: 
 
-- Importing a [ONNX](https://onnx.ai/) exported version of [CLIP ViT-L/14](https://github.com/openai/CLIP) 
+- Importing an [ONNX](https://onnx.ai/)-exported version of [CLIP ViT-L/14](https://github.com/openai/CLIP) 
 for [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/) 
 in [Vespa stateless](https://docs.vespa.ai/en/overview.html) containers. 
 The CLIP model allows mapping a free text prompt to a joint image-text vector space with 768 dimensions.
@@ -56,8 +56,10 @@ The CLIP model allows mapping a free text prompt to a joint image-text vector sp
 from the dataset, and combination with classic Inverted File as described in 
 [Billion-scale vector search using hybrid HNSW-IF](https://blog.vespa.ai/vespa-hybrid-billion-scale-vector-search/).
 - Decoupling of vector storage and vector similarity computations. The stateless layer performs vector
-similarity computation over the full precision vectors. By using Vespa's support for accelerated inference with [onnxruntime](https://onnxruntime.ai/). 
-Moving the majority of the vector compute to the stateless layer allows for faster auto-scaling with daily query volume changes. 
+similarity computation over the full precision vectors.
+By using Vespa's support for accelerated inference with [onnxruntime](https://onnxruntime.ai/), 
+moving the majority of the vector compute to the stateless layer
+allows for faster auto-scaling with daily query volume changes. 
 The full precision vectors are stored in Vespa's summary log store, using lossless compression (zstd). 
 - Dimension reduction with PCA - The centroid vectors are compressed from 768 dimensions to 128 dimensions. This allows indexing 6x more
 centroids on the same instance type due to the reduced memory footprint. With Vespa's support for distributed search, coupled with powerful 
@@ -68,12 +70,12 @@ evaluated in Vespa using accelerated inference, both at indexing time and at que
 The image embedding vectors are also projected to 128 dimensions, stored using 
 memory mapped [paged attribute tensors](https://docs.vespa.ai/en/attributes.html#paged-attributes). 
 Full precision vectors are on stored on disk in Vespa summary store. 
-The first-phase course search ranks vectors in the reduced vector space and results are merged from all nodes before
+The first-phase coarse search ranks vectors in the reduced vector space and results are merged from all nodes before
 the final ranking phase in the stateless layer. 
-The second phase is implemented in the stateless container layer using [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/) 
+The second phase is implemented in the stateless container layer using [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/).
 - Combining approximate nearest neighbor search with [filters](https://blog.vespa.ai/constrained-approximate-nearest-neighbor-search/), filtering
-can be on url, caption, image height, width, safety probability, nswf label and more. 
-- Hybrid ranking, both textual sparse matching features and the CLIP similarity can be used when ranking images. 
+can be on url, caption, image height, width, safety probability, NSFW label, and more. 
+- Hybrid ranking, both textual sparse matching features and the CLIP similarity, can be used when ranking images. 
 - Reduced tensor cell precision. The original LAION-5B dataset uses `float16`. The app uses Vespa's support for `bfloat16` tensors,
   saving 50% of storage compared to full `float` representation.
 - Caching, both reduced vectors (128) cached by the OS buffer cache, and full version 768 dims are cached using Vespa summary cache.  
@@ -85,9 +87,9 @@ or self-hosted on-premise.
 ## Stateless components 
 
 - [RankingSearcher](src/main/java/ai/vespa/examples/searcher/RankingSearcher.java) implements the last stage ranking using
-full-precision vectors using a ONNX model. 
+full-precision vectors using an ONNX model. 
 - [DedupingSearcher](src/main/java/ai/vespa/examples/searcher/DeDupingSearcher.java) implements run-time de-duping after Ranking, using 
-document to document similarity matrix, using a ONNX model. 
+document to document similarity matrix, using an ONNX model. 
 - [DimensionReducer](src/main/java/ai/vespa/examples/DimensionReducer.java) PCA dimension reducing vectors from 768-dims to 128-dims.
 
 
@@ -123,7 +125,7 @@ $ brew install vespa-cli
 </pre>
 
 Set target env, it's also possible to deploy this app to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud. For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html) 
+using target `cloud`. For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html) 
 replace the [src/main/application/services.xml](src/main/application/services.xml) with 
 [src/main/application/services-cloud.xml](src/main/application/services-cloud.xml). 
 
@@ -188,12 +190,10 @@ $ wget  \
   https://mystic.the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
 </pre>
 
-Process the dataset into Vespa feed format. 
-
 Install python dependencies:
 
 <pre data-test="exec">
-$ pip3 install pandas numpy requests mmh3 pyarrow 
+$ python3 -m pip install pandas numpy requests mmh3 pyarrow 
 </pre>
 
 Generate centroids, this process randomly selects vectors from the dataset to represent
@@ -216,7 +216,7 @@ as the processing is single-threaded.
 ## Build and deploy Vespa app 
 
 Download an exported CLIP ONNX model or use the [export utility](src/main/python/clip_export.py). The
-pre-exported model has been quantized for more efficient inference on CPU. 
+pre-exported model has been quantized for more efficient inference on CPU:
 
 <pre data-test="exec">
 $ curl -L -o src/main/application/models/text_transformer.onnx \
@@ -225,10 +225,10 @@ $ curl -L -o src/main/application/models/text_transformer.onnx \
 
 In addition to the CLIP text encoder, the model directory contains three small ONNX models:
 
-- `vespa_innerproduct_ranker.onnx` which is used to perform vector similarity (inner dot product) between the query and the vectors
+- `vespa_innerproduct_ranker.onnx` for vector similarity (inner dot product) between the query and the vectors
 in the stateless container.
-- `vespa_pairwise_similarity.onnx` which is used to perform matrix multiplication between the top retrieved vectors.
-- `pca_transformer.onnx` which is used for dimension reduction, projecting the 768-dim vector space to a 128-dimensional space. 
+- `vespa_pairwise_similarity.onnx` for matrix multiplication between the top retrieved vectors.
+- `pca_transformer.onnx` for dimension reduction, projecting the 768-dim vector space to a 128-dimensional space. 
 
 These `ONNX` model files are generated by specifying the compute operation using `torch` and using torch's
 ability to export the model to ONNX format:
@@ -237,7 +237,7 @@ ability to export the model to ONNX format:
 - [similarity_export.py](src/main/python/similarity_export.py)
 - [pca_transformer_export.py](src/main/python/pca_transformer_export.py)
 
-Build the sample app (make sure you have JDK 17, verify with `mvn -v`)
+Build the sample app (make sure you have JDK 17, verify with `mvn -v`):
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
@@ -255,9 +255,8 @@ Wait for the application endpoint to become available:
 $ vespa status --wait 300
 </pre>
 
-Basic verfication
-Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
-which runs a set of basic tests to verify that the application is working as expected.
+Run [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html),
+which runs a set of basic tests to verify that the application is working as expected:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
@@ -282,7 +281,7 @@ $ ./vespa-feed-client-cli/vespa-feed-client \
 
 # Query the data
 
-Passing `prompt` and Vespa will encode the prompt using the embedded CLIP model:
+`prompt` is a parameter to the [CLIPEmbeddingSearcher](src/main/java/ai/vespa/examples/searcher/CLIPEmbeddingSearcher.java) which will encode the prompt using the embedded CLIP model:
 
 <pre data-test="exec">
 $ vespa query \
@@ -309,7 +308,7 @@ $ vespa query \
 $ docker rm -f vespa
 </pre>
 
-### Text prompt french cat
+### Text prompt "french cat"
 ![french cats](img/french_cat.png)
 
 ### Image to Image
