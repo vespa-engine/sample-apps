@@ -6,4 +6,3 @@ urls:
     - msmarco-ranking/document-ranking-README.md
     - dense-passage-retrieval-with-ann/README.md
     - use-case-shopping/README.md
-    - billion-scale-vector-search/README.md
