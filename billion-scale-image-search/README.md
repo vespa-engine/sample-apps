@@ -305,7 +305,7 @@ $ vespa query \
 ## Shutdown and remove the Docker container:
 
 <pre data-test="after">
-$ docker rm -f vespa
+# $ docker rm -f vespa
 </pre>
 
 ### Text prompt "french cat"

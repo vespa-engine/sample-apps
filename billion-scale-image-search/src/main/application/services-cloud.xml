@@ -9,9 +9,9 @@
     <nodes deploy:environment='prod' count='[2,8]'>
       <resources vcpu="4" memory="8GB" disk="50Gb"/>
     </nodes>
-    <component id='ai.vespa.examples.Centroids' bundle='billion-scale-vector-search'/>
-    <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-vector-search'/>
-    <component id="ai.vespa.examples.BPETokenizer" bundle='billion-scale-vector-search'>
+    <component id='ai.vespa.examples.Centroids' bundle='billion-scale-image-search'/>
+    <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-image-search'/>
+    <component id="ai.vespa.examples.BPETokenizer" bundle='billion-scale-image-search'>
       <config name="ai.vespa.examples.bpe-tokenizer">
         <contextlength>77</contextlength>
         <vocabulary>files/bpe_simple_vocab_16e6.txt.gz</vocabulary>
@@ -31,10 +31,10 @@
     </model-evaluation>
     <search>
       <chain id='default' inherits='vespa'>
-        <searcher id='ai.vespa.examples.searcher.DeDupingSearcher' bundle='billion-scale-vector-search'/>
-        <searcher id='ai.vespa.examples.searcher.RankingSearcher' bundle='billion-scale-vector-search'/>
-        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-scale-vector-search"/>
-        <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-vector-search'/>
+        <searcher id='ai.vespa.examples.searcher.DeDupingSearcher' bundle='billion-scale-image-search'/>
+        <searcher id='ai.vespa.examples.searcher.RankingSearcher' bundle='billion-scale-image-search'/>
+        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-image-vector-search"/>
+        <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-image-search'/>
       </chain>
     </search>
   </container>
@@ -44,18 +44,15 @@
     <nodes deploy:environment='perf' count='[12,12]'>
       <resources vcpu="4" memory="8GB" disk="50Gb"/>
     </nodes>
-    <component id='ai.vespa.examples.Centroids' bundle='billion-scale-vector-search'/>
-    <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-vector-search'/>
+    <component id='ai.vespa.examples.Centroids' bundle='billion-scale-image-search'/>
+    <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-image-search'/>
 
-    <config name="config.docproc.docproc">
-      <numthreads>24</numthreads>
-    </config>
     <document-processing>
       <chain id='neighbor-assigner' inherits='indexing'>
         <documentprocessor id='ai.vespa.examples.docproc.DimensionReductionDocProc'
-                           bundle='billion-scale-vector-search'/>
+                           bundle='billion-scale-image-search'/>
         <documentprocessor id='ai.vespa.examples.docproc.AssignCentroidsDocProc'
-                           bundle='billion-scale-vector-search'/>
+                           bundle='billion-scale-image-search'/>
       </chain>
     </document-processing>
     <search/>
