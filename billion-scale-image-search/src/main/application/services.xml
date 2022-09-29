@@ -27,7 +27,7 @@
       <chain id='default' inherits='vespa'>
         <searcher id='ai.vespa.examples.searcher.DeDupingSearcher' bundle='billion-scale-image-search'/>
         <searcher id='ai.vespa.examples.searcher.RankingSearcher' bundle='billion-scale-image-search'/>
-        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-image-vector-search"/>
+        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-scale-image-search"/>
         <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-image-search'/>
       </chain>
     </search>

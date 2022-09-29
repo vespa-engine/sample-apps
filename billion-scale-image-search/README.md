@@ -2,14 +2,14 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
-# Billion-scale Image Search
+# Billion-Scale Image Search
 
 This sample application combines two sample applications to implement 
-cost-efficient large scale image search over multi-modal AI powered vector representations; 
+cost-efficient large scale image search over multimodal AI powered vector representations; 
 [text-image-search](https://github.com/vespa-engine/sample-apps/tree/master/text-image-search) and 
 [billion-scale-vector-search](https://github.com/vespa-engine/sample-apps/tree/master/billion-scale-vector-search).
 
-# The Vector Dataset
+## The Vector Dataset
 This sample app use the [LAION-5B](https://laion.ai/blog/laion-5b/) dataset,
  the biggest open accessible image-text dataset in the world.
 
@@ -21,20 +21,21 @@ This sample app use the [LAION-5B](https://laion.ai/blog/laion-5b/) dataset,
 > 2,2B samples from 100+ other languages and 1B samples have texts that do not allow a certain language assignment (e.g. names ). 
 
 The LAION-5B dataset was used to train the popular text-to-image 
-generative [StableDiffusion](https://huggingface.co/spaces/stabilityai/stable-diffusion) model. 
+generative [StableDiffusion](https://stability.ai/blog/stable-diffusion-public-release) model. 
 
-Note the following about the dataset
+Note the following about the LAION 5B dataset
 
 >Be aware that this large-scale dataset is un-curated. 
 > Keep in mind that the un-curated nature of the dataset means that collected 
 > links may lead to strongly discomforting and disturbing content for a human viewer.
 
 The released dataset does not contain image data itself, 
-but CLIP vector representations and metadata like `url` and `caption`.
+but [CLIP](https://openai.com/blog/clip/) encoded vector representations of the images, 
+and metadata like `url` and `caption`.
 
-# Use cases 
+## Use cases 
 
-The app can be used to implement several use cases over the LAION dataset:
+The app can be used to implement several use cases over the LAION dataset, or adopted to your large-scale vector dataset:
 
 - Search with a free text prompt over the `caption` or `url` fields in the LAION dataset using Vespa's standard text-matching functionality.
 - CLIP retrieval, using vector search, given a text prompt, search the image vector representations (CLIP ViT-L/14), for example for 'french cat'. 
@@ -44,7 +45,7 @@ be used to take the output image of StableDiffusion to find similar images in th
 All this combined using [Vespa's query language](https://docs.vespa.ai/en/query-language.html),
  and also in combination with filters. 
 
-# Vespa Primitives Demonstrated 
+## Vespa Primitives Demonstrated 
 
 The sample application demonstrates many Vespa primitives: 
 
@@ -84,19 +85,19 @@ accelerated by stateless model inference.
 - Scale, from a single node deployment to multi-node deployment using managed [Vespa Cloud](https://cloud.vespa.ai/), 
 or self-hosted on-premise. 
 
-## Stateless components 
+## Stateless Components 
 
 - [RankingSearcher](src/main/java/ai/vespa/examples/searcher/RankingSearcher.java) implements the last stage ranking using
-full-precision vectors using an ONNX model. 
+full-precision vectors using an ONNX model for accelerated inference. 
 - [DedupingSearcher](src/main/java/ai/vespa/examples/searcher/DeDupingSearcher.java) implements run-time de-duping after Ranking, using 
-document to document similarity matrix, using an ONNX model. 
+document to document similarity matrix, using an ONNX model for accelerated inference. 
 - [DimensionReducer](src/main/java/ai/vespa/examples/DimensionReducer.java) PCA dimension reducing vectors from 768-dims to 128-dims.
 
 
 ## Deploying this app  
 
 These reproducing steps, demonstrates the functionality using a smaller subset of the 5B vector dataset, suitable
-for reproducing on a laptop. 
+for playing around with the app on a laptop. 
 
 **Requirements:**
 
@@ -198,46 +199,40 @@ $ python3 -m pip install pandas numpy requests mmh3 pyarrow
 
 Generate centroids, this process randomly selects vectors from the dataset to represent
 centroids. Performing an incremental clustering can improve vector search recall and allow to
-have fewer centroids. For simplicity, this tutorial uses random sampling. 
+index fewer centroids. For simplicity, this tutorial uses random sampling. 
 
 <pre data-test="exec">
 $ python3 src/main/python/create-centroid-feed.py img_emb_0000.npy > centroids.jsonl
 </pre>
 
-Generate the image feed, this merges the embedding data with the metadata 
+Generate the image feed, this merges the embedding data with the metadata and creates a Vespa
+jsonl feed file, with one json operation per line. 
 
 <pre data-test="exec">
 $ python3 src/main/python/create-joined-feed.py metadata_0000.parquet img_emb_0000.npy > feed.jsonl
 </pre>
 
 To process the entire dataset, we recommend starting several processes, each operating on separate split files 
-as the processing is single-threaded. 
+as the processing implementation is single-threaded. 
 
 ## Build and deploy Vespa app 
 
-Download an exported CLIP ONNX model or use the [export utility](src/main/python/clip_export.py). The
-pre-exported model has been quantized for more efficient inference on CPU:
-
-<pre data-test="exec">
-$ curl -L -o src/main/application/models/text_transformer.onnx \
-  https://data.vespa.oath.cloud/sample-apps-data/clip_text_transformer.onnx
-</pre>
-
-In addition to the CLIP text encoder, the model directory contains three small ONNX models:
+The [models](src/main/application/models) application package directory contains three small ONNX models:
 
 - `vespa_innerproduct_ranker.onnx` for vector similarity (inner dot product) between the query and the vectors
 in the stateless container.
 - `vespa_pairwise_similarity.onnx` for matrix multiplication between the top retrieved vectors.
 - `pca_transformer.onnx` for dimension reduction, projecting the 768-dim vector space to a 128-dimensional space. 
 
-These `ONNX` model files are generated by specifying the compute operation using `torch` and using torch's
-ability to export the model to ONNX format:
+These `ONNX` model files are generated by specifying the compute operation using [pytorch](https://pytorch.org/) and using `torch`'s
+ability to export the model to [ONNX](https://onnx.ai/) format:
 
 - [ranker_export.py](src/main/python/ranker_export.py)
 - [similarity_export.py](src/main/python/similarity_export.py)
 - [pca_transformer_export.py](src/main/python/pca_transformer_export.py)
 
-Build the sample app (make sure you have JDK 17, verify with `mvn -v`):
+Build the sample app (make sure you have JDK 17, verify with `mvn -v`): - This step
+also downloads a pre-exported ONNX model for mapping the prompt text to the CLIP vector embedding space.
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
@@ -279,13 +274,53 @@ $ ./vespa-feed-client-cli/vespa-feed-client \
   --file feed.jsonl --endpoint http://localhost:8080/
 </pre>
 
-# Query the data
+## Fetching data
 
-`prompt` is a parameter to the [CLIPEmbeddingSearcher](src/main/java/ai/vespa/examples/searcher/CLIPEmbeddingSearcher.java) which will encode the prompt using the embedded CLIP model:
+Fetch a single document using [document api](https://docs.vespa.ai/en/reference/document-v1-api-reference.html):
 
-<pre data-test="exec">
+<pre data-test="exec" data-test-assert-contains="vector">
+$ vespa document get \
+ id:laion:image::5775990047751962856 
+</pre>
+
+The response contains all fields, including the full vector representation and the
+reduced vector, plus all the metadata. Everything represented in the same 
+[schema](src/main/application/schemas/image.sd). 
+
+
+## Query the data
+The following provides a few query examples, 
+`prompt` is a run-time query parameter which is used by the  
+[CLIPEmbeddingSearcher](src/main/java/ai/vespa/examples/searcher/CLIPEmbeddingSearcher.java) 
+which will encode the prompt text into a CLIP vector representation using the embedded CLIP model:
+
+<pre data-test="exec" data-test-assert-contains="documentid">
 $ vespa query \
- 'yql=select documentid, license caption, url, height, width from image where nsfw contains "unlikely"'\
+ 'yql=select documentid, caption, url, height, width from image where nsfw contains "unlikely"'\
+ 'hits=10' \
+ 'prompt=two dogs running on a sandy beach'
+</pre>
+
+Results are filtered by a constraint on the `nsfw` field. Note that even if the image is classified 
+as `unlikely` the image content might still be explicit as the NSFW classifier is not 100% accurate.
+
+The returned images are ranked by CLIP similarity (The score is found in each hit's `relevance` field).
+
+The following query adds another filter, restricting the search so that only images crawled from urls with `shutterstock.com`
+is retrieved.
+
+<pre data-test="exec" data-test-assert-contains="documentid">
+$ vespa query \
+ 'yql=select documentid, caption, url, height, width from image where nsfw contains "unlikely" and url contains "shutterstock.com"'\
+ 'hits=10' \
+ 'prompt=two dogs running on a sandy beach'
+</pre>
+
+Another restricting the search further, adding a phrase constraint `caption contains phrase("sandy", "beach")`:
+
+<pre data-test="exec" data-test-assert-contains="documentid">
+$ vespa query \
+ 'yql=select documentid, caption, url, height, width from image where nsfw contains "unlikely" and url contains "shutterstock.com" and caption contains phrase("sandy", "beach")'\
  'hits=10' \
  'prompt=two dogs running on a sandy beach'
 </pre>
@@ -293,23 +328,32 @@ $ vespa query \
 Regular query, matching over the `default` fieldset, searching the `caption` and the `url` field, ranked by 
 the `text` ranking profile:
 
-<pre data-test="exec">
+<pre data-test="exec" data-test-assert-contains="documentid">
 $ vespa query \
- 'yql=select caption, url from image where nsfw contains "unlikely" and userQuery()'\
+ 'yql=select documentid, caption, url from image where nsfw contains "unlikely" and userQuery()'\
  'hits=10' \
  'query=two dogs running on a sandy beach' \
  'ranking=text'
 </pre>
 
+The `text` [rank](https://docs.vespa.ai/en/ranking.html) profile uses 
+[nativeRank](https://docs.vespa.ai/en/nativerank.html), one of Vespa's many 
+text matching rank features. 
+
+## Non-native hyper-parameters
+There are several non-native query request 
+parameters that controls the vector search accuracy and performance tradeoffs.
+
+- `spann.clusters`, default `64`, the number of centroids in the reduced vector space used to restrict the image search.
+A higher number improves recall, but increases computational complexity.
+- `rank-count`,  default `1000`, the number of vectors that are fully re-ranked in the container using the full vector representation.
+A higher number improves recall, but increases the computational complexity. 
+- `collapse.enable`, default `true`, controls de-duping of the top ranked results using image to image similarity.
+- `collapse.similarity.max-hits`, default `1000`, the number of top-ranked hits to perform de-duping of. Must be less than `rank-count`.
+- `collapse.similarity.threshold`, default `0.95`, how similar an given image to image must be before it is considered a duplicate.
 
 ## Shutdown and remove the Docker container:
 
 <pre data-test="after">
 # $ docker rm -f vespa
 </pre>
-
-### Text prompt "french cat"
-![french cats](img/french_cat.png)
-
-### Image to Image
-![french cats](img/stable_diffusion.png)
