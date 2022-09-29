@@ -9,6 +9,7 @@
     <nodes deploy:environment='prod' count='[2,8]'>
       <resources vcpu="4" memory="8GB" disk="50Gb"/>
     </nodes>
+
     <component id='ai.vespa.examples.Centroids' bundle='billion-scale-image-search'/>
     <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-image-search'/>
     <component id="ai.vespa.examples.BPETokenizer" bundle='billion-scale-image-search'>
@@ -33,7 +34,7 @@
       <chain id='default' inherits='vespa'>
         <searcher id='ai.vespa.examples.searcher.DeDupingSearcher' bundle='billion-scale-image-search'/>
         <searcher id='ai.vespa.examples.searcher.RankingSearcher' bundle='billion-scale-image-search'/>
-        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-image-vector-search"/>
+        <searcher id="ai.vespa.examples.searcher.CLIPEmbeddingSearcher" bundle="billion-scale-image-search"/>
         <searcher id='ai.vespa.examples.searcher.SPANNSearcher' bundle='billion-scale-image-search'/>
       </chain>
     </search>
@@ -41,9 +42,13 @@
 
   <container id='feed' version='1.0'>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='[12,12]'>
+    <nodes deploy:environment='perf' count='[2,12]'>
       <resources vcpu="4" memory="8GB" disk="50Gb"/>
     </nodes>
+    <nodes deploy:environment='prod' count='[2,12]'>
+      <resources vcpu="4" memory="8GB" disk="50Gb"/>
+    </nodes>
+
     <component id='ai.vespa.examples.Centroids' bundle='billion-scale-image-search'/>
     <component id='ai.vespa.examples.DimensionReducer' bundle='billion-scale-image-search'/>
 
