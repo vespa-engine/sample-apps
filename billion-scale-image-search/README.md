@@ -181,14 +181,14 @@ Download the vector data file:
 
 <pre data-test="exec">
 $ wget \
-  https://mystic.the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
+  https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
 </pre>
 
 Download the meta data file:
 
 <pre data-test="exec">
 $ wget  \
-  https://mystic.the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
+  https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
 </pre>
 
 Install python dependencies:
@@ -217,7 +217,7 @@ as the processing implementation is single-threaded.
 
 ## Build and deploy Vespa app 
 
-The [models](src/main/application/models/) directory in the application package contains three small ONNX models:
+The models directory in the application package contains three small ONNX models:
 
 - `vespa_innerproduct_ranker.onnx` for vector similarity (inner dot product) between the query and the vectors
 in the stateless container.
