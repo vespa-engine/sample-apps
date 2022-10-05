@@ -68,7 +68,7 @@ jobs:
 
   verify-guides:
     requires: [~pr, ~commit]
-    sourcePaths: ["!billion-scale-vector-search/", "!billion-scale-image-search/"]
+    sourcePaths: ["!billion-scale-vector-search/", "!billion-scale-image-search/", "!screwdriver.yml"]
     image: vespaengine/vespa-build-centos-stream8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
