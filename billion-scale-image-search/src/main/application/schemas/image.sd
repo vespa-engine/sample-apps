@@ -1,0 +1,107 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+schema image {
+
+  document image {
+
+    # Don't need to guess language
+    field language type string {
+      indexing: "en" | set_language
+    }
+
+    field url type string {
+      indexing: summary | index
+    }
+
+    field caption type string {
+      indexing: summary | index
+    }
+
+    field license type string {
+      indexing: summary | index
+      rank:filter
+      match:word
+    }
+
+    field nsfw type string {
+      indexing: summary | index
+      rank:filter
+      match:word
+    }
+
+    field similarity type byte { #scaled from float
+      indexing: summary | attribute
+      attribute: paged
+    }
+
+    field aesthetic type byte { #scaled from float
+      indexing: summary | attribute
+      attribute: paged
+    }
+
+    field watermark type byte { #scaled from float
+      indexing: summary | attribute
+    }
+
+    field punsafe type byte { #scaled from float
+      indexing: summary | attribute
+      attribute: paged
+    }
+
+    field height type int {
+      indexing: summary | attribute
+      attribute: paged
+    }
+
+    field width type int {
+      indexing: summary | attribute
+      attribute: paged
+    }
+
+    field centroids type array<string> {
+      indexing: summary | index
+      match:word
+      stemming:none
+      rank: filter
+    }
+
+    field reduced_vector type tensor<bfloat16>(x[128]) {
+      indexing: attribute
+      attribute: paged
+    }
+
+    field vector type tensor<bfloat16>(x[768]) {
+      indexing: summary
+    }
+
+  }
+
+  document-summary vector-summary {
+    from-disk
+    summary vector type tensor<bfloat16>(x[768]) {
+      source: vector
+    }
+  }
+
+  fieldset default {
+    fields: caption, url
+  }
+
+  rank-profile default {
+      inputs {
+        query(q) tensor<float>(x[768])
+        query(q_reduced) tensor<float>(x[128])
+      }
+      num-threads-per-search: 2
+      first-phase {
+        expression: sum(query(q_reduced) * attribute(reduced_vector))
+      }
+      match-features: firstPhase
+  }
+
+  rank-profile text {
+    num-threads-per-search: 2
+    first-phase {
+      expression: nativeRank(caption) + nativeRank(url)
+    }
+  }
+}

@@ -1,0 +1,36 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+schema centroid {
+
+  document centroid {
+
+    field id type int {
+      indexing: attribute | summary
+    }
+
+    field vector type tensor<bfloat16>(x[768]) {}
+
+    field reduced_vector type tensor<bfloat16>(x[128]) {
+      indexing: attribute | index
+      index {
+        hnsw {
+          max-links-per-node: 24
+          neighbors-to-explore-at-insert: 200
+        }
+      }
+      attribute {
+        distance-metric: innerproduct
+      }
+    }
+  }
+
+  rank-profile default {
+      num-threads-per-search: 1
+      inputs {
+        query(q_reduced) tensor<float>(x[128])
+      }
+      first-phase  {
+        expression: closeness(field, reduced_vector)
+      }
+      match-features: attribute(id) closeness(field, reduced_vector)
+    }
+ }

@@ -1,0 +1,77 @@
+{
+    "name": "Feed and query test",
+    "defaults": {
+        "cluster": "default",
+        "parameters": {
+            "timeout": "2s"
+        }
+    },
+    "steps": [
+        {
+            "name": "feed centroid vector",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/laion/centroid/docid/-4290552400729848435",
+                "body": "../centroid.json"
+            }
+        },
+        {
+            "name": "feed image document",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/laion/image/docid/1",
+                "body": "../image.json"
+            }
+        },
+        {
+            "name": "query vector ",
+            "request": {
+                "method": "GET",
+                "uri": "/search/",
+                "parameters": {
+                  "prompt": "a french cat",
+                  "yql": "select documentid, matchfeatures, caption, url from image where nsfw contains \"UNLIKELY\""
+                }
+            },
+            "response": {
+                "body": {
+                    "root": {
+                        "children": [
+                            {
+                                "fields": {
+                                    "documentid": "id:laion:image::1" 
+                                },
+                                "source": "if"
+                            }
+                        ],
+                        "coverage": {
+                            "results": 1
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "clear existing documents",
+            "request": {
+                "method": "DELETE",
+                "uri": "/document/v1/",
+                "parameters": {
+                    "cluster": "graph",
+                    "selection": "true"
+                }
+            }
+        },
+        {
+            "name": "clear existing documents",
+            "request": {
+                "method": "DELETE",
+                "uri": "/document/v1/",
+                "parameters": {
+                    "cluster": "if",
+                    "selection": "true"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
+<query-profile id="default" >
+ <field name="presentation.timing">true</field>
+ <field name="presentation.format.tensors">short</field>
+ <field name="timeout">2s</field>
+ <field name="model.language">en</field>
+ <!-- Don't use query syntax with +/-/field names when using userQuery-->
+ <field name="model.type">tokenize</field>
+</query-profile>
