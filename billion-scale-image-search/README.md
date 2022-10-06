@@ -52,7 +52,7 @@ The sample application demonstrates many Vespa primitives:
 - Importing an [ONNX](https://onnx.ai/)-exported version of [CLIP ViT-L/14](https://github.com/openai/CLIP) 
 for [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/) 
 in [Vespa stateless](https://docs.vespa.ai/en/overview.html) containers. 
-The CLIP model allows mapping a free text prompt to a joint image-text vector space with 768 dimensions.
+The exported CLIP model encodes a free-text prompt to a joint image-text embedding space with 768 dimensions.
 - [HNSW](https://docs.vespa.ai/en/approximate-nn-hnsw.html) indexing of vector centroids drawn
 from the dataset, and combination with classic Inverted File as described in 
 [Billion-scale vector search using hybrid HNSW-IF](https://blog.vespa.ai/vespa-hybrid-billion-scale-vector-search/).
@@ -65,15 +65,15 @@ The full precision vectors are stored in Vespa's summary log store, using lossle
 - Dimension reduction with PCA - The centroid vectors are compressed from 768 dimensions to 128 dimensions. This allows indexing 6x more
 centroids on the same instance type due to the reduced memory footprint. With Vespa's support for distributed search, coupled with powerful 
 high memory instances, this allows Vespa to scale cost efficiently to trillion-sized vector datasets. 
-- The trained PCA matrix matmul operation which projects the 768 dim vector to 128 dims is 
+- The trained PCA matrix and matrix multiplication which projects the 768-dim vectors to 128-dimensions is 
 evaluated in Vespa using accelerated inference, both at indexing time and at query time. The PCA weights are represented also using ONNX.  
 - Phased ranking. 
 The image embedding vectors are also projected to 128 dimensions, stored using 
 memory mapped [paged attribute tensors](https://docs.vespa.ai/en/attributes.html#paged-attributes). 
 Full precision vectors are on stored on disk in Vespa summary store. 
-The first-phase coarse search ranks vectors in the reduced vector space and results are merged from all nodes before
+The first-phase coarse search ranks vectors in the reduced vector space, per node, and results are merged from all nodes before
 the final ranking phase in the stateless layer. 
-The second phase is implemented in the stateless container layer using [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/).
+The final ranking phase is implemented in the stateless container layer using [accelerated inference](https://blog.vespa.ai/stateful-model-serving-how-we-accelerate-inference-using-onnx-runtime/).
 - Combining approximate nearest neighbor search with [filters](https://blog.vespa.ai/constrained-approximate-nearest-neighbor-search/), filtering
 can be on url, caption, image height, width, safety probability, NSFW label, and more. 
 - Hybrid ranking, both textual sparse matching features and the CLIP similarity, can be used when ranking images. 
@@ -86,17 +86,19 @@ accelerated by stateless model inference.
 or self-hosted on-premise. 
 
 ## Stateless Components 
+The app contains several [container components](https://docs.vespa.ai/en/jdisc/container-components.html):
 
 - [RankingSearcher](src/main/java/ai/vespa/examples/searcher/RankingSearcher.java) implements the last stage ranking using
 full-precision vectors using an ONNX model for accelerated inference. 
 - [DedupingSearcher](src/main/java/ai/vespa/examples/searcher/DeDupingSearcher.java) implements run-time de-duping after Ranking, using 
 document to document similarity matrix, using an ONNX model for accelerated inference. 
 - [DimensionReducer](src/main/java/ai/vespa/examples/DimensionReducer.java) PCA dimension reducing vectors from 768-dims to 128-dims.
-
+- [AssignCentroidsDocProc](src/main/java/ai/vespa/examples/docproc/AssignCentroidsDocProc.java) searches the HNSW graph content cluster
+during ingestion to find the nearest centroids of the incoming vector.
+- [SPANNSearcher](src/main/java/ai/vespa/examples/searcher/SPANNSearcher.java)
 
 ## Deploying this app  
-
-These reproducing steps, demonstrates the functionality using a smaller subset of the 5B vector dataset, suitable
+These reproducing steps, demonstrates the app using a smaller subset of the LAION-5B vector dataset, suitable
 for playing around with the app on a laptop. 
 
 **Requirements:**
@@ -144,13 +146,14 @@ $ vespa auth login
 $ vespa auth cert
 </pre>
 
+For an optimal deployment in Vespa Cloud, replace the `src/main/application/services.xml` with 
+`src/main/application/services-cloud.xml`. The cloud deployment uses
+dedicated clusters for `feed` and `query`. 
 See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
 
-<pre data-test="exec">
-$ git clone https://github.com/vespa-engine/sample-apps.git && cd sample-apps
-$ git checkout jobergum/billion-scale-image-search 
-$ cd billion-scale-image-search
-</pre>
+For multi-node onpremise deployments, use
+the [multi-node high availability](https://github.com/vespa-engine/sample-apps/tree/master/examples/operations/multinode-HA)
+template for inspiration. 
 
 Pull and start the vespa docker container image:
 
@@ -169,11 +172,11 @@ $ vespa status deploy --wait 300
 
 Download this sample application:
 
-<pre>
+<pre data-test="exec">
 $ vespa clone billion-scale-image-search myapp && cd myapp
 </pre>
 
-## Download Vector Data
+## Download Vector + Metadata
 
 These instruction uses the first split file (0000) of a total of 2314 files in the LAION2B-en split:
 
@@ -184,14 +187,14 @@ $ wget \
   https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
 </pre>
 
-Download the meta data file:
+Download the metadata file:
 
 <pre data-test="exec">
 $ wget  \
   https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
 </pre>
 
-Install python dependencies:
+Install python dependencies to process the files:
 
 <pre data-test="exec">
 $ python3 -m pip install pandas numpy requests mmh3 pyarrow 
@@ -255,7 +258,6 @@ which runs a set of basic tests to verify that the application is working as exp
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
-
 
 Download the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 
@@ -342,18 +344,29 @@ text matching rank features.
 
 ## Non-native hyper-parameters
 There are several non-native query request 
-parameters that controls the vector search accuracy and performance tradeoffs.
+parameters that controls the vector search accuracy and performance tradeoffs. These
+can be set with the request, e.g, `/search/&spann.clusters=12`. 
 
 - `spann.clusters`, default `64`, the number of centroids in the reduced vector space used to restrict the image search.
-A higher number improves recall, but increases computational complexity.
+A higher number improves recall, but increases computational complexity and disk reads. 
 - `rank-count`,  default `1000`, the number of vectors that are fully re-ranked in the container using the full vector representation.
-A higher number improves recall, but increases the computational complexity. 
+A higher number improves recall, but increases the computational complexity and network. 
 - `collapse.enable`, default `true`, controls de-duping of the top ranked results using image to image similarity.
 - `collapse.similarity.max-hits`, default `1000`, the number of top-ranked hits to perform de-duping of. Must be less than `rank-count`.
 - `collapse.similarity.threshold`, default `0.95`, how similar an given image to image must be before it is considered a duplicate.
 
-## Shutdown and remove the Docker container:
+## Areas of improvement 
+There are several areas that could be improved. 
+
+- CLIP model. The exported text transformer model uses fixed sequence length (77), this wastes computations and makes
+the model a lot slower than it has to be for shorter sequence lengths. A dynamic sequence length would 
+make encoding short queries a lot faster than the current model. 
+It would also be interesting to use the text encoder as a teacher and train a smaller distilled model using a different architecture (for example based on smaller MiniLM models). 
+- CLIP query embedding caching. The CLIP model is fixed and only uses the text input. Caching the map from text to 
+embedding would save resources. 
+
+## Shutdown and remove the container:
 
 <pre data-test="after">
-# $ docker rm -f vespa
+$ docker rm -f vespa
 </pre>
