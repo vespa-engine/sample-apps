@@ -23,7 +23,9 @@ where approximate nearest neighbor search in a shared user/item embedding space
 is used to retrieve recommended content for a user.
 This sample app also demonstrates use of parent-child relationships.
 
-
+### [Billion-scale Image Search](billion-scale-image-search)
+This sample application demonstrates billion-scale image search using CLIP retrieval. Features separation
+of compute from storage, and query time vector similarity de-duping. 
 
 ## Full-fledged State-of-the-Art Search, Ranking and Question Answering applications
 These are great starting points for bringing the latest advancements in Search and Ranking to your domain!
