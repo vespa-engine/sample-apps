@@ -68,7 +68,7 @@ jobs:
 
   verify-guides:
     requires: [~pr, ~commit]
-    sourcePaths: ["!billion-scale-vector-search/", "!billion-scale-image-search/", "!screwdriver.yml"]
+    sourcePaths: ["!billion-scale-vector-search/", "!billion-scale-image-search/", "!screwdriver.yml", "!examples/model-deployment/"]
     image: vespaengine/vespa-build-centos-stream8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
@@ -119,3 +119,21 @@ jobs:
       - run-tests: |
           cd $SD_DIND_SHARE_PATH
           $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR $SD_SOURCE_DIR/billion-scale-image-search/README.md
+
+  verify-examples-model-deployment:
+    requires: [~pr, ~commit]
+    sourcePaths: ["examples/model-deployment/"]
+    image: python:3.10.7
+    annotations:
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
+      screwdriver.cd/timeout: 180
+      screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
+    steps:
+      - *install-deps
+      - run-tests: |
+          cd $SD_DIND_SHARE_PATH
+          $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR $SD_SOURCE_DIR/examples/model-deployment/README.md

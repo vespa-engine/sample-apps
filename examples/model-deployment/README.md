@@ -12,17 +12,18 @@ this will open a browser window with the notebook:
 Or run in Colab: 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/examples/model-deployment/ONNXModelExport.ipynb)
 
-Alternatively, run the script using python, or:
+Alternatively, run the script using python.
 
-<pre data-test="exec">
-$ pwd
-$ ls -la
-</pre>
+Deploy the application package after completing the notebook.
+
+Note: This example is work in progress and not completed yet
+
+
+
+### Ignore - for auto testing
 
 <pre data-test="exec" data-test-assert-contains="1 passed">
 $ python3 -m pytest --nbmake $SD_SOURCE_DIR/examples/model-deployment/ONNXModelExport.ipynb
 </pre>
 
-Deploy the application package after completing the notebook.
 
-Note: This example is work in progress and not completed yet
