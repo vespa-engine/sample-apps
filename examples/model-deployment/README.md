@@ -9,7 +9,11 @@ this will open a browser window with the notebook:
 
     $ jupyter notebook
 
-Alternatively, run the script using python.
+Alternatively, run the script using python, or:
+
+<pre data-test="exec" data-test-assert-contains="1 passed">
+$ python3 -m pytest --nbmake ONNXModelExport.ipynb
+</pre>
 
 Deploy the application package after completing the notebook.
 
