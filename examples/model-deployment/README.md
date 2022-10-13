@@ -15,6 +15,8 @@ Or run in Colab:
 Alternatively, run the script using python, or:
 
 <pre data-test="exec" data-test-assert-contains="1 passed">
+$ pwd
+$ ls -la
 $ python3 -m pytest --nbmake examples/model-deployment/ONNXModelExport.ipynb
 </pre>
 
