@@ -4,7 +4,8 @@
 
 # ONNX Model export and deployment example
 Run the [ONNXModelExport](ONNXModelExport.ipynb) notebook to generate the model in the `models` directory.
-To run to notebook, cd to this directory and run [jupyter](https://jupyter.org/install):
+To run the notebook, cd to this directory and run [jupyter](https://jupyter.org/install) -
+this will open a browser window with the notebook:
 
     $ jupyter notebook
 
