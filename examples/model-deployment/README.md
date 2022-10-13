@@ -9,6 +9,9 @@ this will open a browser window with the notebook:
 
     $ jupyter notebook
 
+Or
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/examples/model-deployment/ONNXModelExport.ipynb)
+
 Alternatively, run the script using python, or:
 
 <pre data-test="exec" data-test-assert-contains="1 passed">
