@@ -33,5 +33,6 @@
         <module>examples/document-processing</module>
         <module>examples/joins</module>
         <module>billion-scale-vector-search</module>
+        <module>billion-scale-image-search</module>
     </modules>
 </project>
