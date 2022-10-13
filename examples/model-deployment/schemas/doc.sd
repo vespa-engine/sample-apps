@@ -16,7 +16,7 @@ schema doc {
         }
     }
  
-    rank-profile myRank {
+    rank-profile Base {
         inputs {
             query(myTensor) tensor<float>(d0[1],d1[4])
         }
@@ -25,21 +25,22 @@ schema doc {
             input "input": query(myTensor)
             output "output": outputTensor
         }
+    }
+
+    rank-profile myRank inherits Base {
         first-phase {
             expression: sum( onnx(my_onnx_model).outputTensor * attribute(flowercategory) )
         }
     }
- 
-    rank-profile myRankwithpenelty {
-        inputs {
-            query(myTensor) tensor<float>(d0[1],d1[4])
-        }
-        onnx-model my_onnx_model2 {
-            file: models/Network.onnx
-            input "input": query(myTensor)
-        }
+
+    rank-profile myRankwithpenalty inherits Base {
         first-phase {
-            expression: sum( onnx(my_onnx_model2).output * attribute(flowercategory) * if (attribute(feedback)>0,attribute(feedback),1))
+            expression {
+                sum(
+                    onnx(my_onnx_model).outputTensor * attribute(flowercategory) *
+                    if (attribute(feedback) > 0, attribute(feedback), 1)
+                    )
+            }
         }
     }
 }
