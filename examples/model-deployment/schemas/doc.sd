@@ -1,0 +1,47 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+schema doc {
+ 
+    document doc {
+        field isFlower type string {
+            indexing: summary  | attribute
+        }
+        field name type string {
+            indexing: summary  | attribute
+        }
+        field feedback type float {
+            indexing: summary  | attribute
+        }
+        field flowercategory type tensor<float>(d0[1],d1[3]) {
+            indexing: attribute | summary
+        }
+    }
+ 
+    rank-profile Base {
+        inputs {
+            query(myTensor) tensor<float>(d0[1],d1[4])
+        }
+        onnx-model my_onnx_model {
+            file: models/Network.onnx
+            input "input": query(myTensor)
+            output "output": outputTensor
+        }
+    }
+
+    rank-profile myRank inherits Base {
+        first-phase {
+            expression: sum( onnx(my_onnx_model).outputTensor * attribute(flowercategory) )
+        }
+    }
+
+    rank-profile myRankwithpenalty inherits Base {
+        first-phase {
+            expression {
+                sum(
+                    onnx(my_onnx_model).outputTensor * attribute(flowercategory) *
+                    if (attribute(feedback) > 0, attribute(feedback), 1)
+                    )
+            }
+        }
+    }
+}
+
