@@ -120,7 +120,7 @@ jobs:
           cd $SD_DIND_SHARE_PATH
           $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR $SD_SOURCE_DIR/billion-scale-image-search/README.md
 
-  verify-examples-model-deployment:
+  verify-notebooks:
     requires: [~pr, ~commit]
     sourcePaths: ["examples/model-deployment/"]
     image: python:3.10.7
