@@ -12,15 +12,18 @@ this will open a browser window with the notebook:
 Or run in Colab: 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/examples/model-deployment/ONNXModelExport.ipynb)
 
-Alternatively, run the script using python.
+Alternatively, run the script using python, or the pytest below, to generate the model.
 
 Deploy the application package after completing the notebook.
 
 Note: This example is work in progress and not completed yet
 
 
+## Further reading
+* [Ranking With ONNX Models](https://docs.vespa.ai/en/onnx.html)
 
-### Ignore - for auto testing
+
+## Ignore - for auto testing
 
 <pre data-test="exec" data-test-assert-contains="1 passed">
 $ python3 -m pytest --nbmake $SD_SOURCE_DIR/examples/model-deployment/ONNXModelExport.ipynb
