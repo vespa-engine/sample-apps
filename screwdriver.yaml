@@ -137,5 +137,5 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -qqq -r test/requirements.txt --user
           python3 -m pip install --upgrade -qqq pytest nbmake
-          cd $SD_DIND_SHARE_PATH
+          cd $SD_SOURCE_DIR
           $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR $SD_SOURCE_DIR/examples/model-deployment/README.md
