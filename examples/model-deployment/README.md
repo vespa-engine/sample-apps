@@ -23,7 +23,5 @@ Note: This example is work in progress and not completed yet
 ### Ignore - for auto testing
 
 <pre data-test="exec" data-test-assert-contains="1 passed">
-$ python3 -m pytest --nbmake $SD_SOURCE_DIR/examples/model-deployment/ONNXModelExport.ipynb
+$ python3 -m pytest --nbmake examples/model-deployment/ONNXModelExport.ipynb
 </pre>
-
-
