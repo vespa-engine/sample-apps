@@ -140,4 +140,4 @@ jobs:
           pwd
           cd $SD_SOURCE_DIR
           pwd
-          ./test/test.py examples/model-deployment/README.md
+          ./test/test.py -w . examples/model-deployment/README.md
