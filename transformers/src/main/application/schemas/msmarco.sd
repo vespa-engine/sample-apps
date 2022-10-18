@@ -40,6 +40,10 @@ schema msmarco {
 
     rank-profile transformer {
 
+        inputs {
+            query(input) tensor<float>(d0[32])
+        }
+
         function input_ids() {
             expression: tokenInputIds(128, query(input), attribute(tokens))
         }

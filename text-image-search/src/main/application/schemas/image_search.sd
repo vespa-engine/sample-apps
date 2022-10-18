@@ -20,6 +20,10 @@ schema image_search {
   }
 
   rank-profile vit_b_32_similarity inherits default {
+    inputs {
+      query(vit_b_32_text) tensor<float>(x[512])
+    }
+
     first-phase {
       expression: closeness(vit_b_32_image)
     }
