@@ -23,21 +23,28 @@ schema sentence {
     fields:text
   }
 
-  rank-profile sentence-semantic-similarity inherits default {
+  rank-profile common inherits default {
+      inputs {
+        query(query_embedding) tensor<float>(x[512])
+      }
+  }
+
+  rank-profile sentence-semantic-similarity inherits common {
     first-phase {
       expression: closeness(sentence_embedding) 
     }
   }
 
-  rank-profile bm25 inherits default {
+  rank-profile bm25 inherits common {
     first-phase {
       expression: bm25(text) 
     }
   }
 
-  rank-profile bm25-sentence-semantic-similarity inherits default {
+  rank-profile bm25-sentence-semantic-similarity inherits common {
     first-phase {
       expression: bm25(text) + closeness(sentence_embedding) 
     }
   }
+
 }

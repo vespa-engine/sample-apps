@@ -50,13 +50,13 @@ public class RetrievalModelSearcher extends Searcher {
             bertTokenIds = bertTokenIds.subList(0,MAX_QUERY_LENGTH);
 
         TensorInput queryTensorInput = new TensorInput(bertTokenIds);
-        TensorInput.setTo(query.properties(),queryTensorInput);
+        TensorInput.setTo(query.properties(), queryTensorInput);
         Tensor queryTensor = TensorInput.getTensorRepresentation(
                 queryTensorInput.getQueryTokenIdsPadded(MAX_QUERY_LENGTH,0),"d0");
         query.getRanking().getFeatures().put(QUERY_TENSOR_NAME, queryTensor);
         query.getRanking().setRerankCount(query.properties().getInteger("rerank-count", 1000));
 
-        switch(getMethod(query))  {
+        switch (getMethod(query))  {
             case SPARSE:
                 String wandField = query.properties().getString("wand.field", "default");
                 int wandHits = query.properties().getInteger("wand.hits", query.getHits());

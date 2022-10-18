@@ -37,6 +37,9 @@ schema music {
     # See
     #  - https://docs.vespa.ai/en/ranking.html
     rank-profile rank_albums inherits default {
+        inputs {
+            query(user_profile) tensor<float>(cat{})
+        }
         first-phase {
             expression: sum(query(user_profile) * attribute(category_scores))
         }

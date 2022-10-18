@@ -1,5 +1,0 @@
-<query-profile-type id="root">
-  <field name="ranking.features.query(tensor)" type="tensor&lt;float&gt;(x[500])" />
-  <field name="ranking.features.query(tensor_gse)" type="tensor&lt;float&gt;(x[512])" />
-  <field name="ranking.features.query(tensor_bert)" type="tensor&lt;float&gt;(x[768])" />
-</query-profile-type>

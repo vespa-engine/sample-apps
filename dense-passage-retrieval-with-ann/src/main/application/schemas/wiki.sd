@@ -55,6 +55,12 @@ schema wiki {
   }
 
   rank-profile openqa {
+
+    inputs {
+      query(query_embedding) tensor<float>(x[769])
+      query(query_token_ids) tensor<float>(d0[32])
+    }
+
     function input_ids() {
       expression: tokenInputIds(128, query(query_token_ids), attribute(title_token_ids), attribute(text_token_ids))
     }
@@ -112,6 +118,10 @@ schema wiki {
   }
 
   rank-profile dense-retriever {
+    inputs {
+      query(query_embedding) tensor<float>(x[769])
+    }
+
     num-threads-per-search: 1
     first-phase {
       expression: closeness(field, text_embedding)
@@ -119,6 +129,10 @@ schema wiki {
   }
 
   rank-profile hybrid-retriever {
+    inputs {
+      query(query_embedding) tensor<float>(x[769])
+    }
+
     num-threads-per-search: 1
     first-phase {
       expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)

@@ -58,6 +58,11 @@ schema msmarco {
     }
 
     rank-profile default {
+        inputs {
+            query(tensor) tensor<float>(x[500])
+            query(tensor_gse) tensor<float>(x[512])
+            query(tensor_bert) tensor<float>(x[768])
+        }
         first-phase {
             expression: nativeRank(title, body)
         }
