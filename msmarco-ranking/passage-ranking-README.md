@@ -32,7 +32,7 @@ This sample application demonstrates:
 - Simple single stage sparse retrieval accelerated by the
   [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html)
   dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.  
-- Dense (vector) search retrieval to efficient candidate retrieval
+- Dense (vector) search retrieval for efficient candidate retrieval
   using Vespa's support for fast
   [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
   Illustrated in figure **a**. 
