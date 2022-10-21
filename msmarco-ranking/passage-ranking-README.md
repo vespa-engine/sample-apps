@@ -32,16 +32,13 @@ This sample application demonstrates:
 - Simple single stage sparse retrieval accelerated by the
   [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html)
   dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.  
-- Dense (vector) search retrieval to efficient candidate retrieval
-  using Vespa's support for fast
-  [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
+- Dense (vector) search retrieval for efficient candidate retrieval
+  using Vespa's support for [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
   Illustrated in figure **a**. 
 - Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model
   where the ColBERT query and document encoder is also embedded in the Vespa serving stack.
   A Vespa tensor expressions is used to calculate the *MaxSim*. This method is illustrated in figure **d**. 
 - Re-ranking using a *cross-encoder* with cross attention between the query and document terms.
-  This is the most effective model (ranking accuracy)
-  but also the most computationally complex model due to the increased input sequence length (query + passage).
   This method is illustrated in figure **c**.
 - [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html)
   combining efficient retrieval (WAND or ANN) with re-ranking stages.
@@ -50,14 +47,11 @@ This sample application demonstrates:
 - Accelerated [Stateless ML model evaluation](https://blog.vespa.ai/stateless-model-evaluation/)
   for transformer based query encoding and final ranking phase using transformer batch re-ranking. 
 
-  
 
 ### Transformer Models 
-This sample application uses pre-trained Transformer models fine-tuned using MS Marco passage ranking labels from
-[Huggingface 🤗](https://huggingface.co/).
-
-All three Transformer based models used in this sample application are based on
-6-layer [MiniLM](https://arxiv.org/abs/2002.10957) with about 22M parameters.  MiniLM is 
+This sample application uses three transformer models that are fine-tuned using MS Marco passage ranking labels. 
+All three Transformer based models are based on
+the 6-layer [MiniLM](https://arxiv.org/abs/2002.10957) with about 22M parameters.  MiniLM is 
 a distilled BERT model which can be used as a drop-in replacement for its larger brother *bert-base-uncased*.
 
 - Dense retrieval using bi-encoder [sentence-transformers/msmarco-MiniLM-L-6-v3 🤗](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3).
@@ -73,11 +67,12 @@ a distilled BERT model which can be used as a drop-in replacement for its larger
   this model at the content nodes or at the stateless container nodes. The latter approach allows removing duplicates
   or business constraints before applying the compute-intensive model.
  
-Code to export these models to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa.ai
+Code to export these models from PyTorch to [ONNX](https://docs.vespa.ai/en/onnx.html) format for efficient serving in Vespa
 is available in the [model export notebook](src/main/python/model-exporting.ipynb).
 
 All three models are [quantized](https://onnxruntime.ai/docs/performance/quantization.html)
 for accelerated inference on CPU using int8 weights. 
+
 The quantized model versions are hosted on S3 and are free to download and import into the sample application.
 
 ### MS Marco Passage Ranking Evaluation 
@@ -101,7 +96,7 @@ Apache Lucene powers text ranking search for search engines like *Apache Solr* a
 | **BM25 => ColBERT**                       | 0.347 | 0.354 |
 | **dense => ColBERT => Cross all to all**  | 0.393 | 0.403 |
 
-Methods in bold are end to end represented using Vespa.
+Methods in bold are represented using Vespa.
 
 
 # Vespa Sample application 
@@ -241,13 +236,7 @@ is used to cast from bfloat16 format in memory to float,
 this helps the search core to recognize the tensor expression 
 and HW-accelerate the inner dot products using vector instructions.
 
-The query tensor type is defined in the application package in
-[search/query-profiles/types/root.xml](src/main/application/search/query-profiles/types/root.xml):
-<pre>
-&lt;field name="ranking.features.query(qt)" type="tensor&lt;float&gt;(qt{},x[32])"/&gt;
-</pre> 
-
-There are several ranking profiles defined in the passage schema and the most accurate model
+There are several ranking profiles defined in the passage schema:
 
 <pre>
   rank-profile dense-colbert-mini-lm {
