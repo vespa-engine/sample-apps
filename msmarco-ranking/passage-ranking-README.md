@@ -9,32 +9,33 @@ models for text ranking in Vespa.
 
 The methods are described in detail in these blog posts:
 
-* [Pretrained language models for search - part 1 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/)
-* [Pretrained language models for search - part 2 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/)
-* [Pretrained language models for search - part 3 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/)
-* [Pretrained language models for search - part 4 ](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/)
+- [Post one: Introduction to neural ranking and the MS Marco passage ranking dataset](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/).
+- [Post two: Efficient retrievers, sparse, dense, and hybrid retrievers](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/).
+- [Post three: Re-ranking using multi-representation models (ColBERT)](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/).
+- [Post four: Re-ranking using cross-encoders](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/).
+
 
 With this sample application you can reproduce the submission made by the Vespa team to the
-[MS Marco Passage Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Passage-Ranking-Submissions/leaderboard/) 
-submission which currently ranks #15, above many huge ensemble models using large Transformer models.
+[MS Marco Passage Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Passage-Ranking-Submissions/leaderboard/).
 
 ![MS Marco Leaderboard](img/leaderboard.png)
+
+You can also [bring your own data](#bring-your-own-data), and index and query your data using these transformer models.  
 
 ## Transformers for Ranking 
 ![Colbert overview](img/colbert_illustration.png)
 
-*Illustration from [ColBERT paper](https://arxiv.org/abs/2004.12832)*
+*Illustration from [ColBERT paper](https://arxiv.org/abs/2004.12832)*.
 
 This sample application demonstrates:
 
 - Simple single stage sparse retrieval accelerated by the
   [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html)
   dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.  
-- Dense (vector) search retrieval to replace sparse (BM25) for efficient candidate retrieval
+- Dense (vector) search retrieval to efficient candidate retrieval
   using Vespa's support for fast
   [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
-  It demonstrates how to also embed the query encoder model which convert the query text to dense vector representation.
-  This model is a representation model. Illustrated in figure **a**. 
+  Illustrated in figure **a**. 
 - Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model
   where the ColBERT query and document encoder is also embedded in the Vespa serving stack.
   A Vespa tensor expressions is used to calculate the *MaxSim*. This method is illustrated in figure **d**. 
@@ -56,23 +57,15 @@ This sample application uses pre-trained Transformer models fine-tuned using MS 
 [Huggingface 🤗](https://huggingface.co/).
 
 All three Transformer based models used in this sample application are based on
-[MiniLM](https://arxiv.org/abs/2002.10957) which is a distilled BERT model
-which can be used as a drop in replacement for BERT. 
+6-layer [MiniLM](https://arxiv.org/abs/2002.10957) with about 22M parameters.  MiniLM is 
+a distilled BERT model which can be used as a drop-in replacement for its larger brother *bert-base-uncased*.
 
-It uses the same sub word tokenization routine and shares the vocabulary with the original BERT base model.
-The MiniLM model has roughly the same accuracy as the more known big brother *bert-base-uncased* on many tasks,
-but with fewer parameters which lowers the computational complexity significantly.  
- 
-The original MiniLM has 12 layers, this work uses 6 layer versions with only 22M parameters.
-
-The sample application uses the following three models:
-
-- Dense retrieval using bi-encoder [sentence-transformers/msmarco-MiniLM-L-6-v3 🤗](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3)
+- Dense retrieval using bi-encoder [sentence-transformers/msmarco-MiniLM-L-6-v3 🤗](https://huggingface.co/sentence-transformers/msmarco-MiniLM-L-6-v3).
   The original model uses mean pooling over the last layer of the MiniLM model.
-  A simple L2 normalization is used to normalize vectors to unit length (1) so that
-  one can use inner product distance metric instead of angular distance metric.
-  The L2 normalization stage is added to the ONNX execution graph.
-  Using inner product saves computations compared to angular distance during the approximate nearest neighbor search.
+  Vectors are normalized so that
+  one can use *innerproduct* distance metric instead of angular distance.
+  The L2 normalization stage is implemented in the ONNX execution graph.
+
 - Contextualized late interaction (COLBert) [vespa-engine/col-minilm 🤗](https://huggingface.co/vespa-engine/col-minilm).
 - Cross-Encoder [cross-encoder/ms-marco-MiniLM-L-6-v2 🤗](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2). 
   Sometimes also referred to as BERT-mono or BERT-cat in scientific literature.
@@ -114,9 +107,9 @@ Methods in bold are end to end represented using Vespa.
 # Vespa Sample application 
 The following section goes into the details of this sample application and how to reproduce the MS Marco submissions. 
 
-## Vespa document model 
+## Vespa schema
 
-Vectors or generally tensors are first-class citizens in the Vespa document model.
+Vectors or generally [tensors](https://docs.vespa.ai/en/tensor-user-guide.html) are first-class citizens in the Vespa document model.
 The [passage](src/main/application/schemas/passage.sd) document schema is given below:
 
 <pre>
@@ -145,7 +138,7 @@ schema passage {
       index {
         hnsw {
           max-links-per-node: 32
-          neighbors-to-explore-at-insert: 500
+          neighbors-to-explore-at-insert: 200
         }
       }
     }
@@ -158,7 +151,7 @@ schema passage {
 }
 </pre> 
 
-The *text* field indexes the original passage text with support for BM25 ranking. 
+The *text* field indexes the original passage text with support for [BM25](https://docs.vespa.ai/en/reference/bm25.html). 
 
 The *dt* (document term) tensor field stores the contextual multi-term embedding from the ColBERT model. 
 *dt* is an example of a mixed tensor which mixes sparse/mapped ("dt") dimension and dense "x". 
@@ -169,24 +162,16 @@ The tensor cell type is
 [bfloat16 (2 bytes) per tensor cell](https://docs.vespa.ai/en/tensor-user-guide.html#cell-value-types).
 This tensor cell type is used to reduce memory footprint compared to float (4 bytes per value). 
 
-See [Vespa Tensor Guide](https://docs.vespa.ai/en/tensor-user-guide.html) for an introduction to Vespa tensors.
 The *id* field is the passage id from the dataset. 
 
 The *text_token_ids* contains the BERT token vocabulary ids
 and is only used by the final cross all to all interaction re-ranking model. 
-Storing the tokenized sub-word token ids from the BERT vocabulary avoids passage side tokenization at query serving time. 
-
-The *text_token_ids* is also an example of a
-[paged tensor attribute](https://docs.vespa.ai/en/attributes.html#paged-attributes). 
-Using paged attribute enables storing more passages per node,
-at the cost of potentially slower access time,
-depending on memory pressure and document access locality.
-As this field is only used during re-ranking, the number of page-ins are limited by the re-ranking depth. 
+Storing the tokenized sub-word token ids from the BERT vocabulary avoids tokenization at query serving time. 
 
 The *mini_document_embedding* field is the dense vector produced by the bi-encoder model.
 HNSW indexing is enabled for efficient fast approximate nearest neighbor search.
 
-The hnsw settings controls vector accuracy versus speed, 
+The HNSW settings controls recall accuracy versus speed, 
 see more on [hnsw indexing in Vespa](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
 
 ## Retrieval and Ranking 
@@ -572,8 +557,8 @@ Also, the second-phase ranking expression re-rank count could be overridden by t
   and exposed to the first-phase ranking expression.
 * *&wand.hits=x* sets the targetNumber of hits that should be retrieved by the sparse wand retriever
   and exposed to the first-phase ranking expression.
-* *$rerank-count=x* sets the number of hits which are re-ranked by the expression in the *second-phase* expression
-  in the ranking profile. 
+* *&rerank-count=x* sets the number of hits which are re-ranked by the expression in the *second-phase* expression
+  in the ranking profile. This parameter has large impact on serving performance for the cross-encoder methods.
 
 ## Shutdown and remove the Docker container:
 
@@ -584,14 +569,12 @@ $ docker rm -f vespa
 ## Full Evaluation
 
 Full evaluation requires the content node to run on an instance with at least 256 GB of memory.
-For optimal serving performance a cpu with avx512 support is recommended.
+For optimal serving performance, a cpu with avx512 support is recommended.
+
 In our experiments we have used 2 x Xeon Gold 6263CY 2.60GHz (48, 96 threads) and 256 GB of Memory. 
-SSD persistent drive is recommended for faster feeding and random access
-for the paged title_text_token dense tensor field.
- 
 
 ### Download Data
-Download the preprocessed document feed data which includes ColBERT multi-term representations,
+Download the preprocessed passage feed data which includes ColBERT multi-term representations,
 and the sentence transformer single representation embedding.
 The data is compressed using [ZSTD](https://facebook.github.io/zstd/): 
 
@@ -690,22 +673,15 @@ QueriesRanked: 6980
 </pre>
 
 
-# Appendix ColBERT 
+## Bring your own data
 
-Model training and offline text to tensor processing
+The application instructions above used pre-generated embeddings, both for the bi-encoder (dense) and the multi-representation
+model (ColBERT). If you want to experiment with your own data, you can feed JSON with just the text field,  and Vespa 
+will produce both embeddings during document processing. 
 
-* The *ColBERT* model is trained the instructions from the
-  [ColBERT repository](https://github.com/stanford-futuredata/ColBERT) 
-  using the MS Marco Passage training set.
-  The *bert-base-uncased* is replaced with the *MiniLM-L6*. 
-  The model was trained using cosine similarity (inner product as the vectors are unit length normalized).
-* The dimensionality of the token tensor is reduced from 384 (MiniLM hidden dimensionality)
-  to 32 dimensions by a linear layer.
-* A GPU powered indexing routine from the mentioned *ColBERT repository*
-  was used to obtain the ColBERT passage representation. 
+See [src/test/application/tests/sample-passage.json](src/test/application/tests/sample-passage.json) for expected
+feed format.
 
-
--------------------
 
 Further reading:
 * https://docs.vespa.ai/en/vespa-quick-start.html

@@ -71,6 +71,9 @@ schema passage {
   }
 
   rank-profile bm25-colbert inherits bm25 {
+    inputs {
+      query(qt) tensor<float>(qt{},x[32])
+    }
     num-threads-per-search: 6
     second-phase {
       rerank-count: 1000
@@ -89,6 +92,9 @@ schema passage {
   }
 
   rank-profile dense {
+    inputs {
+      query(query_embedding) tensor<float>(d0[384])
+    }
     num-threads-per-search: 1
     first-phase {
         expression: closeness(field, mini_document_embedding)
@@ -96,6 +102,10 @@ schema passage {
   }
 
   rank-profile dense-colbert {
+    inputs {
+      query(qt) tensor<float>(qt{},x[32])
+      query(query_embedding) tensor<float>(d0[384])
+    }
     num-threads-per-search: 1
     first-phase {
       expression: closeness(field, mini_document_embedding)
@@ -117,6 +127,11 @@ schema passage {
   }
 
   rank-profile dense-colbert-mini-lm {
+    inputs {
+      query(qt) tensor<float>(qt{},x[32])
+      query(query_embedding) tensor<float>(d0[384])
+      query(query_token_ids) tensor<float>(d0[32])
+    }
     num-threads-per-search: 24
 
     function input_ids() {
