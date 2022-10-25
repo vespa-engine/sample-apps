@@ -130,5 +130,5 @@ jobs:
       - run-tests: |
           python3 -m pip install --upgrade pip --user
           python3 -m pip install -qqq -r test/requirements.txt --user
-          python3 -m pip install --upgrade -qqq pytest nbmake --user
+          python3 -m pip install --upgrade -qqq pytest nbmake torch pandas scikit-learn --user
           ./test/test.py examples/model-deployment/README.md
