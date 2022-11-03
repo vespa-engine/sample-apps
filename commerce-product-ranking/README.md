@@ -92,7 +92,7 @@ This step is optional, but it indexes two
 documents and runs a query [test](https://docs.vespa.ai/en/reference/testing.html)
 
 <pre data-test="exec" data-test-assert-contains="Success">
-$ cd application; vespa test tests/system-test/feed-and-search-test.json; cd .. 
+$ (cd application; vespa test tests/system-test/feed-and-search-test.json)
 </pre>
 
 ## Indexing sample product data
