@@ -33,8 +33,7 @@
             "response": {
                 "body": {
                     "fields": {
-                        "id": "B08SHMLP5S",
-                        "embedding": {}
+                        "id": "B08SHMLP5S"
                     }
                 }
             }
