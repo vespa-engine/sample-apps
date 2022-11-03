@@ -4,8 +4,7 @@
     "defaults": {
         "cluster": "default",
         "parameters": {
-            "timeout": "5s",
-            "fieldSet": "[all]"
+            "timeout": "5s"
         }
     },
     "steps": [

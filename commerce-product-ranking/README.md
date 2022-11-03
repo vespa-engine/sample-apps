@@ -5,6 +5,11 @@
 # Vespa Product Ranking 
 
 This sample application is used to demonstrate how to improve Product Search with Learning to Rank (LTR).
+
+Blog post series:
+
+* [Improving Product Search with Learning to Rank - part one](https://blog.vespa.ai/improving-product-search-with-ltr/)
+
 This work uses the largest product relevance dataset released by Amazon:
 
 >We introduce the “Shopping Queries Data Set”, a large dataset of difficult search queries, released with the aim of fostering research in the area of semantic matching of queries and products. For each query, the dataset provides a list of up to 40 potentially relevant results, together with ESCI relevance judgements (Exact, Substitute, Complement, Irrelevant) indicating the relevance of the product to the query. Each query-product pair is accompanied by additional information. The dataset is multilingual, as it contains queries in English, Japanese, and Spanish.
