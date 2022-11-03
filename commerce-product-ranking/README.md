@@ -110,6 +110,12 @@ $ zstdcat sample-data/sample-products.jsonl.zstd | \
 Evaluate the `hybrid` baseline rank profile using the evaluation 
 script ([scripts/evaluate.py](scripts/evaluate.py)).
 
+Install requirements
+
+<pre data-test="exec>
+pip3 install numpy pandas pyarrow requests
+</pre>
+
 <pre data-test="exec">
 $ python3 scripts/evaluate.py \
   --endpoint http://localhost:8080/search/ \
@@ -117,16 +123,15 @@ $ python3 scripts/evaluate.py \
   --ranking hybrid
 </pre>
 
-The evaluate script runs all the queries in the test split using the `--ranking` `rank-profile` 
-and produces a `hybrid.run` file with the top ranked results. This file is
-is formatted in the format that `trec_eval` expects. 
+The evaluate script runs all the queries in the test split using the `--ranking` `<rank-profile>` 
+and produces a `<ranking>.run` file with the top ranked results. 
+This file is is formatted in the format that `trec_eval` expects. 
 
 <pre>
 qid Q0 docid rank score run-name
 </pre>
 
-Example ranking produced by Vespa using the `hybrid` rank-profile:
-
+Example ranking produced by Vespa using the `hybrid` rank-profile for query 535:
 <pre>
 535 Q0 B08PB9TTKT 1 0.29231454033212656 hybrid
 535 Q0 B084TV3C1B 2 0.26620505442075637 hybrid
@@ -147,9 +152,9 @@ Example ranking produced by Vespa using the `hybrid` rank-profile:
 </pre>
 
 This run file can then 
-be evaluated using [trec_eval](https://github.com/usnistgov/trec_eval) utility.
+be evaluated using the [trec_eval](https://github.com/usnistgov/trec_eval) utility.
 
-Download the query-product relevance judgments in TREC format:
+Download a pre-processed query-product relevance judgments in TREC format:
 
 <pre data-test="exec"> 
 $  curl -L -o test.qrels \
@@ -200,6 +205,17 @@ $ python3 scripts/evaluate.py \
   --endpoint http://localhost:8080/search/ \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking hybrid
+</pre>
+
+For Vespa cloud deployments we need to pass certificate and the private key.
+
+<pre>
+$ python3 scripts/evaluate.py \
+  --endpoint https://productsearch.samples.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
+  --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
+  --ranking hybrid \
+  --cert <path-to-data-plane-cert.pem> \
+  --key <path-to-data-plane-private-key.pem>
 </pre>
 
 Run evaluation using `trec_eval`:

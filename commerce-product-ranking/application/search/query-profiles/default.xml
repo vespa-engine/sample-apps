@@ -9,4 +9,8 @@
       - https://docs.vespa.ai/en/query-profiles.html
 -->
 
-<query-profile id="default" type="root" />
+<query-profile id="default">
+    <field name="hits">10</field>
+    <field name="maxHits">500</field>
+    <field name="timeout">5s</field>
+</query-profile>
