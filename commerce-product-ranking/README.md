@@ -77,7 +77,7 @@ $ vespa status deploy --wait 300
 Download this sample application 
 
 <pre data-test="exec">
-$ vespa clone commerce-product-ranking
+$ vespa clone commerce-product-ranking my-app && cd my-app
 </pre>
 
 Deploy the application : 
@@ -99,7 +99,7 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 
 Download the pre-processed sample product data for 16 products:
 
-<pre>
+<pre data-test="exec">
 $ zstdcat sample-data/sample-products.jsonl.zstd | \
     ./vespa-feed-client-cli/vespa-feed-client \
      --stdin --endpoint http://localhost:8080
@@ -112,7 +112,7 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 Install requirements
 
-<pre data-test="exec>
+<pre data-test="exec">
 pip3 install numpy pandas pyarrow requests
 </pre>
 
@@ -127,11 +127,12 @@ The evaluate script runs all the queries in the test split using the `--ranking`
 and produces a `<ranking>.run` file with the top ranked results. 
 This file is is formatted in the format that `trec_eval` expects. 
 
-<pre>
-qid Q0 docid rank score run-name
+<pre data-test="exec" data-test-assert-contains="B08PB9TTKT">
+$ cat hybrid.run 
 </pre>
 
 Example ranking produced by Vespa using the `hybrid` rank-profile for query 535:
+
 <pre>
 535 Q0 B08PB9TTKT 1 0.29231454033212656 hybrid
 535 Q0 B084TV3C1B 2 0.26620505442075637 hybrid
@@ -163,9 +164,12 @@ $  curl -L -o test.qrels \
 
 Install `trec_eval` and run:
 
-<pre>
+<pre data-test="exec">
+git clone https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
+</pre>
+
+<pre data-test="exec" data-test-assert-contains="all">
 $ trec_eval test.qrels hybrid.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
-ndcg_1=0,2=0.01,3=0.1,4=1	all	0.7310
 </pre>
 
 This particular product ranking for the query got a NDCG score of 0.7310. Note
@@ -179,11 +183,17 @@ Note that the evaluation uses custom NDCG label gains:
 - Label 3 is **C**omplement with 0.1 gain
 - Label 4 is **E**xact with 1 gain
 
+## Shutdown and remove the Docker container
+
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
+
 ## Full evaluation 
 
 Download a pre-processed feed file with all (1,215,854) products:
 
-<pre data-test="exec"> 
+<pre> 
 $  curl -L -o product-search-products.jsonl.zstd \
     https://data.vespa.oath.cloud/sample-apps-data/product-search-products.jsonl.zstd
 </pre>
