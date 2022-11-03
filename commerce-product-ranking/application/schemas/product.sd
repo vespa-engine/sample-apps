@@ -1,0 +1,123 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema product {
+
+    document product {
+
+        field locale type string {}
+
+        field id type string {
+            indexing: summary | index 
+            rank:filter
+            match:word
+        }
+
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+            match:text
+            weight:300
+            bolding:on
+        }
+
+        field description type string {
+            indexing: summary | index
+            index: enable-bm25
+            match:text
+            weight: 200
+        }
+
+        field bullets type string {
+            indexing: summary | index
+            index: enable-bm25
+            match:text
+            weight: 200
+        }
+
+        field brand type string {
+            indexing: summary | index | attribute
+            match:text
+            weight:100
+        }
+
+        field color type string {
+            indexing: summary | index | attribute
+            match:text
+            weight:100
+        }
+
+    }
+
+    field fuzzy type string {
+        indexing: input title . input description . input bullets | index
+        match {
+            gram
+            gram-size: 3
+        }
+    }
+
+    field title_tokens type tensor<float>(d0[32]) {
+        indexing: input title | embed tokenizer | attribute
+    }
+
+    field description_tokens type tensor<float>(d0[128]) {
+        indexing: input description | embed tokenizer | attribute
+    }
+
+    field embedding type tensor<float>(d0[384]) {
+        indexing: input title . input description | embed transformer | attribute | summary | index
+        attribute {
+            distance-metric: angular 
+        }
+        index {
+            hnsw {
+                max-links-per-node: 16
+                neighbors-to-explore-at-insert: 50
+            }
+        }
+    }
+
+    fieldset default {
+        fields: title, description, bullets, brand  
+    }
+
+    rank-profile default {
+        inputs {
+            query(query_tokens) tensor<float>(d0[32])
+            query(query_embedding) tensor<float>(d0[384])
+        } 
+    }
+
+    rank-profile bm25 inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(description)
+        }
+    }
+
+    rank-profile nativeRank inherits default {
+        first-phase {
+            expression: nativeRank(title) + nativeRank(description)
+        }
+    }
+
+    rank-profile fieldMatch inherits default {
+        first-phase {
+            expression: fieldMatch(title) + fieldMatch(description)
+        }
+    }
+
+    rank-profile semantic inherits default {
+        first-phase {
+            expression: closeness(field, embedding)
+        }
+    } 
+
+    rank-profile hybrid inherits default {
+        inputs {
+          query(alpha): 0.5
+        }
+        first-phase {
+            expression: query(alpha)*closeness(field, embedding) + (1 - query(alpha))*(nativeRank(title) + nativeRank(description))
+        }
+    } 
+}
