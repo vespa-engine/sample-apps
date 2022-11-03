@@ -1,0 +1,83 @@
+{
+    "name": "Ranking system tests",
+    "comment": "Test all retrieval and ranking pipelines",
+    "defaults": {
+        "cluster": "default",
+        "parameters": {
+            "timeout": "5s",
+            "fieldSet": "[all]"
+        }
+    },
+    "steps": [
+        {
+            "name": "feed single product document",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/commerce/product/docid/B08PB9TTKT",
+                "body": "../B08PB9TTKT.json"
+            }
+        },
+        {
+            "name": "feed second product document",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/commerce/product/docid/B08SHMLP5S",
+                "body": "../B08SHMLP5S.json"
+            }
+        },
+        {
+            "name": "get document",
+            "request": {
+                "method": "GET",
+                "uri": "/document/v1/commerce/product/docid/B08SHMLP5S"
+            },
+            "response": {
+                "body": {
+                    "fields": {
+                        "id": "B08SHMLP5S",
+                        "embedding": {}
+                    }
+                }
+            }
+        },
+        {
+            "name": "query for products using simple BM25 ",
+            "request": {
+                "parameters": {
+                    "yql": "select id from product where userQuery()",
+                    "query": "06 bmw 325i radio oem not navigation system",
+                    "ranking": "bm25"
+                }
+            },
+            "response": {
+                "body": {
+                    "root": {
+                        "children": [
+                            {
+                                "fields": {
+                                    "id": "B08PB9TTKT"
+                                }
+                            },
+                            {
+                                "fields": {
+                                    "id": "B08SHMLP5S"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "name": "clear existing documents",
+            "request": {
+                "method": "DELETE",
+                "uri": "/document/v1/",
+                "parameters": {
+                    "cluster": "content",
+                    "selection": "true"
+                }
+            }
+        }
+    ]
+}

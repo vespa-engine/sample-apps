@@ -86,6 +86,15 @@ Deploy the application :
 $ vespa deploy --wait 300 application
 </pre>
 
+## Run basic system test
+
+This step is optional, but it indexes two 
+documents and runs a query [test](https://docs.vespa.ai/en/reference/testing.html)
+
+<pre data-test="exec" data-test-assert-contains="Success">
+$ cd application; vespa test tests/system-test/feed-and-search-test.json; cd .. 
+</pre>
+
 ## Indexing sample product data
 
 Download Vespa feed client 
@@ -162,22 +171,25 @@ $  curl -L -o test.qrels \
     https://data.vespa.oath.cloud/sample-apps-data/test.qrels
 </pre>
 
-Install `trec_eval` and run:
+Install `trec_eval` (your mileage may vary):
 
 <pre data-test="exec">
 git clone https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
 </pre>
 
+Run evaluation :
+
 <pre data-test="exec" data-test-assert-contains="all">
 $ trec_eval test.qrels hybrid.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
 </pre>
 
-This particular product ranking for the query got a NDCG score of 0.7310. Note
-that the `sample-data/test-sample.parquet` file only contains one query. To
-get the overall score, one computes all the NDCG scores of all queries in the
-test split and report the **average** NDCG score.  
+This particular product ranking for the query produces a NDCG score of 0.7310. 
+Note that the `sample-data/test-sample.parquet` file only contains one query. To
+get the overall score, one must computes all the NDCG scores of all queries in the
+test split and report the *average* NDCG score.  
 
 Note that the evaluation uses custom NDCG label gains:
+
 - Label 1 is **I**rrelevant with 0 gain
 - Label 2 is **S**upplement with 0.01 gain
 - Label 3 is **C**omplement with 0.1 gain
