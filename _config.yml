@@ -26,9 +26,6 @@ search:
     - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
       indexes:
         - vespaapps_index.json
-    - url: https://vespacloud-docsearch.vespa-team.aws-ap-northeast-1a.z.vespa-app.cloud/
-      indexes:
-        - vespaapps_index.json
     - url: https://vespacloud-docsearch.vespa-team.gcp-us-central1-f.z.vespa-app.cloud/
       indexes:
         - vespaapps_index.json
