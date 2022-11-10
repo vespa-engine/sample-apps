@@ -4,7 +4,9 @@ schema product {
 
     document product {
 
-        field locale type string {}
+        field locale type string {
+            indexing: "en" | set_language
+        }
 
         field id type string {
             indexing: summary | index 
@@ -49,43 +51,58 @@ schema product {
     }
 
     field fuzzy type string {
-        indexing: input title . input description . input bullets | index
+        indexing: input title | index
         match {
             gram
-            gram-size: 3
+            gram-size: 2
         }
     }
 
-    field title_tokens type tensor<float>(d0[32]) {
-        indexing: input title | embed tokenizer | attribute
+    field title_tokens type tensor<float>(d0[128]) {
+        indexing: input title | embed tokenizer | attribute | summary
     }
 
     field description_tokens type tensor<float>(d0[128]) {
-        indexing: input description | embed tokenizer | attribute
+        indexing: input description | embed tokenizer | attribute | summary
     }
 
-    field embedding type tensor<float>(d0[384]) {
-        indexing: input title . input description | embed transformer | attribute | summary | index
+    field title_embedding type tensor(d0[384]) {
+        indexing: input title | embed title | attribute | summary
         attribute {
             distance-metric: angular 
         }
-        index {
-            hnsw {
-                max-links-per-node: 16
-                neighbors-to-explore-at-insert: 50
-            }
+    }
+    field description_embedding type tensor(d0[384]) {
+        indexing: input description | embed description | attribute | summary
+        attribute {
+            distance-metric: angular 
         }
     }
 
     fieldset default {
-        fields: title, description, bullets, brand  
+        fields: title, description, bullets, brand, color 
+    }
+
+    onnx-model title_cross {
+      file: models/title_ranker.onnx
+      input input_ids: title_input_ids
+      input attention_mask: title_attention_mask
+      input token_type_ids: title_token_type_ids
     }
 
     rank-profile default {
         inputs {
             query(query_tokens) tensor<float>(d0[32])
-            query(query_embedding) tensor<float>(d0[384])
+            query(q_title) tensor<float>(d0[384])
+            query(q_description) tensor<float>(d0[384])
+            query(q_bullets) tensor<float>(d0[384])
         } 
+    }
+
+    rank-profile random inherits default {
+        first-phase {
+            expression: random 
+        }
     }
 
     rank-profile bm25 inherits default {
@@ -106,18 +123,37 @@ schema product {
         }
     }
 
-    rank-profile semantic inherits default {
+    rank-profile semantic-title inherits default {
         first-phase {
-            expression: closeness(field, embedding)
+            expression: closeness(field, title_embedding)
         }
     } 
 
-    rank-profile hybrid inherits default {
-        inputs {
-          query(alpha): 0.5
+    rank-profile semantic-description inherits default {
+        first-phase {
+            expression: closeness(field, description_embedding)
+        }
+    } 
+
+    rank-profile cross-title inherits default {
+
+        function title_input_ids() {
+            expression: tokenInputIds(96, query(query_tokens), attribute(title_tokens))
+        }
+
+        function title_token_type_ids() {
+            expression: tokenTypeIds(96, query(query_tokens), attribute(title_tokens))
+        }
+
+        function title_attention_mask() {
+            expression: tokenAttentionMask(96, query(query_tokens), attribute(title_tokens)) 
+        }
+
+        function cross() {
+            expression: onnx(title_cross){d0:0,d1:0} 
         }
         first-phase {
-            expression: query(alpha)*closeness(field, embedding) + (1 - query(alpha))*(nativeRank(title) + nativeRank(description))
+            expression: cross() 
         }
     } 
 }

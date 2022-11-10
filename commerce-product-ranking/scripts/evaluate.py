@@ -17,9 +17,10 @@ def search(query_group):
     query = row['query']
     query_id = row['query_id']
     query_request = {
-        'yql': 'select id from product where userQuery() or ({targetHits:100, approximate:false}nearestNeighbor(embedding,query_embedding))',
+        'yql': 'select id from product where userQuery() or ({targetHits:100}nearestNeighbor(title_embedding, q_title)) or ({targetHits:100}nearestNeighbor(description_embedding, q_description))',
         'query': query, 
-        'input.query(query_embedding)': 'embed(transformer, "%s")'  % query, 
+        'input.query(q_title)': 'embed(title, "%s")'  % query, 
+        'input.query(q_description)': 'embed(description, "%s")'  % query, 
         'input.query(query_tokens)': 'embed(tokenizer, "%s")' %query,
         'ranking': args.ranking,
         'hits' : args.hits, 
@@ -49,7 +50,7 @@ def search(query_group):
             responses.append(doc)
             pos+=1
     else:
-      print("request failed " + response.json())
+      print("request failed " + str(response.json()))
 
 def main():
     parser = argparse.ArgumentParser()
