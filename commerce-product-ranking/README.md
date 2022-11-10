@@ -100,8 +100,8 @@ $ curl -L -o application/models/description_encoder.onnx \
     https://data.vespa.oath.cloud/sample-apps-data/description_encoder.onnx
 </pre>
 
-See [scripts/bi-encoder-export.py](scripts/bi-encoder-export.py) and
-[scripts/cross-encoder-export.py](scripts/cross-encoder-export.py) for how
+See [scripts/export-bi-encoder.py](scripts/export-bi-encoder.py) and
+[scripts/export-cross-encoder.py](scripts/export-cross-encoder.py) for how
 to export models from PyTorch to ONNX format. 
 
 Deploy the application : 
