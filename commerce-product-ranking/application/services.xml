@@ -16,10 +16,16 @@
             </model>
           </config>
         </component>
-        <component id="transformer" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
+        <component id="title" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
           <config name="embedding.bert-base-embedder">
-            <transformerModel  url="https://data.vespa.oath.cloud/onnx_models/sentence_all_MiniLM_L6_v2.onnx"/>
-            <tokenizerVocab url="https://data.vespa.oath.cloud/onnx_models/bert-base-uncased-vocab.txt"/>
+            <transformerModel  path="models/title_encoder.onnx"/>
+            <tokenizerVocab path="files/bert-base-uncased-vocab.txt"/>
+          </config>
+        </component>
+        <component id="description" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
+          <config name="embedding.bert-base-embedder">
+            <transformerModel  path="models/description_encoder.onnx"/>
+            <tokenizerVocab path="files/bert-base-uncased-vocab.txt"/>
           </config>
         </component>
     </container>
