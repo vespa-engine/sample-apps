@@ -11,7 +11,7 @@ Blog post series:
 * [Improving Product Search with Learning to Rank - part one](https://blog.vespa.ai/improving-product-search-with-ltr/)
 This post introduces the dataset used in this sample application and several baseline ranking models. 
 * [Improving Product Search with Learning to Rank - part two](https://blog.vespa.ai/improving-product-search-with-ltr-part-two/)
-This post demonstrate how to train neural methods for search ranking. The neural training routine is found in this
+This post demonstrates how to train neural methods for search ranking. The neural training routine is found in this
 this [notebook](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb).
 
