@@ -154,7 +154,7 @@ Using a mixed sparse/dense tensor allows storing variable length text where the 
 
 The ColBERT model uses 32 vector dimensions per term, this is denoted by <em>x[32]</em>.
 The tensor cell type is
-[bfloat16 (2 bytes) per tensor cell](https://docs.vespa.ai/en/tensor-user-guide.html#cell-value-types).
+[bfloat16 (2 bytes) per tensor cell](https://docs.vespa.ai/en/performance/feature-tuning.html#cell-value-types).
 This tensor cell type is used to reduce memory footprint compared to float (4 bytes per value). 
 
 The *id* field is the passage id from the dataset. 
