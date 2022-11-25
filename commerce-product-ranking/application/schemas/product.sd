@@ -156,4 +156,31 @@ schema product {
             expression: cross() 
         }
     } 
+
+    rank-profile gbdt-lightgbm {
+        function bi_encoder() {
+            expression: closeness(field, title_embedding)
+        }
+        first-phase {
+            expression: lightgbm("product_ranker_simple_lightgbm.json")
+        }
+    }
+
+    rank-profile gbdt-xgboost {
+        function bi_encoder() {
+            expression: closeness(field, title_embedding)
+        }
+        first-phase {
+            expression: xgboost("product_ranker_simple_xgboost.json")
+        }
+    }
+
+    rank-profile ensemble {
+        function bi_encoder() {
+            expression: closeness(field, title_embedding)
+        }
+        first-phase {
+            expression: xgboost("product_ranker_simple_xgboost.json") + lightgbm("product_ranker_simple_lightgbm.json")
+        }
+    }
 }
