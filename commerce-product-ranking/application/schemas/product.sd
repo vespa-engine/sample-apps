@@ -95,7 +95,6 @@ schema product {
             query(query_tokens) tensor<float>(d0[32])
             query(q_title) tensor<float>(d0[384])
             query(q_description) tensor<float>(d0[384])
-            query(q_bullets) tensor<float>(d0[384])
         } 
     }
 
@@ -136,6 +135,11 @@ schema product {
     } 
 
     rank-profile cross-title inherits default {
+        inputs {
+            query(query_tokens) tensor<float>(d0[32])
+            query(q_title) tensor<float>(d0[384])
+            query(q_description) tensor<float>(d0[384])
+        } 
 
         function title_input_ids() {
             expression: tokenInputIds(96, query(query_tokens), attribute(title_tokens))
@@ -149,36 +153,120 @@ schema product {
             expression: tokenAttentionMask(96, query(query_tokens), attribute(title_tokens)) 
         }
 
-        function cross() {
+        function cross_encoder() {
             expression: onnx(title_cross){d0:0,d1:0} 
         }
         first-phase {
-            expression: cross() 
+            expression: cross_encoder() 
         }
-    } 
+    }
 
-    rank-profile gbdt-lightgbm {
+    rank-profile features inherits cross-title {
+       
         function bi_encoder() {
             expression: closeness(field, title_embedding)
         }
+
+        function bi_encoder_description() {
+            expression: closeness(field, description_embedding)
+        }
+
+    
+        function max_title_significance() {
+            expression: foreach(terms, N, term(N).significance, ">0.5", max)
+        }
+
+        function mean_title_significance() {
+            expression: foreach(terms, N, term(N).significance, ">0.5", average)
+        }
+
+        first-phase {
+            expression: random
+        }
+
+        match-features {
+
+            queryTermCount
+            max_title_significance
+            mean_title_significance
+
+            cross_encoder()
+            bi_encoder()
+            bi_encoder_description()
+
+            bm25(title)
+            bm25(description)
+            bm25(bullets)
+            bm25(color)
+            bm25(brand)
+
+            matches(brand)
+            matches(title)
+            matches(color)
+
+            nativeRank(title)
+            nativeProximity(title)
+            nativeRank(description)
+            nativeProximity(description)
+            nativeRank(bullets)
+            nativeProximity(bullets)
+            nativeRank(color)
+            nativeProximity(color)
+            nativeRank(brand)
+            nativeProximity(brand)
+
+            textSimilarity(title).order
+            textSimilarity(title).proximity
+
+            fieldMatch(title)
+            fieldMatch(title).proximity
+            fieldMatch(title).completeness
+            fieldMatch(title).queryCompleteness
+            fieldMatch(title).fieldCompleteness
+            fieldMatch(title).orderness
+            fieldMatch(title).relatedness
+            fieldMatch(title).orderness
+            fieldMatch(title).earliness
+            fieldMatch(title).significantOccurrence
+            fieldMatch(title).matches
+            fieldMatch(title).head
+            fieldMatch(title).tail
+
+            term(0).significance
+            term(1).significance
+            term(2).significance
+            term(3).significance
+            term(4).significance
+        }
+    }
+
+    rank-profile gbdt-lightgbm-simple inherits features {
         first-phase {
             expression: lightgbm("product_ranker_simple_lightgbm.json")
         }
     }
 
-    rank-profile gbdt-xgboost {
-        function bi_encoder() {
-            expression: closeness(field, title_embedding)
-        }
+    rank-profile gbdt-xgboost-simple inherits features {
+        
         first-phase {
             expression: xgboost("product_ranker_simple_xgboost.json")
         }
     }
 
-    rank-profile ensemble {
-        function bi_encoder() {
-            expression: closeness(field, title_embedding)
+    rank-profile gbdt-lightgbm-full inherits features {
+        first-phase {
+            expression: lightgbm("product_ranker_lightgbm.json")
         }
+    }
+
+    rank-profile gbdt-xgboost-full inherits features {
+        
+        first-phase {
+            expression: xgboost("product_ranker_xgboost.json")
+        }
+    }
+
+    rank-profile ensemble inherits features {
         first-phase {
             expression: xgboost("product_ranker_simple_xgboost.json") + lightgbm("product_ranker_simple_lightgbm.json")
         }
