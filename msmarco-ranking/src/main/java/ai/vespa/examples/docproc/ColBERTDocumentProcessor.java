@@ -40,7 +40,7 @@ public class ColBERTDocumentProcessor extends DocumentProcessor {
     public ColBERTDocumentProcessor(ModelsEvaluator evaluator,
                                     WordPieceEmbedder tokenizer, ColbertConfig config) {
         this.tokenizer = tokenizer;
-        this.maxLength = config.max_query_length();
+        this.maxLength = config.max_document_length();
         this.dim = config.dim();
         this.colbertModel = evaluator.requireModel(modelName);
         this.colbertTensorType = new TensorType.Builder(TensorType.Value.BFLOAT16).
