@@ -60,6 +60,8 @@ public class ColBERTDocumentProcessorTest {
         Optional<Tensor> t = dt_tensor.getTensor();
         assertTrue(t.isPresent());
         MixedTensor m = (MixedTensor)t.get();
+        long maps = m.size()/m.denseSubspaceSize();
+        assertEquals(56, maps);
         assertEquals(32, m.denseSubspaceSize());
     }
 }
