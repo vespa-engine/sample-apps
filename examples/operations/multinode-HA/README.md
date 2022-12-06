@@ -14,7 +14,7 @@ The first part of this example sets up a multinode application of multiple conta
 The second part secures the application using [mTLS](https://docs.vespa.ai/en/mtls.html).
 
 **Troubleshooting:** The [troubleshooting-startup-multinode](https://vespa.ai/resources#troubleshooting-startup-multinode)
-training video goes through various issues to help setting up a multinode cluster.
+training video goes through various issues to help set up a multinode cluster.
 See this if getting problems during the procedures below.
 
 There are multiple ways of deploying multinode applications, on multiple platforms.
@@ -751,6 +751,30 @@ $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/
     --data-urlencode 'yql=select * from sources * where sddocname contains "music"' \
     https://localhost:8445/search/
 </pre>
+
+
+
+## Security Q/A
+
+_I'm getting zookeeper errors regarding my certs once the config nodes are launched.
+The actual error is "PKIX path building failed unable to find valid certification path to requested target."
+I'm using a root key provided in `tls_paths.json`,
+and I tried updated the Java keystore, which didn't seem to have an effect._
+
+The PKIX path error is likely from a client that fails to accept a server certificate.
+This may indicate that the CA certificate configuration is invalid.
+Make sure to use a PEM file as CA bundle - Vespa supports neither JKS nor PKCS#12.
+
+_I notice that `TLS.json` and `services.secure.xml` have different files for the ca-certificates file field - why?
+Also, some of the curl requests utilize the Vespa keys while others use the client keys.
+Are the exposed ports (19107,8080,8082, ...) utilizing the Vespa keys,
+while the internal ports (8445, 8443, ...) use client keys?_
+
+The local container port 8443 is intended for ingress traffic (search/feed),
+while the other ports are intended for local management only.
+From a security standpoint, it is ideal to utilize disjunct certificate chains for those two aspects.
+8080 and 8443 will serve identical APIs, although in this example 8080 is intended for health/state monitoring.
+Separate CAs is though less useful if 8443 ports are protected by a WAF or layer 7 load balancer.
 
 
 
