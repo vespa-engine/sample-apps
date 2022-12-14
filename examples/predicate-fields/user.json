@@ -1,0 +1,1 @@
+{"put": "id:sampleapp:user::alice", "fields": {"target": "gender in ['male'] and age in [30..40] and income in [200..50000]", "age": 23, "gender": ["female"]}}

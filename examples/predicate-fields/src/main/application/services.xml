@@ -14,10 +14,10 @@
     </nodes>
   </container>
 
-  <content version="1.0" id="adserver">
+  <content version="1.0" id="users">
     <redundancy>2</redundancy>
     <documents>
-      <document type="ad" mode="index" />
+      <document type="user" mode="index" />
     </documents>
     <nodes>
       <node hostalias="node1" distribution-key="0" />
