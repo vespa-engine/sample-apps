@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <vespa_version>8.91.2</vespa_version>
+        <vespa_version>8.98.34</vespa_version>
     </properties>
 
     <dependencies>
