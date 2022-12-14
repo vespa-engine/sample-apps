@@ -127,7 +127,8 @@ $ ./vespa-feed-client-cli/vespa-feed-client --verbose \
   --endpoint http://localhost:8080
 </pre>
 
-When feeding to Vespa cloud endpoints, you also need to include the data plane certificate and key. 
+When feeding to Vespa cloud endpoints, you also need to include the data plane certificate and key -
+[example](https://github.com/vespa-cloud/vector-search#feeding-example).
 
 One can also feed using curl or the Vespa-cli:
 
