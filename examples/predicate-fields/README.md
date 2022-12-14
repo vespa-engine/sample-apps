@@ -111,7 +111,7 @@ documents. The users in the market place.
 `target` is the predicate field, the rest are regular Vespa fields. 
 
 Download the latest `vespa-feed-client` release:
-<pre>
+<pre data-test="exec">
 $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
 && FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*<release>\(.*\)<.*>/\1/p') \
 && curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
