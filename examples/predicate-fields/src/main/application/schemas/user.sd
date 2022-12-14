@@ -1,0 +1,58 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema user {
+  
+  document user {
+
+    field cpc type float {
+      indexing: attribute |  summary
+    }
+
+    field gender type array<string> {
+      indexing: attribute |  summary
+      attribute: fast-search 
+      rank:filter
+    }
+
+    field hobby type array<string> {
+      indexing: attribute |  summary
+      attribute: fast-search 
+      rank:filter
+    }
+
+    field age type int {
+      indexing: attribute |  summary
+      attribute: fast-search 
+      rank:filter
+    }
+
+    field profile type tensor<float>(x[4]) {
+      indexing: attribute |  summary
+    }
+
+    field target type predicate {
+      indexing: attribute | summary
+      index {
+        arity: 8
+      }
+    }
+  }
+
+  rank-profile default {
+    inputs {
+      query(profile) tensor<float>(x[4])
+    }
+    summary-features: subqueries(target).lsb subqueries(target).msb
+
+    function cpc_score() {
+       expression: if(isNan(attribute(cpc)) == 1.0, 0.0, attribute(cpc))
+    }
+    first-phase {
+      expression: cpc_score()
+    }
+    second-phase {
+       expression: if(closeness(field, profile) > 0, cpc_score() * closeness(field, profile), cpc_score())
+    }
+  }
+}
+

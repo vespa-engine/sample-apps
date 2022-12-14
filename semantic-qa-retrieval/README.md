@@ -48,7 +48,7 @@ One can explore the questions and the labeled answers [here](https://rajpurkar.g
 
 * [Docker](https://www.docker.com/) installed and running  
 * git client to checkout the sample application repository
-* Operating system: macOS or Linux, Architecture: x86_64
+* Operating system: macOS or Linux, Architecture: x86_64 or arm64 
 * Minimum 6 GB memory dedicated to Docker (the default is 2 GB on Macs).
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting.
