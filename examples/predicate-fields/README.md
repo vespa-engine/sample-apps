@@ -98,7 +98,7 @@ $ mvn package -U
 Finally, deploy the app:
 
 <pre data-test="exec">
-$ vespa deploy 
+$ vespa deploy --wait 300
 </pre>
 
 ## Index users  
