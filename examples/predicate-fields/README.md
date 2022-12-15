@@ -175,7 +175,7 @@ $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["m
 
 The above request will retrieve both _Karen_ and _Alice_ as their `target` predicate matches the user properties. 
 
-If `Ronald`' income estimate drops to 100K, _Alice_ will no longer match since _Alice_ 
+If `Ronald`'s income estimate drops to 100K, _Alice_ will no longer match since _Alice_ 
 has specified a picky income limitation.
 
 <pre data-test="exec" data-test-assert-contains="karen">
