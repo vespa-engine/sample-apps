@@ -14,7 +14,7 @@ For example, this predicate using three target
 properties or attributes (not to be confused with Vespa [attributes](https://docs.vespa.ai/en/attributes.html)):
 > gender in ['male'] and age in [30..40] and income in [200..50000]
 
-This sample application demonstrates a imaginary two-sided dating marketplace
+This sample application demonstrates an imaginary two-sided dating marketplace
 where users can control visibility in the search or recommendation result page. For example, _Bob_
 only wants to be displayed for users that satisfy the following predicate:
 
@@ -34,11 +34,10 @@ at query or recommendation time, set all known properties of the query side user
 We also demonstrate how the marketplace can implement query side filter over regular Vespa fields, so a user `Karen`
 can also specify regular query side constraints (for example, searching for users in a certain age group). This way, 
 the marketplace system has two-sided filtering. Imagine if deployed ad systems would allow the user to also have constraints
-on the ads, and not just the other way around? 
+on the ads shown, and not just the other way around? 
 
-Finally, we demonstrate user [ranking](https://docs.vespa.ai/en/ranking.html) 
-using marketplace business metrics like cost-per-click (CPC), 
-and user [interest embeddings](https://docs.vespa.ai/en/tutorials/news-4-embeddings.html). 
+Finally, we demonstrate how the marketplace can [rank](https://docs.vespa.ai/en/ranking.html) users
+using marketplace business metrics like cost-per-click (CPC) and user [interest embeddings](https://docs.vespa.ai/en/tutorials/news-4-embeddings.html). 
 
 ## Quick start
 
