@@ -4,7 +4,7 @@
 
 # Vespa sample application - Predicate Search
 
-This sample application demonstrates how to use Vespa [predicate fields]((https://docs.vespa.ai/en/predicate-fields.html)) 
+This sample application demonstrates how to use Vespa [predicate fields](https://docs.vespa.ai/en/predicate-fields.html) 
 for indexing boolean *document* constraints. A predicate is a specification of a
 boolean constraint in the form of a boolean expression. Vespa's predicate fields 
 are used to implement [targeted advertising](https://en.wikipedia.org/wiki/Targeted_advertising)
