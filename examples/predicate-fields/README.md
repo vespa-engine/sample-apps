@@ -92,7 +92,7 @@ $ vespa clone examples/predicate-fields my-app && cd my-app
 Build the sample app:
 
 <pre data-test="exec">
-$ mvn package -U 
+$ mvn package -U
 </pre>
 
 Finally, deploy the app:
@@ -140,39 +140,26 @@ $ vespa document -v user.json
 
 This retrieves both _karen_ and _alice_:
 <pre data-test="exec" data-test-assert-contains="alice">
-$ vespa query 'yql=select * from sources * where predicate(
-  target,
-  {"gender":["male"]},
-  {"age":32, "income": 3000})'
+$ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"]}, {"age":32, "income": 3000})'
 </pre>
 
 If we change the income to 100, _alice_ will no longer match since _alice_ has specified an income range:
 
 <pre data-test="exec" data-test-assert-contains="karen">
-$ vespa query 'yql=select * from sources * where predicate(
-  target,
-  {"gender":["male"]},
-  {"age":32, "income": 100})'
+$ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"]}, {"age":32, "income": 100})'
 </pre>
 
 
 ## Matching combining predicate with regular filters 
 The following query retrieves both _karen_ and _bob_:
 <pre data-test="exec" data-test-assert-contains="karen">
-$ vespa query 'yql=select * from sources * where predicate(
-  target,
-  {"gender":["male"], "hobby":["sports"]},
-  {"age":32, "income": 100})'
+$ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"], "hobby":["sports"]}, {"age":32, "income": 100})'
 </pre>
 
 We can specify a regular filter on the `gender` field using regular YQL filter syntax:
 
 <pre data-test="exec" data-test-assert-contains="bob">
-$ vespa query 'yql=select * from sources * where predicate(
-  target,
-  {"gender":["male"], "hobby":["sports"]},
-  {"age":32, "income": 100})
-  and gender contains "male"'
+$ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"], "hobby":["sports"]}, {"age":32, "income": 100}) and gender contains "male"'
 </pre>
 
 This is an example of two-sided filtering, both the search user and the indexed user has constraints. 
@@ -195,10 +182,7 @@ $ ./vespa-feed-client-cli/vespa-feed-client --verbose \
 Run a query for a male user with high income and age 32:
 
 <pre data-test="exec" data-test-assert-contains="alice">
-$ vespa query 'yql=select * from sources * where predicate(
-  target,
-  {"gender":["male"]},
-  {"age":32, "income": 3000})'
+$ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"]}, {"age":32, "income": 3000})'
 </pre>
 
 Notice that we match both alice and karen, but karen is ranked higher because karen has paid more,
@@ -208,11 +192,7 @@ If we now add personalization to the ranking mix, _alice_ is ranking higher,
 as she matches the query user interests perfectly:
 
 <pre data-test="exec" data-test-assert-contains="alice">
-$ vespa query 'yql=select documentid from sources * where (predicate(
-  target,
-  {"gender":["male"]},
-  {"age":32, "income": 3000}))
-  and ({targetHits:10}nearestNeighbor(profile,profile))' \
+$ vespa query 'yql=select documentid from sources * where (predicate(target, {"gender":["male"]}, {"age":32, "income": 3000})) and ({targetHits:10}nearestNeighbor(profile,profile))' \
   'input.query(profile)=[0.10958350208504841, 0.4642735718813399, 0.7250558657395969, 0.1689946673589695]'
 </pre>
 
