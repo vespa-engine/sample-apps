@@ -99,17 +99,17 @@ public class AssignCentroidsDocProc extends DocumentProcessor {
      * Find neighbors asynchronously using the jdisc container's default thread pool
      */
     private Progress findNeighborsAsync(Processing p, Tensor t) {
+        long timeoutMillis = Math.min(10000, Math.max(10, p.timeLeft().toMillis()));
         try {
             Execution exec = factory.newExecution(searchChain);
-            Duration timeout = Duration.ofSeconds(30);
             var promise = CompletableFuture.supplyAsync(
-                    () -> clustering.getCentroids(t, 24, 48, timeout, exec),
+                    () -> clustering.getCentroids(t, 24, 48, Duration.ofMillis(timeoutMillis - 5), exec),
                     exec.context().executor());
             p.setVariable(PROMISE_VAR, promise);
         } catch (RejectedExecutionException e) {
             // Ensure that search is retried later on back-pressure signal from search
             p.removeVariable(PROMISE_VAR);
         }
-        return Progress.LATER;
+        return Progress.later(timeoutMillis - 2);
     }
 }
