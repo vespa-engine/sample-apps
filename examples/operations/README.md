@@ -58,13 +58,3 @@ Removing the readinessProbe on 19071 can make the Config Server cluster start /
 set `publishNotReadyAddress: true` - also see [basic-search-on-gke](basic-search-on-gke) and 
 [vespa-quick-start-kubernetes](https://docs.vespa.ai/en/vespa-quick-start-kubernetes.html).
 
-
-
-### Starting Vespa using Docker on M1 fails
-Also reported in [#20516](https://github.com/vespa-engine/vespa/issues/20516).
-Users on M1 MacBook Pros might see this when starting the Docker container:
-```
-WARNING: The requested image’s platform (linux/amd64) does not match the detected host platform (linux/arm64/v8)
-and no specific platform was requested
-```
-Vespa is not yet tested on M1 arch64, pending resources to do so. There is a [Preview of Vespa on ARM64](https://blog.vespa.ai/preview-of-vespa-on-arm64/) available.
