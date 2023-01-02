@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 public class AssignCentroidsDocProc extends DocumentProcessor {
 
     private static final String PROMISE_VAR = AssignCentroidsDocProc.class.getName() + ".promise";
-    private static Logger logger = Logger.getLogger(AssignCentroidsDocProc.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(AssignCentroidsDocProc.class.getName());
     private final Chain<Searcher> searchChain;
     private final ExecutionFactory factory;
     private final Centroids clustering;
