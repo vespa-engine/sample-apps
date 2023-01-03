@@ -20,10 +20,7 @@
             "request": {
                 "method": "POST",
                 "uri": "/document/v1/laion/image/docid/1",
-                "body": "../image.json",
-                "parameters": {
-                    "timeout": "60s"
-                }
+                "body": "../image.json"
             }
         },
         {
