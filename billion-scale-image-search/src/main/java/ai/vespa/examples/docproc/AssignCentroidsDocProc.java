@@ -12,7 +12,9 @@ import com.yahoo.document.DataType;
 import com.yahoo.document.Document;
 import com.yahoo.document.DocumentOperation;
 import com.yahoo.document.DocumentPut;
-import com.yahoo.document.datatypes.*;
+import com.yahoo.document.datatypes.Array;
+import com.yahoo.document.datatypes.StringFieldValue;
+import com.yahoo.document.datatypes.TensorFieldValue;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.result.ErrorMessage;
 import com.yahoo.search.searchchain.Execution;
@@ -59,11 +61,18 @@ public class AssignCentroidsDocProc extends DocumentProcessor {
                 // Check if neighbor search is already initiated
                 var promise = getNeighborsSearchPromiseOrNull(processing);
 
+                Duration timeout = timeout(processing);
+
+                if (timeout.equals(Duration.ZERO)) return Progress.FAILED.withReason("Timed out");
+
                 // Initiate neighbor search and return
-                if (promise == null) return findNeighborsAsync(processing, vector.getTensor().get().cellCast(TensorType.Value.FLOAT));
+                if (promise == null) {
+                    findNeighborsAsync(processing, vector.getTensor().get().cellCast(TensorType.Value.FLOAT), timeout);
+                    return later(timeout);
+                }
 
                 // Return if search not yet complete
-                if (!promise.isDone()) return Progress.LATER;
+                if (!promise.isDone()) return later(timeout);
 
                 // Fail feed on search error
                 CentroidResult result = Objects.requireNonNull(promise.getNow(null));
@@ -95,21 +104,30 @@ public class AssignCentroidsDocProc extends DocumentProcessor {
         return (CompletableFuture<CentroidResult>) p.getVariable(PROMISE_VAR);
     }
 
+    private static Duration timeout(Processing p) {
+        Duration timeLeft = p.timeLeft();
+        if (timeLeft == Processing.NO_TIMEOUT) return Duration.ofSeconds(60);
+        if (timeLeft.toMillis() < 6) return Duration.ZERO;
+        return timeLeft;
+    }
+
+    private static Progress later(Duration timeout) {
+        return Progress.later(Math.min(20, timeout.minusMillis(2).toMillis()));
+    }
+
     /**
      * Find neighbors asynchronously using the jdisc container's default thread pool
      */
-    private Progress findNeighborsAsync(Processing p, Tensor t) {
-        long timeoutMillis = Math.min(10000, Math.max(10, p.timeLeft().toMillis()));
+    private void findNeighborsAsync(Processing p, Tensor t, Duration timeout) {
         try {
             Execution exec = factory.newExecution(searchChain);
             var promise = CompletableFuture.supplyAsync(
-                    () -> clustering.getCentroids(t, 24, 48, Duration.ofMillis(timeoutMillis - 5), exec),
+                    () -> clustering.getCentroids(t, 24, 48, timeout.minusMillis(4), exec),
                     exec.context().executor());
             p.setVariable(PROMISE_VAR, promise);
         } catch (RejectedExecutionException e) {
             // Ensure that search is retried later on back-pressure signal from search
             p.removeVariable(PROMISE_VAR);
         }
-        return Progress.later(timeoutMillis - 2);
     }
 }

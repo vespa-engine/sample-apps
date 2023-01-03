@@ -14,3 +14,5 @@ _site/
 test/__pycache__
 _work/
 links-to-check.html
+vespa-feed-client-cli/
+vespa-feed-client-cli.zip
