@@ -9,7 +9,7 @@
 This sample application is a demo of how one can build search suggestions from a document corpus.
 It uses documents from [Vespa Documentation](https://github.com/vespa-engine/documentation)
 and extracts terms and phrases.
-[Prefix search](https://docs.vespa.ai/en/text-matching-ranking.html#prefix-search) is used,
+[Prefix match](https://docs.vespa.ai/en/text-matching-ranking.html#prefix-match) is used,
 so suggestions are shown as the user types.
 
 This sample application is also deployed for [vespa-documentation-search](https://github.com/vespa-cloud/vespa-documentation-search),
@@ -31,6 +31,13 @@ Hence, the script generating suggestions should create something like:
             "term":  { "assign": "learning to rank" },
             "terms": { "assign": ["learning to rank", "to rank", "rank"] },
 
+An alternative is to use the `term` field as input, with a field not contained in [document](https://docs.vespa.ai/en/reference/schema-reference.html#document), and split on space:
+
+    field terms_from_term type array<string> {
+        indexing: input term | trim | split " +" | attribute
+        attribute: fast-search
+    }
+
 With this, prefix queries will hit "inside" phrases, too.
 
 Another consideration is how to remove noise.
@@ -39,7 +46,11 @@ A simple approach is to require at least two instances of a word in the corpus.
 A simplistic ranking based on term frequencies is used -
 a real application could implement a more sophisticated ranking for better suggestions.
 
-
+### Performance considerations
+For short inputs, a trick is to use range queries with 
+[hitLimit](https://docs.vespa.ai/en/reference/query-language-reference.html#hitlimit) on a fast-search attribute. 
+This changes the semantics of the prefix query to only match against documents in the top 1K, which is usually what one wants for short prefix lengths.
+* [Advanced range search with hitLimit](https://docs.vespa.ai/en/performance/practical-search-performance-guide.html#advanced-range-search-with-hitlimit)
 
 ## Quick start
 Requirements:
@@ -147,11 +158,19 @@ Using [YQL](https://docs.vespa.ai/en/query-language.html) using *contains* with 
 $ vespa query 'yql=select documentid,term from sources term where term contains ([{"prefix":true}]"stre");'
 </pre>
 
-YQL with userQuery() and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
+YQL with [userQuery()](https://docs.vespa.ai/en/reference/query-language-reference.html#userquery) and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
+* Note: The `term` field is defined as a field in the default [fieldset](https://docs.vespa.ai/en/schemas.html#fieldset)
 
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
-vespa query 'yql=select documentid,term from sources term where ([{"defaultIndex":"term"}]userQuery());' 'query=str*'
+vespa query 'yql=select documentid,term from sources term where userQuery()' 'query=str*'
 </pre>
+
+YQL with [userInput()](https://docs.vespa.ai/en/reference/query-language-reference.html#userinput) and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
+
+<pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
+vespa query 'yql=select documentid,term from sources term where ([{"defaultIndex":"default"}]userInput())' 'query=str*'
+</pre>
+* Note: with userInput, the `defaultIndex` has to be set, it can be a field, or a [fieldset](https://docs.vespa.ai/en/schemas.html#fieldset)
 
 Using regular expression [YQL](https://docs.vespa.ai/en/query-language.html) with *matches* instead of *contains*:
 
