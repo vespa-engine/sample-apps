@@ -168,7 +168,7 @@ vespa query 'yql=select documentid,term from sources term where userQuery()' 'qu
 YQL with [userInput()](https://docs.vespa.ai/en/reference/query-language-reference.html#userinput) and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
 
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
-vespa query 'yql=select documentid,term from sources term where ([{"defaultIndex":"default"}]userInput())' 'query=str*'
+vespa query 'yql=select documentid,term from sources term where ([{"defaultIndex":"default"}]userInput(@query))' 'query=str*'
 </pre>
 * Note: with userInput, the `defaultIndex` has to be set, it can be a field, or a [fieldset](https://docs.vespa.ai/en/schemas.html#fieldset)
 
