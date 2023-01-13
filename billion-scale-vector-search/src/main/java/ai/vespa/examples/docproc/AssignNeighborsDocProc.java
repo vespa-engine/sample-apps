@@ -65,11 +65,18 @@ public class AssignNeighborsDocProc extends DocumentProcessor {
                 // Check if neighbor search is already initiated
                 var promise = getNeighborsSearchPromiseOrNull(processing);
 
+                Duration timeout = timeout(processing);
+
+                if (timeout.equals(Duration.ZERO)) return Progress.FAILED.withReason("Timed out");
+
                 // Initiate neighbor search and return
-                if (promise == null) return findNeighborsAsync(processing, vector);
+                if (promise == null) {
+                    findNeighborsAsync(processing, vector.getTensor().get(), timeout);
+                    return later(timeout);
+                }
 
                 // Return if search not yet complete
-                if (!promise.isDone()) return Progress.LATER;
+                if (!promise.isDone()) return later(timeout);
 
                 // Fail feed on search error
                 CentroidResult result = Objects.requireNonNull(promise.getNow(null));
@@ -104,21 +111,30 @@ public class AssignNeighborsDocProc extends DocumentProcessor {
         return (CompletableFuture<CentroidResult>) p.getVariable(PROMISE_VAR);
     }
 
+    private static Duration timeout(Processing p) {
+        Duration timeLeft = p.timeLeft();
+        if (timeLeft == Processing.NO_TIMEOUT) return Duration.ofSeconds(60);
+        if (timeLeft.toMillis() < 6) return Duration.ZERO;
+        return timeLeft;
+    }
+
+    private static Progress later(Duration timeout) {
+        return Progress.later(Math.min(20, timeout.minusMillis(2).toMillis()));
+    }
+
     /**
      * Find neighbors asynchronously using the jdisc container's default thread pool
      */
-    private Progress findNeighborsAsync(Processing p, TensorFieldValue t) {
+    private void findNeighborsAsync(Processing p, Tensor t, Duration timeout) {
         try {
             Execution exec = factory.newExecution(searchChain);
-            Duration timeout = Duration.ofSeconds(30);
             var promise = CompletableFuture.supplyAsync(
-                    () -> clustering.getCentroids(t.getTensor().get(), 12, 36, timeout, exec),
+                    () -> clustering.getCentroids(t, 12, 36, timeout.minusMillis(4), exec),
                     exec.context().executor());
             p.setVariable(PROMISE_VAR, promise);
         } catch (RejectedExecutionException e) {
             // Ensure that search is retried later on back-pressure signal from search
             p.removeVariable(PROMISE_VAR);
         }
-        return Progress.LATER;
     }
 }
