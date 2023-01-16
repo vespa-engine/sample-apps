@@ -15,6 +15,18 @@ for details and troubleshooting.
 
 This example assumes that you already created a Google project, you have the gcloud command line and kubectl installed.
 If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster).
+Hints:
+
+```
+$ gcloud init
+
+$ gcloud config set project <project ID here>
+
+$ gcloud services enable containerregistry.googleapis.com
+
+$ gcloud config set compute/region europe-west1
+$ gcloud config set compute/zone europe-west1-b
+```
 
 The example below shows the steps to pop a GKE cluster and deploy a multinode setup on GKE.
 
@@ -26,24 +38,24 @@ see [troubleshooting](/examples/operations/README.md#troubleshooting).
 **Check-out the example repository:**
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-$ VESPA_SAMPLE_APP=`pwd`/sample-apps/examples/operations/basic-search-on-gke
+$ cd sample-apps/examples/operations/basic-search-on-gke
 </pre>
 
 **Create a GKE cluster :**
 You can give arguments to this script to change, cluster name, number of nodes, nodes type, and region.
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/create_cluster.sh
+$ ./scripts/create_cluster.sh
 </pre>
 
 **Boostrap config files:**
 You can give arguments to this script to change number of containers and contents.
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/boostrap.sh
+$ ./scripts/boostrap.sh
 </pre>
 
 **Deploy the application:**
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/deploy.sh
+$ ./scripts/deploy.sh
 </pre>
 
 **Feed data to the application:**

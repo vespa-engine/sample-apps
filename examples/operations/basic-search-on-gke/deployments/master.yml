@@ -23,6 +23,7 @@ spec:
         imagePullPolicy: Always
         securityContext:
           privileged: true
+          runAsUser: 0
         readinessProbe:
           httpGet:
             path: /ApplicationStatus
@@ -50,18 +51,18 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 50Gi
+          storage: 5Gi
   - metadata:
       name: vespa-logs
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 50Gi
+          storage: 5Gi
   - metadata:
       name: vespa-workspace
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 10Gi
+          storage: 1Gi
