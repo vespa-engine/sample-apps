@@ -26,6 +26,7 @@ spec:
             name: vespa-config
         securityContext:
           privileged: true
+          runAsUser: 0
         args: ["services"]
         volumeMounts:
         - name: vespa-var-content
@@ -42,4 +43,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 50Gi
+          storage: 5Gi
