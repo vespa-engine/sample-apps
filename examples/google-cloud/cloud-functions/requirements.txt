@@ -1,0 +1,4 @@
+functions-framework==3.*
+flask
+google-cloud-storage
+zstd
