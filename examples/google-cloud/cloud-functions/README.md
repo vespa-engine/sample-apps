@@ -9,7 +9,7 @@
 
 # Vespa Code examples for Google Cloud functions
 
-Find deployable code examples in [main.py](main.py).
+Find deployable code examples in [main.py](python/main.py) and [function.go](go/function.go).
 
 The code examples include functions to list and parse Google Cloud Storage objects -
 useful when parsing [access logs](https://docs.vespa.ai/en/access-logging.html).
@@ -22,10 +22,10 @@ Use `gcloud auth login` to log in with your credentials before deploying.
 This copies files into a Google Storage bucket.
 
 Make sure to start with the hello-example to make sure everything is set up,
-using `curl 'https://hello-awo5tvbrvq-ew.a.run.app/?name=Jim'`
-(replace `awo5tvbrvq-ew` with your ID from the lambda deployment output).
+using `curl 'https://hello-abc5tvbrvq-ew.a.run.app/?name=Jim'`
+(replace `abc5tvbrvq-ew` with your ID from the lambda deployment output).
 
-Deploy a Google Function:
+Deploy a Google Function - python:
 ```
 $ gcloud functions deploy getlogs \
   --gen2 \
@@ -36,6 +36,22 @@ $ gcloud functions deploy getlogs \
   --trigger-http
 ```
 Note that the python file can have many functions, where you select which on to deploy above.
+
+Deploy a Google Function - go:
+```
+$ gcloud functions deploy get-page-tls \
+  --gen2 \
+  --region=europe-west1 \
+  --runtime=go119 \
+  --source=. \
+  --entry-point=getPageTLS \
+  --trigger-http
+```
+Test using:
+```
+$ curl --data '{"url":"https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/document/v1/open/doc/docid"}' \
+  https://get-page-tls-abc5tvbrvq-ew.a.run.app
+```
 
 Refer to [AWS Lambda Functions](../../aws/lambda) for similar examples using AWS Lambda.
 
