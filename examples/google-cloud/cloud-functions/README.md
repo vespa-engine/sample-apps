@@ -23,7 +23,7 @@ This copies files into a Google Storage bucket.
 
 Make sure to start with the hello-example to make sure everything is set up,
 using `curl 'https://hello-abc5tvbrvq-ew.a.run.app/?name=Jim'`
-(replace `awo5tvbrvq-ew` with your ID from the lambda deployment output).
+(replace `abc5tvbrvq-ew` with your ID from the lambda deployment output).
 
 Deploy a Google Function - python:
 ```
