@@ -51,7 +51,19 @@ Test using:
 ```
 $ curl --data '{"url":"https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/document/v1/open/doc/docid"}' \
   https://get-page-tls-abc5tvbrvq-ew.a.run.app
+
+$ curl -v --data '{
+  "url":"https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/document/v1/open/doc/docid",
+  "bucket":"my_bucket",
+  "object":"my_docs"}' \
+  https://store-page-abc5tvbrvq-ew.a.run.app
 ```
+To install - in same directory:
+```
+$ go get cloud.google.com/go/storage
+```
+After deploying a function, use the Google Cloud Console to assign the secrets to a function
+using environment variables and deploy this from the console.
 
 Refer to [AWS Lambda Functions](../../aws/lambda) for similar examples using AWS Lambda.
 
