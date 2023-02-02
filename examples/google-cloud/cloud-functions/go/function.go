@@ -1,6 +1,8 @@
 package vespasamples
 
 import (
+	"cloud.google.com/go/storage"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -9,12 +11,13 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 )
 
 func init() {
 	functions.HTTP("helloWorld", helloWorld)
 	functions.HTTP("getPage", getPageSimple)
-	functions.HTTP("getPageTLS", getPageTLS)
+	functions.HTTP("storePage", storePage)
 }
 
 // helloHTTP is an HTTP Cloud Function with a request parameter.
@@ -55,11 +58,22 @@ func getPageSimple(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(body))
 }
 
-func getPageTLS(w http.ResponseWriter, r *http.Request) {
-	Url := getUrl(w, r)
-	if Url == "" {
+func storePage(w http.ResponseWriter, r *http.Request) {
+	url, bucket, object := getParams(w, r)
+	if url == "" || bucket == "" || object == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Input error - url or bucket or object missing")
 		return
 	}
+	bytes := getPageTLS(w, url)
+	err := writeDocument(bucket, object, bytes)
+	if err != nil {
+		fmt.Fprintf(w, "Store error: %v", err)
+		return
+	}
+}
+
+func getPageTLS(w http.ResponseWriter, url string) []byte {
 
 	// The credentials are stored as Secrets in Google Cloud, exposed as environment variables
 	certPem := []byte(os.Getenv("SEC_CERT"))
@@ -67,7 +81,7 @@ func getPageTLS(w http.ResponseWriter, r *http.Request) {
 	cert, err := tls.X509KeyPair(certPem, keyPem)
 	if err != nil {
 		fmt.Fprintf(w, "Cert error: %v", err)
-		return
+		return nil
 	}
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -77,11 +91,12 @@ func getPageTLS(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
-	response, err := client.Get(Url)
+
+	response, err := client.Get(url)
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		fmt.Fprintf(w, "Request error: %v", err)
-		return
+		return nil
 	}
 	defer response.Body.Close()
 
@@ -89,10 +104,30 @@ func getPageTLS(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "Body read error: %v", err)
-		return
+		return nil
 	}
-	//fmt.Fprint(w, "Response body: ", string(body))
-	fmt.Fprint(w, string(body))
+	return body
+}
+
+func writeDocument(bucket, object string, doc []byte) error {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %v", err)
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	obj := client.Bucket(bucket).Object(object)
+	wr := obj.NewWriter(ctx)
+	defer wr.Close()
+
+	if _, err := wr.Write(doc); err != nil {
+		return fmt.Errorf("Write error: %v", err)
+	}
+	return nil
 }
 
 func getUrl(w http.ResponseWriter, r *http.Request) string {
@@ -104,10 +139,19 @@ func getUrl(w http.ResponseWriter, r *http.Request) string {
 		fmt.Fprintf(w, "JSON parse error: %v", err)
 		return ""
 	}
-	if d.Url == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Input error - url missing")
-		return ""
-	}
 	return d.Url
+}
+
+func getParams(w http.ResponseWriter, r *http.Request) (string, string, string) {
+	var d struct {
+		Url    string `json:"url"`
+		Bucket string `json:"bucket"`
+		Object string `json:"object"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "JSON parse error: %v", err)
+		return "", "", ""
+	}
+	return d.Url, d.Bucket, d.Object
 }
