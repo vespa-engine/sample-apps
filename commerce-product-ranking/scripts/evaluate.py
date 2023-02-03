@@ -24,7 +24,7 @@ def search(query_group):
         'input.query(query_tokens)': 'embed(tokenizer, "%s")' %query,
         'ranking': args.ranking,
         'hits' : args.hits, 
-        'timeout': '5s',
+        'timeout': '15s',
         'recall': recall ,
         'ranking.softtimeout.enable': 'false'
     }
