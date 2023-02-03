@@ -15,13 +15,12 @@ import (
 )
 
 func init() {
-	functions.HTTP("helloWorld", helloWorld)
+	functions.HTTP("helloVespaWorld", helloVespaWorld)
 	functions.HTTP("getPage", getPageSimple)
 	functions.HTTP("storePage", storePage)
 }
 
-// helloHTTP is an HTTP Cloud Function with a request parameter.
-func helloWorld(w http.ResponseWriter, r *http.Request) {
+func helloVespaWorld(w http.ResponseWriter, r *http.Request) {
 	var d struct {
 		Name string `json:"name"`
 	}
@@ -37,11 +36,12 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPageSimple(w http.ResponseWriter, r *http.Request) {
-	Url := getUrl(w, r)
-	if Url == "" {
+	url, _, _ := getParams(w, r)
+	if url == "" {
+		fmt.Fprint(w, "Input error - url missing")
 		return
 	}
-	response, err := http.Get(Url)
+	response, err := http.Get(url)
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		fmt.Fprintf(w, "Request error: %v", err)
@@ -74,7 +74,6 @@ func storePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPageTLS(w http.ResponseWriter, url string) []byte {
-
 	// The credentials are stored as Secrets in Google Cloud, exposed as environment variables
 	certPem := []byte(os.Getenv("SEC_CERT"))
 	keyPem := []byte(os.Getenv("SEC_KEY"))
@@ -128,18 +127,6 @@ func writeDocument(bucket, object string, doc []byte) error {
 		return fmt.Errorf("Write error: %v", err)
 	}
 	return nil
-}
-
-func getUrl(w http.ResponseWriter, r *http.Request) string {
-	var d struct {
-		Url string `json:"url"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "JSON parse error: %v", err)
-		return ""
-	}
-	return d.Url
 }
 
 func getParams(w http.ResponseWriter, r *http.Request) (string, string, string) {
