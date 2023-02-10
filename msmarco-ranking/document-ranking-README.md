@@ -90,7 +90,7 @@ The final GBDT model consists of 533 trees, with up to 128 leaves.
 The training script is [here](src/main/python/train.py). 
 T
 o scrape features one can follow
-[pyvespa collecting training data](https://pyvespa.readthedocs.io/en/latest/collect-training-data.html).
+[pyvespa collecting training data](https://vespa-engine.github.io/learntorank/notebooks/collect-training-data.html).
 
 ### Training output
 <pre>
