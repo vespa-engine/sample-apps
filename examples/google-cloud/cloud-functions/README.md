@@ -35,7 +35,7 @@ $ gcloud functions deploy getlogs \
   --entry-point=getlogs \
   --trigger-http
 ```
-Note that the python file can have many functions, where you select which on to deploy above.
+Note that the python file can have many functions, where you select which one to deploy above.
 
 Deploy a Google Function - go:
 ```
@@ -57,6 +57,13 @@ $ curl -v --data '{
   "bucket":"my_bucket",
   "object":"my_docs"}' \
   https://store-page-abc5tvbrvq-ew.a.run.app
+  
+$ curl --max-time 60 --data '{
+  "contentCluster":"documentation",
+  "chunkCount":100,
+  "selection":"doc",
+  "endpoint":"https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud"}' \
+  https://visit-abc5tvbrvq-ew.a.run.app
 ```
 To install - in same directory:
 ```
