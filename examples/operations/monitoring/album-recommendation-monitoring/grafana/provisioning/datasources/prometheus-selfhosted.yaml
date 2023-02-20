@@ -1,0 +1,19 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+apiVersion: 1
+
+# Clean up after last time
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+
+# Import Prometheus as the default datasource, with name Prometheus
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    default: true
+    uid: 1037
+    # Used for docker-compose internal network management
+    url: http://prometheus:9090

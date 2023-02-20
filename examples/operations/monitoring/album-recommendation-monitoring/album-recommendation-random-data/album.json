@@ -1,0 +1,29 @@
+{
+  "fields": {
+    "album": "genealogies duncan gastrorrhea",
+    "artist": "Arisha Franklin",
+    "year": 1987,
+    "category_scores": {
+      "cells": [
+        {
+          "address": {
+            "cat": "pop"
+          },
+          "value": 0.22720709116356108
+        },
+        {
+          "address": {
+            "cat": "rock"
+          },
+          "value": 0.5884309096373717
+        },
+        {
+          "address": {
+            "cat": "jazz"
+          },
+          "value": 0.5093817418338435
+        }
+      ]
+    }
+  }
+}

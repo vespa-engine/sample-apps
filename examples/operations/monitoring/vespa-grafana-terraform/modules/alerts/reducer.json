@@ -1,0 +1,34 @@
+{
+    "conditions": [
+      {
+        "evaluator": {
+          "params": [],
+          "type": "gt"
+        },
+        "operator": {
+          "type": "and"
+        },
+        "query": {
+          "params": [
+            "B"
+          ]
+        },
+        "reducer": {
+          "params": [],
+          "type": "last"
+        },
+        "type": "query"
+      }
+    ],
+    "datasource": {
+      "type": "__expr__",
+      "uid": "-100"
+    },
+    "expression": "A",
+    "hide": false,
+    "intervalMs": 1000,
+    "maxDataPoints": 43200,
+    "reducer": "last",
+    "refId": "B",
+    "type": "reduce"
+  }
