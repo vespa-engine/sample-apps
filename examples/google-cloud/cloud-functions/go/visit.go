@@ -1,5 +1,5 @@
 // Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-// vespa visit command
+// vespa visit examples
 // Author: arnej, kkraune
 
 package vespasamples
@@ -60,10 +60,7 @@ func FailureWithPayload(message string, payload string) OperationResult {
 	return OperationResult{Success: false, Message: message, Payload: payload}
 }
 
-//
-//
-//
-
+// Example: "visit" a content cluster and count number of documents
 func visit(w http.ResponseWriter, r *http.Request) {
 	var d struct {
 		ContentCluster string `json:"contentCluster"`
@@ -123,10 +120,7 @@ type visitArgs struct {
 	selection      string
 	makeFeed       bool
 	jsonLines      bool
-	pretty         bool
 	quietMode      bool
-	chunkTime      string
-	streamFlag     bool
 	chunkCount     int
 }
 
@@ -184,9 +178,9 @@ func runVisit(vArgs visitArgs, service *Service) (res OperationResult) {
 			return res
 		}
 		if vArgs.makeFeed {
-			dumpDocuments(vvo.Documents, true, vArgs.pretty)
+			dumpDocuments(vvo.Documents, true, false)
 		} else if vArgs.jsonLines {
-			dumpDocuments(vvo.Documents, false, vArgs.pretty)
+			dumpDocuments(vvo.Documents, false, false)
 		}
 		if !vArgs.quietMode {
 			fmt.Fprintln(os.Stderr, "got", len(vvo.Documents), "documents")
@@ -211,12 +205,6 @@ func runOneVisit(vArgs visitArgs, service *Service, contToken string) (*VespaVis
 	}
 	if contToken != "" {
 		urlPath = urlPath + "&continuation=" + contToken
-	}
-	if vArgs.streamFlag {
-		urlPath = urlPath + "&stream=true"
-	}
-	if vArgs.chunkTime != "" {
-		urlPath = urlPath + "&timeChunk=" + vArgs.chunkTime
 	}
 	if vArgs.chunkCount > 0 {
 		urlPath = urlPath + fmt.Sprintf("&wantedDocumentCount=%d", vArgs.chunkCount)
@@ -304,15 +292,6 @@ func dumpDocuments(documents []DocumentBlob, comma, pretty bool) {
 	// ToDo: Add features to dump to response or Google Storage
 	/*
 		for _, value := range documents {
-			if pretty {
-				var prettyJSON bytes.Buffer
-				parseError := json.Indent(&prettyJSON, value.blob, "", "    ")
-				if parseError != nil {
-					os.Stdout.Write(value.blob)
-				} else {
-					os.Stdout.Write(prettyJSON.Bytes())
-				}
-			} else {
 				os.Stdout.Write(value.blob)
 			}
 			if comma {
