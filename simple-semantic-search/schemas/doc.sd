@@ -30,5 +30,11 @@ schema doc {
             expression: bm25(text) + closeness(field, embedding)
         }
     }
+    # Returns cosine similarity as score instead of the angle 
+    rank-profile cosine inherits default {
+        first-phase {
+            expression: bm25(text) + cos(distance(field, embedding))
+        }
+    }
 
 }
