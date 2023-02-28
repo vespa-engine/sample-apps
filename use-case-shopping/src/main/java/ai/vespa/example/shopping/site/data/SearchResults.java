@@ -18,6 +18,7 @@ public class SearchResults {
         if (properties.containsKey("q") &&
                 ! properties.get("q").isBlank() && !properties.get("q").replaceAll("\\p{Punct}", "").isBlank()) {
             String q = properties.get("q");
+            q = q.replace("\"", "\\\"");
             String userInput = "userInput(\"" + q + "\")";
             String keyword = String.format("(%s)", userInput);
             String nearestNeighbor = "{targetHits:200}nearestNeighbor(embedding,query_embedding)";
