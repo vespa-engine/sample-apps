@@ -15,15 +15,17 @@ public class SearchResults {
         String yql = "select * from sources item where ";
 
         StringJoiner where = new StringJoiner(" and ");
-        if (properties.containsKey("q")) {
+        if (properties.containsKey("q") &&
+                ! properties.get("q").isBlank() && !properties.get("q").replaceAll("\\p{Punct}", "").isBlank()) {
             String q = properties.get("q");
             String userInput = "userInput(\"" + q + "\")";
-            String brand = "brand contains \"" + q + "\"";
-            String keyword = String.format("(%s or %s)", userInput,brand);
+            String keyword = String.format("(%s)", userInput);
             String nearestNeighbor = "{targetHits:200}nearestNeighbor(embedding,query_embedding)";
             String hybrid = String.format("((%s) or (%s))", keyword,nearestNeighbor);
             where.add(hybrid);
             query.add("input.query(query_embedding)", String.format("embed(%s)",q));
+        } else {
+            yql = "select * from sources item where true";
         }
         if (properties.containsKey("cat")) {
             where.add("categories contains \"" + properties.get("cat") + "\"");
@@ -46,7 +48,6 @@ public class SearchResults {
         String groupingCategories = "all(group(categories) order(-count()*avg(relevance())) each(output(count(),avg(relevance()))))";
         String groupingPrice = "all( group(predefined(price,bucket[0,10>,bucket[10,25>,bucket[25,50>,bucket[50,100>,bucket[100,200>,bucket[200,500>,bucket[500,inf>)) order(min(price)) each(output(max(price),min(price),count())))";
         String grouping = String.format("all(max(50) all( %s %s %s %s ))", groupingBrand, groupingCategories, groupingStars, groupingPrice);
-        System.out.println(yql);
         yql += " | " + grouping;
 
         query.add("yql", yql);
