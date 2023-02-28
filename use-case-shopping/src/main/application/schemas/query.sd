@@ -1,0 +1,24 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema query {
+
+    document query {
+
+        field query type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field score type float {
+            indexing: summary | attribute
+        }
+    }
+    document-summary query {
+        summary query type string {}
+    }
+    rank-profile default inherits default {
+        first-phase {
+            expression: attributeMatch(query) + attribute(score)
+        }
+    }
+}
