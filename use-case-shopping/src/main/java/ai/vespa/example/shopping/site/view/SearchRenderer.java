@@ -302,9 +302,12 @@ public class SearchRenderer {
                 if (!from.isPresent() || !to.isPresent() || !count.isPresent() || count.get() == 0) {
                     continue;
                 }
-                double min = getDoubleValue(priceRange, "fields", "min(price)").get();
-                double max = getDoubleValue(priceRange, "fields", "max(price)").get();
-
+                //double min = getDoubleValue(priceRange, "fields", "min(price)").get();
+                //double max = getDoubleValue(priceRange, "fields", "max(price)").get();
+                double min = getDoubleValue(priceRange, "limits", "from").get();
+                double max = getDoubleValue(priceRange, "limits", "to").get();
+                if (min < 0 || max > 100000)
+                    continue;
                 String href = new SimpleQueryBuilder("/site/search")
                         .add(properties)
                         .add("price_from", from.get())
