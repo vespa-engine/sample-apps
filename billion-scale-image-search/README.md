@@ -29,8 +29,8 @@ Note the following about the LAION 5B dataset
 > Keep in mind that the un-curated nature of the dataset means that collected 
 > links may lead to strongly discomforting and disturbing content for a human viewer.
 
-The released dataset does not contain image data itself, 
-but [CLIP](https://openai.com/blog/clip/) encoded vector representations of the images, 
+The released dataset does not contain image data itself,
+but [CLIP](https://openai.com/research/clip) encoded vector representations of the images,
 and metadata like `url` and `caption`.
 
 ## Use cases 

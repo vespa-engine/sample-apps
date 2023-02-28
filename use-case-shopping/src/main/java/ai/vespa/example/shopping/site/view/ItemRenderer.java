@@ -10,11 +10,10 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import static ai.vespa.example.shopping.site.data.Categories.getCategoryName;
-import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.ratingToStarsImage;
-import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.truncate;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getDoubleValue;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getIntValue;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getStringValue;
+import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.*;
 
 public class ItemRenderer {
 
@@ -75,7 +74,8 @@ public class ItemRenderer {
                 });
                 html.div("item-rating", (level_3) -> {
                     if (ratingCount.get() > 0) {
-                        html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                        html.text(ratingToStarsEmoji(ratingStars.get(),ratingCount.get()));
+                        //html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
                         html.span("item-rating-count", (level_4) -> {
                             html.text(String.format("(%d)", ratingCount.get()));
                         });
@@ -132,7 +132,8 @@ public class ItemRenderer {
                             });
                             html.div("related-item-rating", (level_4) -> {
                                 if (ratingCount.get() > 0) {
-                                    html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                                    //html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                                    html.text(ratingToStarsEmoji(ratingStars.get(),ratingCount.get()));
                                 }
                             });
 

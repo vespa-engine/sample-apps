@@ -117,6 +117,13 @@ $ zstd -d reviews_sports_24k_sample.json.zst
 $ cat reviews_sports_24k_sample.json | ./convert_reviews.py > feed_reviews.json
 </pre>
 
+Next, data feed for query suggestions:
+<pre data-test="exec">
+$ pip3 install spacy mmh3
+$ python3 -m spacy download en_core_web_sm 
+$ ./create_suggestions.py feed_items.json > feed_suggestions.json
+</pre>
+
 **Feed data:**
 
 Get the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
@@ -137,6 +144,12 @@ Feed reviews [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html
 <pre data-test="exec">
 $  ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file feed_reviews.json --endpoint http://localhost:8080
+</pre>
+
+Feed reviews [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+<pre data-test="exec">
+$  ./vespa-feed-client-cli/vespa-feed-client \
+    --verbose --file feed_suggestions.json --endpoint http://localhost:8080
 </pre>
 
 **Test the application:**
