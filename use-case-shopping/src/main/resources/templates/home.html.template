@@ -7,9 +7,8 @@
 <div class="home">
 
     <div class="title-container">
-        <div class="title-text">Promoted products</div><div class="title-line"></div>
+        <div class="title-text">Popular products</div>
     </div>
-
     {{promoted-items}}
 </div>
 
