@@ -81,9 +81,9 @@ with open(sys.argv[1]) as fp:
 	for doc in docs:
 		fields = doc['fields']
 		title = clean_text(fields['title'])
-		title = " ".join(title.split()[0:4])
+		title = " ".join(re.split(r"[^a-z0-9]+",title)[0:4])
 		if not filter(title):
-			suggestions[title] = 4
+			suggestions[title] = 1
 
 vocab = dict()	
 for k,v in suggestions.items():	
@@ -105,7 +105,7 @@ with open(sys.argv[1]) as fp:
 			if filter(noun_phrase):
 				continue
 			words = len(noun_phrase.split())
-			if words < 3 or words > 6:
+			if words < 3 or words > 5:
 				continue
 			if filter_content(noun_phrase):
 				continue
@@ -117,25 +117,17 @@ with open(sys.argv[1]) as fp:
 						suggestions[noun_phrase] = 1 
 					break
 
-def get_phrases(terms):
-	# from "learning to rank" to ['learning to rank', 'to rank', 'rank']
-	phrases = []
-	phrases.append(terms)
-	end = terms.find(' ')
-	while end != -1:
-		start = end+1
-		remainder = terms[start:]
-		phrases.append(remainder)
-		end = terms.find(' ', start)
-	return phrases
 
 suggest = []
 for k,v in suggestions.items():
 	id = mmh3.hash(k)
+	words = re.split(r"[^a-z0-9]+",k)
 	doc = {
 		'put': 'id:query:query::%i' % id,
     	'fields': {
-      	'query': k
+      	'query': k,
+      	'score': v,
+      	'words': words
       }
   } 
 	print(json.dumps(doc))	

@@ -7,7 +7,7 @@
 <div class="search">
 
     <div class="title-container">
-        <div class="title-text">{{page-title}}</div><div class="title-line"></div>
+        <div class="title-text">{{page-title}}</div><!--<div class="title-line"></div>-->
     </div>
 
     <div class="search-header">

@@ -58,10 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
         suggestionList.innerHTML = '';
         return;
     }
-    // Fetch suggestions by prefix query the query document type
-    let yql = 'select * from query where ({"prefix":true, "defaultIndex":"query", "grammar":"raw"}userInput(@prefix))';
-    yql = encodeURIComponent(yql);
-    fetch(`/search/?yql=${yql}&prefix=${inputValue}&default-index=query&summary=query&hits=3`).then(
+
+    fetch(`/search/?term=${inputValue}&hits=5`).then(
         (response) => response.json()).then((data) => {
             suggestionList.innerHTML = '';
             if (data['root']['fields']['totalCount'] > 0) {
