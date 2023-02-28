@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
 import java.util.Optional;
 
+import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.ratingToStarsEmoji;
 import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.ratingToStarsImage;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getIntValue;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getNode;
@@ -55,7 +56,8 @@ public class ReviewRenderer {
                         html.text(text.orElse(""));
                     });
                     html.div("review-stars", (level_3) -> {
-                        html.img(ratingToStarsImage(stars.get(), 1));
+                        html.text(ratingToStarsEmoji(stars.get(),1));
+                        //html.img(ratingToStarsImage(stars.get(), 1));
                     });
                     html.div("review-helpful", (level_3) -> {
                         html.text(upvotes.get() + " of " + totalVotes + " people found this helpful. Did you?");
