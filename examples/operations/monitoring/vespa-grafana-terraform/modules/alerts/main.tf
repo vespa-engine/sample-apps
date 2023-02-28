@@ -48,7 +48,7 @@ resource "grafana_rule_group" "vespa_rule_group" {
                 intervalMs = 1000
                 maxDataPoints = 43200
                 refId = "A"
-                expr = "max by(applicationId, clusterId, zone) (content_proton_resource_usage_disk_average{zone=~\"dev.*\"})"
+                expr = "max by(applicationId, clusterId, zone) (content_proton_resource_usage_disk_average{zone=~\"prod.*\"})"
             })
         }
 
@@ -132,7 +132,7 @@ resource "grafana_rule_group" "vespa_rule_group" {
                 intervalMs = 1000
                 maxDataPoints = 43200
                 refId = "A"
-                expr = "content_proton_resource_usage_feeding_blocked_last{zone=~\"dev.*\"}"
+                expr = "content_proton_resource_usage_feeding_blocked_last{zone=~\"prod.*\"}"
             })
         }
 
@@ -215,7 +215,7 @@ resource "grafana_rule_group" "vespa_rule_group" {
                 intervalMs = 1000
                 maxDataPoints = 43200
                 refId = "A"
-                expr = "max by(applicationId, zone, clusterId) (content_proton_resource_usage_memory_average{zone=~\"dev.*\"})"
+                expr = "max by(applicationId, zone, clusterId) (content_proton_resource_usage_memory_average{zone=~\"prod.*\"})"
             })
         }
 
@@ -297,7 +297,7 @@ resource "grafana_rule_group" "vespa_rule_group" {
                 intervalMs = 1000
                 maxDataPoints = 43200
                 refId = "A"
-                expr = "max by(applicationId, zone, clusterId) (cpu_util{zone=~\"dev.*\"})"
+                expr = "max by(applicationId, zone, clusterId) (cpu_util{zone=~\"prod.*\"})"
             })
         }
 
