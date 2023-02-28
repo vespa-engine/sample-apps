@@ -132,7 +132,8 @@ public class ItemRenderer {
                             });
                             html.div("related-item-rating", (level_4) -> {
                                 if (ratingCount.get() > 0) {
-                                    html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                                    //html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                                    html.text(ratingToStarsEmoji(ratingStars.get(),ratingCount.get()));
                                 }
                             });
 
