@@ -25,7 +25,7 @@ public class SearchResults {
             where.add(hybrid);
             query.add("input.query(query_embedding)", String.format("embed(%s)",q));
         } else {
-            yql = "select * from sources item where true";
+            where.add("true");
         }
         if (properties.containsKey("cat")) {
             where.add("categories contains \"" + properties.get("cat") + "\"");
