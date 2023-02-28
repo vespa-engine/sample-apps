@@ -57,6 +57,10 @@ public class SimpleHtmlBuilder {
         return ratingToStarsImage((float)stars / (float)count);
     }
 
+    public static String ratingToStarsEmoji(int stars, int count) {
+        return ratingToStarsEmoji((float)stars / (float)count);
+    }
+
     public static String ratingToStarsImage(float rating) {
         final String dir = "/site/img/";
         if (rating >= 4.75) return dir + "vespas_5_0.png";
@@ -65,7 +69,16 @@ public class SimpleHtmlBuilder {
         if (rating >= 1.75) return dir + "vespas_2_0.png";
         if (rating >= 0.75) return dir + "vespas_1_0.png";
         return dir + "vespas_0_0.png";
+    }
 
+    public static String ratingToStarsEmoji(float rating) {
+
+        if (rating >= 4.75) return  "⭐⭐⭐⭐⭐";
+        if (rating >= 3.75) return  "⭐⭐⭐⭐";
+        if (rating >= 2.75) return  "⭐⭐⭐";
+        if (rating >= 1.75) return  "⭐⭐";
+        if (rating >= 0.75) return  "⭐";
+        return "⭐";
     }
 
     public static String truncate(String str, int max) {

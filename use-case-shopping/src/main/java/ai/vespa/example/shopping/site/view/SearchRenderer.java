@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 
 import static ai.vespa.example.shopping.site.data.Categories.getCategoryName;
 import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.ratingToStarsImage;
+import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.ratingToStarsEmoji;
 import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.truncate;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getDoubleValue;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getIntValue;
@@ -68,11 +69,16 @@ public class SearchRenderer {
                     }
 
                     Optional<String> asin = getStringValue(result, "fields", "asin");
+                    Optional<String> brand = getStringValue(result, "fields", "brand");
                     Optional<String> image = getStringValue(result, "fields", "images");  // use first image
                     Optional<String> title = getStringValue(result, "fields", "title");
                     Optional<Double> price = getDoubleValue(result, "fields", "price");
                     Optional<Integer> ratingStars = getIntValue(result, "fields", "rating_stars");
                     Optional<Integer> ratingCount = getIntValue(result, "fields", "rating_count");
+
+                    Optional<Double> semanticScore = getDoubleValue(result, "fields", "matchfeatures", "semantic");
+                    Optional<Double> keywordScore = getDoubleValue(result, "fields", "matchfeatures", "keyword");
+                    Optional<Double> ratingScore = getDoubleValue(result, "fields", "matchfeatures", "rating");
 
                     String href = new SimpleQueryBuilder("/site/item").add("i", asin.get()).toString();
 
@@ -84,17 +90,26 @@ public class SearchRenderer {
                         });
                         html.div("search-item-title", (level_3) -> {
                             html.a(href, (level_4) -> {
-                                html.text(truncate(title.orElse(""), 250));
+                                if(brand.isPresent() && title.isPresent() && !title.get().startsWith(brand.get())) {
+                                    html.text(String.format("%s - %s", brand.orElse(""), truncate(title.orElse(""), 128)));
+                                } else {
+                                    html.text(String.format("%s", truncate(title.orElse(""), 128)));
+                                }
                             });
+                        });
+                        html.div("search-item-scores", (level_3) -> {
+                            html.text(String.format("Semantic score %.2f, Keyword score %.2f, Rating score %.2f",
+                                    semanticScore.get(), keywordScore.get(), ratingScore.get()));
                         });
                         html.div("search-item-price", (level_3) -> {
                             html.text(String.format("$ %.2f", price.get()));
                         });
                         html.div("search-item-rating", (level_3) -> {
                             if (ratingCount.get() > 0) {
-                                html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                                html.text(String.format("%s",ratingToStarsEmoji(ratingStars.get())));
+                                //html.img(ratingToStarsImage(ratingStars.get(), ratingCount.get()));
                                 html.span("search-rating-count", (level_4) -> {
-                                    html.text(String.format("(%d)", ratingCount.get()));
+                                      html.text(String.format("(%d)", ratingCount.get()));
                                 });
                             }
                         });
@@ -202,7 +217,7 @@ public class SearchRenderer {
 
                 html.div("search-groups-item", (level_2) -> {
                     html.a(href, (level_3) -> {
-                        html.text(String.format("%s (%s)", name, count.orElse(0)));
+                        html.text(String.format("%s", name));
                     });
                 });
             }
@@ -231,7 +246,7 @@ public class SearchRenderer {
 
                 html.div("search-groups-item", (level_2) -> {
                     html.a(href, (level_3) -> {
-                        html.text(String.format("%s (%s)", value.get(), count.orElse(0)));
+                        html.text(String.format("%s", value.get()));
                     });
                 });
             }
@@ -254,7 +269,7 @@ public class SearchRenderer {
                 stars[value.get()] = count.get();
             }
 
-            for (int i = 6; --i >= 0; ) {
+            for (int i = 6; --i > 0; ) {
                 int count = stars[i];
                 if (count == 0) {
                     continue;
@@ -264,8 +279,7 @@ public class SearchRenderer {
 
                 html.div("search-groups-item", (level_2) -> {
                     html.a(href, (level_3) -> {
-                        html.img(ratingToStarsImage(rating));
-                        html.text(String.format("%s (%s)", rating, count));
+                        html.text(String.format("%s %s", ratingToStarsEmoji(rating), rating));
                     });
                 });
             }
@@ -299,7 +313,7 @@ public class SearchRenderer {
 
                 html.div("search-groups-item", (level_2) -> {
                     html.a(href, (level_3) -> {
-                        html.text(String.format("$%.0f to $%.0f (%d)", min, max, count.get()));
+                        html.text(String.format("$%.0f to $%.0f", min, max));
                     });
                 });
             }

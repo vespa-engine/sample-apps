@@ -54,11 +54,16 @@ schema item {
 
     }
 
+    field brand_text type string {
+        indexing: input brand | index
+    }
+
     document-summary short {
         from-disk
         summary asin type string { source: asin }
         summary title type string { source: title }
         summary price type float { source: price }
+        summary brand type string { source: brand }
         summary categories type array<string> { source: categories }
         summary images type array<string> { source: images }
         summary rating_stars type int { source: rating_stars }
@@ -66,7 +71,20 @@ schema item {
     }
 
     fieldset default {
-        fields: title, description, categories_text
+        fields: title, description, categories_text, brand_text
+    }
+
+    field embedding type tensor<float>(x[384]) {
+        indexing: input title | embed | attribute | index
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    rank-profile default {
+       inputs {
+            query(query_embedding) tensor<float>(x[384])
+       }
     }
 
     rank-profile item inherits default {
@@ -75,12 +93,36 @@ schema item {
             expression: if(attribute(rating_count) > 0, attribute(rating_stars) / attribute(rating_count), 0)
         }
 
-        function inline default_ranking() {
-            expression: 1*nativeRank(categories) + 2*nativeRank(categories_text) + 3*nativeRank(title) + 1*nativeRank(description) + 1*nativeRank(brand) + 1*if(attribute(rating_count) > 5, average_rating / 5, 0)
+        function rating() {
+            expression: if(attribute(rating_count) > 5, average_rating / 5, 0)
+        }
+
+        function keyword() {
+            expression {
+                (nativeRank(categories) + nativeRank(categories_text) + 2*nativeRank(title) + nativeRank(description) +
+                nativeRank(brand_text))/6
+            }
+        }
+
+        function semantic() {
+            expression: cos(distance(field,embedding))
+        }
+
+        function default_ranking() {
+            expression {
+                0.6*keyword + 0.3*semantic + 0.05*rating
+             }
+        }
+
+        function within_rating_limits() {
+            expression: if ( average_rating > query(min_rating) && (average_rating < query(max_rating)), 1, 0)
         }
 
         function rating_filter(val) {
-            expression: if (query(use_rating_filter)==1, if(average_rating >= (query(rating)-0.5) && average_rating < (query(rating)+0.5), val, -2000000000.0), val)
+            expression {
+                if (query(use_rating_filter) == 1,
+                    if(within_rating_limits == 1, val, -200.0), val)
+            }
         }
 
         function apply_ranking_filters(val) {
@@ -89,11 +131,22 @@ schema item {
 
         first-phase {
             expression: apply_ranking_filters(default_ranking)
-            rank-score-drop-limit: -1000000000.0
+            rank-score-drop-limit: -100.0
         }
 
-        summary-features {
-            rankingExpression(average_rating)
+        match-features {
+            rating
+            semantic
+            keyword
+            query(min_rating)
+            query(max_rating)
+            average_rating
+            within_rating_limits
+            nativeRank(categories)
+            nativeRank(categories_text)
+            nativeRank(brand_text)
+            nativeRank(title)
+            nativeRank(description)
         }
 
     }

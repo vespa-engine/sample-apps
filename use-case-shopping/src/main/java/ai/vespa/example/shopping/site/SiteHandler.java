@@ -157,6 +157,7 @@ public class SiteHandler extends ThreadedHttpRequestHandler {
             case "js":   return "application/javascript";
             case "json": return "application/json";
             case "png":  return "image/png";
+            case "svg": return "image/svg+xml";
         }
         return "text/plain";
     }

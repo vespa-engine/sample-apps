@@ -11,6 +11,13 @@
       </chain>
     </document-processing>
 
+    <component id="encoder" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
+      <config name="embedding.bert-base-embedder">
+        <transformerModel path="model/minilm-l6-v2.onnx"/>
+        <tokenizerVocab path="model/bert-base-uncased.txt"/>
+      </config>
+    </component>
+
     <handler id="ai.vespa.example.shopping.site.SiteHandler" bundle="use-case-shopping">
       <binding>http://*/site/*</binding>
       <binding>http://*/site</binding>
@@ -29,6 +36,7 @@
   <content id="shopping" version="1.0">
     <redundancy>2</redundancy>
     <documents>
+      <document type="query" mode="index" />
       <document type="item" mode="index" />
       <document type="review" mode="index" />
     </documents>

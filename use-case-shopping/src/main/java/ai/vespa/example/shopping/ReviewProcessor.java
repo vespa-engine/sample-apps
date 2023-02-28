@@ -112,7 +112,6 @@ public class ReviewProcessor extends DocumentProcessor {
     public void deconstruct() {
         super.deconstruct();
         asyncSession.destroy();
-        access.shutdown();
     }
 
 }

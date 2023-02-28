@@ -71,10 +71,39 @@ body {
     font-size: 12px;
 }
 
+#suggestions {
+  text-transform: lowercase;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  max-height: 100px;
+  max-width: 300px;
+  overflow-y: auto;
+  margin-top: 0;
+  padding-left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style: none;
+}
+
+#suggestions li {
+  text-transform: lowercase;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#suggestions li.selected {
+  background-color: #ddd;
+}
+
+#suggestions li:hover {
+  text-transform: lowercase;
+  background-color: #f1f1f1;
+}
+
 .header .links a {
 	margin-right: 20px;
 }
-
 
 /*
  * Footer
@@ -143,7 +172,7 @@ body {
 
 .title-text {
 	text-align: left;
-	font-size: 28px;
+	font-size: 18px;
     margin: 0;
     padding: 0;
     line-height: 1;
@@ -337,6 +366,13 @@ body {
     font-weight: 600;
 }
 
+.search-item-scores {
+    grid-column-start:3;
+    grid-row-start:3;
+    font-size: 0.7em;
+    font-weight: 100;
+		font-style: italic;
+}
 
 .search-results-pagination {
     margin: 20px 0px;

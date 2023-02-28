@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static ai.vespa.example.shopping.site.data.Categories.getCategoryName;
+import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.ratingToStarsEmoji;
 import static ai.vespa.example.shopping.site.view.SimpleHtmlBuilder.truncate;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getDoubleValue;
 import static ai.vespa.example.shopping.site.data.SimpleHttpClient.getIntValue;
@@ -56,7 +57,8 @@ public class HomeRenderer {
                         });
                         html.div("promoted-item-rating", (level_4) -> {
                             if (ratingCount.get() > 0) {
-                                html.img(SimpleHtmlBuilder.ratingToStarsImage(ratingStars.get(), ratingCount.get()));
+                                html.text(String.format("%s", ratingToStarsEmoji(ratingStars.get(), ratingCount.get())));
+                                //html.img(SimpleHtmlBuilder.ratingToStarsImage(ratingStars.get(), ratingCount.get()));
                                 html.div("promoted-item-rating-count", (level_5) -> {
                                     html.text(String.format("(%d)", ratingCount.get()));
                                 });

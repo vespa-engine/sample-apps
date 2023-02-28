@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="/site/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="/site/css/site.css"/>
+    <script src="/site/js/autocomplete.js"></script>
 </head>
 
 <body>
@@ -17,17 +18,20 @@
 
     <div class="icon">
         <a href="/site">
-            <img src="/site/img/vespa-logo-dark.png" />
+            <img src="/site/img/vespa_logo_mark_full.svg" />
             <div>Shopping</div>
         </a>
     </div>
 
     <div class="search">
-        <form action="/site/search/" method="get">
-            <input id="searchtext" type="text" value="{{search-query}}" name="q"/>
-            <input id="searchbutton" type="submit" value="Search" />
-        </form>
-    </div>
+            <form action="/site/search/" method="get">
+                <input id="searchtext" type="text" value="{{search-query}}" name="q" autocomplete="off" />
+                <input id="searchbutton" type="submit" value="Search">
+                <ul id="suggestions"></ul>
+                </input>
+            </form>
+   </div>
+
 
     <div class="links">
         <a href="https://docs.vespa.ai/en/use-case-shopping.html">About</a>
