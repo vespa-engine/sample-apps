@@ -12,13 +12,22 @@ schema query {
         field score type float {
             indexing: summary | attribute
         }
+
+        field words type array<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+    }
+    fieldset default {
+        fields: query
     }
     document-summary query {
         summary query type string {}
     }
     rank-profile default inherits default {
         first-phase {
-            expression: attributeMatch(query) + attribute(score)
+            expression: 2*attributeMatch(query) + attributeMatch(words) + attributeMatch(words).queryCompleteness
         }
+        match-features: attributeMatch(query) attributeMatch(words) attributeMatch(words).queryCompleteness
     }
 }

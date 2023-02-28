@@ -55,50 +55,70 @@ body {
     width: 100px;
 }
 
-.header .search {
-	width: 100%;
-	padding: 20px;
-	text-align: left;
-}
+..header .search {
+   width: 100%;
+   padding: 20px;
+   text-align: left;
+   display: flex;
+   align-items: center;
+ }
 
-#searchtext {
-	width: 300px;
-}
+ #searchtext {
+   width: 300px;
+   padding: 10px;
+   border: none;
+   border-radius: 4px;
+   background-color: #f2f2f1;
+   font-size: 18px;
+   color: #1a1a1a;
+   outline: none;
+ }
 
-#searchbutton {
-	text-transform: lowercase;
-	letter-spacing: 1px;
-    font-size: 12px;
-}
+ #searchbutton {
+   text-transform: lowercase;
+   letter-spacing: 1px;
+   font-size: 14px;
+   padding: 10px 10px;
+   border: none;
+   border-radius: 5px;
+   background-color: #222;
+   color: #fff;
+   cursor: pointer;
+   margin-left: 5px;
+ }
 
 #suggestions {
+  font-size: 14px;
+  text-align: left;
+  border: 1px solid #f2f2f1;
   text-transform: lowercase;
   position: absolute;
   z-index: 1;
   width: 100%;
-  max-height: 100px;
+  max-height: 200px;
   max-width: 300px;
   overflow-y: auto;
-  margin-top: 0;
+  margin-top: 2;
   padding-left: 0;
   background-color: white;
-  border: 1px solid #ccc;
   list-style: none;
 }
 
 #suggestions li {
+  text-align: left;
+  width: auto;
   text-transform: lowercase;
   padding: 5px 10px;
   cursor: pointer;
 }
 
 #suggestions li.selected {
-  background-color: #ddd;
+  background-color: #cececa;
 }
 
 #suggestions li:hover {
   text-transform: lowercase;
-  background-color: #f1f1f1;
+  background-color: #cccccc;
 }
 
 .header .links a {

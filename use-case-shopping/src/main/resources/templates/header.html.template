@@ -25,7 +25,7 @@
 
     <div class="search">
             <form action="/site/search/" method="get">
-                <input id="searchtext" type="text" value="{{search-query}}" name="q" autocomplete="off" />
+                <input id="searchtext" type="text" value="{{search-query}}" name="q" autocomplete="off" autofocus/>
                 <input id="searchbutton" type="submit" value="Search">
                 <ul id="suggestions"></ul>
                 </input>
