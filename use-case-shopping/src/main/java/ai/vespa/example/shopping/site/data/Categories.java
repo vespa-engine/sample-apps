@@ -9,11 +9,11 @@ import java.util.Map;
 public class Categories {
 
     static String query() {
-        String yql = "select * from sources item where userQuery()";
+        String yql = "select * from sources item where true";
         String grouping = "all( " +
-                "group(array.at(categories,0)) each( " +
+                "group(array.at(categories,0)) order(-count()) each( " +
                     "output(count()) all(" +
-                        "group(array.at(categories,1)) each( " +
+                        "group(array.at(categories,1)) order(-count()) each( " +
                             "output(count()) all(" +
                                 "group(array.at(categories,2)) each( " +
                                     "output(count())" +
@@ -27,7 +27,6 @@ public class Categories {
         yql += " | " + grouping;
 
         SimpleQueryBuilder query = new SimpleQueryBuilder("/search/");
-        query.add("query", "sddocname:item");
         query.add("hits", "0");
         query.add("yql", yql);
         return query.toString();
