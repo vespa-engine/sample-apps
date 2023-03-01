@@ -125,18 +125,21 @@ schema item {
             }
         }
 
-        function apply_ranking_filters(val) {
+        function inline apply_ranking_filters(val) {
             expression: rating_filter(val)
         }
 
         first-phase {
-            expression: apply_ranking_filters(default_ranking)
+            expression {
+                if(apply_ranking_filters(default_ranking) > 0, if(keyword == 0 && semantic < 0.4, -200, apply_ranking_filters(default_ranking)),apply_ranking_filters(default_ranking))
+            }
             rank-score-drop-limit: -100.0
         }
 
         match-features {
             rating
             semantic
+            distance(field, embedding)
             keyword
             query(min_rating)
             query(max_rating)
