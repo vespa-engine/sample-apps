@@ -1,0 +1,14 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+apiVersion: 1
+
+providers:
+  - name: "Vespa Dashboard"
+    orgId: 1
+    folder: ""
+    type: file
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

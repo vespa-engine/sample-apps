@@ -1,0 +1,23 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: '<SERVICE_NAME>'
+
+    # Prometheus metrics are available here
+    metrics_path: /prometheus/v1/values
+
+    # Scheme defaults to 'http'. Cloud Vespa endpoint is https.
+    scheme: https
+
+    # We have to provide cert and key to Cloud Vespa. Uses relative path.
+    tls_config:
+      cert_file: data-plane-public-cert.pem
+      key_file: data-plane-private-key.pem
+
+    #Replace <ENDPOINT> with your Vespa Cloud endpoint URL
+    static_configs:
+      - targets: ['<ENDPOINT>']

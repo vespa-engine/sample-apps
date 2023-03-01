@@ -40,7 +40,7 @@ This sample application demonstrates deploying a simple Vespa application on Kub
 
 ## Monitoring
 
-### [Vespa metrics and monitoring](album-recommendation-monitoring)
+### [Vespa metrics and monitoring](monitoring/album-recommendation-monitoring)
 This sample app demonstrates how to integrate Vespa with **Prometheus and Grafana**.
 
 

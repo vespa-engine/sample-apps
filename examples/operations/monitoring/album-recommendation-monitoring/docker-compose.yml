@@ -1,0 +1,47 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+services:
+  prometheus:
+    image: "prom/prometheus"
+    container_name: sample-apps-prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    ports:
+    - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus-selfhosted.yml"
+    networks:
+      - monitoring
+  grafana:
+    image: grafana/grafana
+    container_name: sample-apps-grafana
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+  vespa:
+    image: "vespaengine/vespa"
+    build:
+      context: .
+      dockerfile: vespa/VespaAlternateDockerfile
+    container_name: vespa
+    hostname: vespa-container
+    volumes:
+      - ..:/vespa-sample-apps
+    ports:
+    - "8080:8080"
+    networks:
+      - monitoring
+  random-data-feeder:
+    build:
+      context: album-recommendation-random-data/
+      dockerfile: Dockerfile
+    container_name: random-data-feeder
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    name: "monitoring"
+    driver: "bridge"
