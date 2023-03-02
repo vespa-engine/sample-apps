@@ -19,9 +19,9 @@ public class SearchResults {
                 ! properties.get("q").isBlank() && !properties.get("q").replaceAll("\\p{Punct}", "").isBlank()) {
             String q = properties.get("q");
             q = q.replace("\"", "\\\"");
-            String userInput = "userInput(\"" + q + "\")";
+            String userInput = "({\"grammar\":\"all\"}userInput(\"" + q + "\"))";
             String keyword = String.format("(%s)", userInput);
-            String nearestNeighbor = "{targetHits:200}nearestNeighbor(embedding,query_embedding)";
+            String nearestNeighbor = "{targetHits:200,approximate:false}nearestNeighbor(embedding,query_embedding)";
             String hybrid = String.format("((%s) or (%s))", keyword,nearestNeighbor);
             where.add(hybrid);
             query.add("input.query(query_embedding)", String.format("embed(%s)",q));
@@ -30,7 +30,7 @@ public class SearchResults {
             where.add("true");
         }
         if (properties.containsKey("cat")) {
-            where.add("categories contains \"" + properties.get("cat") + "\"");
+            where.add("categories contains ({\"ranked\":false}\"" + properties.get("cat") + "\")");
         }
         if (properties.containsKey("brand")) {
             where.add("brand contains \"" + properties.get("brand") + "\"");
