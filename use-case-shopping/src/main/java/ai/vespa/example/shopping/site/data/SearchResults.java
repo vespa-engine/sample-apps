@@ -21,7 +21,7 @@ public class SearchResults {
             q = q.replace("\"", "\\\"");
             String userInput = "userInput(\"" + q + "\")";
             String keyword = String.format("(%s)", userInput);
-            String nearestNeighbor = "{targetHits:200,approximate:false}nearestNeighbor(embedding,query_embedding)";
+            String nearestNeighbor = "{targetHits:100}nearestNeighbor(embedding,query_embedding)";
             String hybrid = String.format("((%s) or (%s))", keyword,nearestNeighbor);
             where.add(hybrid);
             query.add("input.query(query_embedding)", String.format("embed(%s)",q));
