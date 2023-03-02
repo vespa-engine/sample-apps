@@ -24,7 +24,10 @@ public class SearchRenderer {
         JsonNode results = data.get("searchresults");
         SimpleTemplate template = new SimpleTemplate("search.html.template");
         template.set("page-title", buildPageTitle(properties));
-        template.set("search-query", properties.getOrDefault("q", ""));
+        String query = properties.getOrDefault("q", "");
+        if(!query.isBlank())
+            query = query.replace("\"","&quot;");
+        template.set("search-query", query);
         template.set("search-query-parameters", new SimpleQueryBuilder().add(properties).toString());
         template.set("search-results-count", String.valueOf(totalCount(results)));
         template.set("search-results-pagination", renderPagination(properties, results));

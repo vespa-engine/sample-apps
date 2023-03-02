@@ -14,6 +14,8 @@ schema item {
 
         field brand type string {
             indexing: summary | attribute
+            rank: filter
+            attribute: fast-search
         }
 
         field title type string {
@@ -30,6 +32,8 @@ schema item {
 
         field categories type array<string> {
             indexing: summary | attribute
+            rank:filter
+            attribute: fast-search
         }
 
         field categories_text type string {
@@ -131,7 +135,7 @@ schema item {
 
         first-phase {
             expression {
-                if(apply_ranking_filters(default_ranking) > 0, if(keyword == 0 && semantic < 0.4, -200, apply_ranking_filters(default_ranking)),apply_ranking_filters(default_ranking))
+                if(apply_ranking_filters(default_ranking) > -100, if(keyword < 0.005 && semantic < 0.45, -200, apply_ranking_filters(default_ranking)),apply_ranking_filters(default_ranking))
             }
             rank-score-drop-limit: -100.0
         }
