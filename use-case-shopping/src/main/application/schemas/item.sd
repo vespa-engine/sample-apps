@@ -135,7 +135,7 @@ schema item {
 
         first-phase {
             expression {
-                if(apply_ranking_filters(default_ranking) > -100, if(keyword < 0.005 && semantic < 0.45, -200, apply_ranking_filters(default_ranking)),apply_ranking_filters(default_ranking))
+                if(apply_ranking_filters(default_ranking) > -200, if(keyword < 0.005 && semantic < 0.45 && semantic > -0.95, -200, apply_ranking_filters(default_ranking)), apply_ranking_filters(default_ranking))
             }
             rank-score-drop-limit: -100.0
         }
