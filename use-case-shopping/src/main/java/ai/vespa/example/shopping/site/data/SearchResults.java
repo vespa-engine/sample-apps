@@ -19,7 +19,7 @@ public class SearchResults {
                 ! properties.get("q").isBlank() && !properties.get("q").replaceAll("\\p{Punct}", "").isBlank()) {
             String q = properties.get("q");
             q = q.replace("\"", "\\\"");
-            String userInput = "({\"grammar\":\"all\"}userInput(\"" + q + "\"))";
+            String userInput = "userInput(\"" + q + "\")";
             String keyword = String.format("(%s)", userInput);
             String nearestNeighbor = "{targetHits:200,approximate:false}nearestNeighbor(embedding,query_embedding)";
             String hybrid = String.format("((%s) or (%s))", keyword,nearestNeighbor);
