@@ -114,7 +114,6 @@ $ pip3 install -r requirements.txt
 $ mkdir -p src/main/application/models/
 $ python3 bin/export-reader-model.py src/main/application/models/reader.onnx
 $ python3 bin/export-query-model.py src/main/application/models/question_encoder.onnx
-$ mv src/main/application/models/question_encoder-quantized.onnx src/main/application/models/question_encoder.onnx
 </pre>
 
 Build the application package 
