@@ -83,7 +83,7 @@ jobs:
       - *install-deps
       - run-tests: |
           cd $SD_DIND_SHARE_PATH
-          $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR -c $SD_SOURCE_DIR/test/_test_config.yml
+          $SD_SOURCE_DIR/test/test.py -v -w $SD_SOURCE_DIR -c $SD_SOURCE_DIR/test/_test_config.yml
 
   verify-billion-scale-vector-search:
     requires: [~pr, ~commit]
