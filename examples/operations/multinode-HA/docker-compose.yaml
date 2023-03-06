@@ -1,0 +1,171 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# Docker Compose file to start up a sample multinode Vespa system
+
+# The start sequence is:
+# - Start the 3 nodes 0,1,2 with a configserver and wait for successful start using healthcheck on a configserver.
+# - Start the rest of the nodes.
+# - After the 10 nodes are started, deploy the Vespa application package.
+
+# Notes:
+# - The settings for the healthcheck are just to bail out fast in case of config server start problems,
+#   and not tested for production use.
+# - See https://github.com/vespa-engine/sample-apps/tree/master/examples/operations/multinode-HA#readme
+#   for background for the full configuration.
+# - The port mappings are for observability and status pages when all containers run on the same host,
+#   mapping to a unique host port.
+#   In a true multinode system, this can be simplified by mapping to the same port.
+#   Normally, only 19071 (deployments) and 8080 (feed/query) needs to be mapped out of the Docker network.
+
+services:
+  node0:
+    hostname: node0.vespanet
+    image: vespaengine/vespa
+    command: configserver,services
+    healthcheck:
+      test: curl http://localhost:19071/state/v1/health
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - 19071:19071
+      - 19100:19100
+      - 19050:19050
+      - 20092:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+      VESPA_CONFIGSERVER_JVMARGS: "-Xms32M -Xmx128M"
+      VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
+
+  node1:
+    hostname: node1.vespanet
+    image: vespaengine/vespa
+    command: configserver,services
+    healthcheck:
+      test: curl http://localhost:19071/state/v1/health
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - 19072:19071
+      - 19101:19100
+      - 19051:19050
+      - 20093:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+      VESPA_CONFIGSERVER_JVMARGS: "-Xms32M -Xmx128M"
+      VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
+
+  node2:
+    hostname: node2.vespanet
+    image: vespaengine/vespa
+    command: configserver,services
+    healthcheck:
+      test: curl http://localhost:19071/state/v1/health
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - 19073:19071
+      - 19102:19100
+      - 19052:19050
+      - 20094:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+      VESPA_CONFIGSERVER_JVMARGS: "-Xms32M -Xmx128M"
+      VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
+  
+  node3:
+    hostname: node3.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 19098:19098
+      - 20095:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+  node4:
+    hostname: node4.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+      - 20096:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+  node5:
+    hostname: node5.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 8081:8080
+      - 20097:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+  node6:
+    hostname: node6.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 8082:8080
+      - 20098:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+  node7:
+    hostname: node7.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 8083:8080
+      - 20099:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+  node8:
+    hostname: node8.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 19107:19107
+      - 20100:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+  node9:
+    hostname: node9.vespanet
+    image: vespaengine/vespa
+    command: services
+    depends_on:
+      node0:
+        condition: service_healthy
+    ports:
+      - 19108:19107
+      - 20101:19092
+    environment:
+      VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
+
+networks:
+  vespanet:
+    driver: bridge

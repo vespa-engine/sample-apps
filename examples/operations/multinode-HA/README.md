@@ -13,6 +13,8 @@ This is a guide for functional testing, deployed on one host for simplicity.
 The first part of this example sets up a multinode application of multiple container and content node clusters.
 The second part secures the application using [mTLS](https://docs.vespa.ai/en/mtls.html).
 
+A sample [docker-compose.yaml](docker-compose.yaml) is provided, refer to [Docker Compose](#docker-compose).
+
 **Troubleshooting:** The [troubleshooting-startup-multinode](https://vespa.ai/resources#troubleshooting-startup-multinode)
 training video goes through various issues to help set up a multinode cluster.
 See this if getting problems during the procedures below.
@@ -137,7 +139,7 @@ Later in this guide, only one of the nodes in each cluster is checked, to keep t
 
 ## Deploy the Vespa application configuration
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore | \
+$ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "*.yaml" | \
   curl --header Content-Type:application/zip --data-binary @- \
   http://localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
@@ -591,7 +593,7 @@ for https ports for container clusters for secure client access:
 $ mv services.xml services.xml.open; mv services.xml.secure services.xml
 </pre>
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x "tls/*" "pki/*" "scripts/*" "img/*" README.md .gitignore services.xml.open | \
+$ zip -r - . -x "tls/*" "pki/*" "scripts/*" "img/*" README.md .gitignore services.xml.open "*.yaml" | \
     curl \
       --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
       --header Content-Type:application/zip --data-binary @- \
@@ -878,3 +880,30 @@ $ docker rm -f node0 node1 node2 node3 node4 node5 node6 node7 node8 node9
 $ docker network rm vespanet
 $ docker swarm leave --force
 </pre>
+
+
+
+## Docker Compose
+[docker-compose.yaml](docker-compose.yaml) is a sample file to start up the 10-node cluster -
+use `docker compose up` - sequence:
+
+1. Start the config servers, wait for OK healthcheck
+2. Start the rest of the nodes
+3. Deploy application to the config servers
+
+When the config servers are started, but not yet full initialized, the status looks like:
+
+![Config Servers initializing](img/config-servers-init.png)
+
+If the status stays like this, troubleshoot the config server
+[startup sequence](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
+
+When all nodes are up, it looks like:
+
+![System is up](img/system-up.png)
+
+Finally, deploy the application:
+
+    $ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "*.yaml" | \
+      curl --header Content-Type:application/zip --data-binary @- \
+      http://localhost:19071/application/v2/tenant/default/prepareandactivate
