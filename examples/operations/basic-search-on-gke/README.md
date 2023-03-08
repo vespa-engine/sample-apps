@@ -13,7 +13,9 @@ Containers running Vespa should have minimum 4 GB memory available.
 Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
 for details and troubleshooting.
 
-This example assumes that you already created a Google project, you have the gcloud command line and kubectl installed.
+This example assumes that you already created a Google project,
+you have the [gcloud command line](https://cloud.google.com/sdk/docs/install) and
+[kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
 If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster).
 Hints:
 
