@@ -9,3 +9,6 @@ data:
   vespa-configserver-2.vespa-internal.default.svc.cluster.local"
   VESPA_CONFIGSERVER_JVMARGS: "-Xms32M -Xmx128M"
   VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
+
+# The JVMARGS settings are to minimize, for demo purposes only -
+# remove for production use.
