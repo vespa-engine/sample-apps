@@ -84,16 +84,16 @@ $ curl http://localhost:19071/state/v1/health
 Observe status up:
 ```json
 {
-  "time" : 1678268549957,
-  "status" : {
-    "code" : "up"
-  },
-  "metrics" : {
-    "snapshot" : {
-      "from" : 1.678268489718E9,
-      "to" : 1.678268549718E9
+    "time" : 1678268549957,
+    "status" : {
+        "code" : "up"
+    },
+    "metrics" : {
+        "snapshot" : {
+            "from" : 1.678268489718E9,
+            "to" : 1.678268549718E9
+        }
     }
-  }
 }
 ```
 
@@ -173,7 +173,7 @@ $ kubectl port-forward pod/vespa-feed-container-0 8080:8080
 ```
 $ i=0; (for doc in $(ls ../../../../album-recommendation/ext); \
   do \
-    curl -H Content-Type:application/json -d @../../../album-recommendation/ext/$doc \
+    curl -H Content-Type:application/json -d @../../../../album-recommendation/ext/$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
     i=$(($i + 1)); echo; \
   done)
@@ -209,13 +209,13 @@ $ gcloud container clusters delete vespa --zone europe-west1-b
 ## Misc
 Clean pods for a new deployments:
 ```
-kubectl delete StatefulSet vespa-admin vespa-configserver vespa-content vespa-feed-container vespa-query-container
+$ kubectl delete StatefulSet vespa-admin vespa-configserver vespa-content vespa-feed-container vespa-query-container
 ```
 Troubleshoot a pod failing to start up:
 ```
-kubectl describe pod vespa-feed-container-1 - look for "Insufficient memory"
+$ kubectl describe pod vespa-feed-container-1 - look for "Insufficient memory"
 ```
 Access a port in the application - set up in a separate terminal:
 ```
-kubectl port-forward pod/vespa-query-container-0 8080:8080
+$ kubectl port-forward pod/vespa-query-container-0 8080:8080
 ```
