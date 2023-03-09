@@ -54,7 +54,6 @@ everything depends on a successful config server cluster startup, here using thr
 $ kubectl apply \
   -f config/configmap.yml \
   -f config/headless.yml \
-  -f config/service.yml \
   -f config/configserver.yml
 ```
 
@@ -84,16 +83,16 @@ $ curl http://localhost:19071/state/v1/health
 Observe status up:
 ```json
 {
-  "time" : 1678268549957,
-  "status" : {
-    "code" : "up"
-  },
-  "metrics" : {
-    "snapshot" : {
-      "from" : 1.678268489718E9,
-      "to" : 1.678268549718E9
+    "time" : 1678268549957,
+    "status" : {
+        "code" : "up"
+    },
+    "metrics" : {
+        "snapshot" : {
+            "from" : 1.678268489718E9,
+            "to" : 1.678268549718E9
+        }
     }
-  }
 }
 ```
 
@@ -110,7 +109,8 @@ Start the admin node, feed container cluster, query container cluster and conten
 $ kubectl apply \
   -f config/configmap.yml \
   -f config/headless.yml \
-  -f config/service.yml \
+  -f config/service-feed.yml \
+  -f config/service-query.yml \
   -f config/configserver.yml \
   -f config/admin.yml \
   -f config/feed-container.yml \
@@ -168,12 +168,12 @@ Expected output:
 ## Feed data
 Feed data to a feed container:
 ```
-$ kubectl port-forward pod/vespa-feed-container-0 8080:8080
+$ kubectl port-forward svc/vespa-feed 8080
 ```
 ```
 $ i=0; (for doc in $(ls ../../../../album-recommendation/ext); \
   do \
-    curl -H Content-Type:application/json -d @../../../album-recommendation/ext/$doc \
+    curl -H Content-Type:application/json -d @../../../../album-recommendation/ext/$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
     i=$(($i + 1)); echo; \
   done)
@@ -183,20 +183,12 @@ $ i=0; (for doc in $(ls ../../../../album-recommendation/ext); \
 
 ## Run a query
 ```
-$ kubectl port-forward pod/vespa-query-container-0 8081:8080
+$ kubectl port-forward svc/vespa-query 8081:8080
 ```
 ```
 $ curl --data-urlencode 'yql=select * from sources * where true' \
   http://localhost:8081/search/
 ```
-
-**Congratulations! You have now deployed and tested a Vespa application on a multinode cluster.**
-
-
-## Security
-This script is just an example, it exposes the nodes to the internet.
-For production purpose you should disable it according to
-[vespa security guidelines](https://docs.vespa.ai/en/securing-your-vespa-installation.html)
 
 
 
@@ -209,13 +201,13 @@ $ gcloud container clusters delete vespa --zone europe-west1-b
 ## Misc
 Clean pods for a new deployments:
 ```
-kubectl delete StatefulSet vespa-admin vespa-configserver vespa-content vespa-feed-container vespa-query-container
+$ kubectl delete StatefulSet vespa-admin vespa-configserver vespa-content vespa-feed-container vespa-query-container
 ```
 Troubleshoot a pod failing to start up:
 ```
-kubectl describe pod vespa-feed-container-1 - look for "Insufficient memory"
+$ kubectl describe pod vespa-feed-container-1 - look for "Insufficient memory"
 ```
 Access a port in the application - set up in a separate terminal:
 ```
-kubectl port-forward pod/vespa-query-container-0 8080:8080
+$ kubectl port-forward pod/vespa-query-container-0 8080:8080
 ```
