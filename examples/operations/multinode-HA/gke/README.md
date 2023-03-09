@@ -13,7 +13,8 @@ If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-
 
 This guide uses port forwards to access ports in the application -
 set up these forwards in separate terminal windows.
-The guide does not address setting up load balancers.
+See [config/service-feed.yml](config/service-feed.yml) and [config/service-feed.yml](config/service-query.yml)
+for setting up LoadBalancers.
 
 Get started:
 ```
@@ -74,7 +75,7 @@ vespa-configserver-2   1/1     Running   0          2m4s
 
 Check a status page:
 ```
-$ kubectl port-forward pod/vespa-configserver-0 19071:19071
+$ kubectl port-forward pod/vespa-configserver-0 19071
 ```
 ```
 $ curl http://localhost:19071/state/v1/health
@@ -99,7 +100,7 @@ Observe status up:
 If you are not able to see this status page,
 do [troubleshooting](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
 
-Note both "configserver,services" are started in [config/configserver.yml](config/configserver.yml)
+Note both "configserver,services" are started in [config/configserver.yml](config/configserver.yml).
 
 
 
@@ -107,18 +108,15 @@ Note both "configserver,services" are started in [config/configserver.yml](confi
 Start the admin node, feed container cluster, query container cluster and content node pods:
 ```
 $ kubectl apply \
-  -f config/configmap.yml \
-  -f config/headless.yml \
   -f config/service-feed.yml \
   -f config/service-query.yml \
-  -f config/configserver.yml \
   -f config/admin.yml \
   -f config/feed-container.yml \
   -f config/query-container.yml \
   -f config/content.yml
 ```
 
-Make sure all pods starts
+Make sure all pods start:
 ```
 $ kubectl get pods
 NAME                      READY   STATUS    RESTARTS   AGE
@@ -134,14 +132,15 @@ vespa-query-container-0   1/1     Running   0          2m43s
 vespa-query-container-1   1/1     Running   0          2m41s
 ```
 
-At this point, all pods are started.
-The Vespa Application Package is not yet deployed, so none of the Vespa services are running.
+At this point, all pods should be running.
+The Vespa [application package](https://docs.vespa.ai/en/application-packages.html) is not yet deployed,
+so none of the Vespa services are running.
 Deploy the application package:
 ```
-$ kubectl port-forward pod/vespa-configserver-0 19071:19071
+$ kubectl port-forward pod/vespa-configserver-0 19071
 ```
 ```
-$ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "config/*" | \
+$ zip -r - . -x README.md "config/*" | \
   curl --header Content-Type:application/zip \
   --data-binary @- \
   http://localhost:19071/application/v2/tenant/default/prepareandactivate
@@ -163,10 +162,38 @@ Expected output:
 }
 ```
 
+Vespa is now starting up in all pods - spot-check the vespa service health before continuing.
+Check a content node (these do not have a service endpoint, access the instance in a pod directly):
+```
+kubectl port-forward pod/vespa-content-0 19107
+```
+```
+$ curl http://localhost:19107/state/v1/health
+```
+
+Feed container:
+```
+$ kubectl port-forward svc/vespa-feed 8080
+```
+```
+$ curl http://localhost:8080/state/v1/health
+```
+
+Query container:
+```
+$ kubectl port-forward svc/vespa-query 8080
+```
+```
+$ curl http://localhost:8080/state/v1/health
+```
+
+See troubleshooting at the end of this readme if services do not start.
+At this point, the Vespa application should be fully operational.
+
 
 
 ## Feed data
-Feed data to a feed container:
+Feed data to the feed endpoint:
 ```
 $ kubectl port-forward svc/vespa-feed 8080
 ```
@@ -183,31 +210,64 @@ $ i=0; (for doc in $(ls ../../../../album-recommendation/ext); \
 
 ## Run a query
 ```
-$ kubectl port-forward svc/vespa-query 8081:8080
+$ kubectl port-forward svc/vespa-query 8080
 ```
 ```
 $ curl --data-urlencode 'yql=select * from sources * where true' \
-  http://localhost:8081/search/
+  http://localhost:8080/search/
+```
+
+Expect a result like:
+```json
+{
+    "root": {
+        "id": "toplevel",
+        "relevance": 1,
+        "fields": {
+            "totalCount": 5
+        },
+        "coverage": {
+            "coverage": 100,
+            "documents": 5,
+            "full": true,
+            "nodes": 2,
+            "results": 1,
+            "resultsFull": 1
+        },
+
 ```
 
 
 
 ## Teardown
+Also see section below for deleting resources. Delete the `vespa` cluster:
 ```
 $ gcloud container clusters delete vespa --zone europe-west1-b
 ```
 
 
-## Misc
+
+## Misc / troubleshooting
 Clean pods for a new deployments:
 ```
 $ kubectl delete StatefulSet vespa-admin vespa-configserver vespa-content vespa-feed-container vespa-query-container
+$ kubectl delete service vespa-internal vespa-feed vespa-query
+$ kubectl delete configmap vespa-config
 ```
-Troubleshoot a pod failing to start up:
+
+Troubleshoot a pod failing to start up (e.g. look for "Insufficient memory"):
 ```
-$ kubectl describe pod vespa-feed-container-1 - look for "Insufficient memory"
+$ kubectl describe pod vespa-feed-container-1
 ```
+
 Access a port in the application - set up in a separate terminal:
 ```
-$ kubectl port-forward pod/vespa-query-container-0 8080:8080
+$ kubectl port-forward pod/vespa-query-container-0 8081:8080
 ```
+
+Get logs:
+```
+$ kubectl logs vespa-query-container-0
+```
+
+For reference: [kubectl cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/).
