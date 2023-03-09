@@ -54,7 +54,6 @@ everything depends on a successful config server cluster startup, here using thr
 $ kubectl apply \
   -f config/configmap.yml \
   -f config/headless.yml \
-  -f config/service.yml \
   -f config/configserver.yml
 ```
 
@@ -110,7 +109,8 @@ Start the admin node, feed container cluster, query container cluster and conten
 $ kubectl apply \
   -f config/configmap.yml \
   -f config/headless.yml \
-  -f config/service.yml \
+  -f config/service-feed.yml \
+  -f config/service-query.yml \
   -f config/configserver.yml \
   -f config/admin.yml \
   -f config/feed-container.yml \
@@ -168,7 +168,7 @@ Expected output:
 ## Feed data
 Feed data to a feed container:
 ```
-$ kubectl port-forward pod/vespa-feed-container-0 8080:8080
+$ kubectl port-forward svc/vespa-feed 8080
 ```
 ```
 $ i=0; (for doc in $(ls ../../../../album-recommendation/ext); \
@@ -183,20 +183,12 @@ $ i=0; (for doc in $(ls ../../../../album-recommendation/ext); \
 
 ## Run a query
 ```
-$ kubectl port-forward pod/vespa-query-container-0 8081:8080
+$ kubectl port-forward svc/vespa-query 8081:8080
 ```
 ```
 $ curl --data-urlencode 'yql=select * from sources * where true' \
   http://localhost:8081/search/
 ```
-
-**Congratulations! You have now deployed and tested a Vespa application on a multinode cluster.**
-
-
-## Security
-This script is just an example, it exposes the nodes to the internet.
-For production purpose you should disable it according to
-[vespa security guidelines](https://docs.vespa.ai/en/securing-your-vespa-installation.html)
 
 
 
