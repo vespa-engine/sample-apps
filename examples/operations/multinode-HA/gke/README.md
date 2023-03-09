@@ -3,15 +3,15 @@
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
 # Multinode-HA using Google Cloud Kubernetes Engine - GKE
-This example uses the multinode-HA configuration and principles and deploys GKE.
+This guide uses the multinode-HA configuration and principles and deploys using GKE.
 It is built on [basic-search-on-gke](../../basic-search-on-gke).
 
-This example assumes that you already created a Google project,
-you have the [gcloud command line](https://cloud.google.com/sdk/docs/install) and
-[kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
-If needed, please refer to [GKE quickstart](https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster).
+Prerequisites:
+* A Google project
+* [gcloud command line](https://cloud.google.com/sdk/docs/install)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
-This guide uses port forwards to access ports in the application -
+The guide uses port-forwards to access ports in the application -
 set up these forwards in separate terminal windows.
 See [config/service-feed.yml](config/service-feed.yml) and [config/service-feed.yml](config/service-query.yml)
 for setting up LoadBalancers.
@@ -22,7 +22,7 @@ $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/examples/operations/multinode-HA/gke
 ```
 
-Replace with your own project ID and preferred region/zone - example:
+Replace with your own project ID and preferred region/zone:
 ```
 $ gcloud init
 $ gcloud config set project resonant-diode-123456
@@ -44,7 +44,7 @@ $ gcloud container clusters create vespa \
   
 $ gcloud container clusters get-credentials vespa --zone europe-west1-b
 ```
-This is a minimum-configuration to start the multinode-HA application on few resources.
+This is a minimum-configuration to start the multinode-HA application on GKE.
 
 
 
@@ -58,7 +58,7 @@ $ kubectl apply \
   -f config/configserver.yml
 ```
 
-Note that the StatefulSet definition for config servers does not have a `readinessProbe`.
+Note that the [StatefulSet](config/configserver.yml) definition for config servers does not have a `readinessProbe`.
 This is important to start all three config servers for zookeeper quorum and subsequent OK status -
 [details](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
 
@@ -99,7 +99,6 @@ Observe status up:
 
 If you are not able to see this status page,
 do [troubleshooting](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
-
 Note both "configserver,services" are started in [config/configserver.yml](config/configserver.yml).
 
 
@@ -162,10 +161,10 @@ Expected output:
 }
 ```
 
-Vespa is now starting up in all pods - spot-check the vespa service health before continuing.
+Vespa is now starting up in all pods - spot-check the vespa service health before continuing - status should be "up".
 Check a content node (these do not have a service endpoint, access the instance in a pod directly):
 ```
-kubectl port-forward pod/vespa-content-0 19107
+$ kubectl port-forward pod/vespa-content-0 19107
 ```
 ```
 $ curl http://localhost:19107/state/v1/health
@@ -248,24 +247,25 @@ $ gcloud container clusters delete vespa --zone europe-west1-b
 
 
 ## Misc / troubleshooting
-Clean pods for a new deployments:
+Clean pods for new deployments:
 ```
 $ kubectl delete StatefulSet vespa-admin vespa-configserver vespa-content vespa-feed-container vespa-query-container
 $ kubectl delete service vespa-internal vespa-feed vespa-query
 $ kubectl delete configmap vespa-config
 ```
 
-Troubleshoot a pod failing to start up (e.g. look for "Insufficient memory"):
+Troubleshoot a pod startup failure (e.g. look for "Insufficient memory"):
 ```
 $ kubectl describe pod vespa-feed-container-1
 ```
 
-Access a port in the application - set up in a separate terminal:
+Access a port in the application on a pod or a service - set up in a separate terminal:
 ```
 $ kubectl port-forward pod/vespa-query-container-0 8081:8080
+$ kubectl port-forward svc/vespa-feed 8080
 ```
 
-Get logs:
+Get logs from a pod:
 ```
 $ kubectl logs vespa-query-container-0
 ```
