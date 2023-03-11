@@ -146,7 +146,7 @@ $  ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file feed_reviews.json --endpoint http://localhost:8080
 </pre>
 
-Feed reviews [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Feed query suggestions [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 <pre data-test="exec">
 $  ./vespa-feed-client-cli/vespa-feed-client \
     --verbose --file feed_suggestions.json --endpoint http://localhost:8080
