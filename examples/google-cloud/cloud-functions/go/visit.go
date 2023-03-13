@@ -6,6 +6,7 @@ package vespasamples
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -14,14 +15,17 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 )
 
 func init() {
 	functions.HTTP("visit", visit)
+	functions.HTTP("backup", backup)
 }
 
 func ReaderToJSON(reader io.Reader) string {
@@ -60,17 +64,42 @@ func FailureWithPayload(message string, payload string) OperationResult {
 	return OperationResult{Success: false, Message: message, Payload: payload}
 }
 
-// Example: "visit" a content cluster and count number of documents
-func visit(w http.ResponseWriter, r *http.Request) {
-	var d struct {
-		ContentCluster string `json:"contentCluster"`
-		Selection      string `json:"selection"`
-		ChunkCount     int    `json:"chunkCount"`
-		Endpoint       string `json:"endpoint"`
-	}
+var backupBucket string
+var backupFolder = "backup-" + time.Now().Format("20060102150405") + "/"
+var chunkIndex = 0
+
+var d struct {
+	ContentCluster string `json:"contentCluster"`
+	Selection      string `json:"selection"`
+	ChunkCount     int    `json:"chunkCount"`
+	Endpoint       string `json:"endpoint"`
+	Bucket         string `json:"bucket"`
+	JsonLines      bool   `json:"jsonLines"`
+}
+
+func backup(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
-		fmt.Fprint(w, "Visit: Error decoding arguments")
+		fmt.Fprint(w, "Backup: Error decoding arguments")
 		return
+	}
+	if d.Bucket == "" {
+		fmt.Fprint(w, "Backup: bucket missing")
+		return
+	}
+	backupBucket = d.Bucket
+	fmt.Fprintf(w, "Running backup using visit, using bucket %s\n", backupBucket)
+	log.Printf("Running backup using visit, using bucket %s", backupBucket)
+
+	visit(w, r)
+}
+
+func visit(w http.ResponseWriter, r *http.Request) {
+	if d.Endpoint == "" {
+		// Arguments are not read yet - visit can be called from the backup function or directly
+		if err := json.NewDecoder(r.Body).Decode(&d); err != nil {
+			fmt.Fprint(w, "Visit: Error decoding arguments")
+			return
+		}
 	}
 	if d.Endpoint == "" {
 		fmt.Fprint(w, "Visit: endpoint missing")
@@ -80,11 +109,14 @@ func visit(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Visit: contentCluster missing")
 		return
 	}
-	intro := fmt.Sprintf("Visit - Args: %s, %s, %s, %d\n",
+
+	intro := fmt.Sprintf("Running visit with arguments: %s, %s, %s, %d, %s, %t\n",
 		d.Endpoint,
 		d.ContentCluster,
 		d.Selection,
-		d.ChunkCount)
+		d.ChunkCount,
+		d.Bucket,
+		d.JsonLines)
 	fmt.Fprintf(w, intro)
 	log.Printf(intro)
 
@@ -95,6 +127,9 @@ func visit(w http.ResponseWriter, r *http.Request) {
 	}
 	if d.ChunkCount != 0 {
 		vArgs.chunkCount = d.ChunkCount
+	}
+	if d.JsonLines {
+		vArgs.jsonLines = d.JsonLines
 	}
 
 	certPem := []byte(os.Getenv("SEC_CERT"))
@@ -182,9 +217,9 @@ func runVisit(vArgs visitArgs, service *Service) (res OperationResult) {
 		} else if vArgs.jsonLines {
 			dumpDocuments(vvo.Documents, false, false)
 		}
-		if !vArgs.quietMode {
-			fmt.Fprintln(os.Stderr, "got", len(vvo.Documents), "documents")
-		}
+		//if !vArgs.quietMode {
+		//  fmt.Fprintln(os.Stderr, "got", len(vvo.Documents), "documents")
+		//}
 		totalDocuments += len(vvo.Documents)
 		continuationToken = vvo.Continuation
 		if continuationToken == "" {
@@ -289,16 +324,31 @@ func parseVisitOutput(r io.Reader) (*VespaVisitOutput, error) {
 }
 
 func dumpDocuments(documents []DocumentBlob, comma, pretty bool) {
-	// ToDo: Add features to dump to response or Google Storage
-	/*
-		for _, value := range documents {
-				os.Stdout.Write(value.blob)
-			}
-			if comma {
-				fmt.Printf(",\n")
-			} else {
-				fmt.Printf("\n")
-			}
+	if backupBucket == "" {
+		return
+	}
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		log.Printf("storage.NewClient: %v", err)
+		return
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	obj := client.Bucket(backupBucket).Object(backupFolder + strconv.Itoa(chunkIndex))
+	wr := obj.NewWriter(ctx)
+	defer wr.Close()
+
+	for _, value := range documents {
+		_, err := wr.Write(value.blob)
+		_, err2 := wr.Write([]byte("\n"))
+		if err != nil || err2 != nil {
+			log.Printf("NewWriter.Write: %v", err)
+			return
 		}
-	*/
+	}
+	chunkIndex += 1
 }

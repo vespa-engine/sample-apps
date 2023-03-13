@@ -75,7 +75,24 @@ using environment variables and deploy this from the console.
 Refer to [AWS Lambda Functions](../../aws/lambda) for similar examples using AWS Lambda.
 
 
+
+## Backup - experimental
+Work in progress - new backup function:
+```
+$ curl --max-time 60 --data '{
+  "bucket":"my_bucket",
+  "jsonLines": true,
+  "contentCluster":"documentation",
+  "chunkCount":100,
+  "selection":"doc",
+  "endpoint":"https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud"}' \
+  https://backup-abc5tvbrvq-ew.a.run.app
+```
+
+
+
 ## Troubleshooting
 * Remember to enable Cloud Run API before deploying
 * When deploying first time, you are asked if the function is runnable by anyone
 * Functions can be invoked by `gcloud functions call hello --region europe-west1 --gen2 --data '{"name": "Jim"}'`
+* Remember to allow secrets for each new function, easy done in the console
