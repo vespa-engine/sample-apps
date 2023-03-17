@@ -37,12 +37,11 @@ $ gcloud config set compute/zone europe-west1-b
 Set up a cluster with 24G RAM:
 ```
 $ gcloud container clusters create vespa \
-  --zone europe-west1-b \
   --num-nodes=3 \
   --machine-type=n1-standard-2 \
   --disk-size=20
   
-$ gcloud container clusters get-credentials vespa --zone europe-west1-b
+$ gcloud container clusters get-credentials vespa
 ```
 This is a minimum-configuration to start the multinode-HA application on GKE.
 
@@ -241,7 +240,7 @@ Expect a result like:
 ## Teardown
 Also see section below for deleting resources. Delete the `vespa` cluster:
 ```
-$ gcloud container clusters delete vespa --zone europe-west1-b
+$ gcloud container clusters delete vespa
 ```
 
 
