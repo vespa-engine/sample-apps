@@ -74,7 +74,7 @@ $ vespa status deploy --wait 300
 Download this sample application 
 
 <pre data-test="exec">
-$ vespa clone wikipedia-search my-app && cd my-app
+$ vespa clone multi-vector-indexing my-app && cd my-app
 </pre>
 
 Download embedding model files, see 
