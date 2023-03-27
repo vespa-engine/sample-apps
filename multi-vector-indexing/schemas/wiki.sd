@@ -64,11 +64,11 @@ schema wiki {
         )
       }
     }
-    function avg_paragraph_similarity() {
+    function max_paragraph_similarity() {
       expression {
         reduce(
           sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x),
-          avg,
+          max,
           p
         )
       }
@@ -79,14 +79,17 @@ schema wiki {
         sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x)
       }
     }
+
     first-phase {
       expression: cos(distance(field,paragraph_embeddings)) 
     }
+
     second-phase {
       expression {
         firstPhase + avg_paragraph_similarity() + log( bm25(title) + bm25(paragraphs) + bm25(url))
       }
     }
+
     match-features {
       firstPhase
       closest(paragraph_embeddings)
@@ -94,9 +97,10 @@ schema wiki {
       bm25(paragraphs)
       avg_paragraph_similarity
       max_paragraph_similarity
-     all_paragraph_similarities
+      all_paragraph_similarities
     }
   }
+
   document-summary minimal {
     summary id type int {}
     summary title type string {}
