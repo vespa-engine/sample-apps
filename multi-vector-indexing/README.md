@@ -175,7 +175,7 @@ also calculates several additional features using
 profile as `cos(distance(field, paragraph_embeddings))`.
 - `all_paragraph_similarities` returns all the similarity scores for all paragraphs.
 - `avg_paragraph_similarity` is the average similarity score across all the paragraphs. 
-- `max_paragraph_similarity` is the same as `firstPhase`, but compute using a tensor expression
+- `max_paragraph_similarity` is the same as `firstPhase`, but computed using a tensor expression.
 
 See the `hybrid` rank-profile in the [schema](schemas/wiki.sd) for details.
 The [Vespa Tensor Playground](https://docs.vespa.ai/playground/) is useful to play
