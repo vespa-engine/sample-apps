@@ -107,8 +107,8 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 </pre>
 
 Index the Wikipedia articles. This embeds all the paragraphs using the native embedding model, which
-is computionally expensive for CPU. For production use cases, use Vespa Cloud with GPU instances and
-[autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled. 
+is computionally expensive for CPU. For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu) 
+instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled. 
 
 <pre data-test="exec">
 $ zstdcat ext/articles.jsonl.zst | \
