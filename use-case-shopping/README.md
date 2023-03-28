@@ -5,17 +5,17 @@
 # Vespa sample applications - e-commerce
 
 A sample application showcasing a simple e-commerce site built with Vespa.
-Refer to [Use Case - shopping](https://docs.vespa.ai/en/use-case-shopping.html).
+See [Use Case - shopping](https://docs.vespa.ai/en/use-case-shopping.html) for features and details:
 
-Included scripts to convert data from Julian McAuley's Amazon product data set
-(https://cseweb.ucsd.edu/~jmcauley/datasets.html) to a Vespa data feed.
+![Sample app screenshot](https://docs.vespa.ai/assets/img/shopping-1.png)
+
+Also included are scripts to convert data from Julian McAuley's Amazon product data set at
+https://cseweb.ucsd.edu/~jmcauley/datasets.html to a Vespa data feed.
 This repository contains a small sample of this data from the sports and outdoor category,
 but you can download other data from the site above and use the scripts to convert.
 
-### Quick Start 
-
 Requirements:
-* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is minimum.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
@@ -30,29 +30,24 @@ Requirements:
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
-Validate environment, should be minimum 6GB:
-
+Validate environment, should be minimum 4 GB:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
-
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 <pre >
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
+Set target environment - it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/) using target cloud.
 
-For local deployment using docker image use
-
+For local deployment using Docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/):
 <pre>
 $ vespa config set target cloud
 $ vespa config set application tenant-name.myapp.default
@@ -106,15 +101,13 @@ $ vespa test src/test/application/tests/system-test/product-search-test.json
 First, create data feed for products:
 <pre data-test="exec">
 $ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa.oath.cloud/sample-apps-data/meta_sports_20k_sample.json.zst 
-$ zstd -d meta_sports_20k_sample.json.zst
-$ cat meta_sports_20k_sample.json | ./convert_meta.py > feed_items.json
+$ zstdcat meta_sports_20k_sample.json.zst | ./convert_meta.py > feed_items.json
 </pre>
 
 Next, data feed for reviews:
 <pre data-test="exec">
 $ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa.oath.cloud/sample-apps-data/reviews_sports_24k_sample.json.zst
-$ zstd -d reviews_sports_24k_sample.json.zst 
-$ cat reviews_sports_24k_sample.json | ./convert_reviews.py > feed_reviews.json
+$ zstdcat reviews_sports_24k_sample.json.zst | ./convert_reviews.py > feed_reviews.json
 </pre>
 
 Next, data feed for query suggestions:
