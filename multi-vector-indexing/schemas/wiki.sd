@@ -1,0 +1,108 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema wiki {
+
+  document wiki {
+
+    field id type int {
+      indexing: attribute | summary
+    }
+
+    field title type string {
+      indexing: index | summary
+      index: enable-bm25
+    }
+
+    field url type string {
+      indexing: index | summary
+      index: enable-bm25
+    }
+
+    field paragraphs type array<string> {
+      indexing: index | summary
+      index: enable-bm25
+      bolding: on 
+    }
+  }
+
+  field paragraph_embeddings type tensor<float>(p{},x[384]) {
+    indexing: input paragraphs | embed | index | attribute
+    attribute {
+      distance-metric: angular
+    }
+  }
+
+  fieldset default {
+    fields: title, url, paragraphs 
+  }
+
+  rank-profile semantic inherits default {
+    inputs {
+      query(q) tensor<float>(x[384])
+    }
+    first-phase {
+      expression: cos(distance(field,paragraph_embeddings))
+    }
+    match-features {
+      closest(paragraph_embeddings)
+    }
+  }
+
+  rank-profile bm25 {
+    first-phase {
+      expression: 2*bm25(title) + bm25(paragraphs) 
+    }
+  }
+
+  rank-profile hybrid inherits semantic {
+    function avg_paragraph_similarity() {
+      expression {
+        reduce(
+          sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x),
+          avg,
+          p
+        )
+      }
+    }
+    function max_paragraph_similarity() {
+      expression {
+        reduce(
+          sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x),
+          max,
+          p
+        )
+      }
+    }
+
+    function all_paragraph_similarities() {
+      expression {
+        sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x)
+      }
+    }
+
+    first-phase {
+      expression: cos(distance(field,paragraph_embeddings)) 
+    }
+
+    second-phase {
+      expression {
+        firstPhase + avg_paragraph_similarity() + log( bm25(title) + bm25(paragraphs) + bm25(url))
+      }
+    }
+
+    match-features {
+      firstPhase
+      closest(paragraph_embeddings)
+      bm25(title)
+      bm25(paragraphs)
+      avg_paragraph_similarity
+      max_paragraph_similarity
+      all_paragraph_similarities
+    }
+  }
+
+  document-summary minimal {
+    summary id type int {}
+    summary title type string {}
+  }
+}
