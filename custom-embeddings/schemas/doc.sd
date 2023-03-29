@@ -1,0 +1,70 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema doc {
+
+  document doc {
+
+    field id type int {
+      indexing: attribute | summary
+    }
+
+    field text type string {
+      indexing: index | summary
+      index: enable-bm25
+    }
+  }
+
+  field embedding type tensor<float>(x[384]) {
+    indexing: input text | embed frozen | index | attribute
+    attribute {
+      distance-metric: angular
+    }
+  }
+
+  fieldset default {
+    fields: text 
+  }
+
+  rank-profile default inherits default {
+    inputs {
+      query(q) tensor<float>(x[384])
+    }
+    first-phase {
+      expression: cos(distance(field,embedding))
+    }
+  }
+
+  rank-profile simple-similarity inherits default {
+    # One way to obtain the custom weight matrix
+    constants  {
+      W tensor<float>(w[128],x[384]): file: constants/weights.json
+    }
+    function transform_query() {
+      expression: sum(query(q) * constant(W), w)
+    }
+    first-phase {
+      expression: sum(l2_normalize(transform_query(),x) * l2_normalize(attribute(embedding),x),x)
+    }
+  }
+
+  rank-profile custom-similarity inherits simple-similarity {
+
+    function query() {
+      expression: query(q) * tensor<float>(batch[1]):[1]
+    }
+
+    function document() {
+      expression: attribute(embedding) * tensor<float>(batch[1]):[1]
+    }
+
+    onnx-model dnn {
+      file: models/custom_similarity.onnx
+      input "query": query
+      input "document": document
+      output "similarity": score
+    }
+    second-phase {
+      expression: sum(onnx(dnn).score)
+    }
+  }
+}
