@@ -6,7 +6,7 @@
 
 This sample application is used to demonstrate multi-vector indexing with Vespa.
 Multi-vector indexing was introduced in Vespa 8.144.19. 
-Read the [blog post](https://blog.vespa.ai/) announcing multi-vector indexing. 
+Read the [blog post](https://blog.vespa.ai/semantic-search-with-multi-vector-indexing/) announcing multi-vector indexing.
 
 The app uses a small sample of Wikipedia articles, where each paragraph is embedded in embedding
 vector space.
