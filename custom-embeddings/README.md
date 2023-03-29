@@ -89,7 +89,8 @@ $ curl -L -o models/frozen.onnx \
 
 $ cp models/frozen.onnx  models/tuned.onnx 
 </pre>
-In this case, the we re-use the frozen model.
+
+In this case, we re-use the frozen model as the tuned model to demonstrate functionality.
 
 Deploy the application : 
 
