@@ -156,7 +156,7 @@ schema product {
         function cross_encoder() {
             expression: onnx(title_cross){d0:0,d1:0} 
         }
-        first-phase {
+        global-phase {
             expression: cross_encoder() 
         }
     }
