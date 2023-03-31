@@ -62,7 +62,7 @@ schema msmarco {
         }
 
         # The output of this model is a tensor of size ["batch", 1]
-        second-phase {
+        global-phase {
             rerank-count: 10
             expression: onnx(rank_model){d0:0,d1:0}
         }
