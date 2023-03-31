@@ -12,7 +12,7 @@ which uses multiple Transformer based models for retrieval and ranking.
 This application uses [phased ranking](https://docs.vespa.ai/en/phased-ranking.html), first a set of candidate
 documents are retrieved using [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html) and the first phase ranking
 is using [BM25](https://docs.vespa.ai/en/reference/bm25.html). The top-k ranking documents from the first phase
-is re-ranked using the Transformer model. 
+is re-ranked using the Transformer model. The latter is performed at the new [global phase](https://docs.vespa.ai/en/phased-ranking.html#global-phase) on the stateless container.
 
 ## Requirements:
 
