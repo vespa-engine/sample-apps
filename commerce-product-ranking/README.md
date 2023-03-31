@@ -285,8 +285,8 @@ $ python3 scripts/evaluate.py \
   --endpoint https://productsearch.samples.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking semantic-title \
-  --cert <path-to-data-plane-cert.pem> \
-  --key <path-to-data-plane-private-key.pem>
+  --cert &lt;path-to-data-plane-cert.pem&gt; \
+  --key &lt;path-to-data-plane-private-key.pem&gt;
 </pre>
 
 Run evaluation using `trec_eval`:
