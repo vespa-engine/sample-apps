@@ -39,8 +39,8 @@
         <!--
             <nodes> specifies the nodes that should run this cluster.
         -->
-        <nodes>
-            <node hostalias="node1" />
+        <nodes count="2">
+            <resources vcpu="2" memory="8Gb" disk="1Tb"/>
         </nodes>
     </container>
 
@@ -56,8 +56,8 @@
         <documents>
             <document type="music" mode="index" />
         </documents>
-        <nodes>
-            <node hostalias="node1" distribution-key="0" />
+        <nodes count="2">
+            <resources vcpu="2" memory="8Gb" disk="1Tb"/>
         </nodes>
     </content>
 
