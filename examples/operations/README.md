@@ -37,7 +37,7 @@ The [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke/)
 application demonstrates deploying a simple Vespa application on Kubernetes (Google GKE).
 
 ## Monitoring
-These are monitoring and metrics oriented applications.
+These are monitoring and metrics-oriented applications.
 
 ### Vespa metrics and monitoring
 The [Vespa metrics and monitoring](monitoring/album-recommendation-monitoring/)

@@ -13,7 +13,7 @@ The [part-purchases-demo](part-purchases-demo) app demonstrates Vespa grouping a
 
 ### Vespa predicate fields
 The [predicate-fields](predicate-fields) demonstrates how to use Vespa's [predicate field](https://docs.vespa.ai/en/predicate-fields.html) type to implement indexing of document side boolean expressions.
-Boolean document side constraints allows the document to specify which type of queries it can be retrieved for. Predicate fields allow expressing logic like _"this document should only be visible in search for readers in age range 20 to 30"_ or "This product should only be visible in search during campaign hours".
+Boolean document side constraints allows the document to specify which type of queries it can be retrieved for. Predicate fields allow expressing logic like _"this document should only be visible in search for readers in age range 20 to 30"_ or _"this product should only be visible in search during campaign hours"_.
 
 ### Operations
 See [operations](operations) for sample applications for multinode clusters,

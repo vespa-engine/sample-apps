@@ -31,7 +31,7 @@ The [custom-embeddings](custom-embeddings/) application demonstrates how to cust
 ## More advanced sample applications
 
 ### News search and recommendation tutorial 
-The [news](news/) sample application used in the [Vespa tutorial](https://docs.vespa.ai/en/tutorials/news-1-getting-started.html).This application demonstrates basic search functionality.
+The [news](news/) sample application used in the [Vespa tutorial](https://docs.vespa.ai/en/tutorials/news-1-getting-started.html). This application demonstrates basic search functionality.
 
 It also demonstrates how to build a recommendation system
 where approximate nearest neighbor search in a shared user/item embedding space
@@ -69,7 +69,7 @@ demonstrates end to end question answering using Facebook's DPR (Dense passage R
 the answer from the evidence passage(s).
 
 This sample app uses Vespa's approximate nearest neighbor search to efficiently retrieve text passages
-from a Wikipedia based collection of 21M passages.A BERT based reader component reads the top ranking passages and produces the textual answer to the question.
+from a Wikipedia-based collection of 21M passages. A BERT-based reader component reads the top-ranking passages and produces the textual answer to the question.
 
 See also [Efficient Open Domain Question Answering with Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/)
 and [Scaling Question Answering with Vespa](https://blog.vespa.ai/from-research-to-production-scaling-a-state-of-the-art-machine-learning-system/).
