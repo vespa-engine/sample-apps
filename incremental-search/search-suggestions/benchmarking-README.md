@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # Benchmarcking results
 
 This is a comparison of the benchmarking results for indexed prefix search with fast-search and streaming prefix search.

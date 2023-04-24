@@ -27,12 +27,15 @@ module Jekyll
                 end
 
                 if page.data["index"] == true
+
                     operations.push({
+                        :put => "id:" + namespace + ":doc::" + namespace + path,
                         :fields => {
                             :path => path,
                             :namespace => namespace,
                             :title => title,
-                            :content => extract_text(page)
+                            :content => extract_text(page),
+                            :html => Kramdown::Document.new(page.content).to_html
                         }
                     })
                 end

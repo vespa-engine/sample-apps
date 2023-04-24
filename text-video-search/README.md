@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # Text-video search app
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)

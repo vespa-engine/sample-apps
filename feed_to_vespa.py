@@ -3,26 +3,19 @@
 
 import json
 import os
-import subprocess
 import sys
 import yaml
-
+import requests
+from requests.adapters import HTTPAdapter, Retry
 
 def find(json, path, separator = "."):
     if len(path) == 0: return json
     head, _, rest = path.partition(separator)
     return find(json[head], rest) if head in json else None
 
-
 # extract <id> from form id:open:doc::<id>
 def get_document_id(id):
     return id[id.rfind(":")+1:]
-
-
-def call(args):
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE)
-    (out, err) = proc.communicate()
-    return out
 
 
 def get_private_key_path():
@@ -46,98 +39,71 @@ def get_public_cert_path():
 
 
 def vespa_get(endpoint, operation, options):
-    endpoint = endpoint[:-1] if endpoint.endswith("/") else endpoint
     url = "{0}/{1}?{2}".format(endpoint, operation, "&".join(options))
-    print(url)
-    return call([
-        "curl",
-        "-gsS",
-        "--cert", get_public_cert_path(),
-        "--key", get_private_key_path(),
-        url ])
+    return session.get(url).json()
 
 
 def vespa_delete(endpoint, operation, options):
-    endpoint = endpoint[:-1] if endpoint.endswith("/") else endpoint
     url = "{0}/{1}?{2}".format(endpoint, operation, "&".join(options))
-    return call([
-        "curl",
-        "-gsS",
-        "--cert", get_public_cert_path(),
-        "--key", get_private_key_path(),
-        "-X", "DELETE",
-        url
-    ])
+    return session.delete(url).json()
+    
+def vespa_post(endpoint, doc, docid, namespace, doc_type):
+    url = "{0}/document/v1/{1}/{2}/docid/{3}".format(endpoint, namespace, doc_type, docid)
+    return session.post(url, json=doc).json()
+    
 
-
-def vespa_post(endpoint, doc, docid, namespace):
-    endpoint = endpoint[:-1] if endpoint.endswith("/") else endpoint
-    url = "{0}/document/v1/{1}/doc/docid/{2}".format(endpoint, namespace, docid)
-    return call([
-        "curl",
-        "-sS",
-        "-H", "Content-Type:application/json",
-        "--cert", get_public_cert_path(),
-        "--key", get_private_key_path(),
-        "-X", "POST",
-        "--data-binary", "{0}".format(doc),
-        url
-    ])
-
-
-def vespa_visit(endpoint, namespace, continuation = None):
+def vespa_visit(endpoint, namespace, doc_type, continuation = None):
     options = []
     options.append("wantedDocumentCount=500")
+    options.append("timeout=60s")
     if continuation is not None and len(continuation) > 0:
         options.append("&continuation={0}".format(continuation))
-    response = vespa_get(endpoint, "document/v1/{0}/doc/docid".format(namespace), options)
-    try:
-        return json.loads(response)
-    except:
-        print("Unable to parse JSON response from {0}. Should not happen, endpoint down? response: {1}".format(endpoint, response))
-        sys.exit(1)
-    return {}
+    return vespa_get(endpoint, "document/v1/{0}/{1}/docid".format(namespace,doc_type), options)
+    
 
-
-def vespa_remove(endpoint, doc_ids, namespace):
+def vespa_remove(endpoint, doc_ids, namespace, doc_type):
     options = []
     for doc_id in doc_ids:
         id = get_document_id(doc_id)
-        print("Removing: {0}".format(id))
-        vespa_delete(endpoint, "document/v1/{0}/doc/docid/{1}".format(namespace, id), options)
+        vespa_delete(endpoint, "document/v1/{0}/{1}/docid/{2}".format(namespace, doc_type, id), options)
 
 
-def vespa_feed(endpoint, feed, namespace):
+def vespa_feed(endpoint, feed, namespace, doc_type):
     for doc in get_docs(feed):
-        document_id = find(doc, "fields.namespace") +  find(doc, "fields.path")
-        print(vespa_post(endpoint, json.dumps(doc), document_id, namespace))
-
+        if doc_type == "doc": 
+        	    document_id = find(doc, "fields.namespace") + find(doc, "fields.path")
+        elif doc_type == "term":
+        		document_id = str(find(doc, "fields.hash")) 
+        elif doc_type == "paragraph":
+                document_id = get_document_id(doc['put'])
+        print(vespa_post(endpoint, doc, document_id, namespace, doc_type))
 
 def get_docs(index):
     file = open(index, "r", encoding='utf-8')
     return json.load(file)
 
-
-def get_indexed_docids(endpoint, namespace):
+def get_indexed_docids(endpoint, namespace, doc_type):
     docids = set()
     continuation = ""
     while continuation is not None:
-        json = vespa_visit(endpoint, namespace, continuation)
+        json = vespa_visit(endpoint, namespace, doc_type, continuation)
         documents = find(json, "documents")
         if documents is not None:
             ids = [ find(document, "id") for document in documents ]
-            for id in ids:
-                print("Found {0}".format(id))
             docids.update(ids)
         continuation = find(json, "continuation")
     return docids
 
 
-def get_feed_docids(feed, namespace):
+def get_feed_docids(feed, namespace, doc_type):
     with open(feed, "r", encoding='utf-8') as f:
         feed_json = json.load(f)
-    return set([ "id:{0}:doc::".format(namespace) + find(doc, "fields.namespace") + find(doc, "fields.path") for doc in feed_json ])
-
+    if doc_type == "doc": 
+    		return set([ "id:{0}:doc::".format(namespace) + find(doc, "fields.namespace") + find(doc, "fields.path") for doc in feed_json ])
+    elif doc_type == "term": 
+    		return set([ "id:{0}:term::".format(namespace) + str(find(doc, "fields.hash")) for doc in feed_json ])
+    elif doc_type == "paragraph": 
+    		return set([ doc['put'] for doc in feed_json ])
 
 def print_header(msg):
     print("")
@@ -146,8 +112,8 @@ def print_header(msg):
     print("*" * 80)
 
 
-def read_config():
-    with open("_config.yml", "r") as f:
+def read_config(config_file):
+    with open(config_file, "r") as f:
         return yaml.safe_load(f)
 
 
@@ -155,17 +121,19 @@ def update_endpoint(endpoint, config):
     do_remove_index = config["search"]["do_index_removal_before_feed"]
     do_feed = config["search"]["do_feed"]
     namespace = config["search"]["namespace"]
+    doc_type = config["search"]["doc_type"]
 
     endpoint_url = endpoint["url"]
+    endpoint_url = endpoint_url[:-1] if endpoint_url.endswith("/") else endpoint_url
     endpoint_indexes = endpoint["indexes"]
 
     print_header("Retrieving already indexed document ids for endpoint {0}".format(endpoint_url))
-    docids_in_index = get_indexed_docids(endpoint_url, namespace)
+    docids_in_index = get_indexed_docids(endpoint_url, namespace, doc_type)
     print("{0} documents found.".format(len(docids_in_index)))
 
     if do_remove_index:
         print_header("Removing all indexed documents in {0}".format(endpoint_url))
-        vespa_remove(endpoint_url, docids_in_index, namespace)
+        vespa_remove(endpoint_url, docids_in_index, namespace, doc_type)
         print("{0} documents removed.".format(len(docids_in_index)))
 
     if do_feed:
@@ -173,7 +141,7 @@ def update_endpoint(endpoint, config):
         print_header("Parsing feed file(s) for document ids")
         for index in endpoint_indexes:
             assert os.path.exists(index)
-            docids_in_feed = docids_in_feed.union(get_feed_docids(index, namespace))
+            docids_in_feed = docids_in_feed.union(get_feed_docids(index, namespace, doc_type))
         print("{0} documents found.".format(len(docids_in_feed)))
 
         if len(docids_in_feed) == 0:
@@ -184,20 +152,29 @@ def update_endpoint(endpoint, config):
             print_header("Removing indexed documents not in feed in {0}".format(endpoint_url))
             for id in docids_to_remove:
                 print("To Remove: {0}".format(id))
-            vespa_remove(endpoint_url, docids_to_remove, namespace)
+            vespa_remove(endpoint_url, docids_to_remove, namespace, doc_type)
             print("{0} documents removed.".format(len(docids_to_remove)))
         else:
             print("No documents to be removed.")
 
         for index in endpoint_indexes:
             print_header("Feeding {0} to {1}...".format(index, endpoint_url))
-            print(vespa_feed(endpoint_url, index, namespace))
+            print(vespa_feed(endpoint_url, index, namespace, doc_type))
 
         print("{0} documents fed.".format(len(docids_in_feed)))
 
 
 def main():
-    config = read_config()
+    configuration_file = sys.argv[1]
+    config = read_config(configuration_file)
+    global session
+    session = requests.Session()
+    retries = Retry(total=10, connect=10,
+        backoff_factor=0.8,
+        status_forcelist=[ 500, 503, 504, 429 ]
+    )
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+    session.cert = (get_public_cert_path(), get_private_key_path())
     for endpoint in config["search"]["feed_endpoints"]:
         update_endpoint(endpoint, config)
 
