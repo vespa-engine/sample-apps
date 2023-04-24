@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -14,35 +18,30 @@ Use the AWS multinode quick-start guides in [getting started](https://docs.vespa
 See [vespa.ai/support](https://vespa.ai/support) for how to get help / FAQ / Stack Overflow.
 [Admin procedures](https://docs.vespa.ai/en/operations/admin-procedures.html) can be a good read, too.
 
-
-
 ## Multinode applications
 
 
-### [Multinode](multinode)
-Set up a three-node application and experiment with node start/stop.
+### Multinode
+The [Multinode](multinode/) application sets up a three-node application and experiment with node start/stop.
 Use status and metrics pages to inspect the system.
-Whenever deploying and facing issues, please refer to this application for how to get useful debugging information
-for support follow-up - i.e. run this application first.
+Whenever deploying and facing issues, please refer to this application for how to get useful debugging information for support follow-up - i.e. run this application first.
 
-
-### [Multinode High Availability](multinode-HA)
-Use this application as a starting point for high-availability multi-node applications.
+### Multinode High Availability
+The [Multinode High Availability](multinode-HA/) application is a great starting point for high-availability multi-node deployment of Vespa.
 The example deploys 10 nodes on one base host, and is a good example of a full-fledged multinode application -
-use this as a template.
-This example includes securing the application using mTLS.
+use this as a template. This example includes securing the application using mTLS.
 
 
-### [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke)
-This sample application demonstrates deploying a simple Vespa application on Kubernetes.
-
-
+### Vespa on Kubernetes 
+The [Vespa on Kubernetes (Google Kubernetes Engine)](basic-search-on-gke/)
+application demonstrates deploying a simple Vespa application on Kubernetes (Google GKE).
 
 ## Monitoring
+These are monitoring and metrics-oriented applications.
 
-### [Vespa metrics and monitoring](monitoring/album-recommendation-monitoring)
-This sample app demonstrates how to integrate Vespa with **Prometheus and Grafana**.
-
+### Vespa metrics and monitoring
+The [Vespa metrics and monitoring](monitoring/album-recommendation-monitoring/)
+application demonstrates how to integrate Vespa with **Prometheus and Grafana**.
 
 
 ## Troubleshooting
