@@ -464,7 +464,7 @@ Feed 5 documents, using the document-API endpoint in the _feed_ container cluste
 <pre data-test="exec">
 $ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); \
   do \
-    curl -H Content-Type:application/json -d @../../../album-recommendation/ext/$doc \
+    curl -H Content-Type:application/json -d @$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
     i=$(($i + 1)); echo; \
   done)
@@ -740,7 +740,7 @@ Feed 5 documents, using the document-API endpoint in the _feed_ container cluste
 <pre data-test="exec">
 $ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); do \
     curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
-      -H Content-Type:application/json -d @../../../album-recommendation/ext/$doc \
+      -H Content-Type:application/json -d @$doc \
       https://localhost:8443/document/v1/mynamespace/music/docid/$i; \
     i=$(($i + 1)); echo; \
   done)
