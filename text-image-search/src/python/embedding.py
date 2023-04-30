@@ -14,7 +14,7 @@ import matplotlib.image as mpimg
 
 
 def translate_model_names_to_valid_vespa_field_names(model_name):
-    return model_name.replace("/", "_").replace("-", "_").lower()
+    return model_name.replace("/", "_").replace("-", "_").replace("@", "_").lower()
 
 
 class ImageFeedDataset(Dataset):
@@ -147,7 +147,7 @@ def create_text_image_app(model_info):
     :return: A Vespa application package.
 
     """
-    app_package = ApplicationPackage(name="image_search")
+    app_package = ApplicationPackage(name="imagesearch")
 
     app_package.schema.add_fields(
         Field(name="image_file_name", type="string", indexing=["summary", "attribute"]),

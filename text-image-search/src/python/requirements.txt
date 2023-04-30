@@ -5,7 +5,8 @@ torchvision
 ftfy
 regex
 tqdm
-pyvespa
+pyvespa >= 0.33.0
+learntorank>=0.0.21
 streamlit
 matplotlib
 tenacity
