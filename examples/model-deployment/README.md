@@ -24,7 +24,7 @@ Note: This example is work in progress and not completed yet
 * [Ranking With ONNX Models](https://docs.vespa.ai/en/onnx.html)
 
 
-## Ignore - for auto testing
+## Auto testing
 
 <pre data-test="exec" data-test-assert-contains="1 passed">
 $ python3 -m pytest --nbmake $SD_SOURCE_DIR/examples/model-deployment/ONNXModelExport.ipynb
