@@ -133,3 +133,4 @@ jobs:
           python3 -m pip install -r test/requirements.txt
           python3 -m pip install --upgrade pytest nbmake torch pandas scikit-learn torchvision torchaudio onnx
           ./test/test.py examples/model-deployment/README.md
+          ./test/test.py text-image-search/src/python/README.md
