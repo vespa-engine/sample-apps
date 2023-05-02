@@ -132,7 +132,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r test/requirements.txt
           python3 -m pip install --upgrade pytest nbmake torch pandas scikit-learn torchvision torchaudio onnx
-          python3 -m pytest --debug --nbmake examples/model-deployment/README.md
+          python3 -m pytest --debug --nbmake $SD_SOURCE_DIR/examples/model-deployment/README.md
           cat pytestdebug.log
-          python3 -m pytest --debug --nbmake text-image-search/src/python/README.md
+          python3 -m pytest --debug --nbmake $SD_SOURCE_DIR/text-image-search/src/python/README.md
           cat pytestdebug.log
