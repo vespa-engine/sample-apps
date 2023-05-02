@@ -165,8 +165,7 @@ $ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=3s"
 </pre>
 
 **Shutdown and remove the container:**
-
-<pre data-test="after">
+<pre data-test="exec">
 $ docker rm -f vespa
 </pre>
 
@@ -174,4 +173,12 @@ $ docker rm -f vespa
 ## Auto testing
 <pre data-test="exec" data-test-assert-contains="1 passed">
 $ python3 -m pytest --nbmake $SD_SOURCE_DIR/text-image-search/src/python/compare-pre-trained-clip-for-text-image-search.ipynb
+</pre>
+
+** Cleanup post-auto-testing **
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
+<pre data-test="after">
+$ docker rm -f imagesearch
 </pre>
