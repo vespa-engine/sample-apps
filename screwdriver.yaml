@@ -127,8 +127,8 @@ jobs:
     image: quay.io/centos/centos:stream8
     annotations:
       screwdriver.cd/timeout: 120
-      screwdriver.cd/cpu: HIGH
-      screwdriver.cd/ram: HIGH
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
       screwdriver.cd/dockerEnabled: true
       screwdriver.cd/dockerCpu: TURBO
       screwdriver.cd/dockerRam: TURBO
@@ -144,6 +144,6 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install pytest notebook nbconvert runnb
       - run-notebooks-except-cloud-related: |
-          (cd text-image-search/src/python && runnb --allow-not-trusted compare-pre-trained-clip-for-text-image-search.ipynb)
+          #(cd text-image-search/src/python && runnb --allow-not-trusted compare-pre-trained-clip-for-text-image-search.ipynb)
           #python3 -m pip install --upgrade pytest nbmake torch pandas scikit-learn torchvision torchaudio onnx
-          #(cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
+          (cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
