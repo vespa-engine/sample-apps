@@ -62,8 +62,3 @@ streamlit run app.py
 ```
 
 [Animation](https://data.vespa.oath.cloud/sample-apps-data/image_demo.gif)
-
-## Auto testing
-<pre data-test="exec" data-test-assert-contains="1 passed">
-$ python3 -m pytest --nbmake $SD_SOURCE_DIR/text-image-search/src/python/compare-pre-trained-clip-for-text-image-search.ipynb
-</pre>

@@ -7,6 +7,7 @@ regex
 tqdm
 pyvespa >= 0.33.0
 learntorank>=0.0.21
+ipywidgets
 streamlit
 matplotlib
 tenacity
