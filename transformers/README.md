@@ -5,29 +5,31 @@
 
 # Vespa sample application - Transformers
 
-This sample application is a small example of using Transformers for ranking
+This sample application is a small example of using Transformer-based cross-encoders for ranking
 using a small sample from the MS MARCO data set. 
+
 See also the more comprehensive [MS Marco Ranking sample app](../msmarco-ranking/)
 which uses multiple Transformer based models for retrieval and ranking. 
 
 This application uses [phased ranking](https://docs.vespa.ai/en/phased-ranking.html), first a set of candidate
-documents are retrieved using [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html) and the first phase ranking
-is using [BM25](https://docs.vespa.ai/en/reference/bm25.html). The top-k ranking documents from the first phase
-is re-ranked using the Transformer model. The latter is performed at the new [global phase](https://docs.vespa.ai/en/phased-ranking.html#global-phase) on the stateless container.
+documents are retrieved using [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html). 
+
+The hits retrieved by the WAND operator are ranked using [BM25](https://docs.vespa.ai/en/reference/bm25.html). 
+The top-k ranking documents from the first phase
+is re-ranked using a cross-encoder Transformer model. 
+The cross-encoder re-ranking uses [global phase](https://docs.vespa.ai/en/phased-ranking.html#global-phase), evaluated in the
+Vespa stateless container.
 
 ## Requirements:
 
-* [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
+* [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
-* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
-* [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
-  to build the application.
-* python3.8+ (tested with 3.8)
+* python3.8+ to export models from Huggingface. 
 
 **Validate environment, should be minimum 6G:**
 
@@ -83,28 +85,19 @@ $ python3 -m pip install --upgrade pip
 $ python3 -m pip install torch transformers onnx onnxruntime
 </pre>
 
-**Setup ranking models**
-
-This downloads the transformer model, converts it to an ONNX model and puts it
-in the `files` directory. 
+**Download and export cross-encoder model**
 
 For this sample application, we use a [fine-tuned MiniLM](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
 model with 6 layers and 22 million parameters.
-However, other [Transformers models](https://huggingface.co/docs/transformers/index) can be used.
 
-To export other models, for instance DistilBERT or ALBERT, change the
-code in "src/python/setup-model.py". However, this sample application
-uses a Vespa [WordPiece embedder](https://docs.vespa.ai/en/embedding.html), so if the Transformer model requires a
-different tokenizer, you would have to add that yourself.
+This step downloads the cross-encoder transformer model, converts it to an ONNX model and saves it
+in the `files` directory.
 
 <pre data-test="exec">
 $ ./bin/setup-ranking-model.sh
 </pre>
 
-**Build the application package:**
-<pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
-$ mvn clean package -U
-</pre>
+**Deploy the application:** 
 
 Verify that configuration service (deploy api) is ready
 
@@ -112,11 +105,10 @@ Verify that configuration service (deploy api) is ready
 $ vespa status deploy --wait 300
 </pre>
 
-
-Deploy the application 
+Deploy the app 
 
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa deploy --wait 300
+$ vespa deploy --wait 300 application
 </pre>
 
 Wait for the application endpoint to become available
@@ -129,37 +121,37 @@ $ vespa status --wait 300
 **Create data feed:**
 
 Convert from MS MARCO format to Vespa JSON feed format. 
-To use the entire MS MARCO data set, use the download script.
+To use the entire MS MARCO data set, use the download script. This
+step creates a `vespa.json` file in the `msmarco` directory:
 
 <pre data-test="exec">
 $ ./bin/convert-msmarco.sh
 </pre>
 
-**Feed data:**
+**Index data:**
 
 <pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-$ ./vespa-feed-client-cli/vespa-feed-client \
-    --verbose --file msmarco/vespa.json --endpoint http://localhost:8080
+$ vespa feed msmarco/vespa.json --endpoint http://localhost:8080
 </pre>
 
 
-**Test the application:**
+**Query data:**
 
-Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
-which runs a set of basic tests to verify that the application is working as expected.
+Query example using the vespa cli, note that the embed part is required to convert the query text
+to wordpiece representation which is used by the rank-profile. 
 
-<pre data-test="exec" data-test-assert-contains="Success">
-vespa test src/test/application/tests/system-test/document-ranking-test.json
+<pre data-test="exec" data-test-assert-contains="children">
+$ vespa query \
+ 'yql=select title from msmarco where userQuery()' \
+ 'query=is long term care insurance tax deductible' \
+ 'ranking=transformer' \
+ 'input.query(q)=embed(is long term care insurance tax deductible)'
 </pre>
 
 This script reads from the MS MARCO queries and issues a Vespa query:
 
 <pre data-test="exec" data-test-assert-contains="children">
-$ ./src/python/evaluate.py
+$ ./bin/evaluate.py
 </pre>
 
 **Shutdown and remove the container:**
@@ -167,3 +159,10 @@ $ ./src/python/evaluate.py
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
+
+## Bonus 
+To export other cross-encoder models, change the
+code in "src/python/setup-model.py". 
+However, this sample application uses a Vespa [WordPiece embedder](https://docs.vespa.ai/en/embedding.html#wordpiece-embedder), 
+so if the Transformer model requires a different tokenizer, you would have to change the tokenizer. For example
+using Vespa [SentencePiece emebdder](https://docs.vespa.ai/en/embedding.html#sentencepiece-embedder).
