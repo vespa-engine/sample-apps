@@ -122,14 +122,27 @@ jobs:
           $SD_SOURCE_DIR/test/test.py -w $SD_SOURCE_DIR $SD_SOURCE_DIR/billion-scale-image-search/README.md
 
   verify-notebooks:
-    requires: [~pr, ~commit]
-    sourcePaths: ["examples/model-deployment/","text-image-search/"]
-    image: python:3.10.8
+    requires: [~commit,~pr]
+    sourcePaths: [ "examples/model-deployment/","text-image-search/" ]
+    image: quay.io/centos/centos:stream8
     annotations:
+      screwdriver.cd/timeout: 120
+      screwdriver.cd/cpu: TURBO
+      screwdriver.cd/ram: TURBO
+      screwdriver.cd/dockerEnabled: true
+      screwdriver.cd/dockerCpu: TURBO
+      screwdriver.cd/dockerRam: TURBO
       screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
     steps:
-      - run-tests: |
+      - setup-with-docker: |
+          dnf install -y git dnf-plugins-core
+          dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+          dnf install -y docker-ce-cli
+          docker system info
+      - install-python: |
+          dnf install -y python39
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r test/requirements.txt
-          python3 -m pip install --upgrade pytest nbmake torch pandas scikit-learn torchvision torchaudio onnx
-          ./test/test.py examples/model-deployment/README.md
+          python3 -m pip install pytest notebook nbconvert runnb
+      - run-notebooks: |
+          (cd text-image-search/src/python && runnb --allow-not-trusted compare-pre-trained-clip-for-text-image-search.ipynb)
+          (cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
