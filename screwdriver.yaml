@@ -143,6 +143,6 @@ jobs:
           dnf install -y python39
           python3 -m pip install --upgrade pip
           python3 -m pip install pytest notebook nbconvert runnb
-      - run-notebooks-except-cloud-related: |
+      - run-notebooks: |
           (cd text-image-search/src/python && runnb --allow-not-trusted compare-pre-trained-clip-for-text-image-search.ipynb)
           (cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
