@@ -166,5 +166,5 @@ $ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=3s"
 
 **Shutdown and remove the container:**
 <pre data-test="after">
-$ docker rm -f imagesearch
+$ docker rm -f vespa
 </pre>
