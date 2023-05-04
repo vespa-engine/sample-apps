@@ -8,6 +8,7 @@ tqdm
 pyvespa >= 0.33.0
 learntorank>=0.0.21
 ipywidgets
+plotly
 streamlit
 matplotlib
 tenacity
