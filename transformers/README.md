@@ -16,7 +16,7 @@ documents are retrieved using [WAND](https://docs.vespa.ai/en/using-wand-with-ve
 
 The hits retrieved by the WAND operator are ranked using [BM25](https://docs.vespa.ai/en/reference/bm25.html). 
 The top-k ranking documents from the first phase
-is re-ranked using a cross-encoder Transformer model. 
+are re-ranked using a cross-encoder Transformer model. 
 The cross-encoder re-ranking uses [global phase](https://docs.vespa.ai/en/phased-ranking.html#global-phase), evaluated in the
 Vespa stateless container.
 
