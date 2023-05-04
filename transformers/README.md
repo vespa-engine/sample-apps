@@ -137,7 +137,7 @@ $ vespa feed msmarco/vespa.json -t http://localhost:8080
 
 **Query data:**
 
-Query example using the vespa cli, note that the embed part is required to convert the query text
+Note that the embed part is required to convert the query text
 to wordpiece representation which is used by the rank-profile. 
 
 <pre data-test="exec" data-test-assert-contains="children">
