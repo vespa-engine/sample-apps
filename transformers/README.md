@@ -165,4 +165,4 @@ To export other cross-encoder models, change the
 code in "src/python/setup-model.py". 
 However, this sample application uses a Vespa [WordPiece embedder](https://docs.vespa.ai/en/embedding.html#wordpiece-embedder), 
 so if the Transformer model requires a different tokenizer, you would have to change the tokenizer. For example
-using Vespa [SentencePiece emebdder](https://docs.vespa.ai/en/embedding.html#sentencepiece-embedder).
+using Vespa [SentencePiece embedder](https://docs.vespa.ai/en/embedding.html#sentencepiece-embedder).
