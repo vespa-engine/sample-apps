@@ -13,7 +13,7 @@ Blog post series:
 This post introduces the dataset used in this sample application and several baseline ranking models. 
 * [Improving Product Search with Learning to Rank - part two](https://blog.vespa.ai/improving-product-search-with-ltr-part-two/)
 This post demonstrates how to train neural methods for search ranking. The neural training routine is found in this
-this [notebook](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb)
+[notebook](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb).
 * [Improving Product Search with Learning to Rank - part three](https://blog.vespa.ai/improving-product-search-with-ltr-part-three/)
 This post demonstrates how to train GBDT methods for search ranking. The model uses also neural signals as features. See notebooks:
@@ -132,21 +132,10 @@ $ (cd application; vespa test tests/system-test/feed-and-search-test.json)
 
 ## Indexing sample product data
 
-Download Vespa feed client 
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
-
 Download the pre-processed sample product data for 16 products:
 
 <pre data-test="exec">
-$ zstdcat sample-data/sample-products.jsonl.zstd | \
-    ./vespa-feed-client-cli/vespa-feed-client \
-     --stdin --endpoint http://localhost:8080
+$ zstdcat sample-data/sample-products.jsonl.zstd | vespa feed -
 </pre>
 
 ## Evaluation 
@@ -167,9 +156,9 @@ $ python3 scripts/evaluate.py \
   --ranking semantic-title 
 </pre>
 
-The evaluate script runs all the queries in the test split using the `--ranking` `<rank-profile>` 
-and produces a `<ranking>.run` file with the top ranked results. 
-This file is is formatted in the format that `trec_eval` expects. 
+[evaluate.py](scripts/evaluate.py) runs all the queries in the test split using the `--ranking` `<rank-profile>`
+and produces a `<ranking>.run` file with the top ranked results.
+This file is formatted in the format that `trec_eval` expects.
 
 <pre data-test="exec" data-test-assert-contains="B08PB9TTKT">
 $ cat semantic-title.run 
@@ -219,8 +208,8 @@ $ trec_eval test.qrels semantic-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
 </pre>
 
 This particular product ranking for the query produces a NDCG score of 0.7046. 
-Note that the `sample-data/test-sample.parquet` file only contains one query. To
-get the overall score, one must computes all the NDCG scores of all queries in the
+Note that the `sample-data/test-sample.parquet` file only contains one query.
+To get the overall score, one must compute all the NDCG scores of all queries in the
 test split and report the *average* NDCG score.  
 
 Note that the evaluation uses custom NDCG label gains:
@@ -230,7 +219,7 @@ Note that the evaluation uses custom NDCG label gains:
 - Label 3 is **C**omplement with 0.1 gain
 - Label 4 is **E**xact with 1 gain
 
-We can also try another ranking model
+We can also try another ranking model:
 
 <pre data-test="exec">
 $ python3 scripts/evaluate.py \
@@ -246,6 +235,7 @@ $ trec_eval test.qrels cross-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
 Which for this query produces a NDCG score of 0.8208, better than the semantic-title model.
 
 ## Shutdown and remove the Docker container
+
 
 <pre data-test="after">
 $ docker rm -f vespa
@@ -264,9 +254,7 @@ This step is resource intensive as the semantic embedding model encodes
 the product title and description into the dense embedding vector space.
 
 <pre>
-$ zstdcat product-search-products.jsonl.zstd | \
-    ./vespa-feed-client-cli/vespa-feed-client \
-     --stdin --endpoint http://localhost:8080
+$ zstdcat product-search-products.jsonl.zstd | vespa feed -
 </pre>
 
 Evaluate the `hybrid` baseline rank profile using the evaluation 
