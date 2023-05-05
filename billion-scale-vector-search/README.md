@@ -60,7 +60,7 @@ For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
 <pre>
 $ vespa config set target cloud
 $ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
+$ vespa auth login
 $ vespa auth cert
 </pre>
 
@@ -114,7 +114,7 @@ This step creates two feed files:
 Install python dependencies:
 
 <pre data-test="exec">
-$ pip3 install numpy requests tqdm 
+$ pip3 install numpy requests tqdm
 </pre>
 
 <pre data-test="exec">
@@ -160,10 +160,8 @@ $ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-clien
 The _graph_ vectors must be feed before the _if_ vectors:
 
 <pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client \
-  --file graph-vectors.jsonl --endpoint http://localhost:8080/
-$ ./vespa-feed-client-cli/vespa-feed-client \
-  --file if-vectors.jsonl --endpoint http://localhost:8080/
+$ vespa feed graph-vectors.jsonl
+$ vespa feed if-vectors.jsonl
 </pre>
 
 
