@@ -5,7 +5,8 @@
   <container id="default" version="1.0">
     <document-api/>
 
-    <component id="com.yahoo.language.wordpiece.WordPieceEmbedder" bundle="linguistics-components">
+    <component id="tokenizer"
+               class="com.yahoo.language.wordpiece.WordPieceEmbedder" bundle="linguistics-components">
       <config name="language.wordpiece.word-piece">
         <model>
           <item>
@@ -15,29 +16,14 @@
         </model>
       </config>
     </component>
-
-    <document-processing>
-      <chain id="transformer-processing" inherits="indexing">
-        <documentprocessor id="ai.vespa.examples.processor.TransformerProcessor" bundle="transformers"/>
-      </chain>
-    </document-processing>
-
-    <search>
-      <chain id="transformer" inherits="vespa">
-        <searcher id="ai.vespa.examples.searcher.TransformerSearcher" bundle="transformers"/>
-      </chain>
-    </search>
+    <search/>
   </container>
 
 
   <content id='msmarco' version='1.0'>
-    <search>
-      <visibility-delay>1</visibility-delay>
-    </search>
     <redundancy>2</redundancy>
     <documents>
       <document type='msmarco' mode="index"/>
-      <document-processing cluster="default" chain="transformer-processing" />
     </documents>
     <nodes>
       <node hostalias="node1" distribution-key="0" />
@@ -47,7 +33,7 @@
         <tuning>
           <searchnode>
             <requestthreads>
-              <persearch>10</persearch>
+              <persearch>1</persearch>
             </requestthreads>
           </searchnode>
         </tuning>

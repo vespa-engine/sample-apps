@@ -3,19 +3,23 @@
 import os
 import csv
 import json
-import urllib.parse, urllib.request
+import requests
 
 data_dir = "msmarco"
 queries_file = os.path.join(data_dir, "test-queries.tsv")
 
 
 def vespa_search(query, hits=10):
-    url = "http://localhost:8080/search/?hits={}&query={}".format(
-              hits,
-              urllib.parse.quote_plus(query)
-          )
+    request_body = {
+        "query": query,
+        "yql": "select * from msmarco where userQuery()",
+        "input.query(q)": "embed(%s)".format(query),
+        "ranking": "transformer"
+    }
+    url = "http://localhost:8080/search/"
     print("Querying: " + url)
-    return json.loads(urllib.request.urlopen(url).read())
+    response = requests.post(url, json=request_body)
+    return response.json()
 
 
 def main():

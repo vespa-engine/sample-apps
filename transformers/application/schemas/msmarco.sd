@@ -20,40 +20,45 @@ schema msmarco {
             indexing: index | summary
             index: enable-bm25
         }
+    }
 
-        field tokens type tensor<float>(d0[128]) {
-            indexing: attribute
-        }
-
+    field tokens type tensor<float>(d0[128]) {
+        indexing: (input title || "") . " " . (input body || "") | embed tokenizer | attribute
     }
 
     fieldset default {
         fields: title, body
     }
 
-    onnx-model rank_model {
+    onnx-model cross_encoder {
         file: files/ranking_model.onnx
         input input_ids: input_ids
         input attention_mask: attention_mask
         input token_type_ids: token_type_ids
     }
 
-    rank-profile transformer {
+    rank-profile bm25 {
+        first-phase {
+            expression: bm25(title) + bm25(body)
+        }
+    }
+
+    rank-profile transformer inherits default {
 
         inputs {
-            query(input) tensor<float>(d0[32])
+            query(q) tensor<float>(d0[32])
         }
 
         function input_ids() {
-            expression: tokenInputIds(128, query(input), attribute(tokens))
+            expression: tokenInputIds(128, query(q), attribute(tokens))
         }
 
         function token_type_ids() {
-            expression: tokenTypeIds(128, query(input), attribute(tokens))
+            expression: tokenTypeIds(128, query(q), attribute(tokens))
         }
 
         function attention_mask() {
-            expression: tokenAttentionMask(128, query(input), attribute(tokens))
+            expression: tokenAttentionMask(128, query(q), attribute(tokens))
         }
 
         # Use BM25 as a first phase
@@ -64,7 +69,7 @@ schema msmarco {
         # The output of this model is a tensor of size ["batch", 1]
         global-phase {
             rerank-count: 10
-            expression: onnx(rank_model){d0:0,d1:0}
+            expression: onnx(cross_encoder){d0:0,d1:0}
         }
 
     }
