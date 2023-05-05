@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -8,16 +7,18 @@
 A sample Vespa application to assist with learning how to group according to the
 [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
 
+
 **Validate environment, should be minimum 4G:**
 
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
+Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+for details and troubleshooting:
 
-**Check-out, compile and run:**
+
+**Check-out, start Docker container:**
 
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
@@ -28,50 +29,38 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 
-**Wait for the configserver to start:**
+**Install the Vespa CLI, configure:**
+<pre data-test="exec">
+$ brew install vespa-cli
+$ vespa config set target local
+</pre>
 
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:19071/ApplicationStatus
+
+**Wait for the configserver to start:**
+<pre data-test="exec" data-test-wait-for="Deploy API at http://127.0.0.1:19071 is ready">
+$ vespa status deploy --wait 300
 </pre>
 
 
 **Deploy the application:**
-
-<pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x README.md .gitignore "ext/*" "vespa-feed-client-cli*" | \
-  curl --header Content-Type:application/zip --data-binary @- \
-  localhost:19071/application/v2/tenant/default/prepareandactivate
-</pre>
-
-
-**Wait for the application to start:**
-
-<pre data-test="exec" data-test-wait-for="200 OK">
-$ curl -s --head http://localhost:8080/ApplicationStatus
+<pre data-test="exec" data-test-assert-contains="Success: Deployed">
+$ vespa deploy --wait 300
 </pre>
 
 
 **Generate sample from csv**
-
 <pre data-test="exec">
 $ python3 ext/parts.py -f ext/purchase.csv > ext/purchase.json
 </pre>
 
 
 **Feed data into application:**
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-$ ./vespa-feed-client-cli/vespa-feed-client \
-    --verbose --file ext/purchase.json --endpoint http://localhost:8080
+<pre data-test="exec" data-test-wait-for='"feeder.ok.count": 20'>
+$ vespa feed ext/purchase.json
 </pre>
 
 
 **Shutdown and remove the container:**
-
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
