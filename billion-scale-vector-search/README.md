@@ -147,16 +147,6 @@ Test basic functionality:
 $ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
 
-
-Get the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
-
 The _graph_ vectors must be feed before the _if_ vectors:
 
 <pre data-test="exec">
