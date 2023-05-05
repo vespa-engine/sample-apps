@@ -121,8 +121,7 @@ $ vespa deploy --wait 300
 </pre>
 
 
-## Index marketplace users  
-This example uses the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html) to feed documents.
+## Index marketplace users
 The users in the imaginary marketplace:
 ```json lines
 {"put": "id:s:user::alice", "fields": {"target": "gender in ['male'] and age in [30..40] and income in [200..50000]", "age": 23, "gender": ["female"]}}
