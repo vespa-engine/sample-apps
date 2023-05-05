@@ -177,21 +177,21 @@ Download this sample application:
 $ vespa clone billion-scale-image-search myapp && cd myapp
 </pre>
 
+
 ## Download Vector + Metadata
 
-These instruction uses the first split file (0000) of a total of 2314 files in the LAION2B-en split:
-
+These instructions use the first split file (0000) of a total of 2314 files in the LAION2B-en split.
 Download the vector data file:
 
 <pre data-test="exec">
-$ wget \
+$ curl -L -o img_emb_0000.npy \
   https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
 </pre>
 
 Download the metadata file:
 
 <pre data-test="exec">
-$ wget  \
+$ curl -L -o metadata_0000.parquet \
   https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
 </pre>
 
@@ -260,23 +260,21 @@ which runs a set of basic tests to verify that the application is working as exp
 $ vespa test src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
 
-Download the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
-
 The _centroid_ vectors **must** be indexed first:
 
 <pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client \
-  --file centroids.jsonl --endpoint http://localhost:8080/
-$ ./vespa-feed-client-cli/vespa-feed-client \
-  --file feed.jsonl --endpoint http://localhost:8080/
+$ vespa feed centroids.jsonl
+$ vespa feed feed.jsonl
 </pre>
+
+Track number of documents while feeding:
+
+<pre data-test="exec">
+$ vespa query 'yql=select * from image where true' \
+  hits=0 \
+  ranking=unranked
+</pre>
+
 
 ## Fetching data
 
@@ -284,7 +282,7 @@ Fetch a single document using [document api](https://docs.vespa.ai/en/reference/
 
 <pre data-test="exec" data-test-assert-contains="vector">
 $ vespa document get \
- id:laion:image::5775990047751962856 
+ id:laion:image::5775990047751962856
 </pre>
 
 The response contains all fields, including the full vector representation and the
