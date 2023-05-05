@@ -27,7 +27,6 @@
         <module>news/app-7-parent-child</module>
         <module>text-image-search</module>
         <module>text-search</module>
-        <module>transformers</module>
         <module>use-case-shopping</module>
         <module>examples/vespa-chinese-linguistics</module>
         <module>examples/document-processing</module>
