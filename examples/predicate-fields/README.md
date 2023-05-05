@@ -3,6 +3,7 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
+
 # Vespa sample application - Predicate Search
 
 This sample application demonstrates how to use Vespa [predicate fields](https://docs.vespa.ai/en/predicate-fields.html) 
@@ -13,6 +14,7 @@ systems at scale.
 
 For example, this predicate using three target 
 properties or attributes (not to be confused with Vespa [attributes](https://docs.vespa.ai/en/attributes.html)):
+
 > gender in ['male'] and age in [30..40] and income in [200..50000]
 
 This sample application demonstrates an imaginary two-sided dating marketplace
@@ -27,18 +29,21 @@ a high income (measured in thousands).
 
 > gender in ['male'] and age in [30..40] and income in [200..50000]
 
-Both `Bob` and `Alice` are indexed in the marketplace's index system (powered by Vespa of course) as Vespa documents. The 
-predicate expression in the *document* determines which queries (other users) they would be retrieved for. 
+Both `Bob` and `Alice` are indexed in the marketplace's index system (powered by Vespa of course) as Vespa documents.
+The predicate expression in the *document* determines which queries (other users) they would be retrieved for.
 The marketplace owner is responsible for managing available targeting properties (e.g `gender`, `age` and `income`) and
 at query or recommendation time, set all known properties of the query side user. 
 
 We also demonstrate how the marketplace can implement query side filter over regular Vespa fields, so a user `Karen`
-can also specify regular query side constraints (for example, searching for users in a certain age group). This way, 
-the marketplace system has two-sided filtering. Imagine if deployed ad systems would allow the user to also have constraints
-on the ads shown, and not just the other way around? 
+can also specify regular query side constraints (for example, searching for users in a certain age group).
+This way, the marketplace system has two-sided filtering.
+Imagine if deployed ad systems would allow the user to also have constraints on the ads shown,
+and not just the other way around?
 
 Finally, we demonstrate how the marketplace can [rank](https://docs.vespa.ai/en/ranking.html) users
-using marketplace business metrics like cost-per-click (CPC) and user [interest embeddings](https://docs.vespa.ai/en/tutorials/news-4-embeddings.html). 
+using marketplace business metrics like cost-per-click (CPC) and user
+[interest embeddings](https://docs.vespa.ai/en/tutorials/news-4-embeddings.html).
+
 
 ## Quick start
 
@@ -67,9 +72,6 @@ Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
-
 For local deployment using the docker image, use:
 
 <pre data-test="exec">
@@ -84,9 +86,6 @@ $ vespa config set application tenant-name.myapp.default
 $ vespa auth login 
 $ vespa auth cert
 </pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started).
-It's possible to switch between local deployment and cloud deployment by changing the `config target`.
 
 Pull and start the vespa docker container image:
 
@@ -121,6 +120,7 @@ Finally, deploy the app:
 $ vespa deploy --wait 300
 </pre>
 
+
 ## Index marketplace users  
 This example uses the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html) to feed documents.
 The users in the imaginary marketplace:
@@ -130,33 +130,22 @@ The users in the imaginary marketplace:
 {"put": "id:s:user::karen", "fields": {"target": "gender in ['male'] and age in [30..55]", "age":55, "gender": ["female"]}}
 {"put": "id:s:user::mia", "fields": {"target": "gender in ['male'] and age in [50..80]", "age":56,"gender": ["female"]}}
 ```
-`target` is the predicate field, the rest are regular fields. The `target` predicate field specifies which users
-the indexed user want's to be shown to, and the regular fields like `age` and `gender` could be searched by other users 
-in the marketplace when looking for love. 
-
-Download the latest `vespa-feed-client`:
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-  && FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-  && curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-  && unzip -o vespa-feed-client-cli.zip
-</pre>
+`target` is the predicate field, the rest are regular fields.
+The `target` predicate field specifies which users the indexed user want's to be shown to,
+and the regular fields like `age` and `gender` could be searched by other users in the marketplace.
 
 Feed the documents:
+
 <pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client --verbose \
-  --file users.jsonl \
-  --endpoint http://localhost:8080
+$ vespa feed users.jsonl
 </pre>
 
-When feeding to Vespa cloud endpoints, you also need to include the data plane certificate and key -
-[example](https://github.com/vespa-cloud/vector-search#feeding-example).
-
-One can also feed using curl or the Vespa-cli:
+To update one document:
 
 <pre data-test="exec">
 $ vespa document -v user.json
 </pre>
+
 
 ## Matching using predicate attributes
 
@@ -182,6 +171,7 @@ has specified a picky income limitation.
 $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"]}, {"age":32, "income": 100})'
 </pre>
 
+
 ## Matching combining predicate with regular filters 
 Another user, _Jon_, enters the marketplace's search page. The marketplace knows the following properties about _Jon_:
 
@@ -205,7 +195,9 @@ $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["m
 </pre>
 
 This is an example of two-sided filtering, both the search user and the indexed user has constraints.
-## Matching and ranking 
+
+
+## Matching and ranking
 
 Predicate fields control matching and as we have seen from the above examples,
 can also be used with regular query filters.
@@ -217,12 +209,10 @@ but also which documents (users) are exposed to
 Feed data with user profile embedding vectors, and the marketplace business user `cpc`:
 
 <pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client --verbose \
-  --file users_with_ranking_data.jsonl \
-  --endpoint http://localhost:8080
+$ vespa feed users_with_ranking_data.jsonl
 </pre>
 
- _Ronald_, enters the marketplace home page again
+_Ronald_, enters the marketplace home page again
 
 - gender: male
 - age: 32
@@ -251,7 +241,6 @@ as a query tensor.
 $ vespa query 'yql=select documentid from sources * where (predicate(target, {"gender":["male"]}, {"age":32, "income": 3000})) and ({targetHits:10}nearestNeighbor(profile,profile))' \
   'input.query(profile)=[0.10958350208504841, 0.4642735718813399, 0.7250558657395969, 0.1689946673589695]'
 </pre>
-
 
 
 ### Shutdown and remove the Vespa container
