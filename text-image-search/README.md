@@ -137,15 +137,7 @@ Alternatively use pre-computed embeddings, see next instruction.
 $ python3 src/python/clip_feed.py
 </pre>
 
-Alternatively, instead of computing the embeddings, use our pre-computed embeddings and feed directly with 
-[vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html): 
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
+Alternatively, instead of computing the embeddings, use the pre-computed embeddings:
 
 <pre data-test="exec">
 $ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
@@ -153,9 +145,7 @@ $ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
 </pre>
 
 <pre data-test="exec">
-$ zstdcat flickr-8k-clip-embeddings.jsonl.zst | \
-    ./vespa-feed-client-cli/vespa-feed-client \
-     --stdin --endpoint http://localhost:8080
+$ zstdcat flickr-8k-clip-embeddings.jsonl.zst | vespa feed -
 </pre>
 
 **Search:**

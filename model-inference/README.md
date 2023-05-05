@@ -1,7 +1,7 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
+
 
 # Vespa sample applications - Stateless model evaluation
 
@@ -21,6 +21,7 @@ various ways stateless model evaluation can be used in Vespa:
   executing custom code before evaluating a model.
 - In searchers and document processors.
 - In a post-processing searcher to run a model in batch with the result from the content node.
+
 
 ### Quick Start 
 
@@ -52,13 +53,13 @@ $ brew install vespa-cli
 Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
 using target cloud.
 
-For local deployment using docker image use
+For local deployment using docker image use:
 
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
 
 <pre>
 $ vespa config set target cloud
@@ -78,29 +79,29 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Download this sample application
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone model-inference myapp && cd myapp
 </pre>
 
-Build the application package
+Build the application package:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
 
-Verify that configuration service (deploy api) is ready
+Verify that configuration service (deploy api) is ready:
 
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Deploy the application 
+Deploy the application:
 
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available
+Wait for the application endpoint to become available:
 
 <pre data-test="exec">
 $ vespa status --wait 300
@@ -164,14 +165,10 @@ the model.
 
 **Test the document processor**
 
-Feed in a few documents by first downloading the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html): 
+Feed documents:
 
 <pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-$ ./vespa-feed-client-cli/vespa-feed-client --verbose --file feed.json --endpoint http://localhost:8080
+$ vespa feed feed.json
 </pre>
 
 The document processor uses the `transformer` model to generate embeddings that are stored in the content cluster.

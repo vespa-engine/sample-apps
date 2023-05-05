@@ -50,7 +50,6 @@ $ ./bin/convert-msmarco.sh
 $ mvn package
 </pre>
 
-
 <pre data-test="exec">
 $ docker run -m 12G --detach --name vespa-msmarco --hostname vespa-msmarco \
   --publish 8080:8080 --publish 19112:19112 --publish 19071:19071 \
@@ -62,12 +61,7 @@ $ vespa deploy --wait 300
 </pre>
 
 <pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-$ ./vespa-feed-client-cli/vespa-feed-client \
-  --verbose --file msmarco/vespa.json --endpoint http://localhost:8080
+$ vespa feed msmarco/vespa.json
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="What Is A  Dad Bod">
