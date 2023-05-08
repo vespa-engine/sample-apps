@@ -131,7 +131,7 @@ $ ./bin/convert-msmarco.sh
 **Index data:**
 
 <pre data-test="exec">
-$ vespa feed msmarco/vespa.json -t http://localhost:8080
+$ vespa feed msmarco/vespa.json
 </pre>
 
 
