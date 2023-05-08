@@ -158,7 +158,7 @@ To reproduce the paper one need to convert the entire dataset and do evaluation 
 
 <pre>
 $ ./qa/bin/convert-to-vespa-squad.py SQuAD_train_v1.1.json 2> /dev/null
-$ vespa feed squad_vespa_feed.json
+$ vespa feed squad_vespa_feed.json -t http://localhost:8080
 $ cat squad_queries.txt |./qa/bin/evaluation.py 2> /dev/null
 </pre>
 
