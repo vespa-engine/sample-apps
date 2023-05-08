@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -48,14 +47,14 @@ One can explore the questions and the labeled answers [here](https://rajpurkar.g
 **Requirements for running this sample application:**
 
 * [Docker](https://www.docker.com/) installed and running  
-* git client to checkout the sample application repository
+* git client to check out the sample application repository
 * Operating system: macOS or Linux, Architecture: x86_64 or arm64 
 * Minimum 6 GB memory dedicated to Docker (the default is 2 GB on Macs).
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting.
  
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
-This setup is slightly different then the official quick start guide
+This setup is slightly different from the official quick start guide
 as we build a custom docker image  with the tensorflow dependencies.
 
 **Validate environment, should be minimum 6G:**
@@ -65,9 +64,8 @@ $ docker info | grep "Total Memory"
 </pre>
 
 
-**Checkout the sample-apps repository**
+**Check out the sample-apps repository**
 
-This step requires that you have a working git client:
 <pre>
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample-apps/semantic-qa-retrieval
 </pre>
@@ -125,7 +123,7 @@ $ $VESPA_HOME/bin/vespa-feed-client --file squad_vespa_feed.json --endpoint http
 **Run evaluation**
 
 The evaluation script runs all questions produced by the conversion script
-and for each question it executes different recall and ranking strategies and finally it computes the
+and for each question it executes different recall and ranking strategies, and finally it computes the
 [mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) _MRR@100_
 and the Recall@1,Recall@5 and Recall@10 metrics.
 
