@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -22,11 +21,11 @@ Requirements:
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
-* python3 installed
+* python3
 * zstd: `brew install zstd`
 
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
@@ -37,7 +36,7 @@ $ docker info | grep "Total Memory"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
-<pre >
+<pre>
 $ brew install vespa-cli
 </pre>
 
@@ -68,19 +67,19 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
+Verify that configuration service (deploy api) is ready:
 
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application
+Download this sample application:
 
 <pre data-test="exec">
 $ vespa clone use-case-shopping myapp && cd myapp
 </pre>
 
-Build the application package
+Build the application package:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
@@ -90,8 +89,8 @@ Deploy the application package:
 $ vespa deploy --wait 300
 </pre>
 
-Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
-which runs a set of basic tests to verify that the application is working as expected.
+Run [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html) -
+this runs a set of basic tests to verify that the application is working as expected.
 
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/product-search-test.json
@@ -120,30 +119,19 @@ $ ./create_suggestions.py feed_items.json > feed_suggestions.json
 
 **Feed data:**
 
-Get the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Feed products:
 <pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
+$ vespa feed feed_items.json
 </pre>
 
-Feed products [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Feed reviews:
 <pre data-test="exec">
-$  ./vespa-feed-client-cli/vespa-feed-client \
-    --verbose --file feed_items.json --endpoint http://localhost:8080
+$ vespa feed feed_reviews.json
 </pre>
 
-Feed reviews [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Feed query suggestions:
 <pre data-test="exec">
-$  ./vespa-feed-client-cli/vespa-feed-client \
-    --verbose --file feed_reviews.json --endpoint http://localhost:8080
-</pre>
-
-Feed query suggestions [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
-<pre data-test="exec">
-$  ./vespa-feed-client-cli/vespa-feed-client \
-    --verbose --file feed_suggestions.json --endpoint http://localhost:8080
+$ vespa feed feed_suggestions.json
 </pre>
 
 **Test the application:**

@@ -30,22 +30,22 @@ Validate Docker resource settings, should be minimum 4 GB:
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 
-<pre >
+<pre>
 $ brew install vespa-cli
 </pre>
 
 Set target env, it's also possible to deploy this application to [Vespa Cloud](https://cloud.vespa.ai/)
 using target cloud. 
 
-For local deployment using docker image use 
+For local deployment using docker image use:
 
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
 
 <pre>
 $ vespa config set target cloud
@@ -66,20 +66,20 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
+Verify that configuration service (deploy api) is ready:
 
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application 
+Download this sample application:
 
 <pre data-test="exec">
 $ vespa clone multi-vector-indexing my-app && cd my-app
 </pre>
 
 Download embedding model files, see 
-[text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details.
+[text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details:
 
 <pre data-test="exec"> 
 $ mkdir -p model
@@ -98,23 +98,12 @@ $ vespa deploy --wait 300
 
 ## Indexing sample Wikipedia articles
 
-Download Vespa feed client 
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
-
 Index the Wikipedia articles. This embeds all the paragraphs using the native embedding model, which
-is computionally expensive for CPU. For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu) 
+is computationally expensive for CPU. For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu)
 instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled. 
 
 <pre data-test="exec">
-$ zstdcat ext/articles.jsonl.zst | \
-./vespa-feed-client-cli/vespa-feed-client \
---stdin --endpoint http://localhost:8080
+$ zstdcat ext/articles.jsonl.zst | vespa feed -
 </pre>
 
 ## Query and ranking examples
@@ -123,15 +112,15 @@ We demonstrate using `vespa cli`, use `-v` to see the curl equivalent using HTTP
 ### Simple retrieve all articles with undefined ranking:
 
 <pre data-test="exec" data-test-assert-contains='"totalCount": 8'>
-vespa query 'yql=select * from articles where true' \
-'ranking=unranked'
+$ vespa query 'yql=select * from articles where true' \
+  'ranking=unranked'
 </pre>
 
 ### Traditional keyword search with BM25 ranking on the article level:
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-vespa query 'yql=select * from articles where userQuery()' \
-'query=24' \
-'ranking=bm25'
+$ vespa query 'yql=select * from articles where userQuery()' \
+  'query=24' \
+  'ranking=bm25'
 </pre>
 
 Notice the `relevance`, which is assigned by the rank-profile. Also note
@@ -140,15 +129,15 @@ that keywords are highlighted in the `paragraphs` field.
 ### Semantic vector search on the paragraph level. 
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-vespa query 'yql=select * from articles where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
-'input.query(q)=embed(what does 24 mean in the context of railways)' \
-'ranking=semantic'
+$ vespa query 'yql=select * from articles where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
+  'input.query(q)=embed(what does 24 mean in the context of railways)' \
+  'ranking=semantic'
 </pre>
 The closest (best semantic matching) paragraph has index 4.
 ```json
 "matchfeatures": {
- "closest(paragraph_embeddings)": {"4": 1.0}
- }
+    "closest(paragraph_embeddings)": {"4": 1.0}
+}
 ```
 This index corresponds to the following paragraph:
 ```
@@ -161,11 +150,11 @@ this sample application to shorten down the output.
 Hybrid combining keyword search on the article level with vector search in the paragraph index:
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-vespa query 'yql=select * from articles where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
-'input.query(q)=embed(what does 24 mean in the context of railways)' \
-'query=what does 24 mean in the context of railways' \
-'ranking=hybrid' \
-'hits=1'
+$ vespa query 'yql=select * from articles where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
+  'input.query(q)=embed(what does 24 mean in the context of railways)' \
+  'query=what does 24 mean in the context of railways' \
+  'ranking=hybrid' \
+  'hits=1'
 </pre>
 
 This case combines exact search with nearestNeighbor search. The `hybrid` rank-profile 
@@ -175,7 +164,7 @@ also calculates several additional features using
 - `firstPhase` is the score of the first ranking phase, configured in the hybrid
 profile as `cos(distance(field, paragraph_embeddings))`.
 - `all_paragraph_similarities` returns all the similarity scores for all paragraphs.
-- `avg_paragraph_similarity` is the average similarity score across all the paragraphs. 
+- `avg_paragraph_similarity` is the average similarity score across all the paragraphs.
 - `max_paragraph_similarity` is the same as `firstPhase`, but computed using a tensor expression.
 
 See the `hybrid` rank-profile in the [schema](schemas/wiki.sd) for details.
@@ -191,11 +180,11 @@ ranking to limit the number of vector computations.
 Filtering is also supported, also disable bolding. 
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-vespa query 'yql=select * from articles where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
-'input.query(q)=embed(what does 24 mean in the context of railways)' \
-'query=what does 24 mean in the context of railways' \
-'ranking=hybrid' \
-'bolding=false'
+$ vespa query 'yql=select * from articles where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
+  'input.query(q)=embed(what does 24 mean in the context of railways)' \
+  'query=what does 24 mean in the context of railways' \
+  'ranking=hybrid' \
+  'bolding=false'
 </pre>
 
 ## Cleanup
