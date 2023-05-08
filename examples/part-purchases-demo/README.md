@@ -7,6 +7,16 @@
 A sample Vespa application to assist with learning how to group according to the
 [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
 
+**Requirements:**
+
+* [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  for details and troubleshooting
+* Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
+* Architecture: x86_64 or arm64
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
+
 
 **Validate environment, should be minimum 4G:**
 
@@ -30,8 +40,10 @@ $ docker run --detach --name vespa --hostname vespa-container \
 
 
 **Install the Vespa CLI, configure:**
-<pre data-test="exec">
+<pre>
 $ brew install vespa-cli
+</pre>
+<pre data-test="exec">
 $ vespa config set target local
 </pre>
 
