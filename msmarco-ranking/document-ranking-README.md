@@ -49,7 +49,7 @@ schema doc {
 The original text fields plus an additional field from docTTTTTQuery is used by the retriever,
 see Rodrigo Nogueira and Jimmy Lin paper: 
 [From doc2query to docTTTTTquery](https://cs.uwaterloo.ca/~jimmylin/publications/Nogueira_Lin_2019_docTTTTTquery-v2.pdf). 
-The authors have published their pre-generated model and we use their predictions directly as is.
+The authors have published their pre-generated model, and we use their predictions directly as is.
 The only difference from the original paper and implementation
 is that suggested expansion queries are indexed as an array instead of a blob of text. 
 This allows calculating ranking features which takes proximity into account. 
@@ -71,7 +71,7 @@ LightGBM is used to train the GBDT re-ranking model.
 Vespa has great support for GBDT models and supports both 
 [LightGBM](https://docs.vespa.ai/en/lightgbm.html) and [XGBoost](https://docs.vespa.ai/en/xgboost.html). 
 
-## LightGBM hyper-parameters
+## LightGBM hyperparameters
 
 <pre>
 params = {
@@ -119,17 +119,17 @@ the exact same feature definition as was used during training.
 rank-profile ltr inherits ltr-scrape {
     num-threads-per-search: 12
     second-phase {
-      expression: lightgbm("docranker.json")
-      rerank-count: 1000
+        expression: lightgbm("docranker.json")
+        rerank-count: 1000
     }
-  }
+}
 </pre>
 
 
 # Ranking Evaluation 
 See Vespa on the [MS Marco Document Ranking Leaderboard](https://microsoft.github.io/MSMARCO-Document-Ranking-Submissions/leaderboard/)
 
-  **MS Marco Judgements** 
+**MS Marco Judgements**
 
 The official metric on MS Marco is [MRR@100](https://en.wikipedia.org/wiki/Mean_reciprocal_rank). 
  
@@ -169,7 +169,7 @@ Requirements:
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
@@ -183,20 +183,20 @@ $ docker info | grep "Total Memory"
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
 
-<pre >
+<pre>
 $ brew install vespa-cli
 </pre>
 
 Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
 using target cloud.
 
-For local deployment using docker image use
+For local deployment using docker image use:
 
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
 
 <pre>
 $ vespa config set target cloud
@@ -217,13 +217,13 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
+Verify that configuration service (deploy api) is ready:
 
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application
+Download this sample application:
 
 <pre data-test="exec">
 $ vespa clone msmarco-ranking myapp && cd myapp
@@ -231,7 +231,7 @@ $ vespa clone msmarco-ranking myapp && cd myapp
 
 Download GBDT model which is used by [document ranking](document-ranking-README.md),
 this step is required since both passage and document ranking is represented
-in the same sample application.
+in the same sample application:
 
 <pre data-test="exec">
 $ mkdir -p src/main/application/models
@@ -242,13 +242,13 @@ $ zstd -f -d src/main/application/models/docranker.json.zst
 
 ## Build the application package.
 This step also downloads the three ONNX models used in this application package. The download
-script used is found [here](src/main/bash/download_models.sh).
+script used is [download_models.sh](src/main/bash/download_models.sh):
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
 
-Make sure that the used Java version is 11.
+Make sure that the used Java version is 17.
 The above mvn command will download models, build and package the vespa application package.
 
 Deploy the application. This step deploys the application package built in the previous step:
@@ -257,7 +257,7 @@ Deploy the application. This step deploys the application package built in the p
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available
+Wait for the application endpoint to become available:
 
 <pre data-test="exec">
 $ vespa status --wait 300
@@ -272,18 +272,8 @@ $ vespa test src/test/application/tests/system-test/passage-ranking-system-test.
 $ vespa test src/test/application/tests/system-test/document-ranking-system-test.json
 </pre>
 
+
 ## Feeding Sample Data
-Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html).
-
-Download feeding client
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
-
-### Download sample feed files
 
 <pre data-test="exec">
 $ mkdir -p sample-feed
@@ -299,16 +289,14 @@ $ zstd -d sample-feed/sample_regular_fields.jsonl.zst
 $ zstd -d sample-feed/sample_doc_t5_query.jsonl.zst 
 </pre>
 
-Feed the data
+Feed the data:
 
 <pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client \
-    --file sample-feed/sample_regular_fields.jsonl --endpoint http://localhost:8080
+$ vespa feed sample-feed/sample_regular_fields.jsonl
 </pre>
 
 <pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client \
-    --file sample-feed/sample_doc_t5_query.jsonl --endpoint http://localhost:8080
+$ vespa feed sample-feed/sample_doc_t5_query.jsonl
 </pre>
 
 Now all the data is in place and one can play around with the query interface (Though only searching 1K documents).
@@ -378,11 +366,11 @@ Then run the script with --output_docs_path *doc_t5_query_updates.jsonl*.
 Place the output file *doc_t5_query_updates.json* in the directory of the sample app. ($SAMPLE_APP)
 
 <pre>
-$ ./vespa-feed-client-cli/vespa-feed-client --file all-feed.jsonl --endpoint http://localhost:8080
+$ vespa feed all-feed.jsonl
 </pre>
 
 <pre>
-$ ./vespa-feed-client-cli/vespa-feed-client --file doc_t5_query_updates.jsonl --endpoint http://localhost:8080
+$ vespa feed doc_t5_query_updates.jsonl
 </pre>
 
 
