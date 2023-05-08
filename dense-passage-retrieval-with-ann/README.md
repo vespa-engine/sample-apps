@@ -24,9 +24,8 @@ This README contains the following:
 - Instructions on [how to feed the entire Wikipedia dataset](#how-to-feed-the-entire-dataset)
 - [Experiments](#experiments) and [results](#results)
 
-<figure>
-<p align="center"><img src="img/retriever-reader.png" alt="Open-Domain Question Answering overview"/></p>
-</figure>
+<img src="img/retriever-reader.png" alt="Open-Domain Question Answering overview"/>
+
 
 ## Quick start
 
@@ -42,7 +41,7 @@ Requirements:
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * python3.7+ installed. Using Python runtime environments (e.g. using [Conda](https://conda.io/projects/conda/en/latest/index.html)) is highly recommended
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
@@ -106,7 +105,7 @@ $ vespa clone dense-passage-retrieval-with-ann myapp && cd myapp
 </pre>
 
 
-Download and setup the Transformer models, and build the application package.
+Download and set up the Transformer models, and build the application package.
 This can take some time as the two BERT-based models are around 100Mb each. The quick
 start uses quantized model versions. 
 
@@ -142,17 +141,10 @@ which runs a set of basic tests to verify that the application is working as exp
 $ vespa test src/test/application/tests/system-test/passage-ranking-system-test.json
 </pre>
 
-Feed sample data using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
+Feed sample data:
 
 <pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
-
-<pre data-test="exec">
-$ ./vespa-feed-client-cli/vespa-feed-client --file sample-feed.jsonl --endpoint http://localhost:8080
+$ vespa feed sample-feed.jsonl
 </pre>
 
 Run a question: 
@@ -183,7 +175,7 @@ for details and troubleshooting:
 Since the DPR repo depends on a different version of transformers library,
 the following steps needs to be a performed in a different python environment.
 We recommend using e.g. conda.
-How to install and configure conda is outside of the scope of this work
+How to install and configure conda is outside the scope of this work
 but the  below creates a python3.7 runtime environment named DPR.
 This isolates the environment where the DPR dependencies are installed.
 
@@ -235,7 +227,7 @@ The final feed file is 273G uncompressed. Adding compression like zstd/zip is hi
 same tool as with the toy sample data:
 
 <pre>
-$ ./vespa-feed-client-cli/vespa-feed-client --file feed.jsonl --endpoint http://localhost:8080
+$ vespa feed feed.jsonl
 </pre>
 
 ## Experiments
@@ -328,9 +320,9 @@ it will not  match the golden answers which are *14 December 1972 UTC* or *Decem
 </figure>
 -->
 
-<figure>
-<p align="center"><img width="90%" src="img/two-towers-embedding.png" alt="DPR Two Tower Embedding Architecture" /></p>
-</figure>
+
+<img width="90%" src="img/two-towers-embedding.png" alt="DPR Two Tower Embedding Architecture" />
+
 
 
 ### Schema
@@ -404,7 +396,7 @@ We enable [HNSW index for fast approximate nearest neighbor search](https://docs
 
 The dual query and document encoder of the DPR retrieval system uses the inner
 dot product between the query tensor and the document tensor to represent the score.
-We transform the 768 dimensional inner product space to euclidean space using an
+We transform the 768 dimensional inner product space to euclidean space using a
 [euclidean transformation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/XboxInnerProduct.pdf)
 which adds one dimension.
 Our representation hence becomes 769 dimensional,
@@ -481,9 +473,9 @@ which is evaluated by the Reader ONNX model.
 **summary-features** is a way to pass ranking features and tensors
 from the content nodes to the java serving container.
 
-<figure>
-<p align="center"><img width="90%" src="img/reader.png" /></p>
-</figure>
+
+<img width="90%" src="img/reader.png" alt="Model overview"/>
+
 
 
 ### Importing Transformer models to Vespa.ai via ONNX
@@ -516,5 +508,5 @@ The application has 4 custom plugins:
   [RetrieveModelSearcher.java](src/main/java/ai/vespa/examples/searcher/RetrieveModelSearcher.java)
 * A custom Searcher which reads the outputs of the reader model for the best ranking hit from the retriever phase
   (Vespa second phase ranking) and maps the best matching answer span
-  to an textual answer which is returned as the predicted answer:
+  to a textual answer which is returned as the predicted answer:
   [QASearcher.java](src/main/java/ai/vespa/examples/searcher/QASearcher.java)

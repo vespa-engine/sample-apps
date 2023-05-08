@@ -106,44 +106,44 @@ The following section goes into the details of this sample application and how t
 ## Vespa schema
 
 Vectors or generally [tensors](https://docs.vespa.ai/en/tensor-user-guide.html) are first-class citizens in the Vespa document model.
-The [passage](src/main/application/schemas/passage.sd) document schema is given below:
+The [passage](src/main/application/schemas/passage.sd) document schema is:
 
 <pre>
 schema passage {
 
-  document passage {
+    document passage {
 
-    field id type int {
-      indexing: summary |attribute
-    }
-
-    field text type string {
-      indexing: summary | index
-      index: enable-bm25
-    }
-
-    field dt type tensor&lt;bfloat16&gt;(dt{}, x[32]){
-      indexing: summary | attribute
-    }
-    
-    field mini_document_embedding type tensor&lt;float&gt;(d0[384]) {
-      indexing: attribute | index
-      attribute {
-        distance-metric: innerproduct
-      }
-      index {
-        hnsw {
-          max-links-per-node: 32
-          neighbors-to-explore-at-insert: 200
+        field id type int {
+            indexing: summary |attribute
         }
-      }
-    }
+
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field dt type tensor&lt;bfloat16&gt;(dt{}, x[32]){
+            indexing: summary | attribute
+        }
     
-  }
-  field text_token_ids type tensor&lt;float&gt;(d0[128])  {
-    indexing: input text | embed tokenizer | attribute | summary
-    attribute: paged
-  }
+        field mini_document_embedding type tensor&lt;float&gt;(d0[384]) {
+            indexing: attribute | index
+            attribute {
+                distance-metric: innerproduct
+            }
+            index {
+                hnsw {
+                    max-links-per-node: 32
+                    neighbors-to-explore-at-insert: 200
+                }
+            }
+        }
+    }
+
+    field text_token_ids type tensor&lt;float&gt;(d0[128])  {
+        indexing: input text | embed tokenizer | attribute | summary
+        attribute: paged
+    }
 }
 </pre> 
 
@@ -170,6 +170,7 @@ HNSW indexing is enabled for efficient fast approximate nearest neighbor search.
 The HNSW settings controls recall accuracy versus speed, 
 see more on [hnsw indexing in Vespa](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
 
+
 ## Retrieval and Ranking 
 There are several ranking profiles defined in the *passage* document schema. 
 See [Vespa Ranking Documentation](https://docs.vespa.ai/en/ranking.html)
@@ -181,10 +182,10 @@ Below is the *bm25* ranking profile, defined in the passage document schema:
 
 <pre> 
 rank-profile bm25 {
-  num-threads-per-search: 6
-  first-phase {
-    expression: bm25(text)
-  }
+    num-threads-per-search: 6
+    first-phase {
+        expression: bm25(text)
+    }
 }
 </pre>
 
@@ -209,21 +210,21 @@ The ColBERT MaxSim operator is expressed using Vespa's
 
 <pre> 
 rank-profile bm25-colbert inherits bm25 {
-  num-threads-per-search: 6
-  second-phase {
-    rerank-count: 1000
-    expression {
-      sum(
-        reduce(
-          sum(
-            query(qt) * cell_cast(attribute(dt),float), x
-          ),
-          max, dt
-        ),
-        qt
-      )
+    num-threads-per-search: 6
+    second-phase {
+        rerank-count: 1000
+        expression {
+            sum(
+                reduce(
+                    sum(
+                        query(qt) * cell_cast(attribute(dt),float), x
+                    ),
+                    max, dt
+                ),
+                qt
+            )
+        }
     }
-  }
 }
 </pre>
 
@@ -240,7 +241,7 @@ and HW-accelerate the inner dot products using vector instructions.
 There are several ranking profiles defined in the passage schema:
 
 <pre>
-  rank-profile dense-colbert-mini-lm {
+rank-profile dense-colbert-mini-lm {
     num-threads-per-search: 12
 
     function input_ids() {
@@ -248,33 +249,33 @@ There are several ranking profiles defined in the passage schema:
     }
 
     function token_type_ids() {
-      expression: tokenTypeIds(128, query(query_token_ids), attribute(text_token_ids))
+        expression: tokenTypeIds(128, query(query_token_ids), attribute(text_token_ids))
     }
 
     function attention_mask() {
-      expression: tokenAttentionMask(128, query(query_token_ids), attribute(text_token_ids))
+        expression: tokenAttentionMask(128, query(query_token_ids), attribute(text_token_ids))
     }
 
     #Max score is 32 * 1.0
     function maxSimNormalized() {
-      expression {
-        sum(
-          reduce(
+        expression {
             sum(
-              query(qt) * attribute(dt), x
-            ),
-            max, dt
-          ),
-          qt
-        )/32.0
-       }
+                reduce(
+                    sum(
+                        query(qt) * attribute(dt), x
+                    ),
+                    max, dt
+                ),
+                qt
+            )/32.0
+        }
     }
     function dense() {
-      expression: closeness(field,mini_document_embedding)
+        expression: closeness(field,mini_document_embedding)
     }
 
     function crossModel() {
-      expression: onnx(minilmranker){d0:0,d1:0}
+        expression: onnx(minilmranker){d0:0,d1:0}
     }
 
     first-phase {
@@ -282,10 +283,10 @@ There are several ranking profiles defined in the passage schema:
     }
 
     second-phase {
-      rerank-count: 24
-      expression: 0.2*crossModel() + 1.1*maxSimNormalized() + 0.8*dense()
+        rerank-count: 24
+        expression: 0.2*crossModel() + 1.1*maxSimNormalized() + 0.8*dense()
     }
-  }
+}
 </pre>
 
 This ranking model uses the ColBERT MaxSim expression in the first-phase,
@@ -311,6 +312,7 @@ The following models are evaluated in the stateless container cluster:
 
 These two encoders are evaluated in parallel and invoked by
 [QueryEncodingSearcher](src/main/java/ai/vespa/examples/searcher/QueryEncodingSearcher.java) 
+
 
 ## Scaling and Serving Performance
 
@@ -376,22 +378,22 @@ Validate Docker resource settings, should be minimum 6 GB:
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 
-<pre >
+<pre>
 $ brew install vespa-cli
 </pre>
 
 Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
 using target cloud. 
 
-For local deployment using docker image use 
+For local deployment using docker image use:
 
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
+For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
 
 <pre>
 $ vespa config set target cloud
@@ -412,13 +414,13 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
+Verify that configuration service (deploy api) is ready:
 
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application 
+Download this sample application:
 
 <pre data-test="exec">
 $ vespa clone msmarco-ranking myapp && cd myapp
@@ -426,7 +428,7 @@ $ vespa clone msmarco-ranking myapp && cd myapp
 
 Download GBDT model which is used by [document ranking](document-ranking-README.md),
 this step is required since both passage and document ranking is represented
-in the same sample application. 
+in the same sample application:
 
 <pre data-test="exec">
 $ mkdir -p src/main/application/models
@@ -437,7 +439,7 @@ $ zstd -f -d src/main/application/models/docranker.json.zst
 
 ## Build the application package. 
 This step also downloads the three ONNX models used in this application package. The download
-script used is found [here](src/main/bash/download_models.sh). 
+script used is [download_models.sh](src/main/bash/download_models.sh).
 
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
@@ -452,7 +454,7 @@ Deploy the application. This step deploys the application package built in the p
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available 
+Wait for the application endpoint to become available:
 
 <pre data-test="exec">
 $ vespa status --wait 300
@@ -467,16 +469,8 @@ $ vespa test src/test/application/tests/system-test/passage-ranking-system-test.
 $ vespa test src/test/application/tests/system-test/document-ranking-system-test.json
 </pre>
 
-## Feeding Sample Data 
 
-Feed the sample documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
-
-<pre data-test="exec">
-$ FEED_CLI_REPO="https://repo1.maven.org/maven2/com/yahoo/vespa/vespa-feed-client-cli" \
-	&& FEED_CLI_VER=$(curl -Ss "${FEED_CLI_REPO}/maven-metadata.xml" | sed -n 's/.*&lt;release&gt;\(.*\)&lt;.*&gt;/\1/p') \
-	&& curl -SsLo vespa-feed-client-cli.zip ${FEED_CLI_REPO}/${FEED_CLI_VER}/vespa-feed-client-cli-${FEED_CLI_VER}-zip.zip \
-	&& unzip -o vespa-feed-client-cli.zip
-</pre>
+## Feeding Sample Data
 
 Download the sample data:
 
@@ -486,12 +480,10 @@ $ mkdir -p sample-feed && \
     https://data.vespa.oath.cloud/colbert_data/colmini-passage-feed-sample.jsonl.zst
 </pre>
 
-Feed the data :
+Feed the data:
 
 <pre data-test="exec">
-$ zstdcat sample-feed/colmini-passage-feed-sample.jsonl.zst | \
-    ./vespa-feed-client-cli/vespa-feed-client \
-     --stdin --endpoint http://localhost:8080
+$ zstdcat sample-feed/colmini-passage-feed-sample.jsonl.zst | vespa feed -
 </pre>
 
 Now all the data is indexed and one can play around with the search interface.
@@ -575,12 +567,10 @@ $ for i in 1 2 3; do curl -L -o sample-feed/colmini-passage-feed-$i.jsonl.zst \
   https://data.vespa.oath.cloud/colbert_data/colmini-passage-feed-$i.jsonl.zst; done
 </pre>
 
-Note that we stream through the data using *zstdcat* as the uncompressed representation is large (170 GB). 
+Note that we stream through the data using *zstdcat* as the uncompressed representation is large (170 GB):
 
 <pre>
-$ zstdcat sample-feed/colmini-passage-feed-*.zst | \
-    ./vespa-feed-client-cli/vespa-feed-client \
-     --stdin --endpoint http://localhost:8080
+$ zstdcat sample-feed/colmini-passage-feed-*.zst | vespa feed -
 </pre>
 
 Indexing everything on a single node using real time indexing takes a few hours,
@@ -598,7 +588,6 @@ There are no run time python dependencies in Vespa, but to run the evaluation th
 <pre>
 $ pip3 install torch numpy ir_datasets requests tqdm
 </pre>
-
 
 Note that the ir_datasets utility will download MS Marco query evaluation data,
 so the first run will take some time to complete. 
@@ -666,12 +655,11 @@ QueriesRanked: 6980
 ## Bring your own data
 
 The application instructions above used pre-generated embeddings, both for the bi-encoder (dense) and the multi-representation
-model (ColBERT). If you want to experiment with your own data, you can feed JSON with just the text field,  and Vespa 
-will produce both embeddings during document processing. 
+model (ColBERT). If you want to experiment with your own data, you can feed JSON with just the text field,
+and Vespa will produce both embeddings during document processing.
 
 See [src/test/application/tests/sample-passage.json](src/test/application/tests/sample-passage.json) for expected
 feed format.
-
 
 Further reading:
 * https://docs.vespa.ai/en/vespa-quick-start.html
@@ -680,5 +668,5 @@ Further reading:
 #### Notebook test
 Ignore this. This is for CI testing of sample-apps.
 <pre data-test="exec" data-test-assert-contains="1 passed">
-$ python3 -m pytest  --nbmake src/main/python/model-exporting.ipynb 
+$ python3 -m pytest --nbmake src/main/python/model-exporting.ipynb
 </pre>
