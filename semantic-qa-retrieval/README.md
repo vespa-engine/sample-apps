@@ -67,7 +67,8 @@ $ docker info | grep "Total Memory"
 **Check out the sample-apps repository**
 
 <pre>
-$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git; cd sample-apps/semantic-qa-retrieval
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git && \
+  cd sample-apps/semantic-qa-retrieval
 </pre>
 
 
@@ -92,7 +93,7 @@ $ docker exec -it vespa_qa bash
 **Deploy the document schema and configuration - this will start Vespa services**
 
 <pre>
-$ vespa-deploy prepare qa/src/main/application/ && vespa-deploy activate
+$ vespa deploy qa/src/main/application
 </pre>
 
 
@@ -114,9 +115,8 @@ The sample question set generates 351 sentence documents and 55 context document
 
 **Feed Vespa json** 
 
-We feed the documents using the [vespa-feed-client](https://docs.vespa.ai/en/vespa-feed-client.html):
 <pre>
-$ $VESPA_HOME/bin/vespa-feed-client --file squad_vespa_feed.json --endpoint http://localhost:8080
+$ vespa feed squad_vespa_feed.json -t http://localhost:8080
 </pre>
 
 
@@ -158,7 +158,7 @@ To reproduce the paper one need to convert the entire dataset and do evaluation 
 
 <pre>
 $ ./qa/bin/convert-to-vespa-squad.py SQuAD_train_v1.1.json 2> /dev/null
-$ $VESPA_HOME/bin/vespa-feed-client --file squad_vespa_feed.json --endpoint http://localhost:8080
+$ vespa feed squad_vespa_feed.json -t http://localhost:8080
 $ cat squad_queries.txt |./qa/bin/evaluation.py 2> /dev/null
 </pre>
 

@@ -1,5 +1,7 @@
 FROM vespaengine/vespa
 
+USER root
+
 RUN yum -y update && \
     yum install -y \
         git \
