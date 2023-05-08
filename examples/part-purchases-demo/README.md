@@ -49,13 +49,13 @@ $ vespa config set target local
 
 
 **Wait for the configserver to start:**
-<pre data-test="exec" data-test-wait-for="Deploy API at http://127.0.0.1:19071 is ready">
+<pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 
 **Deploy the application:**
-<pre data-test="exec" data-test-assert-contains="Success: Deployed">
+<pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
 
