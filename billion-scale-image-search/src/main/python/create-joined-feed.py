@@ -33,7 +33,7 @@ for index, row in df.iterrows():
   caption = row['caption']
   id = compute_hash(url, caption)
   similarity = nan_handler(row['similarity'])
-  similarity_scaled = int(100*similarity) 
+  similarity_scaled = min(int(100*similarity), 127)
   doc = {
     "put": "id:laion:image::%i" % id,
     "fields": {
