@@ -87,7 +87,7 @@ with open(sys.argv[1]) as fp:
         html_doc = doc['fields']['html']
         html_doc = xml_fixup(html_doc)
         soup = BeautifulSoup(html_doc, 'html5lib')
-        md = markdownify(html_doc, heading_style='ATX', code_language_callback=what_language)
+        md = markdownify(html_doc, heading_style='ATX', code_language_callback=what_language, strip=['img'])
         lines = md.split("\n")
         headers = []
         header = ""
