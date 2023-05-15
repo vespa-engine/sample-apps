@@ -6,13 +6,12 @@ on:
 env:
   DATA_PLANE_PUBLIC_KEY: ${{ secrets.VESPA_TEAM_DATA_PLANE_PUBLIC_CERT }}
   DATA_PLANE_PRIVATE_KEY: ${{ secrets.VESPA_TEAM_DATA_PLANE_PRIVATE_KEY }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
     - uses: actions/checkout@v3
-
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.1
@@ -39,6 +38,6 @@ jobs:
         ./feed-split.py vespaapps_index.json https://github.com/vespa-engine/sample-apps/tree/master
         ./feed_to_vespa.py _paragraphs_config.yml
 
-     - name: Feed suggestions
+    - name: Feed suggestions
       run: |
         ./feed_to_vespa.py _suggestions_config.yml
