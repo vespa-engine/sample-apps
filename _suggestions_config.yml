@@ -1,0 +1,17 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+search:
+  namespace: "vespaapps-p"
+  doc_type: "term"
+  do_feed  : true
+  do_index_removal_before_feed: false
+  feed_endpoints:
+    - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json 
+    - url: https://vespacloud-docsearch.vespa-team.gcp-us-central1-f.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json 
+    - url: https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json 
