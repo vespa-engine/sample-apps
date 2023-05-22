@@ -35,7 +35,7 @@ jobs:
 
     - name: Feed paragraphs site
       run: |
-        ./feed-split.py vespaapps_index.json https://github.com/vespa-engine/sample-apps/tree/master
+        ./feed-split.py vespaapps_index.json https://github.com/vespa-engine/sample-apps/tree/master questions.jsonl
         ./feed_to_vespa.py _paragraphs_config.yml
 
     - name: Feed suggestions
