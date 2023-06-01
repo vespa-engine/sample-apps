@@ -140,7 +140,7 @@ Later in this guide, only one of the nodes in each cluster is checked, to keep t
 
 ## Deploy the Vespa application configuration
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "*.yaml" | \
+$ zip -r - . -x "gke/*" "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "*.yaml" | \
   curl --header Content-Type:application/zip --data-binary @- \
   http://localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
@@ -594,7 +594,7 @@ for https ports for container clusters for secure client access:
 $ mv services.xml services.xml.open; mv services.xml.secure services.xml
 </pre>
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x "tls/*" "pki/*" "scripts/*" "img/*" README.md .gitignore services.xml.open "*.yaml" | \
+$ zip -r - . -x "tls/*" "pki/*" "scripts/*" "gke/*" "img/*" README.md .gitignore services.xml.open "*.yaml" | \
     curl \
       --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
       --header Content-Type:application/zip --data-binary @- \
@@ -905,6 +905,6 @@ When all nodes are up, it looks like:
 
 Finally, deploy the application:
 
-    $ zip -r - . -x "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "*.yaml" | \
+    $ zip -r - . -x "gke/*" "img/*" "scripts/*" "pki/*" "tls/*" README.md .gitignore "*.yaml" | \
       curl --header Content-Type:application/zip --data-binary @- \
       http://localhost:19071/application/v2/tenant/default/prepareandactivate
