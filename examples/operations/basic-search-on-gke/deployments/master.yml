@@ -17,13 +17,27 @@ spec:
         app: vespa
         name: vespa-internal
     spec:
+      initContainers:
+      - name: chown-var
+        securityContext:
+          runAsUser: 0
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000 /opt/vespa/var"]
+        volumeMounts:
+          - name: vespa-var
+            mountPath: /opt/vespa/var
+      - name: chown-logs
+        securityContext:
+          runAsUser: 0
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000 /opt/vespa/logs"]
+        volumeMounts:
+          - name: vespa-logs
+            mountPath: /opt/vespa/logs
       containers:
       - name: vespa
         image: vespaengine/vespa
         imagePullPolicy: Always
-        securityContext:
-          privileged: true
-          runAsUser: 0
         readinessProbe:
           httpGet:
             path: /ApplicationStatus

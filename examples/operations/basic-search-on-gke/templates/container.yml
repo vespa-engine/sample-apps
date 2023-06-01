@@ -25,9 +25,6 @@ spec:
         - configMapRef:
             name: vespa-config
         args: ["services"]
-        securityContext:
-          privileged: true
-          runAsUser: 0
         resources:
           requests:
             memory: "4G"

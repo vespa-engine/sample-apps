@@ -50,10 +50,10 @@ You can give arguments to this script to change, cluster name, number of nodes, 
 $ ./scripts/create_cluster.sh
 </pre>
 
-**Boostrap config files:**
+**Bootstrap config files:**
 You can give arguments to this script to change number of containers and contents.
 <pre data-test="exec">
-$ ./scripts/boostrap.sh
+$ ./scripts/bootstrap.sh
 </pre>
 
 **Deploy the application:**
@@ -63,11 +63,13 @@ $ ./scripts/deploy.sh
 
 **Feed data to the application:**
 <pre data-test="exec">
-$ $VESPA_SAMPLE_APP/scripts/feed.sh
+$ ./scripts/feed.sh
 </pre>
 **Do a search:**
 <pre data-test="exec">
-$ curl -s "http://$(kubectl get service/vespa -o jsonpath='{.status.loadBalancer.ingress[*].ip}'):$(kubectl get service/vespa -o jsonpath='{.spec.ports[?(@.name=="container")].port}')/search/?query=michael" | \
+$ HOSTNAME=$(kubectl get service/vespa -o jsonpath='{.status.loadBalancer.ingress[*].ip}')
+$ PORT=$(kubectl get service/vespa -o jsonpath='{.spec.ports[?(@.name=="container")].port}')
+$ curl -s "http://$HOSTNAME:$PORT/search/?yql=select+*+from+music+where+artist+contains+'eminem'" | \
   python3 -m json.tool
 </pre>
 
