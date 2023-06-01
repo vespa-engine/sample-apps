@@ -17,6 +17,15 @@ spec:
         app: vespa-content
         name: vespa-internal
     spec:
+      initContainers:
+      - name: chown-var
+        securityContext:
+          runAsUser: 0
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000 /opt/vespa/var"]
+        volumeMounts:
+        - name: vespa-var
+          mountPath: /opt/vespa/var
       containers:
       - name: vespa-content
         image: vespaengine/vespa
@@ -26,10 +35,9 @@ spec:
         - configMapRef:
             name: vespa-config
         securityContext:
-          privileged: true
-          runAsUser: 0
+          runAsUser: 1000
         volumeMounts:
-        - name: vespa-var-content
+        - name: vespa-var
           mountPath: /opt/vespa/var
         resources:
           requests:
@@ -38,7 +46,7 @@ spec:
             memory: "1G"
   volumeClaimTemplates:
   - metadata:
-      name: vespa-var-content
+      name: vespa-var
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:

@@ -17,6 +17,15 @@ spec:
         app: vespa-content
         name: vespa-internal
     spec:
+      initContainers:
+      - name: chown-var
+        securityContext:
+          runAsUser: 0
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000 /opt/vespa/var"]
+        volumeMounts:
+          - name: vespa-var-content
+            mountPath: /opt/vespa/var
       containers:
       - name: vespa-content
         image: vespaengine/vespa
@@ -24,9 +33,6 @@ spec:
         envFrom:
         - configMapRef:
             name: vespa-config
-        securityContext:
-          privileged: true
-          runAsUser: 0
         args: ["services"]
         volumeMounts:
         - name: vespa-var-content

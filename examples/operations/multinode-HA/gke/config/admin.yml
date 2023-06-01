@@ -26,8 +26,7 @@ spec:
         - configMapRef:
             name: vespa-config
         securityContext:
-          privileged: true
-          runAsUser: 0
+          runAsUser: 1000
         resources:
           requests:
             memory: "1G"
