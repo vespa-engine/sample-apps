@@ -85,3 +85,5 @@ Replace CLUSTER_NAME and ZONE with your own values. By default `CLUSTER_NAME=ves
 <pre data-test="after">
 $ gcloud container clusters delete CLUSTER_NAME --zone ZONE
 </pre>
+
+Remember to delete the disks used, too.
