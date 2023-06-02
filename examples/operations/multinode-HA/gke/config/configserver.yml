@@ -27,6 +27,14 @@ spec:
         volumeMounts:
           - name: vespa-var
             mountPath: /opt/vespa/var
+      - name: chown-logs
+        securityContext:
+          runAsUser: 0
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000 /opt/vespa/logs"]
+        volumeMounts:
+          - name: vespa-logs
+            mountPath: /opt/vespa/logs
       containers:
       - name: vespa-configserver
         image: vespaengine/vespa

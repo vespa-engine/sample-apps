@@ -247,6 +247,8 @@ Also see section below for deleting resources. Delete the `vespa` cluster:
 gcloud container clusters delete vespa
 ```
 
+Remember to delete the disks used, too.
+
 
 
 ## Misc / troubleshooting
