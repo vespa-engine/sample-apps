@@ -26,10 +26,10 @@ schema wiki {
       indexing: summary |attribute
     }
 
-    field text_embedding type tensor<float>(x[769]){
+    field text_embedding type tensor<float>(x[768]){
       indexing: attribute|index
       attribute {
-        distance-metric:euclidean
+        distance-metric: dotproduct
       }
       index {
         hnsw {
@@ -57,7 +57,7 @@ schema wiki {
   rank-profile openqa {
 
     inputs {
-      query(query_embedding) tensor<float>(x[769])
+      query(query_embedding) tensor<float>(x[768])
       query(query_token_ids) tensor<float>(d0[32])
     }
 
@@ -105,7 +105,7 @@ schema wiki {
   rank-profile hybrid inherits openqa {
     num-threads-per-search: 1
     first-phase {
-      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+      expression: closeness(field, text_embedding) + bm25(text) + bm25(title)
     }
   }
 
@@ -119,7 +119,7 @@ schema wiki {
 
   rank-profile dense-retriever {
     inputs {
-      query(query_embedding) tensor<float>(x[769])
+      query(query_embedding) tensor<float>(x[768])
     }
 
     num-threads-per-search: 1
@@ -130,12 +130,12 @@ schema wiki {
 
   rank-profile hybrid-retriever {
     inputs {
-      query(query_embedding) tensor<float>(x[769])
+      query(query_embedding) tensor<float>(x[768])
     }
 
     num-threads-per-search: 1
     first-phase {
-      expression: 1000*closeness(field, text_embedding) + bm25(text) + bm25(title)
+      expression: closeness(field, text_embedding) + bm25(text) + bm25(title)
     }
   }
 

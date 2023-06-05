@@ -360,10 +360,10 @@ schema wiki {
       indexing: summary | attribute
     }
 
-    field text_embedding type tensor<float>(x[769]){
+    field text_embedding type tensor<float>(x[768]){
       indexing: attribute | index
       attribute {
-        distance-metric:euclidean
+        distance-metric: dotproduct
       }
       index {
         hnsw {
@@ -390,17 +390,14 @@ The schema defines two indexed string fields.
 This enables fast and efficient term based retrieval, e.g. using WeakAND (WAND).
 The *id* represents the Wikipedia passage id
 as assigned in the pre-computed dataset published by Facebook Research.
-The *text_embedding* tensor is a dense 769 dimensional tensor
+The *text_embedding* tensor is a dense 768 dimensional tensor
 which represents the document (text and title).
 We enable [HNSW index for fast approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
 
 The dual query and document encoder of the DPR retrieval system uses the inner
 dot product between the query tensor and the document tensor to represent the score.
-We transform the 768 dimensional inner product space to euclidean space using a
-[euclidean transformation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/XboxInnerProduct.pdf)
-which adds one dimension.
-Our representation hence becomes 769 dimensional,
-where we can use the euclidean distance metric when finding the nearest neighbors in embedding space.
+Internally, Vespa transform the 768 dimensional inner product space to angular-distance space using a
+[transformation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/XboxInnerProduct.pdf) which adds one dimension.
 The DPR implementation uses the same space transformation when using
 [Faiss with HNSW index](https://github.com/facebookresearch/faiss).
 
