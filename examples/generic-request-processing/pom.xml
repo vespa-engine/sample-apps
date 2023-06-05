@@ -79,6 +79,9 @@
                 <artifactId>bundle-plugin</artifactId>
                 <version>${vespa_version}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <failOnWarnings>true</failOnWarnings>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

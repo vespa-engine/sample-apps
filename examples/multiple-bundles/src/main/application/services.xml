@@ -3,10 +3,10 @@
 <services version="1.0">
 
     <container id="fibonacci" version="1.0">
-        <component id="ai.vespa.examples.lib.FibonacciProducer" bundle="multiple-bundles-lib" />
+        <component id="ai.vespasamples.lib.FibonacciProducer" bundle="multiple-bundles-lib" />
         <search>
             <chain id="default">
-                <searcher id="ai.vespa.examples.search.FibonacciSearcher" bundle="multiple-bundles" />
+                <searcher id="ai.vespasamples.search.FibonacciSearcher" bundle="multiple-bundles" />
             </chain>
         </search>
         <nodes>
