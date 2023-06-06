@@ -114,7 +114,7 @@ public class RetrieveModelSearcher extends Searcher {
         evaluator.bind("attention_mask", transformTokenAttentionMask(tokenIds));
         Tensor embedding = evaluator.evaluate();
         embedding = embedding.reduce(Reduce.Aggregator.min,"d0");
-        embedding = embedding.rename("d1","x").concat(0,"x");
+        embedding = embedding.rename("d1","x");
         return embedding;
     }
 
