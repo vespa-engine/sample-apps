@@ -38,10 +38,10 @@ schema news {
         field impressions type int {
             indexing: summary | attribute
         }
-        field embedding type tensor<float>(d0[51]) {
+        field embedding type tensor<float>(d0[50]) {
             indexing: attribute | index
             attribute {
-                distance-metric: euclidean
+                distance-metric: dotproduct
             }
         }
         field category_tensor type tensor<float>(category{}) {
