@@ -8,7 +8,7 @@ schema user {
             attribute: fast-search
         }
 
-        field embedding type tensor<float>(d0[51]) {
+        field embedding type tensor<float>(d0[50]) {
             indexing: summary | attribute
         }
 
