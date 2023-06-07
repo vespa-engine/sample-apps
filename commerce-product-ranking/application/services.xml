@@ -16,13 +16,17 @@
             </model>
           </config>
         </component>
-        <component id="title" type="bert-embedder">
-          <transformer-model  path="models/title_encoder.onnx"/>
-          <tokenizer-vocab path="files/bert-base-uncased-vocab.txt"/>
+        <component id="title" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
+          <config name="embedding.bert-base-embedder">
+            <transformerModel  path="models/title_encoder.onnx"/>
+            <tokenizerVocab path="files/bert-base-uncased-vocab.txt"/>
+          </config>
         </component>
-        <component id="description" type="bert-embedder">
-          <transformer-model  path="models/description_encoder.onnx"/>
-          <tokenizer-vocab path="files/bert-base-uncased-vocab.txt"/>
+        <component id="description" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
+          <config name="embedding.bert-base-embedder">
+            <transformerModel  path="models/description_encoder.onnx"/>
+            <tokenizerVocab path="files/bert-base-uncased-vocab.txt"/>
+          </config>
         </component>
     </container>
 
