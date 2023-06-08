@@ -14,6 +14,8 @@
     <relativePath/>
   </parent>
   <properties>
+    <!-- TODO: this app uses non-public packages [com.yahoo.language.simple, com.yahoo.collections] -->
+    <bundle-plugin.failOnWarnings>false</bundle-plugin.failOnWarnings>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
   </properties>

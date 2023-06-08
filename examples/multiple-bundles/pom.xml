@@ -58,6 +58,9 @@
                 <artifactId>bundle-plugin</artifactId>
                 <version>${vespa_version}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <failOnWarnings>true</failOnWarnings>
+                </configuration>
             </plugin>
 
             <!-- Copy the lib bundle into the target/ folder -->
