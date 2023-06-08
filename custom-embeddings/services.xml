@@ -7,18 +7,14 @@
 
         <!-- See https://docs.vespa.ai/en/embedding.html#bertbase-embedder -->
 
-        <component id="frozen" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
-            <config name="embedding.bert-base-embedder">
-                <transformerModel path="models/frozen.onnx"/>
-                <tokenizerVocab path="models/bert-base-uncased.txt"/>
-            </config>
+        <component id="frozen" type="bert-embedder">
+            <transformer-model path="models/frozen.onnx"/>
+            <tokenizer-vocab path="models/bert-base-uncased.txt"/>
         </component>
 
-        <component id="tuned" class="ai.vespa.embedding.BertBaseEmbedder" bundle="model-integration">
-            <config name="embedding.bert-base-embedder">
-                <transformerModel path="models/tuned.onnx"/>
-                <tokenizerVocab path="models/bert-base-uncased.txt"/>
-            </config>
+        <component id="tuned" type="bert-embedder">
+            <transformer-model path="models/tuned.onnx"/>
+            <tokenizer-vocab path="models/bert-base-uncased.txt"/>
         </component>
         <document-api/>
         <search/>
