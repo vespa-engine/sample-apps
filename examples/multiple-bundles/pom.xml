@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
         <junit.version>5.7.1</junit.version>
-        <vespa_version>8.173.24</vespa_version>
+        <vespa_version>8.174.17</vespa_version>
         <jdk.version>17</jdk.version>
 
         <!-- NB! Must be updated upon changes in the library -->
