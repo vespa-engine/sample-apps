@@ -5,7 +5,7 @@
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">
 
-        <!-- See https://docs.vespa.ai/en/embedding.html#bertbase-embedder -->
+        <!-- See https://docs.vespa.ai/en/embedding.html#bert-embedder -->
         <component id="bert" type="bert-embedder">
             <transformer-model path="model/minilm-l6-v2.onnx"/>
             <tokenizer-vocab path="model/bert-base-uncased.txt"/>

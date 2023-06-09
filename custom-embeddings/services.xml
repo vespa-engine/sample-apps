@@ -5,7 +5,7 @@
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">
 
-        <!-- See https://docs.vespa.ai/en/embedding.html#bertbase-embedder -->
+        <!-- See https://docs.vespa.ai/en/embedding.html#bert-embedder -->
 
         <component id="frozen" type="bert-embedder">
             <transformer-model path="models/frozen.onnx"/>
