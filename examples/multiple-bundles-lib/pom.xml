@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ai.vespa.examples.multibundle</groupId>
     <artifactId>multiple-bundles-lib</artifactId>
-    <version>1.0.1</version>  <!-- NB! Must be updated upon every code change in this library -->
+    <version>1.0.2</version>  <!-- NB! Must be updated upon every code change in this library -->
     <packaging>container-plugin</packaging>
 
     <properties>

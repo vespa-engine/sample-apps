@@ -18,7 +18,7 @@
         <jdk.version>17</jdk.version>
 
         <!-- NB! Must be updated upon changes in the library -->
-        <multiple-bundles-lib.version>1.0.1</multiple-bundles-lib.version>
+        <multiple-bundles-lib.version>1.0.2</multiple-bundles-lib.version>
     </properties>
 
     <dependencies>
