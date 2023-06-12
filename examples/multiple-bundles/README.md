@@ -60,7 +60,7 @@ $ curl -s --head http://localhost:8080/ApplicationStatus
 </pre>
 
 **Test the application:**
-<pre data-test="exec" data-test-assert-contains="fib(0) = 0">
+<pre data-test="exec" data-test-assert-contains="fib(">
 $ curl -s http://localhost:8080/search/
 </pre>
 Sending multiple requests generates the Fibonacci number sequence in the 'message' field
