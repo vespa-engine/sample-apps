@@ -161,8 +161,8 @@ $ docker rm -f vespa
 </pre>
 
 ## Bonus 
-To export other cross-encoder models, change the
-code in "src/python/setup-model.py". 
-However, this sample application uses a Vespa [WordPiece embedder](https://docs.vespa.ai/en/embedding.html#wordpiece-embedder), 
+To export other cross-encoder models, change the code in "src/python/setup-model.py".
+However, this sample application uses a Vespa
+[WordPiece embedder](https://docs.vespa.ai/en/reference/embedding-reference.html#wordpiece-embedder),
 so if the Transformer model requires a different tokenizer, you would have to change the tokenizer. For example
-using Vespa [SentencePiece embedder](https://docs.vespa.ai/en/embedding.html#sentencepiece-embedder).
+using Vespa [SentencePiece embedder](https://docs.vespa.ai/en/reference/embedding-reference.html#sentencepiece-embedder).
