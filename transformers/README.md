@@ -28,21 +28,16 @@ Vespa stateless container.
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * python3.8+ to export models from Huggingface. 
 
-**Validate environment, should be minimum 6G:**
-
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-for details and troubleshooting:
-
+Validate environment, should be minimum 6G:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 

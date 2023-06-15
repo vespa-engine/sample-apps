@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -13,50 +12,31 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 
-**Validate environment, must be minimum 4GB:**
-
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-for details and troubleshooting:
+Validate environment, must be minimum 4GB:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
-
-For local deployment using docker image use
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-Where tenant-name is the tenant created when signing up for cloud.
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -64,57 +44,52 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Download this sample application
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone incremental-search/search-as-you-type myapp && cd myapp
 </pre>
 
-Build the application package
+Build the application package:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
 
-**Download feed file**
-
+Download feed file:
 <pre data-test="exec">
 $ curl -L -o search-as-you-type-index.jsonl \
-    https://data.vespa.oath.cloud/sample-apps-data/search-as-you-type-index.jsonl 
+  https://data.vespa.oath.cloud/sample-apps-data/search-as-you-type-index.jsonl 
 </pre>
 
-
-Verify that configuration service (deploy api) is ready
-
+Verify that configuration service (deploy api) is ready:
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Deploy the application
-
+Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
+Wait for the application endpoint to become available:
 <pre data-test="exec">
 $ vespa status --wait 300
 </pre>
 
-**Test the application**
-
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
-which runs a set of basic tests to verify that the application is working as expected.
-
+which runs a set of basic tests to verify that the application is working as expected:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/search-as-you-type-test.json
 </pre>
 
-**Feed documents**
-Feed documents using the [vespa-cli](https://docs.vespa.ai/en/vespa-cli.html):
-
+Feed documents:
 <pre data-test="exec">
 $ while read -r line; do echo $line > tmp.json; vespa document tmp.json; done < search-as-you-type-index.jsonl
 </pre>
+<!-- ToDo: rewrite to using vespa feed -->
 
 <pre data-test="exec" data-test-assert-contains="Ranking with XGBoost Models">
 $ vespa query \
@@ -123,16 +98,12 @@ $ vespa query \
  'query=xgb'
 </pre>
 
-**Check out the website**
-
-Open <http://localhost:8080/site/> in a browser.
-To validate the site is up:
+Check out the website - open <http://localhost:8080/site/> in a browser:
 <pre data-test="exec" data-test-assert-contains="search as you type">
 $ curl -s http://localhost:8080/site/
 </pre>
 
-
-**Shutdown and remove the Docker container**
+Shutdown and remove the Docker container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
@@ -143,13 +114,26 @@ $ docker rm -f vespa
 
 ### N-grams
 
-Substring searches are slow when working on large amounts of data. However an N-gram search can be used as a faster but less precise substring-like search.
-The fields _title_ and _content_ are reindexed to create the fields _gram\_title_ and _gram\_content_ with an N-gram index. In this example the gram size is set to 3, but any value can be used. A lower gram size will get more hits, but may also find more irrelevant hits.
+Substring searches are slow when working on large amounts of data.
+However, an N-gram search can be used as a faster but less precise substring-like search.
+The fields _title_ and _content_ are re-indexed to create the fields
+_gram\_title_ and _gram\_content_ with an N-gram index.
+In this example the gram size is set to 3, but any value can be used.
+A lower gram size will get more hits, but may also find more irrelevant hits.
 
 ### Weighted combination of searches
 
-If we can get a hit on a whole word, this is most likely a more relevant hit than a hit on only a part of a word. Therefore we search through both the _default_ fieldset and the _grams_ fieldset and we weight hits on the _default_ fieldset higher than other hits. These weights can be seen in the _weighted\_doc\_rank_ rank profile.
+If we can get a hit on a whole word, this is most likely a more relevant hit than a hit on only a part of a word.
+Therefore, we search through both the _default_ fieldset and the _grams_ fieldset,
+and we weight hits on the _default_ fieldset higher than other hits.
+These weights can be seen in the _weighted\_doc\_rank_ rank profile.
 
 ### Highlighting
 
-Text highlights are generated by including `summary: dynamic` in a field. As searches on _default_ and _grams_ match with different parts of the text, the highlights of these matches will also be different. The line `contentScore*highlightWeight >= gramContentScore` in the file _src/main/resources/site/js/main.js_ decides which of these highlights should be shown on the website. The variable _highlightWeight_ can be tweaked to prioritize _default_ highlighting or _grams_ highlighting.
+Text highlights are generated by including `summary: dynamic` in a field.
+As searches on _default_ and _grams_ match with different parts of the text,
+the highlights of these matches will also be different.
+The line `contentScore*highlightWeight >= gramContentScore` in
+[src/main/resources/site/js/main.js](src/main/resources/site/js/main.js)
+decides which of these highlights should be shown on the website.
+The variable _highlightWeight_ can be tweaked to prioritize _default_ highlighting or _grams_ highlighting.

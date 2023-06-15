@@ -19,7 +19,6 @@ A sample Vespa application to assist with learning how to group according to the
 
 
 **Validate environment, should be minimum 4G:**
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
@@ -29,7 +28,6 @@ for details and troubleshooting:
 
 
 **Check-out, start Docker container:**
-
 <pre data-test="exec">
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/examples/part-purchases-demo

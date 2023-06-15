@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -24,7 +23,13 @@ This post demonstrates how to train GBDT methods for search ranking. The model u
 
 This work uses the largest product relevance dataset released by Amazon:
 
->We introduce the “Shopping Queries Data Set”, a large dataset of difficult search queries, released with the aim of fostering research in the area of semantic matching of queries and products. For each query, the dataset provides a list of up to 40 potentially relevant results, together with ESCI relevance judgements (Exact, Substitute, Complement, Irrelevant) indicating the relevance of the product to the query. Each query-product pair is accompanied by additional information. The dataset is multilingual, as it contains queries in English, Japanese, and Spanish.
+> We introduce the “Shopping Queries Data Set”, a large dataset of difficult search queries,
+> released with the aim of fostering research in the area of semantic matching of queries and products.
+> For each query, the dataset provides a list of up to 40 potentially relevant results,
+> together with ESCI relevance judgements (Exact, Substitute, Complement, Irrelevant)
+> indicating the relevance of the product to the query.
+> Each query-product pair is accompanied by additional information.
+> The dataset is multilingual, as it contains queries in English, Japanese, and Spanish.
 
 The dataset is found at [amazon-science/esci-data](https://github.com/amazon-science/esci-data). 
 The dataset is released under the [Apache 2.0 license](https://github.com/amazon-science/esci-data/blob/main/LICENSE).
@@ -36,6 +41,7 @@ The following is a quick start recipe on how to get started with this applicatio
 * [Docker](https://www.docker.com/) Desktop installed and running. 6 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
@@ -44,40 +50,21 @@ The following is a quick start recipe on how to get started with this applicatio
 * Python3 with `requests` `pyarrow` and `pandas` installed 
 
 Validate Docker resource settings, should be minimum 6 GB:
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy this application to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud. 
-
-For local deployment using docker image use 
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
-to switch between local deployment and cloud deployment by changing the `config target`. 
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -85,21 +72,18 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
-
+Verify that configuration service (deploy api) is ready:
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application 
-
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone commerce-product-ranking my-app && cd my-app
 </pre>
 
 Download ONNX models for neural ranking:
-
-<pre data-test="exec"> 
+<pre data-test="exec">
 $ mkdir -p application/models
 $ curl -L -o application/models/title_ranker.onnx \
     https://data.vespa.oath.cloud/sample-apps-data/title_ranker.onnx
@@ -115,11 +99,15 @@ See [scripts/export-bi-encoder.py](scripts/export-bi-encoder.py) and
 [scripts/export-cross-encoder.py](scripts/export-cross-encoder.py) for how
 to export models from PyTorch to ONNX format. 
 
-Deploy the application : 
-
+Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300 application
 </pre>
+
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
+
 
 ## Run basic system test
 
@@ -130,6 +118,7 @@ documents and runs a query [test](https://docs.vespa.ai/en/reference/testing.htm
 $ (cd application; vespa test tests/system-test/feed-and-search-test.json)
 </pre>
 
+
 ## Indexing sample product data
 
 Download the pre-processed sample product data for 16 products:
@@ -137,6 +126,7 @@ Download the pre-processed sample product data for 16 products:
 <pre data-test="exec">
 $ zstdcat sample-data/sample-products.jsonl.zstd | vespa feed -
 </pre>
+
 
 ## Evaluation 
 
@@ -165,7 +155,6 @@ $ cat semantic-title.run
 </pre>
 
 Example ranking produced by Vespa using the `semantic-title` rank-profile for query 535:
-
 <pre>
 535 Q0 B08PB9TTKT 1 0.46388297538130346 semantic-title
 535 Q0 B00B4PJC9K 2 0.4314163871097326 semantic-title
@@ -185,12 +174,10 @@ Example ranking produced by Vespa using the `semantic-title` rank-profile for qu
 535 Q0 B0742BZXC2 16 0.3778094352830984 semantic-title
 </pre>
 
-This run file can then 
-be evaluated using the [trec_eval](https://github.com/usnistgov/trec_eval) utility.
+This run file can then be evaluated using the [trec_eval](https://github.com/usnistgov/trec_eval) utility.
 
 Download a pre-processed query-product relevance judgments in TREC format:
-
-<pre data-test="exec"> 
+<pre data-test="exec">
 $  curl -L -o test.qrels \
     https://data.vespa.oath.cloud/sample-apps-data/test.qrels
 </pre>
@@ -234,18 +221,19 @@ $ trec_eval test.qrels cross-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
 
 Which for this query produces a NDCG score of 0.8208, better than the semantic-title model.
 
-## Shutdown and remove the Docker container
 
+## Shutdown and remove the Docker container
 
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
 
+
 ## Full evaluation 
 
 Download a pre-processed feed file with all (1,215,854) products:
 
-<pre> 
+<pre>
 $  curl -L -o product-search-products.jsonl.zstd \
     https://data.vespa.oath.cloud/sample-apps-data/product-search-products.jsonl.zstd
 </pre>
@@ -282,4 +270,3 @@ Run evaluation using `trec_eval`:
 <pre>
 $ trec_eval test.qrels semantic-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1
 </pre>
-
