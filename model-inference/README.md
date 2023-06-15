@@ -29,49 +29,32 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
-* Minimum 6GB memory dedicated to Docker (the default is 2GB on macOS).
+* Minimum 4GB memory dedicated to Docker.
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 
-**Validate environment, should be minimum 6G:**
-
+Validate environment, should be minimum 4G:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
-
-For local deployment using docker image use:
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-Where tenant-name is the tenant created when signing up for cloud. 
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -90,38 +73,33 @@ $ mvn clean package -U
 </pre>
 
 Verify that configuration service (deploy api) is ready:
-
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Deploy the application:
-
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available:
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
+Wait for the application endpoint to become available:
 <pre data-test="exec">
 $ vespa status --wait 300
 </pre>
 
-**Test the application**
-
-Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
-which runs a set of basic tests to verify that the application is working as expected.
+Test the application - run [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
+which executes a set of basic tests to verify that the application is working as expected:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/model-inference-test.json
 </pre>
 
-**Using the REST APIs directly**
-In the following examples we use vespa-cli's curl option, vespa-cli manages the endpoint url, local or cloud. It's 
-also possible to switch between the two modes and have a local deployment and a cloud deployment. 
 
-<pre data-test="exec">
-$ vespa config set application tenant-name.myapp.default
-</pre>
+**Using the REST APIs directly**
+In the following examples we use vespa CLI's curl option, it manages the endpoint url, local or cloud.
 
 List the available models:
 <pre data-test="exec" data-test-assert-contains="transformer">
@@ -129,13 +107,11 @@ $ vespa curl /model-evaluation/v1/
 </pre>
 
 Details of model the `transformer` model:
-
 <pre data-test="exec" data-test-assert-contains="transformer">
 $ vespa curl /model-evaluation/v1/transformer
 </pre>
 
 Evaluating the model:
-
 <pre data-test="exec" data-test-assert-contains="1.64956">
 $ vespa curl -- \
   --data-urlencode "input=[[1,2,3]]" \
@@ -143,7 +119,8 @@ $ vespa curl -- \
   /model-evaluation/v1/transformer/eval
 </pre>
 
-The input here is using [literal short form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form):
+The input here is using [literal short form](https://docs.vespa.ai/en/reference/tensor.html#tensor-literal-form).
+
 
 **Test the application - Java API in a handler**
 
@@ -154,24 +131,26 @@ $ vespa curl -- \
   /models/
 </pre>
 
-The input here is
+The input here is:
 
 ```
     { {x:0}:1, {x:1}:2, {x:2}:3 }
 ```
 
-The model expects type `tensor(d0[],d1[])`, but the handler transforms the tensor to the correct shape before evaluating
-the model.
+The model expects type `tensor(d0[],d1[])`,
+but the handler transforms the tensor to the correct shape before evaluating the model.
+
 
 **Test the document processor**
 
 Feed documents:
-
 <pre data-test="exec">
 $ vespa feed feed.json
 </pre>
 
-The document processor uses the `transformer` model to generate embeddings that are stored in the content cluster.
+The [MyDocumentProcessor](src/main/java/ai/vespa/example/MyDocumentProcessor.java) document processor
+uses the `transformer` model to generate embeddings that are stored in the content cluster.
+
 
 **Test the searchers**
 
@@ -188,15 +167,17 @@ This issues a search for the same input as above:
     { {x:0}:1, {x:1}:2, {x:2}:3 }
 ```
 
-The `MySearcher` searcher uses the `transformer` model to translate to an embedding, which is sent to the backend.
-A simple dot product between the embeddings of the query and documents are performed, and the documents are initially
-sorted in descending order.
+The [MySearcher](src/main/java/ai/vespa/example/MySearcher.java) searcher
+uses the `transformer` model to translate to an embedding, which is sent to the backend.
+A simple dot product between the embeddings of the query and documents are performed,
+and the documents are initially sorted in descending order.
 
-The `MyPostProcessingSearcher` uses the `pairwise_ranker` model to compare each document against each other, something
-that can't be done on the back end before determining the final rank order.
+The [MyPostProcessingSearcher](src/main/java/ai/vespa/example/MyPostProcessingSearcher.java) searcher
+uses the `pairwise_ranker` model to compare each document against each other,
+something that can't be done on the back end before determining the final rank order.
 
-**Shutdown and remove the container:**
 
+**Shutdown and remove the container**
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>

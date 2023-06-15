@@ -11,53 +11,35 @@ Frozen data embeddings from Foundational models are an emerging industry practic
 
 Read the [blog post](https://blog.vespa.ai/).
 
-## Quick start
 
-The following is a quick start recipe on how to get started with this application. 
+## Quick start
+The following is a quick start recipe on how to get started with this application:
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
 Validate Docker resource settings, should be minimum 4 GB:
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy this application to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud. 
-
-For local deployment using docker image use 
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
-It's possible to switch between local deployment and cloud deployment by changing the `config target`. 
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -65,42 +47,42 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
-
+Verify that configuration service (deploy api) is ready:
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application 
-
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone custom-embeddings my-app && cd my-app
 </pre>
 
 Download a frozen embedding model file, see 
-[text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details.
-
-<pre data-test="exec"> 
+[text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details:
+<pre data-test="exec">
 $ mkdir -p models
 $ curl -L -o models/bert-base-uncased.txt \
-    https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/bert-base-uncased.txt
+  https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/bert-base-uncased.txt
 
 $ curl -L -o models/frozen.onnx \
-    https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/minilm-l6-v2.onnx
+  https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/minilm-l6-v2.onnx
 
-$ cp models/frozen.onnx  models/tuned.onnx 
+$ cp models/frozen.onnx models/tuned.onnx 
 </pre>
 
 In this case, we re-use the frozen model as the tuned model to demonstrate functionality.
 
-Deploy the application : 
-
+Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
 
-## Indexing sample documents 
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
 
+
+## Indexing sample documents
 <pre data-test="exec">
 vespa document ext/1.json
 vespa document ext/2.json
@@ -112,7 +94,6 @@ vespa document ext/3.json
 We demonstrate using `vespa cli`, use `-v` to see the curl equivalent using HTTP api.  
 
 ### Simple retrieve all documents with undefined ranking:
-
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
 vespa query 'yql=select * from doc where true' \
 'ranking=unranked'
@@ -141,8 +122,7 @@ vespa query 'yql=select * from doc where {targetHits:10}nearestNeighbor(embeddin
 This invokes the `simple-similarity` ranking model, which performs the query transformation
 to the tuned embedding. 
 
-### Using the Deep Neural Network similarity 
-
+### Using the Deep Neural Network similarity
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
 vespa query 'yql=select * from doc where {targetHits:10}nearestNeighbor(embedding, q)' \
 'input.query(q)=embed(tuned, "space contains many suns")' \
@@ -162,6 +142,7 @@ vespa visit --field-set "[all]" > ../vector-data.jsonl
 <pre>
 curl "http://localhost:8080/document/v1/doc/doc/docid/1?fieldSet=\[all\]"
 </pre>
+
 
 ## Cleanup
 Tear down the running container:

@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -13,6 +12,7 @@ and extracts terms and phrases.
 [Prefix match](https://docs.vespa.ai/en/text-matching-ranking.html#prefix-match) is used,
 so suggestions are shown as the user types.
 
+<!-- ToDo check this after deploying new suggestions script - we might need to kill this app and point to new code -->
 This sample application is also deployed for [vespa-documentation-search](https://github.com/vespa-cloud/vespa-documentation-search),
 see [schema](https://github.com/vespa-cloud/vespa-documentation-search/blob/main/src/main/application/schemas/term.sd).
 Note an enhancement to this sample app:
@@ -50,7 +50,8 @@ a real application could implement a more sophisticated ranking for better sugge
 ### Performance considerations
 For short inputs, a trick is to use range queries with 
 [hitLimit](https://docs.vespa.ai/en/reference/query-language-reference.html#hitlimit) on a fast-search attribute. 
-This changes the semantics of the prefix query to only match against documents in the top 1K, which is usually what one wants for short prefix lengths.
+This changes the semantics of the prefix query to only match against documents in the top 1K,
+which is usually what one wants for short prefix lengths.
 * [Advanced range search with hitLimit](https://docs.vespa.ai/en/performance/practical-search-performance-guide.html#advanced-range-search-with-hitlimit)
 
 ## Quick start
@@ -58,50 +59,31 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * [Apache Maven](https://maven.apache.org/install.html) This sample app uses custom Java components and Maven is used
   to build the application.
 
-**Validate environment, must be minimum 4GB:**
-
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-for details and troubleshooting:
+Validate environment, must be minimum 4GB:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
-
-For local deployment using docker image use
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-Where tenant-name is the tenant created when signing up for cloud.
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -109,78 +91,74 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Download this sample application
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone incremental-search/search-suggestions myapp && cd myapp
 </pre>
 
-Build the application package
+Build the application package:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
 
-Verify that configuration service (deploy api) is ready
-
+Verify that configuration service (deploy api) is ready:
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Deploy the application
-
+Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
+Wait for the application endpoint to become available:
 <pre data-test="exec">
 $ vespa status --wait 300
 </pre>
 
-**Feed the example documents**
-Feed documents using the [vespa-cli](https://docs.vespa.ai/en/vespa-cli.html):
-
+Feed the example documents:
+<!-- ToDo rewrite to using vespa feed -->
 <pre data-test="exec">
 $ while read -r line; do echo $line > tmp.json; vespa document tmp.json; done < example_feed.jsonl
 </pre>
 
-**Check the website, write queries and view suggestions**
-
-Open http://localhost:8080/site/ in a browser.
-To validate the site is up:
+Check the website, write queries and view suggestions.
+Open http://localhost:8080/site/ in a browser:
 <pre data-test="exec" data-test-assert-contains="search suggestions">
 $ curl -s http://localhost:8080/site/
 </pre>
 
 
-**Do a prefix query**
-Using [YQL](https://docs.vespa.ai/en/query-language.html) using *contains* with prefix annotation:
+Do a prefix query -
+using [YQL](https://docs.vespa.ai/en/query-language.html) using *contains* with prefix annotation:
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
 $ vespa query 'yql=select documentid,term from sources term where term contains ([{"prefix":true}]"stre");'
 </pre>
 
-YQL with [userQuery()](https://docs.vespa.ai/en/reference/query-language-reference.html#userquery) and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
+YQL with [userQuery()](https://docs.vespa.ai/en/reference/query-language-reference.html#userquery) and
+[simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html):
 * Note: The `term` field is defined as a field in the default [fieldset](https://docs.vespa.ai/en/schemas.html#fieldset)
-
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
 vespa query 'yql=select documentid,term from sources term where userQuery()' 'query=str*'
 </pre>
 
-YQL with [userInput()](https://docs.vespa.ai/en/reference/query-language-reference.html#userinput) and [simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html)
-
+YQL with [userInput()](https://docs.vespa.ai/en/reference/query-language-reference.html#userinput) and
+[simple query language](https://docs.vespa.ai/en/reference/simple-query-language-reference.html):
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
 vespa query 'yql=select documentid,term from sources term where ([{"defaultIndex":"default"}]userInput(@query))' 'query=str*'
 </pre>
 * Note: with userInput, the `defaultIndex` has to be set, it can be a field, or a [fieldset](https://docs.vespa.ai/en/schemas.html#fieldset)
 
 Using regular expression [YQL](https://docs.vespa.ai/en/query-language.html) with *matches* instead of *contains*:
-
 <pre data-test="exec" data-test-assert-contains="id:term:term::streaming">
 $ vespa query 'yql=select documentid,term from sources term where term matches "stre"'
 </pre>
 
-**Shutdown and remove the docker container**
-
+Shutdown and remove the docker container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>

@@ -23,10 +23,10 @@ The following is for deploying the end to end application including a custom fro
 * Architecture: x86_64 or arm64 
 * Minimum **10 GB** memory dedicated to Docker (the default is 2 GB on Macs)
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * python 3 
-* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
-* [Apache Maven](https://maven.apache.org/install.html) Maven is used
+* [Java 17](https://openjdk.org/projects/jdk/17/)
+* [Apache Maven](https://maven.apache.org/install.html)
 
 ## Installing vespa-cli
 

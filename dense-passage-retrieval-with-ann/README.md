@@ -38,6 +38,7 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
@@ -51,40 +52,21 @@ Requirements:
 See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
 Validate Docker resource settings, should be minimum 6GB:
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
-Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
-
-<pre >
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
-
-For local deployment using docker image use
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
-to switch between local deployment and cloud deployment by changing the `config target`.
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -92,22 +74,19 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Verify that configuration service (deploy api) is ready
-
+Verify that configuration service (deploy api) is ready:
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Download this sample application
-
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone dense-passage-retrieval-with-ann myapp && cd myapp
 </pre>
 
-
 Download and set up the Transformer models, and build the application package.
-This can take some time as the two BERT-based models are around 100Mb each. The quick
-start uses quantized model versions. 
+This can take some time as the two BERT-based models are around 100Mb each.
+The quick start uses quantized model versions. 
 
 <pre data-test="exec">
 $ pip3 install -r requirements.txt
@@ -118,7 +97,7 @@ $ python3 bin/export-query-model.py src/main/application/models/question_encoder
 $ mv src/main/application/models/question_encoder-quantized.onnx src/main/application/models/question_encoder.onnx
 </pre>
 
-Build the application package 
+Build the application package:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
@@ -128,39 +107,37 @@ Deploy the application package:
 $ vespa deploy --wait 300
 </pre>
 
-Wait for the application endpoint to become available
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
 
+Wait for the application endpoint to become available:
 <pre data-test="exec">
 $ vespa status --wait 300
 </pre>
 
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
-which runs a set of basic tests to verify that the application is working as expected.
-
+which runs a set of basic tests to verify that the application is working as expected:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/passage-ranking-system-test.json
 </pre>
 
 Feed sample data:
-
 <pre data-test="exec">
 $ vespa feed sample-feed.jsonl
 </pre>
 
-Run a question: 
-
+Run a question:
 <pre data-test="exec" data-test-assert-contains='prediction": "2, 700"'>
 $ curl -s "http://localhost:8080/search/?query=what+is+the+population+of+achill+island%3F" | python3 -m json.tool
 </pre>
 
-Run another question: 
-
+Run another question:
 <pre data-test="exec" data-test-assert-contains='prediction": "78. 29'>
 $ curl -s "http://localhost:8080/search/?query=what+is+the+boiling+point+of+ethanol%3F" | python3 -m json.tool
 </pre>
 
 After you are done, shutdown and remove the container:
-
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
@@ -194,7 +171,6 @@ Note that the data is large, the text passage representation
 
 To download the pre-generated Wikipedia snippets and the pre-computed passage
 embeddings use the DPR download utility:
-
 <pre>
 $ python3 dpr/data/download_data.py --resource data.wikipedia_split
 $ python3 dpr/data/download_data.py --resource data.retriever_results.nq.single.wikipedia_passages
@@ -202,15 +178,13 @@ $ python3 dpr/data/download_data.py --resource data.retriever_results.nq.single.
 
 To generate the combined feed file use the *make-vespa-feed.py* script.  
 It reads the entire Wikipedia passage text dataset into memory, reads one embedding file at a time
-and emits a joint Vespa document representation of the textual passage data with the precomputed DPR passage embedding.
-
+and emits a joint Vespa document representation of the textual passage data with the precomputed DPR passage embedding:
 <pre>
 $ cd ..
 $ python3 bin/make-vespa-feed.py DPR/downloads/data/wikipedia_split/psgs_w100.tsv DPR/downloads/data/retriever_results/nq/single/wikipedia_passages_*.pkl > feed.jsonl 
 </pre>
 
-The script generates the input feed file, sample snippet: 
-
+The script generates the input feed file, sample snippet:
 <pre>
 {
   "put": "id:wiki:wiki::41",
@@ -225,16 +199,15 @@ The script generates the input feed file, sample snippet:
 
 The final feed file is 273G uncompressed. Adding compression like zstd/zip is highly recommended. Feed the file using the 
 same tool as with the toy sample data:
-
 <pre>
 $ vespa feed feed.jsonl
 </pre>
+
 
 ## Experiments
 
 With the full dataset indexed in Vespa, on can run all questions from the
 Natural Questions (NQ) dev split using the three different retrieval strategies:
-
 <pre>
 $ curl -L -o NQ-open.dev.jsonl https://raw.githubusercontent.com/google-research-datasets/natural-questions/master/nq_open/NQ-open.dev.jsonl
 $ python3 bin/evaluate_em.py NQ-open.dev.jsonl dense http://your-vespa-instance-hostname:8080
@@ -247,8 +220,7 @@ $ python3 bin/evaluate_em.py NQ-open.dev.jsonl hybrid http://your-vespa-instance
 
 The following section describe the experiments performed with this setup,
 all experiments are done running queries using the [Vespa query api](https://docs.vespa.ai/en/query-api)
-and checking the predicted answer against the golden reference answer(s).
-
+and checking the predicted answer against the golden reference answer(s):
 <pre>
 def get_vespa_result(question, retriever_model):
   request_body = {
@@ -282,11 +254,11 @@ Three different retrieval strategies are evaluated:
 * **Hybrid** Using a linear combination of the above and using OR to combine
   the weakAnd and nearestNeighbor search operator.
 
-| Retrieval Model                 | Recall@1  | Recall@5 | Recall@10| Recall@20 |
-|-------------------------------- |-----------|----------|----------|-----------|
-| sparse (WAND bm25)              | 23.77     | 44.24    | 52.69    | 61.47     |
-| dense  (nearest neighbor)       | 46.37     | 68.53    | 75.07    | 80.36     |
-| hybrid (WAND + nearest neighbor)| 40.61     | 69.25    | 75.96    | 80.44     |
+| Retrieval Model                  | Recall@1 | Recall@5 | Recall@10 | Recall@20 |
+|----------------------------------|----------|----------|-----------|-----------|
+| sparse (WAND bm25)               | 23.77    | 44.24    | 52.69     | 61.47     |
+| dense  (nearest neighbor)        | 46.37    | 68.53    | 75.07     | 80.36     |
+| hybrid (WAND + nearest neighbor) | 40.61    | 69.25    | 75.96     | 80.44     |
 
 The DPR paper reports Recall@20 79.4,
 so results are in accordance with the reported results for the dense retrieval method.
@@ -305,21 +277,19 @@ it will not  match the golden answers which are *14 December 1972 UTC* or *Decem
 **Original Natural Question dev set**
 ([NQ-open.dev.jsonl](https://github.com/google-research-datasets/natural-questions/blob/master/nq_open/NQ-open.dev.jsonl))
 
-| Retrieval Model                 | EM(@5)    | EM (@10)|
-|---------------------------------|-----------|--------|
-| sparse (WAND bm25               | 23.80     | 26.23  |
-| dense  (nearest neighbor)       | 39.34     | 40.58  |
-| hybrid (WAND + nearest neighbor)| 39.36     | 40.61  |
+| Retrieval Model                  | EM(@5) | EM (@10) |
+|----------------------------------|--------|----------|
+| sparse (WAND bm25                | 23.80  | 26.23    |
+| dense  (nearest neighbor)        | 39.34  | 40.58    |
+| hybrid (WAND + nearest neighbor) | 39.36  | 40.61    |
 
 
-## Summary 
-
+## Summary
 <!--
 <figure>
 <p align="center"><img width="90%" src="img/embedding_learning.png" /></p>
 </figure>
 -->
-
 
 <img width="90%" src="img/two-towers-embedding.png" alt="DPR Two Tower Embedding Architecture" />
 
@@ -332,7 +302,6 @@ in the same Vespa [document schema](src/main/application/schemas/wiki.sd).
 We also store the token ids from the BERT tokenization as Vespa tensor fields.
 These token_ids fields are not used by the retriever component, but by the reader.
 The tensor field type in Vespa is always stored in memory for fast access during retrieval and ranking. Schema:
-
 <pre>
 schema wiki {
 
@@ -396,7 +365,7 @@ We enable [HNSW index for fast approximate nearest neighbor search](https://docs
 
 The dual query and document encoder of the DPR retrieval system uses the inner
 dot product between the query tensor and the document tensor to represent the score.
-Internally, Vespa transform the 768 dimensional inner product space to angular-distance space using a
+Internally, Vespa transforms the 768 dimensional inner product space to angular-distance space using a
 [transformation](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/XboxInnerProduct.pdf) which adds one dimension.
 The DPR implementation uses the same space transformation when using
 [Faiss with HNSW index](https://github.com/facebookresearch/faiss).
@@ -469,7 +438,6 @@ The function builds a tensor: [[CLS, question_token_ids, SEP, title_token_ids, S
 which is evaluated by the Reader ONNX model.
 **summary-features** is a way to pass ranking features and tensors
 from the content nodes to the java serving container.
-
 
 <img width="90%" src="img/reader.png" alt="Model overview"/>
 

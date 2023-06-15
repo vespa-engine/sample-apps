@@ -14,7 +14,7 @@ cost-efficient large scale image search over multimodal AI powered vector repres
 This sample app use the [LAION-5B](https://laion.ai/blog/laion-5b/) dataset,
  the biggest open accessible image-text dataset in the world.
 
->Large image-text models like ALIGN, BASIC, Turing Bletchly, FLORENCE & GLIDE have 
+> Large image-text models like ALIGN, BASIC, Turing Bletchly, FLORENCE & GLIDE have
 > shown better and better performance compared to previous flagship models like CLIP and DALL-E.
 > Most of them had been trained on billions of image-text pairs and unfortunately, no datasets of this size had been openly available until now. 
 > To address this problem we present LAION 5B, a large-scale dataset for research purposes 
@@ -26,8 +26,8 @@ generative [StableDiffusion](https://stability.ai/blog/stable-diffusion-public-r
 
 Note the following about the LAION 5B dataset
 
->Be aware that this large-scale dataset is un-curated. 
-> Keep in mind that the un-curated nature of the dataset means that collected 
+> Be aware that this large-scale dataset is un-curated.
+> Keep in mind that the un-curated nature of the dataset means that collected
 > links may lead to strongly discomforting and disturbing content for a human viewer.
 
 The released dataset does not contain image data itself,
@@ -86,6 +86,7 @@ accelerated by stateless model inference.
 - Scale, from a single node deployment to multi-node deployment using managed [Vespa Cloud](https://cloud.vespa.ai/), 
 or self-hosted on-premise. 
 
+
 ## Stateless Components 
 The app contains several [container components](https://docs.vespa.ai/en/jdisc/container-components.html):
 
@@ -107,10 +108,11 @@ for playing around with the app on a laptop.
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [Github releases](https://github.com/vespa-engine/vespa/releases).
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * [Java 17](https://openjdk.org/projects/jdk/17/) installed.
 * Python3 and numpy to process the vector dataset 
 * [Apache Maven](https://maven.apache.org/install.html) - this sample app uses custom Java components and Maven is used
@@ -123,41 +125,19 @@ $ docker info | grep "Total Memory"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
-
-<pre >
+<pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy this app to [Vespa Cloud](https://cloud.vespa.ai/)
-using target `cloud`. For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html) 
-replace the [src/main/application/services.xml](src/main/application/services.xml) with 
-[src/main/application/services-cloud.xml](src/main/application/services-cloud.xml). 
-
-For local deployment using docker image use:
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-For an optimal deployment in Vespa Cloud, replace the `src/main/application/services.xml` with 
-`src/main/application/services-cloud.xml`. The cloud deployment uses
-dedicated clusters for `feed` and `query`. 
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
-
-For multi-node onpremise deployments, use
-the [multi-node high availability](https://github.com/vespa-engine/sample-apps/tree/master/examples/operations/multinode-HA)
-template for inspiration. 
+Use the [multi-node high availability](https://github.com/vespa-engine/sample-apps/tree/master/examples/operations/multinode-HA)
+template for inspiration for multi-node, on-premise deployments.
 
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -166,13 +146,11 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 Verify that the configuration service (deploy api) is ready:
-
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-
 <pre data-test="exec">
 $ vespa clone billion-scale-image-search myapp && cd myapp
 </pre>
@@ -202,8 +180,8 @@ $ python3 -m pip install pandas numpy requests mmh3 pyarrow
 </pre>
 
 Generate centroids, this process randomly selects vectors from the dataset to represent
-centroids. Performing an incremental clustering can improve vector search recall and allow to
-index fewer centroids. For simplicity, this tutorial uses random sampling. 
+centroids. Performing an incremental clustering can improve vector search recall and allow
+indexing fewer centroids. For simplicity, this tutorial uses random sampling. 
 
 <pre data-test="exec">
 $ python3 src/main/python/create-centroid-feed.py img_emb_0000.npy > centroids.jsonl
@@ -219,9 +197,10 @@ $ python3 src/main/python/create-joined-feed.py metadata_0000.parquet img_emb_00
 To process the entire dataset, we recommend starting several processes, each operating on separate split files 
 as the processing implementation is single-threaded. 
 
+
 ## Build and deploy Vespa app 
 
-The models directory in the application package contains three small ONNX models:
+The [models](src/main/application/models) directory in the application package contains three small ONNX models:
 
 - `vespa_innerproduct_ranker.onnx` for vector similarity (inner dot product) between the query and the vectors
 in the stateless container.
@@ -247,6 +226,14 @@ Deploy the application. This step deploys the application package built in the p
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
+
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
+For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html)
+replace the [src/main/application/services.xml](src/main/application/services.xml) with
+[src/main/application/services-cloud.xml](src/main/application/services-cloud.xml) -
+the cloud deployment uses dedicated clusters for `feed` and `query`.
 
 Wait for the application endpoint to become available:
 
@@ -342,7 +329,7 @@ The `text` [rank](https://docs.vespa.ai/en/ranking.html) profile uses
 [nativeRank](https://docs.vespa.ai/en/nativerank.html), one of Vespa's many 
 text matching rank features. 
 
-## Non-native hyper-parameters
+## Non-native hyperparameters
 There are several non-native query request 
 parameters that controls the vector search accuracy and performance tradeoffs. These
 can be set with the request, e.g, `/search/&spann.clusters=12`. 
@@ -353,7 +340,7 @@ A higher number improves recall, but increases computational complexity and disk
 A higher number improves recall, but increases the computational complexity and network. 
 - `collapse.enable`, default `true`, controls de-duping of the top ranked results using image to image similarity.
 - `collapse.similarity.max-hits`, default `1000`, the number of top-ranked hits to perform de-duping of. Must be less than `rank-count`.
-- `collapse.similarity.threshold`, default `0.95`, how similar an given image to image must be before it is considered a duplicate.
+- `collapse.similarity.threshold`, default `0.95`, how similar a given image to image must be before it is considered a duplicate.
 
 ## Areas of improvement 
 There are several areas that could be improved. 

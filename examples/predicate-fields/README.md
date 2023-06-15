@@ -52,6 +52,7 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
@@ -61,34 +62,21 @@ Requirements:
   This sample app uses custom Java components and Maven is used to build the application.
 
 Validate Docker resource settings, should be minimum 4 GB:
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
-
-<pre >
+<pre>
 $ brew install vespa-cli
 </pre>
 
-For local deployment using the docker image, use:
-
+For local deployment using the docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/), use:
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -97,28 +85,28 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 Verify that configuration service (deploy api) is ready:
-
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-
 <pre data-test="exec">
 $ vespa clone examples/predicate-fields my-app && cd my-app
 </pre>
 
 Build the sample app:
-
 <pre data-test="exec">
 $ mvn package -U
 </pre>
 
-Finally, deploy the app:
-
+Deploy the app:
 <pre data-test="exec">
 $ vespa deploy --wait 300
 </pre>
+
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
 
 ## Index marketplace users
