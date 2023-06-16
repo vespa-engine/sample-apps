@@ -6,7 +6,6 @@ ftfy
 regex
 tqdm
 pyvespa >= 0.34.0
-learntorank>=0.0.21
 ipywidgets
 plotly
 streamlit
