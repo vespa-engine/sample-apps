@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -363,6 +362,7 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
@@ -373,40 +373,21 @@ Requirements:
 * zstd: `brew install zstd`
 
 Validate Docker resource settings, should be minimum 6 GB:
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
-
 <pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud. 
-
-For local deployment using docker image use:
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
-to switch between local deployment and cloud deployment by changing the `config target`. 
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -415,13 +396,11 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 Verify that configuration service (deploy api) is ready:
-
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-
 <pre data-test="exec">
 $ vespa clone msmarco-ranking myapp && cd myapp
 </pre>
@@ -454,6 +433,10 @@ Deploy the application. This step deploys the application package built in the p
 $ vespa deploy --wait 300
 </pre>
 
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
+
 Wait for the application endpoint to become available:
 
 <pre data-test="exec">
@@ -473,7 +456,6 @@ $ vespa test src/test/application/tests/system-test/document-ranking-system-test
 ## Feeding Sample Data
 
 Download the sample data:
-
 <pre data-test="exec">
 $ mkdir -p sample-feed && \
   curl -L -o sample-feed/colmini-passage-feed-sample.jsonl.zst \
@@ -481,7 +463,6 @@ $ mkdir -p sample-feed && \
 </pre>
 
 Feed the data:
-
 <pre data-test="exec">
 $ zstdcat sample-feed/colmini-passage-feed-sample.jsonl.zst | vespa feed -
 </pre>
@@ -491,8 +472,7 @@ Note, only searching 1K demo passages.
 
 For example do a query for *what was the Manhattan Project*: 
 
-In this case using dense retrieval and ColBERT re-ranking: 
-
+In this case using dense retrieval and ColBERT re-ranking:
 <pre>
 $ curl -H 'Content-Type: application/json' --data '
 {
@@ -516,14 +496,14 @@ See query profile definitions in
 
 Examples of retrieval and ranking methods demonstrated with this sample application:
 
-| **Retrieval method** | **Ranking model**                      | **Query example link**                                                                                           |
-|------------------|--------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| sparse (wand)    | bm25                                       | [sparse-bm25](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-bm25) |
-| sparse (wand)    | bm25 => col-MiniLM                         | [sparse-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-colbert) |
-| dense (ann)      | dense                                      | [dense](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense) |
-| dense (ann)      | dense => col-MiniLM                        | [dense-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert) |
-| dense (ann)      | dense => col-MiniLM => MiniLM              | [dense-colbert-cross](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-cross&rerank-count=24) |
-| dense (ann)      | dense => col-MiniLM => Container re-ranking| [dense-colbert-cross-container](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-container-rerank&rerank-count=24) |
+| **Retrieval method** | **Ranking model**                           | **Query example link**                                                                                                                                            |
+|----------------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| sparse (wand)        | bm25                                        | [sparse-bm25](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-bm25)                                                      |
+| sparse (wand)        | bm25 => col-MiniLM                          | [sparse-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=sparse-colbert)                                                |
+| dense (ann)          | dense                                       | [dense](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense)                                                                  |
+| dense (ann)          | dense => col-MiniLM                         | [dense-colbert](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert)                                                  |
+| dense (ann)          | dense => col-MiniLM => MiniLM               | [dense-colbert-cross](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-cross&rerank-count=24)                      |
+| dense (ann)          | dense => col-MiniLM => Container re-ranking | [dense-colbert-cross-container](http://localhost:8080/search/?query=what+was+the+Manhattan%20Project&queryProfile=dense-colbert-container-rerank&rerank-count=24) |
 
 The last retrieval and ranking method fetches the title_token_ids tensor of the top-k globally ranked documents
 and the re-ranking using the cross attention model happens in the stateless container layer.
@@ -542,11 +522,13 @@ Also, the second-phase ranking expression re-rank count could be overridden by t
 * *&rerank-count=x* sets the number of hits which are re-ranked by the expression in the *second-phase* expression
   in the ranking profile. This parameter has large impact on serving performance for the cross-encoder methods.
 
+
 ## Shutdown and remove the Docker container:
 
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
+
 
 ## Full Evaluation
 
@@ -561,14 +543,12 @@ and the sentence transformer single representation embedding.
 The data is compressed using [ZSTD](https://facebook.github.io/zstd/): 
 
 Each file is just below 20 GB of data:
-
 <pre>
 $ for i in 1 2 3; do curl -L -o sample-feed/colmini-passage-feed-$i.jsonl.zst \
   https://data.vespa.oath.cloud/colbert_data/colmini-passage-feed-$i.jsonl.zst; done
 </pre>
 
 Note that we stream through the data using *zstdcat* as the uncompressed representation is large (170 GB):
-
 <pre>
 $ zstdcat sample-feed/colmini-passage-feed-*.zst | vespa feed -
 </pre>
@@ -584,7 +564,6 @@ we can run retrieval and ranking using the methods demonstrated in this sample a
 
 Install python dependencies.
 There are no run time python dependencies in Vespa, but to run the evaluation the following is needed:
-
 <pre>
 $ pip3 install torch numpy ir_datasets requests tqdm
 </pre>
@@ -601,48 +580,45 @@ $ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile sp
 **BM25(WAND) + ColMiniLM re-ranking**
 <pre>
 $ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile sparse-colbert --endpoint \
-    http://localhost:8080/search/
+  http://localhost:8080/search/
 </pre>
 
 **dense(ANN) Single phase dense retrieval**
 <pre>
 $ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense --endpoint \
-    http://localhost:8080/search/
+  http://localhost:8080/search/
 </pre>
 
 **dense(ANN) + ColMiniLM re-ranking**
 <pre>
 $ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense-colbert --endpoint \
-   http://localhost:8080/search/
+  http://localhost:8080/search/
 </pre>
 
 **dense(ANN) + ColMiniLM re-ranking + CrossMiniLm**
 <pre>
 $ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense-colbert-cross --endpoint \
-    http://localhost:8080/search/
+  http://localhost:8080/search/
 </pre>
 
 **dense(ANN) + ColMiniLM re-ranking + Container CrossMiniLm**
 <pre>
 $ ./src/main/python/evaluate_passage_run.py --query_split dev --query_profile dense-colbert-container-rerank --endpoint \
-    http://localhost:8080/search/
+  http://localhost:8080/search/
 </pre>
 
 To evaluate ranking accuracy download the official MS Marco evaluation script:
-
 <pre>
 $ curl -L -o msmarco_eval.py https://raw.githubusercontent.com/spacemanidol/MSMARCO/master/Ranking/Baselines/msmarco_eval.py
 </pre>
 
 Generate the dev qrels (query relevancy labels) file using the *ir_datasets*:
-
 <pre>
 $ ./src/main/python/dump_passage_dev_qrels.py
 </pre>
 
 Above will write a **qrels.dev.small.tsv** file to the current directory,
 now we can evaluate using the **run.dev.txt** file created by any of the evaluate_passage_run.py runs listed above:
-
 <pre>
 $ python3 msmarco_eval.py qrels.dev.small.tsv run.dev.txt
 #####################
@@ -654,8 +630,9 @@ QueriesRanked: 6980
 
 ## Bring your own data
 
-The application instructions above used pre-generated embeddings, both for the bi-encoder (dense) and the multi-representation
-model (ColBERT). If you want to experiment with your own data, you can feed JSON with just the text field,
+The application instructions above used pre-generated embeddings,
+both for the bi-encoder (dense) and the multi-representation model (ColBERT).
+If you want to experiment with your own data, you can feed JSON with just the text field,
 and Vespa will produce both embeddings during document processing.
 
 See [src/test/application/tests/sample-passage.json](src/test/application/tests/sample-passage.json) for expected

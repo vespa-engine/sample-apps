@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -19,46 +18,28 @@ The following is a quick start recipe on how to get started with this applicatio
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
 Validate Docker resource settings, should be minimum 4 GB:
-
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
-
 <pre>
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy this application to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud. 
-
-For local deployment using docker image use:
-
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use:
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
-It's possible to switch between local deployment and cloud deployment by changing the `config target`. 
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -67,34 +48,35 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 Verify that configuration service (deploy api) is ready:
-
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-
 <pre data-test="exec">
 $ vespa clone multi-vector-indexing my-app && cd my-app
 </pre>
 
 Download embedding model files, see 
 [text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details:
-
 <pre data-test="exec"> 
 $ mkdir -p model
 $ curl -L -o model/bert-base-uncased.txt \
-    https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/bert-base-uncased.txt
+  https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/bert-base-uncased.txt
 
 $ curl -L -o model/minilm-l6-v2.onnx \
-    https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/minilm-l6-v2.onnx
+  https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/minilm-l6-v2.onnx
 </pre>
 
-Deploy the application : 
-
+Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
+
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
+
 
 ## Indexing sample Wikipedia articles
 
@@ -106,11 +88,11 @@ instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled.
 $ zstdcat ext/articles.jsonl.zst | vespa feed -
 </pre>
 
+
 ## Query and ranking examples
 We demonstrate using `vespa cli`, use `-v` to see the curl equivalent using HTTP api.  
 
 ### Simple retrieve all articles with undefined ranking:
-
 <pre data-test="exec" data-test-assert-contains='"totalCount": 8'>
 $ vespa query 'yql=select * from articles where true' \
   'ranking=unranked'
@@ -126,8 +108,7 @@ $ vespa query 'yql=select * from articles where userQuery()' \
 Notice the `relevance`, which is assigned by the rank-profile. Also note
 that keywords are highlighted in the `paragraphs` field. 
 
-### Semantic vector search on the paragraph level. 
-
+### Semantic vector search on the paragraph level.
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from articles where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
   'input.query(q)=embed(what does 24 mean in the context of railways)' \
@@ -192,4 +173,3 @@ Tear down the running container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
-

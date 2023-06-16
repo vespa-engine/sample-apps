@@ -18,6 +18,7 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is minimum.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
@@ -40,26 +41,12 @@ Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 $ brew install vespa-cli
 </pre>
 
-Set target environment - it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/) using target cloud.
-
 For local deployment using Docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/):
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). It's possible
-to switch between local deployment and cloud deployment by changing the `config target`.
-
 Pull and start the vespa docker container image:
-
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
@@ -68,13 +55,11 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 Verify that configuration service (deploy api) is ready:
-
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-
 <pre data-test="exec">
 $ vespa clone use-case-shopping myapp && cd myapp
 </pre>
@@ -89,14 +74,15 @@ Deploy the application package:
 $ vespa deploy --wait 300
 </pre>
 
-Run [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html) -
-this runs a set of basic tests to verify that the application is working as expected.
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
+Run [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html) -
+this runs a set of basic tests to verify that the application is working as expected:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/product-search-test.json
 </pre>
-
-**Download and create data feed:**
 
 First, create data feed for products:
 <pre data-test="exec">
@@ -117,32 +103,30 @@ $ python3 -m spacy download en_core_web_sm
 $ ./create_suggestions.py feed_items.json > feed_suggestions.json
 </pre>
 
-**Feed data:**
-
-Feed products:
+Feed products data:
 <pre data-test="exec">
 $ vespa feed feed_items.json
 </pre>
 
-Feed reviews:
+Feed reviews data:
 <pre data-test="exec">
 $ vespa feed feed_reviews.json
 </pre>
 
-Feed query suggestions:
+Feed query suggestions data:
 <pre data-test="exec">
 $ vespa feed feed_suggestions.json
 </pre>
 
-**Test the application:**
+Test the application:
 <pre data-test="exec" data-test-assert-contains="id:item:item::">
 $ vespa query "query=golf"
 </pre>
 
-**Browse the site:**
+Browse the site:
 [http://localhost:8080/site](http://localhost:8080/site)
 
-**Shutdown and remove the container:**
+Shutdown and remove the container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>

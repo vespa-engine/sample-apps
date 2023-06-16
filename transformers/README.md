@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -25,6 +24,7 @@ Vespa stateless container.
 * [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
@@ -41,22 +41,9 @@ Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 $ brew install vespa-cli
 </pre>
 
-Set target env, it's also possible to deploy to [Vespa Cloud](https://cloud.vespa.ai/)
-using target cloud.
-
-For local deployment using container image use
-
+For local deployment using container image:
 <pre data-test="exec">
 $ vespa config set target local
-</pre>
-
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
 </pre>
 
 Pull and start the vespa docker container image:
@@ -67,74 +54,59 @@ $ docker run --detach --name vespa --hostname vespa-container \
   vespaengine/vespa
 </pre>
 
-Download this sample application
-
+Download this sample application:
 <pre data-test="exec">
 $ vespa clone transformers myapp && cd myapp
 </pre>
 
 Install required python packages:
-
 <pre data-test="exec">
 $ python3 -m pip install --upgrade pip
 $ python3 -m pip install torch transformers onnx onnxruntime
 </pre>
 
-**Download and export cross-encoder model**
-
 For this sample application, we use a [fine-tuned MiniLM](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
 model with 6 layers and 22 million parameters.
-
-This step downloads the cross-encoder transformer model, converts it to an ONNX model and saves it
-in the `files` directory.
-
+This step downloads the cross-encoder transformer model, converts it to an ONNX model,
+and saves it in the `files` directory:
 <pre data-test="exec">
 $ ./bin/setup-ranking-model.sh
 </pre>
 
-**Deploy the application:** 
-
-Verify that configuration service (deploy api) is ready
-
+Verify that configuration service (deploy api) is ready:
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
-Deploy the app 
-
+Deploy the app:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300 application
 </pre>
 
-Wait for the application endpoint to become available
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
 
+Wait for the application endpoint to become available:
 <pre data-test="exec">
 $ vespa status --wait 300
 </pre>
 
-
-**Create data feed:**
-
 Convert from MS MARCO format to Vespa JSON feed format. 
-To use the entire MS MARCO data set, use the download script. This
-step creates a `vespa.json` file in the `msmarco` directory:
-
+To use the entire MS MARCO data set, use the download script.
+This step creates a `vespa.json` file in the `msmarco` directory:
 <pre data-test="exec">
 $ ./bin/convert-msmarco.sh
 </pre>
 
-**Index data:**
-
+Index data:
 <pre data-test="exec">
 $ vespa feed msmarco/vespa.json
 </pre>
 
-
-**Query data:**
-
+Query data.
 Note that the embed part is required to convert the query text
-to wordpiece representation which is used by the rank-profile. 
-
+to wordpiece representation which is used by the rank-profile:
 <pre data-test="exec" data-test-assert-contains="children">
 $ vespa query \
  'yql=select title from msmarco where userQuery()' \
@@ -144,16 +116,15 @@ $ vespa query \
 </pre>
 
 This script reads from the MS MARCO queries and issues a Vespa query:
-
 <pre data-test="exec" data-test-assert-contains="children">
 $ ./bin/evaluate.py
 </pre>
 
-**Shutdown and remove the container:**
-
+Shutdown and remove the container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
+
 
 ## Bonus 
 To export other cross-encoder models, change the code in "src/python/setup-model.py".
