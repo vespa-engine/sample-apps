@@ -200,7 +200,7 @@ as the processing implementation is single-threaded.
 
 ## Build and deploy Vespa app 
 
-The [models](src/main/application/models) directory in the application package contains three small ONNX models:
+`src/main/application/models` has three small ONNX models:
 
 - `vespa_innerproduct_ranker.onnx` for vector similarity (inner dot product) between the query and the vectors
 in the stateless container.

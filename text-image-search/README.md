@@ -1,4 +1,3 @@
-
 <!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
@@ -34,6 +33,7 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
@@ -46,10 +46,7 @@ Requirements:
 The following instructions sets up the stand-alone Vespa application using the
 [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
 
-**Validate environment, should be minimum 6G:**
-
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
-for details and troubleshooting:
+Validate environment, should be minimum 6G:
 <pre>
 $ docker info | grep "Total Memory"
 </pre>
@@ -59,29 +56,17 @@ Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 $ brew install vespa-cli
 </pre>
 
+For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
 
-For cloud deployment using [Vespa Cloud](https://cloud.vespa.ai/) use
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-Where `tenant-name` is a tenant that you have an account registered with.
-
 Checkout this sample app :
-
 <pre data-test="exec">
 $ vespa clone text-image-search myapp && cd myapp 
 </pre>
 
-**Set up transformer model:**
-
+Set up transformer model:
 <pre data-test="exec">
 $ pip3 install -r src/python/requirements.txt
 $ python3 src/python/clip_export.py
@@ -90,7 +75,7 @@ $ python3 src/python/clip_export.py
 This extracts the text transformer model from CLIP and puts it into the
 `models` directory of the application.
 
-**Compile and run:**
+Compile and run:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
 </pre>
@@ -100,17 +85,19 @@ $ docker run --detach --name vespa --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 vespaengine/vespa
 </pre>
 
-**Wait for the configserver to start:**
-
+Wait for the configserver to start:
 <pre data-test="exec" data-test-assert-contains="is ready">
 $ vespa status deploy --wait 300 --color never
 </pre>
 
-**Deploy the application and wait for services to start:**
-
+Deploy the application and wait for services to start:
 <pre data-test="exec">
 $ vespa deploy --wait 300 --color never
 </pre>
+
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
 which runs a set of basic tests to verify that the application is working as expected.
@@ -118,8 +105,7 @@ which runs a set of basic tests to verify that the application is working as exp
 $ vespa test src/test/application/tests/system-test/image-search-system-test.json 
 </pre>
 
-**Download and extract image data:**
-
+Download and extract image data:
 <pre>
 $ ./src/sh/download_flickr8k.sh
 $ export IMG_DIR=data/Flicker8k_Dataset/
@@ -128,7 +114,7 @@ $ export IMG_DIR=data/Flicker8k_Dataset/
 The full Flickr8k dataset is around 1.1GB, the feed script
 uses [PyVespa](https://github.com/vespa-engine/pyvespa/) to feed the image data to the running instance.
 
-**Encode images and feed data:**
+Encode images and feed data.
 This step take some time as each image is encoded using the CLIP model.
 Alternatively use pre-computed embeddings, see next instruction.
 
@@ -137,7 +123,6 @@ $ python3 src/python/clip_feed.py
 </pre>
 
 Alternatively, instead of computing the embeddings, use the pre-computed embeddings:
-
 <pre data-test="exec">
 $ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
     https://data.vespa.oath.cloud/sample-apps-data/flickr-8k-clip-embeddings.jsonl.zst 
@@ -147,13 +132,12 @@ $ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
 $ zstdcat flickr-8k-clip-embeddings.jsonl.zst | vespa feed -
 </pre>
 
-**Search:**
-Run a query using curl 
+Run a query:
 <pre data-test="exec" data-test-assert-contains="2337919839_df83827fa0">
 $ curl "http://localhost:8080/search/?input=a+child+playing+football&timeout=3s"
 </pre>
 
-**Shutdown and remove the container:**
+Shutdown and remove the container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
