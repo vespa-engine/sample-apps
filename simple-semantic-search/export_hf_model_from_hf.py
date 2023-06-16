@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+#
+#This script exports an embedding model to be 
+# used with https://docs.vespa.ai/en/embedding.html#huggingface-embedder
+#
 
 from transformers import AutoModel, AutoTokenizer
 import torch
