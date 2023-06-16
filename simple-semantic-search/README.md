@@ -48,4 +48,23 @@ is suitable for production use and will produce good results in many domains wit
 especially when combined with text match features such as bm25.
 
 ## Model exporting
-See [export_model_from_hf.py](export_model_from_hf.py) for how to export a Huggingface sentence-transformer model to onnx format.
+Transformer based embedding models have named inputs and outputs that needs to be compatible with the input and output names used by the Bert embedder or the Huggingface embedder.
+
+### Bert-embedder
+See [export_model_from_hf.py](export_model_from_hf.py) for how to export a Huggingface sentence-transformer model to ONNX format compatible with default input and output names used by
+the [bert-embedder](https://docs.vespa.ai/en/embedding.html#bert-embedder). 
+
+The following exports [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) and saves the model parameters in a ONNX file and the `vocab.txt` file 
+in the format expected by the Vespa bert-embedder.
+<pre>
+./export_model_from_hf.py --hf_model sentence-transformers/all-MiniLM-L6-v2 --output_dir model
+</pre>
+
+### Huggingface-embedder
+See [export_hf_model_from_hf.py](export_hf_model_from_hf.py) for how to export a Huggingface sentence-transformer model to ONNX format compatible with default input and output names used by
+the [huggingface-embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder). 
+
+The following exports [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) and saves the model parameters in a ONNX file and the `tokenizer.json` file. 
+<pre>
+./export_hf_model_from_hf.py --hf_model sentence-transformers/all-MiniLM-L6-v2 --output_dir model
+</pre>
