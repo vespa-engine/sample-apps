@@ -2,6 +2,21 @@
 
 ![Vespa logo](https://vespa.ai/assets/vespa-logo-color.png)
 
+
+This notebook is work in progress:
+
+```
+ERROR: Could not find a version that satisfies the requirement torch==1.* (from versions: 2.0.0, 2.0.1)
+ERROR: No matching distribution found for torch==1.*
+```
+
+Using torch 2.0 not doable at time of writing:
+
+https://pytorch.org/docs/stable/onnx_supported_aten_ops.html
+
+aten::unflatten.   Not yet supported
+
+
 # Vespa sample application - Text-Image Search
 
 This sample is an example of a text-to-image search application.
