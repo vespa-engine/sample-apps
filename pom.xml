@@ -23,6 +23,7 @@
         <module>msmarco-ranking</module>
         <module>examples/multiple-bundles-lib</module>
         <module>examples/multiple-bundles</module>
+        <module>examples/embedding-service</module>
         <module>news/app-6-recommendation-with-searchers</module>
         <module>news/app-7-parent-child</module>
         <module>text-image-search</module>
