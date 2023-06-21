@@ -36,8 +36,11 @@
       <binding>http://*/embedding</binding>
     </handler>
 
-    <component id="hugging-face-embedder" type="hugging-face-embedder">
-      <transformer-model path="models/model.onnx"/>
+    <component id="e5-small-v2" type="hugging-face-embedder">
+      <transformer-model
+              path="models/model.onnx"
+              model-id="e5-small-v2"
+      />
       <tokenizer-model path="models/tokenizer.json"/>
     </component>
 
