@@ -1,6 +1,5 @@
 package ai.vespa.example.embedding_service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.yahoo.component.provider.ComponentRegistry;
@@ -28,38 +27,32 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest httpRequest) {
-        byte[] json = new byte[0];
-        try {
-            json = httpRequest.getData().readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Data requestData = parseRequestJson(httpRequest);
 
-        Data data;
-        try {
-            data = jsonMapper.readValue(json, Data.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Embedder embedder = availableEmbedders.getComponent(data.embedder);
+        Embedder embedder = availableEmbedders.getComponent(requestData.embedder());
         Embedder.Context context = new Embedder.Context("");
         TensorType type = TensorType.fromSpec("tensor<float>(x[384])");
-        data.embedding = embedder.embed(data.text, context, type).toString();
+        String embedding = embedder.embed(requestData.text(), context, type).toString();
+
+        Data responseData = new Data(requestData.text(), requestData.embedder(), embedding);
 
         return new HttpResponse(200) {
             @Override
             public void render(OutputStream outputStream) throws IOException {
-                outputStream.write(jsonMapper.writeValueAsBytes(data));
+                outputStream.write(jsonMapper.writeValueAsBytes(responseData));
             }
         };
     }
+
+    private Data parseRequestJson(HttpRequest httpRequest) {
+        byte[] json = new byte[0];
+        try {
+            json = httpRequest.getData().readAllBytes();
+            return jsonMapper.readValue(json, Data.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
-class Data {
-    public String embedder;
-    public String text; // Before embedding
-    public String embedding; // After embedding
-}
+record Data(String embedder, String text, String embedding) {}

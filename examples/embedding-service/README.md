@@ -10,19 +10,17 @@ component can be used to process HTTP requests.
 In this application, a handler is used to implement an embedding service,
 which takes a string as an input and returns a vector embedding of that string.
 
-## Setup
+## Setup for local deployment
 
-1. Follow steps 1-4 in the [Quick start, with Java](https://docs.vespa.ai/en/vespa-quick-start-java.html) guide.
-2. Clone this repository: ``git clone INSERT_REPO_NAME && cd INSERT_REPO_NAME``.
+1. Set up a Vespa Docker container by following steps 1-5 in the [quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html)
+2. Clone this repository: ``vespa clone examples/embedding-service embedding-service``
 3. Download the models:
 ```
-cd src/main/application/
-mkdir models && cd models
-wget https://huggingface.co/intfloat/e5-small-v2
-wget https://data.vespa.oath.cloud/onnx_models/e5-small-v2/tokenizer.json
-cd ../../..
+mkdir -p src/main/application/models
+wget -P src/main/application/models https://data.vespa.oath.cloud/onnx_models/e5-small-v2/model.onnx
+wget -P src/main/application/models https://data.vespa.oath.cloud/onnx_models/e5-small-v2/tokenizer.json
 ```
-4. Follow steps 6 and 7 in the [Quick start, with Java](https://docs.vespa.ai/en/vespa-quick-start-java.html) guide to launch the application.
+4. Compile and deploy the application: ``mvn install && vespa deploy --wait 300``
 
 ## Calling the embedding service
 
