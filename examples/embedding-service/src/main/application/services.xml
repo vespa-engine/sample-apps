@@ -37,7 +37,7 @@
     </handler>
 
     <component id="hugging-face-embedder" type="hugging-face-embedder">
-      <transformer-model path="models/e5-small-v2"/>
+      <transformer-model path="models/model.onnx"/>
       <tokenizer-model path="models/tokenizer.json"/>
     </component>
 
