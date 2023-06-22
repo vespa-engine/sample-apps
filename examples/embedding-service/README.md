@@ -19,8 +19,8 @@ which takes a string as an input and returns a vector embedding of that string.
 3. Download the models:
 ```
 mkdir -p src/main/application/embedder-models/e5-small-v2
-wget -P src/main/application/embedder-models/e5-small-v2 https://data.vespa.oath.cloud/onnx_models/e5-small-v2/model.onnx
-wget -P src/main/application/embedder-models/e5-small-v2 https://data.vespa.oath.cloud/onnx_models/e5-small-v2/tokenizer.json
+curl -o src/main/application/embedder-models/e5-small-v2/model.onnx https://data.vespa.oath.cloud/onnx_models/e5-small-v2/model.onnx
+curl -o src/main/application/embedder-models/e5-small-v2/tokenizer.json https://data.vespa.oath.cloud/onnx_models/e5-small-v2/tokenizer.json
 ```
 4. Compile and deploy the application: ``mvn install && vespa deploy --wait 300``
 
