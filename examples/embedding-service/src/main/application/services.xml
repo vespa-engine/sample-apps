@@ -36,20 +36,25 @@
       <binding>http://*/embedding</binding>
     </handler>
 
+    <!-- Embedders fetched from https://cloud.vespa.ai/en/model-hub -->
+
+    <!-- Available locally and in Vespa Cloud -->
     <component id="e5-small-v2" type="hugging-face-embedder">
       <transformer-model
-              path="models/model.onnx"
+              path="embedder-models/e5-small-v2/model.onnx"
               model-id="e5-small-v2"
       />
-      <tokenizer-model path="models/tokenizer.json"/>
+      <tokenizer-model path="embedder-models/e5-small-v2/tokenizer.json"/>
     </component>
 
-    <!-- TODO Add more components
-    <component id="another-embedder" type="hugging-face-embedder">
-      <transformer-model path="models/model.onnx"/>
-      <tokenizer-model path="models/tokenizer.json"/>
+    <!-- Available only in Vespa Cloud -->
+    <component id="e5-base-v2" type="hugging-face-embedder">
+      <transformer-model model-id="e5-base-v2"/>
     </component>
-    -->
+
+    <component id="e5-large-v2" type="hugging-face-embedder">
+      <transformer-model model-id="e5-large-v2" />
+    </component>
 
 
     <!--
