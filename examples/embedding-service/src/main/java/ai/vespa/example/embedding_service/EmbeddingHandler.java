@@ -25,8 +25,7 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
             "e5-base-v2", TensorType.fromSpec("tensor<float>(x[768])"),
             "e5-large-v2", TensorType.fromSpec("tensor<float>(x[1024])"),
             "multilingual-e5-base", TensorType.fromSpec("tensor<float>(x[768])"),
-            "minilm-l6-v2", TensorType.fromSpec("tensor<float>(x[384])"),
-            "mpnet-base-v2", TensorType.fromSpec("tensor<float>(x[768])")
+            "minilm-l6-v2", TensorType.fromSpec("tensor<float>(x[384])")
     );
 
     @Inject

@@ -56,6 +56,14 @@
       <transformer-model model-id="e5-large-v2" />
     </component>
 
+    <component id="multilingual-e5-base" type="hugging-face-embedder">
+      <transformer-model model-id="multilingual-e5-base" />
+    </component>
+
+    <component id="minilm-l6-v2" type="bert-embedder">
+      <transformer-model model-id="minilm-l6-v2" />
+      <tokenizer-vocab model-id="bert-base-uncased"/>
+    </component>
 
     <!--
         <nodes> specifies the nodes that should run this cluster, and through the <resources>

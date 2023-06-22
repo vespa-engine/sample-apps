@@ -33,7 +33,7 @@ containing a JSON object specifying the text to be encoded and the embedder to u
 
 Currently, only ``"e5-small-v2"`` is supported for local deployments.
 If you're running the app in Vespa Cloud,
-``"e5-base-v2"``, ``"e5-large-v2"``, ``"multilingual-e5-base"``, ``"minilm-l6-v2"`` and ``"mpnet-base-v2"``
+``"e5-base-v2"``, ``"e5-large-v2"``, ``"multilingual-e5-base"``and ``"minilm-l6-v2"``
 are also available.
 
 
