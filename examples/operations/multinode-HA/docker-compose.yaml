@@ -19,8 +19,11 @@
 
 services:
   node0:
+    container_name: node0
     hostname: node0.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: configserver,services
     healthcheck:
       test: curl http://localhost:19071/state/v1/health
@@ -38,8 +41,11 @@ services:
       VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
 
   node1:
+    container_name: node1
     hostname: node1.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: configserver,services
     healthcheck:
       test: curl http://localhost:19071/state/v1/health
@@ -57,8 +63,11 @@ services:
       VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
 
   node2:
+    container_name: node2
     hostname: node2.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: configserver,services
     healthcheck:
       test: curl http://localhost:19071/state/v1/health
@@ -76,8 +85,11 @@ services:
       VESPA_CONFIGPROXY_JVMARGS: "-Xms32M -Xmx32M"
   
   node3:
+    container_name: node3
     hostname: node3.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -89,8 +101,11 @@ services:
       VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
 
   node4:
+    container_name: node4
     hostname: node4.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -102,8 +117,11 @@ services:
       VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
 
   node5:
+    container_name: node5
     hostname: node5.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -115,8 +133,11 @@ services:
       VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
 
   node6:
+    container_name: node6
     hostname: node6.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -128,8 +149,11 @@ services:
       VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
 
   node7:
+    container_name: node7
     hostname: node7.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -141,8 +165,11 @@ services:
       VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
 
   node8:
+    container_name: node8
     hostname: node8.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -154,8 +181,11 @@ services:
       VESPA_CONFIGSERVERS: node0.vespanet,node1.vespanet,node2.vespanet
 
   node9:
+    container_name: node9
     hostname: node9.vespanet
     image: vespaengine/vespa
+    networks:
+      - vespanet
     command: services
     depends_on:
       node0:
@@ -169,3 +199,4 @@ services:
 networks:
   vespanet:
     driver: bridge
+    name: vespanet
