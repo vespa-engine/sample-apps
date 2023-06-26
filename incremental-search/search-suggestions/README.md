@@ -171,7 +171,7 @@ $ docker rm -f vespa
 Indexed prefix search matches documents where the prefix of the term matches the query terms.
 
 To do an indexed prefix search the query needs \[{"prefix":true}],
-see [example](https://docs.vespa.ai/en/streaming-search.html#match).
+see [example](https://docs.vespa.ai/en/reference/schema-reference#match).
 It is important to note that this type of prefix search is not supported for fields set to _index_ in the schema. 
 Therefore, all fields for prefix search has to be _attributes_.
 
