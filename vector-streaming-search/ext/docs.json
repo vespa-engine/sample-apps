@@ -1,0 +1,50 @@
+[
+{
+  "put": "id:mail:mail:g=1234:1",
+  "fields": {
+    "timestamp": 1684760400,
+    "subject": "Explore New Cycling Routes with Fellow Enthusiasts",
+    "content": "Hi, I came across a group of passionate cyclists who regularly explore scenic routes around our city. Join them on their next adventure to discover new paths and make cycling even more enjoyable. Get in touch for more details!"
+  }
+},
+{
+  "put": "id:mail:mail:g=1234:2",
+  "fields": {
+    "timestamp": 1685970000,
+    "subject": "Soccer League Registration Open Now",
+    "content": "Hey, it's time to lace up your boots and join the local soccer league! Registration is now open, and it's a great opportunity to stay active and meet new people."
+  }
+},
+{
+  "put": "id:mail:mail:g=1234:3",
+  "fields": {
+    "timestamp": 1686574800,
+    "subject": "Beer Tasting Event: Expand Your Palate",
+    "content": "Hi, there's a fascinating beer tasting event coming up, where you can expand your palate and discover unique flavors from various breweries. It's a perfect chance to indulge in your passion for beer and connect with fellow enthusiasts. See the attachment for event details."
+  }
+},
+{
+  "put": "id:mail:mail:g=5678:4",
+  "fields": {
+    "timestamp": 1684760400,
+    "subject": "Order Confirmation: Your Living Room Sofa is on its Way!",
+    "content": "We are thrilled to inform you that your order for a beautiful living room sofa has been successfully confirmed! Our team is working diligently to prepare your sofa for delivery, and you can expect it to arrive at your doorstep within the estimated timeframe."
+  }
+},
+{
+  "put": "id:mail:mail:g=5678:5",
+  "fields": {
+    "timestamp": 1685970000,
+    "subject": "Get Ready to Rock: Music Festival Hits the City",
+    "content": "Hey, the city is about to come alive with the electrifying energy of a rock music festival. Prepare for mind-blowing performances, adrenaline-pumping music, and an unforgettable atmosphere. It's time to let loose and rock out! Find all the details in the attachment—see you there."
+  }
+},
+{
+  "put": "id:mail:mail:g=5678:6",
+  "fields": {
+    "timestamp": 1686574800,
+    "subject": "Order Confirmation: Your New Shoes are on their Way",
+    "content": "Hi! Your order for a pair of stylish shoes has been confirmed. We're excited to deliver them to you soon. Attached is your order confirmation for your reference."
+  }
+}
+]

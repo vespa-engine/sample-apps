@@ -1,0 +1,29 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema mail {
+  document mail {
+    field timestamp type long {
+      indexing: attribute | summary
+    }
+    field subject type string {
+      indexing: index | summary
+    }
+    field content type string {
+      indexing: index | summary
+    }
+  }
+  field embedding type tensor<bfloat16>(x[384]) {
+    indexing: (input subject || "") . " " . (input content || "") | embed | attribute
+    attribute {
+      distance-metric: angular
+    }
+  }
+  rank-profile default {
+    inputs {
+      query(qemb) tensor<bfloat16>(x[384])
+    }
+    first-phase {
+      expression: closeness(field,embedding)
+    }
+  }
+}
