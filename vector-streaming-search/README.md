@@ -21,6 +21,7 @@ The following is a quick start recipe on how to get started with this applicatio
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
   for details and troubleshooting
+* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
@@ -43,18 +44,6 @@ For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
-
-For cloud deployment to [Vespa Cloud](https://cloud.vespa.ai/) use:
-
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.myapp.default
-$ vespa auth login 
-$ vespa auth cert
-</pre>
-
-See also [Cloud Vespa getting started guide](https://cloud.vespa.ai/en/getting-started). 
-It's possible to switch between local deployment and cloud deployment by changing the `config target`. 
 
 Pull and start the Vespa docker container image:
 
@@ -94,6 +83,11 @@ Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
+
+#### Deployment note
+It is possible to deploy this app to
+[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
+
 
 ## Feeding sample mail documents
 
