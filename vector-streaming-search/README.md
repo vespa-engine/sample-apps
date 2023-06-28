@@ -6,7 +6,7 @@
 # Vespa Vector Streaming Search
 
 This sample application is used to demonstrate vector streaming search with Vespa.
-This was introduced in Vespa 8.184.20.
+This was introduced in Vespa 8.181.15.
 Read the [blog post](https://blog.vespa.ai/announcing-vector-streaming-search/) announcing vector streaming search.
 See [Streaming Search](https://docs.vespa.ai/en/streaming-search.html) for more details.
 
