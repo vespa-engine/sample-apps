@@ -9,7 +9,7 @@ shared:
     install-deps: &install-deps
       install-deps: |
         dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
-        dnf -y install docker-ce protobuf-compiler protobuf-devel wget --nobest
+        dnf -y install docker-ce protobuf-compiler protobuf-devel --nobest
         python3 -m pip install --upgrade pip
         python3 -m pip install -qqq -r test/requirements.txt --user
         python3 -m pip install --upgrade -qqq pytest nbmake onnx onnxruntime torch numpy transformers 
