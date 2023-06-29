@@ -8,7 +8,6 @@ RUN yum -y update && \
         python3 \
         python3-pip \
         jq \
-        wget \
         && \
     yum clean all
 
