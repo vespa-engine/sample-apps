@@ -38,32 +38,43 @@
 
     <!-- Embedders fetched from https://cloud.vespa.ai/en/model-hub -->
 
-    <!-- Available locally and in Vespa Cloud -->
+    <!-- Available for local deployments and in Vespa Cloud
+    -->
     <component id="e5-small-v2" type="hugging-face-embedder">
-      <transformer-model
-              path="embedder-models/e5-small-v2/model.onnx"
-              model-id="e5-small-v2"
-      />
+      <transformer-model model-id="e5-small-v2" path="embedder-models/e5-small-v2/model.onnx"/>
       <tokenizer-model path="embedder-models/e5-small-v2/tokenizer.json"/>
     </component>
 
-    <!-- Available only in Vespa Cloud -->
+    <!--
+    The models below are only available in Vespa Cloud, unless you download the models locally (see instructions in README).
+    You can uncomment the blocks to enable the models, but please be mindful of the increased memory usage.
+    A brief test indicates that *at least* 12Gb of memory is consumed when all the models are enabled.
+    -->
+
+    <!--
     <component id="e5-base-v2" type="hugging-face-embedder">
       <transformer-model model-id="e5-base-v2"/>
     </component>
+    -->
 
+    <!--
     <component id="e5-large-v2" type="hugging-face-embedder">
-      <transformer-model model-id="e5-large-v2" />
+      <transformer-model model-id="e5-large-v2"/>
     </component>
+    -->
 
+    <!--
     <component id="multilingual-e5-base" type="hugging-face-embedder">
-      <transformer-model model-id="multilingual-e5-base" />
+      <transformer-model model-id="multilingual-e5-base"/>
     </component>
+    -->
 
+    <!--
     <component id="minilm-l6-v2" type="bert-embedder">
       <transformer-model model-id="minilm-l6-v2" />
       <tokenizer-vocab model-id="bert-base-uncased"/>
     </component>
+    -->
 
     <!--
         <nodes> specifies the nodes that should run this cluster, and through the <resources>
@@ -74,7 +85,11 @@
          - Reference: https://docs.vespa.ai/en/reference/services.html
     -->
     <nodes>
-      <node hostalias="node1" />
+      <!--
+        At least 16Gb of memory is required, since even the smallest model consumes quite a lot of memory.
+      -->
+      <resources vcpu="4.0" memory="16Gb"/>
+      <node hostalias="node1"/>
     </nodes>
   </container>
 
