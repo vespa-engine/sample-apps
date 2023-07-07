@@ -85,11 +85,10 @@
          - Reference: https://docs.vespa.ai/en/reference/services.html
     -->
     <nodes>
-      <!--
-        At least 16Gb of memory is required, since even the smallest model consumes quite a lot of memory.
-      -->
-      <resources vcpu="4.0" memory="16Gb"/>
       <node hostalias="node1"/>
+
+      <!-- Example of configuring more memory for larger models, using Vespa Cloud -->
+      <resources vcpu="4.0" memory="16Gb"/>
     </nodes>
   </container>
 
