@@ -8,14 +8,12 @@ import com.yahoo.container.jdisc.HttpResponse;
 import com.yahoo.container.jdisc.ThreadedHttpRequestHandler;
 import com.yahoo.component.annotation.Inject;
 import com.yahoo.language.process.Embedder;
+import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorType;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 public class EmbeddingHandler extends ThreadedHttpRequestHandler {
@@ -64,18 +62,12 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
 
         Embedder.Context context = new Embedder.Context("");
 
-        // "embedding":"tensor<float>(x[384]):[-0.5786399, 0.20775521, ...]"
-        String embedding = embedder.embed(requestData.text(), context, type).toString();
+        Tensor embedding = embedder.embed(requestData.text(), context, type);
 
-        String[] stringValues = embedding
-                .split(":")[1] // Get the array of numbers
-                .replaceAll("\\[|\\]", "") // Remove brackets
-                .split(","); // Separate the numbers
-
-        float[] embeddingValues = new float[stringValues.length];
-
-        for (int i = 0; i < stringValues.length; i++) {
-            embeddingValues[i] = Float.parseFloat(stringValues[i].trim());
+        ArrayList<Double> embeddingValues = new ArrayList<Double>();
+        Iterator<Double> iter = embedding.valueIterator();
+        while(iter.hasNext()){
+            embeddingValues.add(iter.next());
         }
 
         Data responseData = new Data(requestData.embedder(), requestData.text(), embeddingValues);
@@ -99,4 +91,5 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
     }
 }
 
-record Data(String embedder, String text, float[] embedding) { }
+record Data(String embedder, String text, ArrayList<Double> embedding) {
+}
