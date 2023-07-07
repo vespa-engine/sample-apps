@@ -12,6 +12,9 @@ import com.yahoo.tensor.TensorType;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -44,7 +47,7 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
             return new HttpResponse(400) {
                 @Override
                 public void render(OutputStream outputStream) throws IOException {
-                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "Embedder '" + requestData.embedder()  + "' not found")));
+                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "Embedder '" + requestData.embedder() + "' not found")));
                 }
             };
         }
@@ -54,15 +57,28 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
             return new HttpResponse(400) {
                 @Override
                 public void render(OutputStream outputStream) throws IOException {
-                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "TensorType for embedder '" + requestData.embedder()  + "' not found")));
+                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "TensorType for embedder '" + requestData.embedder() + "' not found")));
                 }
             };
         }
 
         Embedder.Context context = new Embedder.Context("");
+
+        // "embedding":"tensor<float>(x[384]):[-0.5786399, 0.20775521, ...]"
         String embedding = embedder.embed(requestData.text(), context, type).toString();
 
-        Data responseData = new Data(requestData.text(), requestData.embedder(), embedding);
+        String[] stringValues = embedding
+                .split(":")[1] // Get the array of numbers
+                .replaceAll("\\[|\\]", "") // Remove brackets
+                .split(","); // Separate the numbers
+
+        float[] embeddingValues = new float[stringValues.length];
+
+        for (int i = 0; i < stringValues.length; i++) {
+            embeddingValues[i] = Float.parseFloat(stringValues[i].trim());
+        }
+
+        Data responseData = new Data(requestData.embedder(), requestData.text(), embeddingValues);
 
         return new HttpResponse(200) {
             @Override
@@ -83,4 +99,4 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
     }
 }
 
-record Data(String embedder, String text, String embedding) {}
+record Data(String embedder, String text, float[] embedding) { }
