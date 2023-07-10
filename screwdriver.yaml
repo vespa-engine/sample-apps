@@ -6,6 +6,7 @@ shared:
   environment:
     USER_SHELL_BIN: bash
   annotations:
+    screwdriver.cd/restrictPR: fork
     install-deps: &install-deps
       install-deps: |
         dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
