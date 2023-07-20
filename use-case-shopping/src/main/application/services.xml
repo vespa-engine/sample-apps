@@ -14,10 +14,10 @@
                 <documentprocessor id="ai.vespa.example.shopping.ReviewProcessor" bundle="use-case-shopping"/>
             </chain>
         </document-processing>
-
-        <component id="encoder" type="bert-embedder">
-            <transformer-model path="model/minilm-l6-v2.onnx"/>
-            <tokenizer-vocab path="model/bert-base-uncased.txt"/>
+        <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+        <component id="encoder" type="hugging-face-embedder">
+            <transformer-model path="model/e5-small-v2-int8.onnx"/>
+            <tokenizer-model path="model/tokenizer.json"/>
         </component>
 
         <handler id="ai.vespa.example.shopping.site.SiteHandler" bundle="use-case-shopping">
