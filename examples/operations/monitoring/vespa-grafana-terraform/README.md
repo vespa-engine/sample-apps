@@ -13,7 +13,7 @@ Terraform template for provisioning metric dashboards and alerts for your Vespa 
 ### Variables
 * Grafana instance URL
 * Grafana API key ([doc](https://grafana.com/docs/grafana/latest/administration/api-keys/#create-an-api-key))
-* Name of Grafana datasource containing Vespa metrics. If there is no datasource yet, you can extend the template with a [grafana_data_source](https://grafana.com/docs/grafana-cloud/infrastructure-as-code/terraform/terraform-cloud-stack/#add-a-data-source)
+* Name of Grafana datasource containing Vespa metrics. If there is no datasource yet, you can extend the template with a [grafana_data_source](https://grafana.com/docs/grafana-cloud/developer-resources/infrastructure-as-code/terraform/terraform-cloud-stack/#add-a-data-source)
 * Alert contact point name (optional), determining the alert routing policy
 
 
