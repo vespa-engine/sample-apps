@@ -7,13 +7,13 @@
 
         <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
         <component id="frozen" type="hugging-face-embedder">
-            <transformer-model path="model/frozen.onnx"/>
-            <tokenizer-model path="model/tokenizer.json"/>
+            <transformer-model path="models/frozen.onnx"/>
+            <tokenizer-model path="models/tokenizer.json"/>
         </component>
 
         <component id="tuned" type="hugging-face-embedder">
-            <transformer-model path="model/tuned.onnx"/>
-            <tokenizer-model path="model/tokenizer.json"/>
+            <transformer-model path="models/tuned.onnx"/>
+            <tokenizer-model path="models/tokenizer.json"/>
         </component>
         <document-api/>
         <search/>
