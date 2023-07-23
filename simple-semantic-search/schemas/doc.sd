@@ -15,7 +15,7 @@ schema doc {
     # See https://docs.vespa.ai/en/embedding.html#embedding-a-document-field
     # and https://docs.vespa.ai/en/approximate-nn-hnsw.html
     field embedding type tensor<float>(x[384]) {
-        indexing: input text | embed bert | attribute | index
+        indexing: input text | embed | attribute | index
         attribute {
             distance-metric: angular
         }

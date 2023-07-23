@@ -7,9 +7,9 @@ echo "[INFO] Downloading models into $DIR"
 mkdir -p $DIR
 
 echo "Downloading encoder model" 
-curl -L -o $DIR/minilm-l6-v2.onnx \
-https://github.com/vespa-engine/sample-apps/blob/master/simple-semantic-search/model/minilm-l6-v2.onnx?raw=true
+curl -L -o $DIR/e5-small-v2-int8.onnx \
+https://github.com/vespa-engine/sample-apps/blob/master/simple-semantic-search/model/e5-small-v2-int8.onnx?raw=true
 
 echo "Downloading vocab" 
-curl -L -o $DIR/bert-base-uncased.txt \
-https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/bert-base-uncased.txt
+curl -L -o $DIR/tokenizer.json \
+https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json

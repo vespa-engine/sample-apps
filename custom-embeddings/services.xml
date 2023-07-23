@@ -5,16 +5,15 @@
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">
 
-        <!-- See https://docs.vespa.ai/en/embedding.html#bert-embedder -->
-
-        <component id="frozen" type="bert-embedder">
-            <transformer-model path="models/frozen.onnx"/>
-            <tokenizer-vocab path="models/bert-base-uncased.txt"/>
+        <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+        <component id="frozen" type="hugging-face-embedder">
+            <transformer-model path="model/frozen.onnx"/>
+            <tokenizer-model path="model/tokenizer.json"/>
         </component>
 
-        <component id="tuned" type="bert-embedder">
-            <transformer-model path="models/tuned.onnx"/>
-            <tokenizer-vocab path="models/bert-base-uncased.txt"/>
+        <component id="tuned" type="hugging-face-embedder">
+            <transformer-model path="model/tuned.onnx"/>
+            <tokenizer-model path="model/tokenizer.json"/>
         </component>
         <document-api/>
         <search/>
