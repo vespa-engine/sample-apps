@@ -98,15 +98,19 @@ $ zstdcat ext/sw-feed.jsonl.zst | vespa feed -
 
 The evaluation script queries Vespa (requires pandas and requests libraries):
 
+<pre data-test="exec">
+$ pip3 install pandas requests
+</pre
+ 
 ## E5 multilingual embedding model
-Using the multlingual embedding model
+Using the multilingual embedding model
 <pre data-test="exec">
 $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
  --query_file ext/topics.miracl-v1.0-sw-dev.tsv \
  --ranking semantic --hits 100 --language sw
  </pre>
 
-Compute NDCG@10 using `trec_eval` with the judgements:
+Compute NDCG@10 using `trec_eval` with the judgments:
 
 <pre data-test="exec" data-test-assert-contains="0.675" >
 $ trec_eval -mndcg_cut.10 ext/qrels.miracl-v1.0-sw-dev.tsv semantic.run
@@ -124,7 +128,7 @@ $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
  --query_file ext/topics.miracl-v1.0-sw-dev.tsv \
  --ranking bm25 --hits 100 --language sw
  </pre>
-Compute NDCG@10 using trec_eval with the judgements:
+Compute NDCG@10 using trec_eval with the judgments:
 <pre data-test="exec" data-test-assert-contains="0.4243" >
 $ trec_eval -mndcg_cut.10 ext/qrels.miracl-v1.0-sw-dev.tsv bm25.run
 </pre>
