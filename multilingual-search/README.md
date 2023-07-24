@@ -98,7 +98,7 @@ $ zstdcat ext/sw-feed.jsonl.zst | vespa feed -
 
 The evaluation script queries Vespa (requires pandas and requests libraries):
 
-## Semantic (bi-encoder)
+## E5 multilingual embedding model
 Using the multlingual embedding model
 <pre data-test="exec">
 $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
@@ -117,7 +117,7 @@ ndcg_cut_10           	all	0.675
 </pre>
 
 ## BM25
-Using traditional keyword search with BM25 ranking 
+Using traditional keyword search with BM25 ranking:
 
 <pre data-test="exec">
 $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
