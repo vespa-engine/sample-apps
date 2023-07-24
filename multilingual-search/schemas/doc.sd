@@ -1,0 +1,69 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema doc {
+
+  document doc {
+
+    field language type string {
+      indexing: set_language | summary
+    }
+
+    field title type string {
+      indexing: index | summary
+      index: enable-bm25
+    }
+
+    field doc_id type string {
+      indexing: index | summary
+      match: word 
+    }
+
+    field text type string {
+      indexing: index | summary
+      index: enable-bm25
+      bolding: on 
+    }
+  }
+
+  field embedding type tensor<float>(x[384]) {
+    indexing: "passage: " . input title . " " . input text | embed | attribute
+    attribute {
+      distance-metric: angular
+    }
+  }
+
+  fieldset default {
+    fields: title, text 
+  }
+
+  rank-profile semantic inherits default {
+    inputs {
+      query(q) tensor<float>(x[384])
+    }
+    first-phase {
+      expression: cos(distance(field,embedding))
+    }
+  }
+
+  rank-profile hybrid inherits semantic {
+    first-phase {
+      expression: log(bm25(title) + bm25(text))/2 + 2*cos(distance(field,embedding))
+    }
+	}
+
+  rank-profile bm25 inherits semantic {
+    first-phase {
+      expression: bm25(title) + bm25(text)
+    }
+    rank-properties {
+      bm25(title).k1: 0.9
+      bm25(title).b: 0.4
+      bm25(abstract).k1: 0.9
+      bm25(abstract).b: 0.4
+    }
+  }
+
+  document-summary minimal {
+    summary doc_id type string {}
+  }
+}
