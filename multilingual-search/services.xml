@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+    <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
+    <container id="default" version="1.0">
+
+        <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+        <component id="e5" type="hugging-face-embedder">
+            <transformer-model path="model/model.onnx"/>
+            <tokenizer-model path="model/tokenizer.json"/>
+        </component>
+        <document-api/>
+        <search/>
+
+        <nodes>
+            <node hostalias="node1" />
+        </nodes>
+    </container>
+
+    <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
+    <content id="content" version="1.0">
+        <redundancy>2</redundancy>
+        <documents>
+            <document type="doc" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+
+</services>
