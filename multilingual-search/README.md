@@ -100,10 +100,11 @@ The evaluation script queries Vespa (requires pandas and requests libraries):
 
 <pre data-test="exec">
 $ pip3 install pandas requests
-</pre
+</pre>
  
 ## E5 multilingual embedding model
 Using the multilingual embedding model
+
 <pre data-test="exec">
 $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
  --query_file ext/topics.miracl-v1.0-sw-dev.tsv \
