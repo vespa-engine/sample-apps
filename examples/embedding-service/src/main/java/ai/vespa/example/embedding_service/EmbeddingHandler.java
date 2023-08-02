@@ -66,7 +66,7 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
 
         ArrayList<Double> embeddingValues = new ArrayList<Double>();
         Iterator<Double> iter = embedding.valueIterator();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             embeddingValues.add(iter.next());
         }
 
