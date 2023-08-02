@@ -1,17 +1,20 @@
 package ai.vespa.example.embedding_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.yahoo.component.annotation.Inject;
 import com.yahoo.component.provider.ComponentRegistry;
 import com.yahoo.container.jdisc.HttpRequest;
 import com.yahoo.container.jdisc.HttpResponse;
 import com.yahoo.container.jdisc.ThreadedHttpRequestHandler;
-import com.yahoo.component.annotation.Inject;
 import com.yahoo.language.process.Embedder;
+import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorType;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -41,10 +44,14 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
 
         Embedder embedder = availableEmbedders.getComponent(requestData.embedder());
         if (embedder == null) {
+            String validEmbedders = Arrays.toString(modelTensorTypeMap.keySet().toArray());
+
             return new HttpResponse(400) {
                 @Override
                 public void render(OutputStream outputStream) throws IOException {
-                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "Embedder '" + requestData.embedder()  + "' not found")));
+                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of(
+                            "error", "Embedder '" + requestData.embedder() + "' not found. " +
+                            "Valid embedders: " + validEmbedders)));
                 }
             };
         }
@@ -54,15 +61,22 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
             return new HttpResponse(400) {
                 @Override
                 public void render(OutputStream outputStream) throws IOException {
-                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "TensorType for embedder '" + requestData.embedder()  + "' not found")));
+                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "TensorType for embedder '" + requestData.embedder() + "' not found")));
                 }
             };
         }
 
         Embedder.Context context = new Embedder.Context("");
-        String embedding = embedder.embed(requestData.text(), context, type).toString();
 
-        Data responseData = new Data(requestData.text(), requestData.embedder(), embedding);
+        Tensor embedding = embedder.embed(requestData.text(), context, type);
+
+        ArrayList<Double> embeddingValues = new ArrayList<Double>();
+        Iterator<Double> iter = embedding.valueIterator();
+        while (iter.hasNext()) {
+            embeddingValues.add(iter.next());
+        }
+
+        Data responseData = new Data(requestData.embedder(), requestData.text(), embeddingValues);
 
         return new HttpResponse(200) {
             @Override
@@ -83,4 +97,5 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
     }
 }
 
-record Data(String embedder, String text, String embedding) {}
+record Data(String embedder, String text, ArrayList<Double> embedding) {
+}
