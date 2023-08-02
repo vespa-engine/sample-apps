@@ -43,6 +43,10 @@ Generic [request-response](https://docs.vespa.ai/en/jdisc/processing.html) proce
 <!-- ToDo: FIXME -->
 
 
+### Lucene Linguistics
+The [lucene-linguistics](lucene-linguistics)
+demonstrates configurability of the Lucene based `Linguistics` implementation.
+
 ----
 
 Note: Applications with _pom.xml_ are Java/Maven projects and must be built before being deployed.

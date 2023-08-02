@@ -1,0 +1,12 @@
+<components>
+  <component id="pl"
+             class="ai.vespa.linguistics.pl.PolishAnalyzer"
+             bundle="vespa-lucene-linguistics-poc" />
+  <component id="linguistics"
+             class="com.yahoo.language.lucene.LuceneLinguistics"
+             bundle="vespa-lucene-linguistics-poc">
+    <config name="com.yahoo.language.lucene.lucene-analysis">
+      <configDir>ext/linguistics</configDir>
+    </config>
+  </component>
+</components>
