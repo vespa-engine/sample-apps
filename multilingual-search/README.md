@@ -7,7 +7,7 @@
 This sample application is used to demonstrate multilingual search
 using multilingual embeddings. 
  
-Read the [blog post](https://blog.vespa.ai/simplify-search-with-multilingual-embeddings). 
+Read the [blog post](https://blog.vespa.ai/simplify-search-with-multilingual-embeddings/). 
 
 ## Quick start
 
