@@ -42,10 +42,14 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
 
         Embedder embedder = availableEmbedders.getComponent(requestData.embedder());
         if (embedder == null) {
+            String validEmbedders = Arrays.toString(modelTensorTypeMap.keySet().toArray());
+
             return new HttpResponse(400) {
                 @Override
                 public void render(OutputStream outputStream) throws IOException {
-                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of("error", "Embedder '" + requestData.embedder() + "' not found")));
+                    outputStream.write(jsonMapper.writeValueAsBytes(Map.of(
+                            "error", "Embedder '" + requestData.embedder() + "' not found. " +
+                            "Valid embedders: " + validEmbedders)));
                 }
             };
         }
