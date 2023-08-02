@@ -1,19 +1,21 @@
 package ai.vespa.example.embedding_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.yahoo.component.annotation.Inject;
 import com.yahoo.component.provider.ComponentRegistry;
 import com.yahoo.container.jdisc.HttpRequest;
 import com.yahoo.container.jdisc.HttpResponse;
 import com.yahoo.container.jdisc.ThreadedHttpRequestHandler;
-import com.yahoo.component.annotation.Inject;
 import com.yahoo.language.process.Embedder;
 import com.yahoo.tensor.Tensor;
 import com.yahoo.tensor.TensorType;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class EmbeddingHandler extends ThreadedHttpRequestHandler {
