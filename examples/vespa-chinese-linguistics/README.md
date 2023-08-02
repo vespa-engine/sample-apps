@@ -44,7 +44,7 @@ For example, the structure will be like below with sampleapps.
 * sampleapps/search/kosmos/
     * services.xml
     * components/
-        * chinese-linguistics-1.0.0-deploy.jar
+        * vespa-chinese-linguistics-1.0.0-deploy.jar
 
 
 ### Configuration
@@ -54,15 +54,16 @@ it is recommended to define &lt;component&gt; in all &lt;container&gt; sections 
 
 ```xml
 <container id="mycontainer" version="1.0">
-    <component id="com.qihoo.language.JiebaLinguistics" bundle="chinese-linguistics" >
+    <component id="com.qihoo.language.JiebaLinguistics" bundle="vespa-chinese-linguistics" >
         <config name="com.qihoo.language.config.dicts-loc">
-            <dictionaryPath>/opt/vespa/conf/dict</dictionaryPath>
-            <stopwordsPath>/opt/vespa/conf/stopwords</stopwordsPath>
+            <dictionaryPath>/opt/vespa/conf/jieba</dictionaryPath>
+            <stopwordsPath>/opt/vespa/conf/jieba/stopwords</stopwordsPath>
         </config>
     </component>
 </container>
 ```
 
+User dict files should ends with `.dict`, such as `/opt/vespa/conf/jieba/user.dict`.
 
 ## License
 Code licensed under the Apache 2.0 license. See LICENSE for terms.
