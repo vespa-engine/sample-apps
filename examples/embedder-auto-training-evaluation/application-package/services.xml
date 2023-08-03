@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services version="1.0" xmlns:deploy="vespa">
+    <container id="doc_container" version="1.0">
+        <component id="embedding" type="hugging-face-embedder">
+            <transformer-model path="model/model.onnx"/>
+            <tokenizer-model path="model/tokenizer.json"/>
+        </component>
+
+        <search></search>
+        <document-api></document-api>
+
+        <nodes deploy:environment="dev" count="1">
+            <resources vcpu="4.0" memory="16Gb" disk="125Gb">
+                <gpu count="1" memory="16Gb"/>
+            </resources>
+        </nodes>
+    </container>
+    <content id="doc_content" version="1.0">
+        <redundancy reply-after="1">1</redundancy>
+        <documents>
+            <document type="doc" mode="index"></document>
+        </documents>
+        <nodes>
+            <node distribution-key="0" hostalias="node1"></node>
+        </nodes>
+    </content>
+</services>
