@@ -44,8 +44,9 @@ Generic [request-response](https://docs.vespa.ai/en/jdisc/processing.html) proce
 
 
 ### Lucene Linguistics
-The [lucene-linguistics](lucene-linguistics)
-demonstrates configurability of the Lucene based `Linguistics` implementation.
+The [lucene-linguistics](lucene-linguistics) contains two sample application packages:
+1. A bare minimal app.
+2. Shows advanced configuration of the Lucene based `Linguistics` implementation.
 
 ----
 
