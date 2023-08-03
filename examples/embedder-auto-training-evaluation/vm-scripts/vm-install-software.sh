@@ -13,7 +13,7 @@ mkdir bin
 mv vespa/bin/vespa bin
 
 echo "vespa config set target cloud"
-echo "vespa config set application summer-project-2023.doc.default"
+echo "vespa config set application mytenant.doc.default"
 echo "vespa config get"
 echo "vespa auth login"
 echo "vespa auth cert application-package -f"
