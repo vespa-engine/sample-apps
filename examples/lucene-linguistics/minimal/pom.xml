@@ -22,20 +22,6 @@
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>lucene-linguistics</artifactId>
       <version>${vespa.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.yahoo.vespa</groupId>
-          <artifactId>configdefinitions</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.yahoo.vespa</groupId>
-          <artifactId>linguistics</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.yahoo.vespa</groupId>
-          <artifactId>vespajlib</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
