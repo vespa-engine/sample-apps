@@ -1,0 +1,37 @@
+schema doc {
+    document doc {
+        field cord_uid type string {
+            indexing: attribute | summary
+        }
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field abstract type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+
+    fieldset default {
+        fields: title, abstract
+    }
+
+    # See https://docs.vespa.ai/en/embedding.html#embedding-a-document-field
+    # and https://docs.vespa.ai/en/approximate-nn-hnsw.html
+    field embedding type tensor<float>(x[384]) {
+        indexing: input abstract | embed | attribute | index
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    rank-profile summer-intern-special-cool-ranking-profile {
+        inputs {
+            query(e) tensor<float>(x[384])
+        }
+        first-phase {
+            expression: closeness(field, embedding)
+        }
+    }
+}
