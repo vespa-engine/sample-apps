@@ -1,33 +1,37 @@
-# Vespa Summer Intern Project 2023
-
-The fruits of our labor: Code, data, experiments and other cool stuff related to the summer intern project of 2023.
+# Automatic data generation for training embedders using LLMs [WORK IN PROGRESS]
 
 ## What, how and why?
 
-TLDR: Automagic data generation using the ChatGPT API in order to train an embedder model to
+TLDR: Automatic data generation using the ChatGPT API in order to train an embedder model to
 perform better on specific datasets without labor-intensive and expensive manual training data annotation.
 
 Machine learned embedder models enable efficient similarity computations,
 but training these models requires large amounts of (often manually) annotated data.
-Our aim was to investigate whether Large Language Models (LLMs), such as GPT-3.5-turbo,
+The aim of this app is to investigate whether Large Language Models (LLMs), such as GPT-3.5-turbo,
 could be employed to generate synthetic data for training embedder models, without extensive manual intervention.
+
+The repository contains scripts and notebooks to:
+- Prepare datasets
+- Generate training data from datasets using LLM
+- Train an embedder 
+- Evaluate performance
 
 ### Overview of the process
 
-Query generation
+**Query generation**
 
-1. Generate prompt-generating prompt
-2. Use generated prompt to create new prompt
-3. Use that prompt to generate query(ies)
-4. Show it examples + a doc, then ask for a query
-5. Consider the doc-query pair a valid qrel
-6. Send the query to vespa and receive a list of hits
-7. Show query and documents to LLM and ask for relevance judgement
+1. Generate rules describing dataset
+2. Use rules to create new prompt for generating queries from documents
+3. Use the prompt, combined with some examples, to get LLM to generate one or more queries for a given document
+4. Generate more qrels (optional)
+    1. Query Vespa using generated query
+    2. Ask LLM to determine whether each document is relevant or not
 
-Training
+**Training**
 
-1. Train
-2. Profit?
+1. Generate hard negatives
+2. Train embedder
+3. Evaluate
 
 ## How to use it
 
@@ -36,8 +40,8 @@ Training
 #### Clone repo
 
 ```bash
-git clone git@git.ouryahoo.com:tegge01/Vespa-Summer-Intern-Project-2023.git 
-cd Vespa-Summer-Intern-Project-2023
+vespa clone examples/embedder-auto-training-eval embedder-auto-training-eval
+cd embedder-auto-training-eval
 ```
 
 #### Install tools and dependencies
