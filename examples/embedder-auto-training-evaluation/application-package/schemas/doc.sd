@@ -26,7 +26,8 @@ schema doc {
         }
     }
 
-    rank-profile summer-intern-special-cool-ranking-profile {
+    # Approximate Nearest Neighbor
+    rank-profile ann {
         inputs {
             query(e) tensor<float>(x[384])
         }
