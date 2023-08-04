@@ -67,8 +67,8 @@ python3 scripts/export_hf_model_from_hf.py --hf_model 'intfloat/e5-small-v2'  --
 
 #### Download and prepare datasets
 
-The scripts in [data-preparation](data-preparation) can be used to automatically download and process
-various datasets using the **ir_datasets** package.
+The scripts in <a href="data-preparation/" data-proofer-ignore>data-preparation</a>
+can be used to automatically download and process various datasets using the **ir_datasets** package.
 Scripts for the following datasets are available:
 
 - FIQA
@@ -119,7 +119,8 @@ There are plenty of options to play around with,
 which can greatly affect the quality and cost of query generation.
 The notebook contains more details.
 
-Before proceeding, you need to create a file in the [query-generation](query-generation) directory called **.env**
+Before proceeding, you need to create a file in the
+<a href="query-generation/" data-proofer-ignore>query-generation</a> directory called **.env**
 containing your OpenAI API-key (generate one at https://platform.openai.com/account/api-keys).
 This is requires in order to use the OpenAI API to generate data.
 
