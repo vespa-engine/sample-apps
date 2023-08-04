@@ -28,7 +28,7 @@ python3 scripts/e5-hard-negatives.py \
       --endpoint "${VESPA_ENDPOINT}" \
       --certificate "${VESPA_CERTIFICATE}" \
       --key "${VESPA_KEY}" \
-      --ranking summer-intern-special-cool-ranking-profile \
+      --ranking ann \
       --hits 100 \
       --queries "$2" \
       --qrels "$3" \
@@ -38,7 +38,7 @@ python3 scripts/e5-hard-negatives.py \
       --endpoint "${VESPA_ENDPOINT}" \
       --certificate "${VESPA_CERTIFICATE}" \
       --key "${VESPA_KEY}" \
-      --ranking summer-intern-special-cool-ranking-profile \
+      --ranking ann \
       --hits 100 \
       --queries "$4" \
       --qrels "$5" \
@@ -93,6 +93,6 @@ python3 scripts/evaluate.py \
                   --endpoint "${VESPA_ENDPOINT}" \
                   --certificate "${VESPA_CERTIFICATE}" \
                   --key "${VESPA_KEY}" \
-                  --ranking summer-intern-special-cool-ranking-profile \
+                  --ranking ann \
                   --queries "${DATA_DIR}/test-queries"
-trec_eval -mndcg_cut.10 "${DATA_DIR}/test-qrels" summer-intern-special-cool-ranking-profile.run
+trec_eval -mndcg_cut.10 "${DATA_DIR}/test-qrels" ann.run
