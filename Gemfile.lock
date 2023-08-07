@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     Ascii85 (1.1.0)
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     afm (0.2.2)
     async (2.6.3)
@@ -26,7 +26,7 @@ GEM
     fiber-local (1.0.0)
     forwardable-extended (2.6.0)
     hashery (2.1.2)
-    html-proofer (5.0.7)
+    html-proofer (5.0.8)
       addressable (~> 2.3)
       async (~> 2.1)
       nokogiri (~> 1.13)
@@ -102,7 +102,7 @@ GEM
     unicode-display_width (1.8.0)
     webrick (1.8.1)
     yell (2.2.2)
-    zeitwerk (2.6.10)
+    zeitwerk (2.6.11)
 
 PLATFORMS
   ruby
