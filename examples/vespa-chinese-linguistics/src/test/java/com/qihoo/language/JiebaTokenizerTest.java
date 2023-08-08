@@ -1,5 +1,6 @@
 package com.qihoo.language;
 
+import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.qihoo.language.config.DictsLocConfig;
 import com.yahoo.language.Language;
 import com.yahoo.language.process.StemMode;
@@ -18,7 +19,7 @@ public class JiebaTokenizerTest {
     @Test
     public void testJiebaTokenizer() {
         String text = "e-tron是Audi生产的车";
-        var tokenizer = new JiebaTokenizer(new DictsLocConfig.Builder().build());
+        var tokenizer = new JiebaTokenizer(new DictsLocConfig.Builder().build(), JiebaSegmenter.SegMode.INDEX);
         Iterator<Token> tokens = tokenizer.tokenize(text, Language.CHINESE_SIMPLIFIED, StemMode.ALL, true).iterator();
         assertToken("e", tokens);
         assertToken("-", tokens);

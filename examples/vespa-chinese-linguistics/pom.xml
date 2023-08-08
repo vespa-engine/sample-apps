@@ -73,7 +73,7 @@
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
-      <artifactId>linguistics</artifactId>
+      <artifactId>opennlp-linguistics</artifactId>
       <version>${vespa_version}</version>
       <scope>provided</scope>
     </dependency>
