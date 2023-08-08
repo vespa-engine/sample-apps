@@ -10,7 +10,7 @@ import json
 def search(query, query_id):
     query_request = {
         "yql": 'select cord_uid from doc where {"grammar":"tokenize", "targetHits":200}nearestNeighbor(embedding, e)',
-        "input.query(e)": f"embed({query})",
+        "input.query(e)": f"embed(frozen, '{query}')",
         "ranking": args.ranking,
         "cross-rerank": args.reranking,
         "cross-rerank-count": args.reranking_count,

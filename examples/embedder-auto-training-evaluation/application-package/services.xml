@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services version="1.0" xmlns:deploy="vespa">
     <container id="doc_container" version="1.0">
-        <component id="embedding" type="hugging-face-embedder">
-            <transformer-model path="model/model.onnx"/>
-            <tokenizer-model path="model/tokenizer.json"/>
+        <component id="frozen" type="hugging-face-embedder">
+            <transformer-model path="model/frozen.onnx"/>
+            <tokenizer-model path="model/tokenizer-frozen.json"/>
+        </component>
+        <component id="tuned" type="hugging-face-embedder">
+            <transformer-model path="model/tuned.onnx"/>
+            <tokenizer-model path="model/tokenizer-tuned.json"/>
         </component>
 
         <search></search>

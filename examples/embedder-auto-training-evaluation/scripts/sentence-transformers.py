@@ -53,7 +53,33 @@ def main():
     parser.add_argument("--output_dir", type=str, required=True)
     args = parser.parse_args()
 
-    model = SentenceTransformer(args.model)
+    q_word_embedding_model = models.Transformer(args.model)
+
+    q_pooling_model = models.Pooling(
+        q_word_embedding_model.get_word_embedding_dimension(),
+        pooling_mode_mean_tokens=True,
+        pooling_mode_cls_token=False,
+        pooling_mode_max_tokens=False
+    )
+
+    d_word_embedding_model = models.Transformer(args.model)
+
+    d_pooling_model = models.Pooling(
+        d_word_embedding_model.get_word_embedding_dimension(),
+        pooling_mode_mean_tokens=True,
+        pooling_mode_cls_token=False,
+        pooling_mode_max_tokens=False
+    )
+
+    q_model = SentenceTransformer(modules=[q_word_embedding_model, q_pooling_model])
+    d_model = SentenceTransformer(modules=[d_word_embedding_model, d_pooling_model])
+    for param in d_model.parameters():
+        param.requires_grad = False
+
+    asym_model = models.Asym({'query': [q_model], 'doc': [d_model]})
+    model = SentenceTransformer(modules=[asym_model])
+
+    # model = SentenceTransformer(args.model)
 
     train_dataset = TrainDataset(args.documents, args.queries)
     train_dataloader = DataLoader(
