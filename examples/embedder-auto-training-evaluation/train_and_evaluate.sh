@@ -67,4 +67,4 @@ python3 scripts/evaluate.py \
                   --key "${VESPA_KEY}" \
                   --ranking ann \
                   --queries "${TEST_QUERIES}"
-trec_eval -mndcg_cut.10 "${TEST_QRELS}" ann
+trec_eval -mndcg_cut.10 "${TEST_QRELS}" ann.run
