@@ -42,7 +42,7 @@ python3 scripts/positives-negatives.py \
       --output_file "${OUTPUT_DIR}/queries.jsonl"
 
 echo 'Training model'
-python3 sentence-transformers.py \
+python3 scripts/sentence-transformers.py \
   --model "${BASE_MODEL}" \
   --documents "${DOCUMENTS}" \
   --queries "${OUTPUT_DIR}/queries.jsonl" \
