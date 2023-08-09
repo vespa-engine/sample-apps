@@ -36,8 +36,9 @@ python3 scripts/sentence-transformers.py \
   --output_dir "${MODEL_DIR}"
 
 echo 'Exporting finetuned model to .onnx'
+QUERY_MODEL_FOLDER_NAME=$(jq -r '.structure.query[0]' "${OUTPUT_DIR}/models/0_Asym/config.json")
 python3 scripts/export_hf_model_from_hf.py \
-  --hf_model "${MODEL_DIR}" \
+  --hf_model "${OUTPUT_DIR}/models/0_Asym/${QUERY_MODEL_FOLDER_NAME}/" \
   --output_dir "${OUTPUT_DIR}"
 
 echo 'Moving finetuned model to application package'
