@@ -55,7 +55,7 @@ brew install vespa-cli
 2. Install Python packages
 
 ```bash
-python3 -m pip install pyvespa ir_datasets transformers torch onnx
+python3 -m pip install pyvespa ir_datasets transformers torch onnx sentence_transformers
 ```
 
 #### Download embedder model
@@ -122,41 +122,29 @@ The notebook contains more details.
 Before proceeding, you need to create a file in the
 <a href="query-generation/" data-proofer-ignore>query-generation</a> directory called **.env**
 containing your OpenAI API-key (generate one at https://platform.openai.com/account/api-keys).
-This is requires in order to use the OpenAI API to generate data.
+This is required in order to use the OpenAI API to generate data.
 
 After this is done, simply open up the notebook and follow the instructions there.
 
-### Training and evaluating embedder
+### Train and evaluate embedder
 
 Training and evaluating an embedder is handled by a single script, [train_and_evaluate.sh](train_and_evaluate.sh).
 It requires a GPU to run.
-The script first deploys the base embedder to Vespa, feeds the dataset's documents, and generates hard negatives
-for the train
-and dev set.
-Then the script trains a new model using those hard negatives, deploys it, and evaluates the model.
+The script first deploys the base embedder to Vespa, feeds documents, and generates positives and negatives
+for the training data.
+Then the script trains a new model, deploys it, and evaluates the model.
 
-The script depends on another project. Download the repository with:
-```bash
-git clone git@github.com:Shybert/unilm.git
-```
+To run the script you have to set three environment variables:
 
-Install the script's required dependencies with:
-
-```bash
-python3 -m pip install -r unilm/simlm/requirements.txt
-```
-
-To run the script you have to set four environment variables:
-
-- `DATA_DIR`, the path to a directory containing a prepared dataset.
 - `VESPA_ENDPOINT`, the URL to the search endpoint of your Vespa instance.
 - `VESPA_KEY`, a path to a key for your Vespa Cloud instance.
 - `VESPA_CERTIFICATE`, a path to a certificate for your Vespa Cloud instance.
 
-The script can then be run by passing the following inputs:
+The script can then be run with the following input paths:
 
-- The name of the output model
-- The path to the queries of the train set
-- The path to the qrels of the train set
-- The path to the queries of the dev set
-- The path to the qrels of the dev set
+- Output directory
+- Documents file
+- Queries to use for training
+- Qrels to use for training
+- Queries to use for testing
+- Qrels to use for testing
