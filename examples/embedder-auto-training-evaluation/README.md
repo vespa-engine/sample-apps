@@ -55,7 +55,7 @@ brew install vespa-cli
 2. Install Python packages
 
 ```bash
-python3 -m pip install pyvespa ir_datasets transformers torch onnx sentence_transformers
+python3 -m pip install pyvespa ir_datasets transformers torch onnx sentence_transformers optimum[exporters]
 ```
 
 #### Download embedder model

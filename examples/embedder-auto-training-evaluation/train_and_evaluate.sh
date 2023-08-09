@@ -17,9 +17,7 @@ mkdir -p "${MODEL_DIR}"
 mkdir -p application-package/model/
 
 echo 'Exporting and deploying base model'
-python3 scripts/export_hf_model_from_hf.py \
-      --hf_model "${BASE_MODEL}" \
-      --output_dir application-package/model/
+optimum-cli export onnx --framework pt --task sentence-similarity --model "${BASE_MODEL}" application-package/model/
 vespa deploy --wait 1800 application-package/
 
 echo 'Preparing documents for feeding'
@@ -50,9 +48,7 @@ python3 scripts/sentence-transformers.py \
   --output_dir "${MODEL_DIR}"
 
 echo 'Exporting model to .onnx'
-python3 scripts/export_hf_model_from_hf.py \
-  --hf_model "${MODEL_DIR}" \
-  --output_dir application-package/model/
+optimum-cli export onnx --framework pt --task sentence-similarity --model "${MODEL_DIR}" application-package/model/
 
 echo 'Deploying finetuned model'
 vespa deploy --wait 1800 application-package/
