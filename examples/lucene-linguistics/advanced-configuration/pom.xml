@@ -7,36 +7,17 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ai.vespa</groupId>
   <artifactId>vespa-lucene-linguistics-poc</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <packaging>container-plugin</packaging>
   <properties>
     <bundle-plugin.failOnWarnings>false</bundle-plugin.failOnWarnings>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
-    <vespa.version>8.204.11</vespa.version>
+    <vespa.version>8.205.14</vespa.version>
     <junit.version>5.7.1</junit.version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>com.yahoo.vespa</groupId>
-      <artifactId>lucene-linguistics</artifactId>
-      <version>${vespa.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.yahoo.vespa</groupId>
-          <artifactId>configdefinitions</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.yahoo.vespa</groupId>
-          <artifactId>linguistics</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.yahoo.vespa</groupId>
-          <artifactId>vespajlib</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analysis-stempel</artifactId>
@@ -44,13 +25,18 @@
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
-      <artifactId>application</artifactId>
+      <artifactId>lucene-linguistics</artifactId>
+      <version>${vespa.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.yahoo.vespa</groupId>
+      <artifactId>linguistics</artifactId>
       <version>${vespa.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
-      <artifactId>container</artifactId>
+      <artifactId>application</artifactId>
       <version>${vespa.version}</version>
       <scope>provided</scope>
     </dependency>

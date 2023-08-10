@@ -6,15 +6,16 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ai.vespa</groupId>
-  <artifactId>lucene-linguistics-minimal</artifactId>
-  <version>0.0.1</version>
+  <artifactId>vespa-lucene-linguistics-crazy</artifactId>
+  <version>0.0.2</version>
   <packaging>container-plugin</packaging>
   <properties>
     <bundle-plugin.failOnWarnings>false</bundle-plugin.failOnWarnings>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
-    <vespa.version>8.204.11</vespa.version>
+    <vespa.version>8.205.14</vespa.version>
     <junit.version>5.7.1</junit.version>
+    <lucene.version>9.7.0</lucene.version>
   </properties>
 
   <dependencies>
@@ -24,16 +25,48 @@
       <version>${vespa.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analysis-common</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analysis-opennlp</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analysis-stempel</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>linguistics</artifactId>
       <version>${vespa.version}</version>
       <scope>provided</scope>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.yahoo.vespa</groupId>-->
+<!--      <artifactId>configdefinitions</artifactId>-->
+<!--      <version>${vespa.version}</version>-->
+<!--      <scope>provided</scope>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>application</artifactId>
       <version>${vespa.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
