@@ -17,13 +17,11 @@ mkdir -p "${MODEL_DIR}"
 mkdir -p application-package/model/
 
 echo 'Exporting and deploying base model'
-python3 scripts/export_hf_model_from_hf.py \
-      --hf_model "${BASE_MODEL}" \
-      --output_dir application-package/model/
+optimum-cli export onnx --framework pt --task sentence-similarity --model "${BASE_MODEL}" application-package/model/
 vespa deploy --wait 1800 application-package/
 
 echo 'Preparing documents for feeding'
-python3 scripts/convert-for-feeding.py \
+python3 data-preparation/convert-for-feeding.py \
   < "${DOCUMENTS}" \
   > "${OUTPUT_DIR}/feed.jsonl"
 
@@ -31,7 +29,7 @@ echo 'Feeding data to base model'
 vespa feed --progress 10 "${OUTPUT_DIR}/feed.jsonl"
 
 echo 'Generating hard negatives'
-python3 scripts/positives-negatives.py \
+python3 training-evaluation/positives-negatives.py \
       --endpoint "${VESPA_ENDPOINT}" \
       --certificate "${VESPA_CERTIFICATE}" \
       --key "${VESPA_KEY}" \
@@ -42,7 +40,7 @@ python3 scripts/positives-negatives.py \
       --output_file "${OUTPUT_DIR}/queries.jsonl"
 
 echo 'Training model'
-python3 scripts/sentence-transformers.py \
+python3 training-evaluation/train.py \
   --model "${BASE_MODEL}" \
   --documents "${DOCUMENTS}" \
   --queries "${OUTPUT_DIR}/queries.jsonl" \
@@ -50,9 +48,7 @@ python3 scripts/sentence-transformers.py \
   --output_dir "${MODEL_DIR}"
 
 echo 'Exporting model to .onnx'
-python3 scripts/export_hf_model_from_hf.py \
-  --hf_model "${MODEL_DIR}" \
-  --output_dir application-package/model/
+optimum-cli export onnx --framework pt --task sentence-similarity --model "${MODEL_DIR}" application-package/model/
 
 echo 'Deploying finetuned model'
 vespa deploy --wait 1800 application-package/
@@ -61,7 +57,7 @@ echo 'Feeding data to finetuned model'
 vespa feed --progress 10 "${OUTPUT_DIR}/feed.jsonl"
 
 echo 'Evaluating'
-python3 scripts/evaluate.py \
+python3 training-evaluation/evaluate.py \
                   --endpoint "${VESPA_ENDPOINT}" \
                   --certificate "${VESPA_CERTIFICATE}" \
                   --key "${VESPA_KEY}" \

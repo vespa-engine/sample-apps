@@ -1,7 +1,0 @@
-QUERIES_IN_TRAIN=$1
-INPUT=$2
-OUTPUT_PREFIX=$3
-
-split -l "${QUERIES_IN_TRAIN}" "${INPUT}"
-mv xaa "${OUTPUT_PREFIX}-train"
-mv xab "${OUTPUT_PREFIX}-dev"

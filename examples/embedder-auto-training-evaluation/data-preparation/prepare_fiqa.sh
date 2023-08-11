@@ -3,11 +3,11 @@
 mkdir -p datasets/fiqa && cd datasets/fiqa
 ir_datasets export beir/fiqa docs  > docs
 ir_datasets export beir/fiqa docs --format jsonl \
-  | python3 ../../scripts/prepend-passage.py \
-  | python3 ../../scripts/add-title-if-missing.py \
+  | python3 ../../data-preparation/prepend-passage.py \
+  | python3 ../../data-preparation/add-title-if-missing.py \
   > docs.jsonl
 gzip < docs.jsonl > passages.jsonl.gz
-< docs.jsonl python3 ../../scripts/convert-for-feeding.py > feed.jsonl
+< docs.jsonl python3 ../../data-preparation/convert-for-feeding.py > feed.jsonl
 
 ir_datasets export beir/fiqa/train qrels > train-qrels
 ir_datasets export beir/fiqa/train queries > train-queries
