@@ -1,4 +1,4 @@
-protobuf >=4.24.0, <=4.24.0
+protobuf >=4.24.1, <=4.24.1
 torch==1.10.2
 transformers==4.10.3
 onnx
