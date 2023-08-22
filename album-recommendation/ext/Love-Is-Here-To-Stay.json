@@ -5,12 +5,9 @@
         "artist": "Diana Krall",
         "year": 2018,
         "category_scores": {
-            "cells": [
-                { "address" : { "cat" : "pop" },  "value": 0.4 },
-                { "address" : { "cat" : "rock" }, "value": 0   },
-                { "address" : { "cat" : "jazz" }, "value": 0.8 }
-            ]
+            "pop": 0.4,
+            "rock": 0,
+            "jazz": 0.8
         }
-     }
+    }
 }
-
