@@ -2,7 +2,7 @@
   "name": "Product Search",
   "comment": "Test of end to end retrieve and read pipeline",
   "defaults": {
-    "cluster": "default",
+    "cluster": "container",
     "parameters": {
       "timeout": "5s"
     }
