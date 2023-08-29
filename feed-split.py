@@ -193,7 +193,8 @@ def main():
         id = op['put']
         if id in questions_expansion:
             op['fields']['questions'] = questions_expansion[id]
-
+        else: 
+            op['fields']['questions'] = [op['fields']['title']]
     with open("paragraph_index.json", "w") as fp:
         json.dump(operations, fp)
 
