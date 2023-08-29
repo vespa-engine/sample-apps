@@ -8,6 +8,9 @@ This sample application is used to demonstrate multi-vector indexing with Vespa.
 Multi-vector indexing was introduced in Vespa 8.144.19. 
 Read the [blog post](https://blog.vespa.ai/semantic-search-with-multi-vector-indexing/) announcing multi-vector indexing.
 
+Go to [multi-vector-indexing](https://pyvespa.readthedocs.io/en/latest/examples/multi-vector-indexing.html)
+to run this sample application using [pyvespa](https://pyvespa.readthedocs.io/en/latest/index.html).
+
 The app uses a small sample of Wikipedia articles, where each paragraph is embedded in embedding
 vector space.
 
@@ -68,7 +71,7 @@ $ curl -L -o model/e5-small-v2-int8.onnx \
   https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx
 </pre>
 
-Deploy the application :
+Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
 </pre>
@@ -92,15 +95,15 @@ $ zstdcat ext/articles.jsonl.zst | vespa feed -
 ## Query and ranking examples
 We demonstrate using `vespa cli`, use `-v` to see the curl equivalent using HTTP api.  
 
-### Simple retrieve all articles with undefined ranking:
+### Simple retrieve all articles with undefined ranking
 <pre data-test="exec" data-test-assert-contains='"totalCount": 8'>
-$ vespa query 'yql=select * from articles where true' \
+$ vespa query 'yql=select * from wiki where true' \
   'ranking=unranked'
 </pre>
 
-### Traditional keyword search with BM25 ranking on the article level:
+### Traditional keyword search with BM25 ranking on the article level
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from articles where userQuery()' \
+$ vespa query 'yql=select * from wiki where userQuery()' \
   'query=24' \
   'ranking=bm25'
 </pre>
@@ -108,9 +111,9 @@ $ vespa query 'yql=select * from articles where userQuery()' \
 Notice the `relevance`, which is assigned by the rank-profile. Also note
 that keywords are highlighted in the `paragraphs` field. 
 
-### Semantic vector search on the paragraph level.
+### Semantic vector search on the paragraph level
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from articles where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
+$ vespa query 'yql=select * from wiki where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
   'input.query(q)=embed(what does 24 mean in the context of railways)' \
   'ranking=semantic'
 </pre>
@@ -131,7 +134,7 @@ this sample application to shorten down the output.
 Hybrid combining keyword search on the article level with vector search in the paragraph index:
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from articles where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
+$ vespa query 'yql=select * from wiki where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
   'input.query(q)=embed(what does 24 mean in the context of railways)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
@@ -161,7 +164,7 @@ ranking to limit the number of vector computations.
 Filtering is also supported, also disable bolding. 
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from articles where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
+$ vespa query 'yql=select * from wiki where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
   'input.query(q)=embed(what does 24 mean in the context of railways)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
