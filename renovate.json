@@ -5,4 +5,7 @@
   ],
   "dependencyDashboardApproval": true,
   "ignorePaths": [],
+  "ignoreDeps": [
+    "ai.vespa.examples.multibundle:multiple-bundles-lib"
+  ]
 }
