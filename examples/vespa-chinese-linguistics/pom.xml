@@ -27,7 +27,7 @@
     
     <source-jdk.version>17</source-jdk.version>
     <target-jdk.version>17</target-jdk.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
 
     <vespa_version>8.219.19</vespa_version>
     <guice.version>3.0</guice.version>
