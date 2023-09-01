@@ -101,9 +101,9 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo>[Vespa version: ] ${vespa_version}</echo>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
