@@ -93,7 +93,7 @@
             <plugin>
                 <!-- For debugging only -->
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -101,9 +101,9 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo>[Vespa version: ] ${vespa_version}</echo>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
