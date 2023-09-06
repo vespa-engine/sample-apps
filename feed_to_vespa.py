@@ -3,15 +3,19 @@
 
 import json
 import os
+import re
+import subprocess
 import sys
 import yaml
 import requests
 from requests.adapters import HTTPAdapter, Retry
+import urllib.parse
 
 def find(json, path, separator = "."):
     if len(path) == 0: return json
     head, _, rest = path.partition(separator)
     return find(json[head], rest) if head in json else None
+
 
 # extract <id> from form id:open:doc::<id>
 def get_document_id(id):
@@ -46,11 +50,7 @@ def vespa_get(endpoint, operation, options):
 def vespa_delete(endpoint, operation, options):
     url = "{0}/{1}?{2}".format(endpoint, operation, "&".join(options))
     return session.delete(url).json()
-    
-def vespa_post(endpoint, doc, docid, namespace, doc_type):
-    url = "{0}/document/v1/{1}/{2}/docid/{3}".format(endpoint, namespace, doc_type, docid)
-    return session.post(url, json=doc).json()
-    
+
 
 def vespa_visit(endpoint, namespace, doc_type, continuation = None):
     options = []
@@ -59,7 +59,7 @@ def vespa_visit(endpoint, namespace, doc_type, continuation = None):
     if continuation is not None and len(continuation) > 0:
         options.append("&continuation={0}".format(continuation))
     return vespa_get(endpoint, "document/v1/{0}/{1}/docid".format(namespace,doc_type), options)
-    
+
 
 def vespa_remove(endpoint, doc_ids, namespace, doc_type):
     options = []
@@ -69,18 +69,16 @@ def vespa_remove(endpoint, doc_ids, namespace, doc_type):
 
 
 def vespa_feed(endpoint, feed, namespace, doc_type):
-    for doc in get_docs(feed):
-        if doc_type == "doc": 
-        	    document_id = find(doc, "fields.namespace") + find(doc, "fields.path")
-        elif doc_type == "term":
-        		document_id = str(find(doc, "fields.hash")) 
-        elif doc_type == "paragraph":
-                document_id = get_document_id(doc['put'])
-        print(vespa_post(endpoint, doc, document_id, namespace, doc_type))
+    if doc_type == "paragraph" or doc_type == "term" or doc_type == "doc":
+        splits = re.split(r'/|\.', endpoint)
+        app_string = splits[3] + '.' + splits[2]
+        print(subprocess.run(['./vespa', 'feed', '-a', app_string, '-t', endpoint, feed], capture_output=True))
+
 
 def get_docs(index):
     file = open(index, "r", encoding='utf-8')
     return json.load(file)
+
 
 def get_indexed_docids(endpoint, namespace, doc_type):
     docids = set()
@@ -90,7 +88,13 @@ def get_indexed_docids(endpoint, namespace, doc_type):
         documents = find(json, "documents")
         if documents is not None:
             ids = [ find(document, "id") for document in documents ]
-            docids.update(ids)
+            for id in ids:
+                # The document id might contain chars that needs to be escaped for the delete/put operation to work
+                # also for comparison with what is in the feed
+                docid = get_document_id(id) # return the last part
+                encoded = urllib.parse.quote(docid) #escape
+                id = id.replace(docid, encoded)
+                docids.add(id)
         continuation = find(json, "continuation")
     return docids
 
@@ -98,12 +102,13 @@ def get_indexed_docids(endpoint, namespace, doc_type):
 def get_feed_docids(feed, namespace, doc_type):
     with open(feed, "r", encoding='utf-8') as f:
         feed_json = json.load(f)
-    if doc_type == "doc": 
-    		return set([ "id:{0}:doc::".format(namespace) + find(doc, "fields.namespace") + find(doc, "fields.path") for doc in feed_json ])
-    elif doc_type == "term": 
-    		return set([ "id:{0}:term::".format(namespace) + str(find(doc, "fields.hash")) for doc in feed_json ])
-    elif doc_type == "paragraph": 
-    		return set([ doc['put'] for doc in feed_json ])
+    if doc_type == "doc":
+        return set(["id:{0}:doc::".format(namespace) + find(doc, "fields.namespace") + find(doc, "fields.path") for doc in feed_json])
+    elif doc_type == "term":
+        return set(["id:{0}:term::".format(namespace) + str(find(doc, "fields.hash")) for doc in feed_json])
+    elif doc_type == "paragraph":
+        return set([doc['put'] for doc in feed_json])
+
 
 def print_header(msg):
     print("")
