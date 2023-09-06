@@ -30,7 +30,7 @@ The steps are:
 ```
 
 And voilà! Your VAP is ready to be deployed.
-The essence of the trick is that in the VAP you create a directory which is not empty and therefore the VAP can be successfully deployed.
+The essence of the trick is that in the VAP you create a directory which is not empty and therefore the VAP can be successfully deployed ([details](https://github.com/vespa-engine/vespa/issues/27912)).
 Also, by doing this you isolate the linguistics configurations (which can get quite verbose) from polluting the `services.xml`.
 And this structure is guaranteed not to clash with the expected [VAP directory structure](https://docs.vespa.ai/en/reference/application-packages-reference.html).
 
@@ -94,7 +94,7 @@ Add a component declaration into the `config.xml` (or `services.xml`) file:
            class="ai.vespa.linguistics.pl.PolishAnalyzer"
            bundle="vespa-lucene-linguistics-poc" />
 ```
-And now you have a Polish language handling available.
+And now you have the handling of the Polish language available.
 
 ## Common Problems
 
@@ -172,4 +172,3 @@ Unable to send file specified in com.yahoo.language.lucene.lucene-analysis:
 WARNING Jar file 'vespa-lucene-linguistics-poc-0.0.1-deploy.jar' uses non-public Vespa APIs: [com.yahoo.language.simple]
 ```
 You can ignore this warning.
-

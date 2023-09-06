@@ -6,12 +6,14 @@
 
 A couple of example of how to get started with the `lucene-linguistics`:
 
-- `minimal`: an absolute minimum to get started;
-- `advanced-configuration`: shows the configurability and how to solve common problems. 
+- `non-java`: an absolute minimum to get started; 
+- `minimal`: minimal Java based project using Lucene Linguistics;
+- `advanced-configuration`: demonstrates the configurability and how to solve common problems;
+- `going-crazy`: demonstrates the advanced setup;
 
 ## Getting started
 
-For both application package the procedure is the same:
+For all application packages the procedure is the same:
 go to the application package directory and play with the following commands:
 
 ```shell
@@ -94,8 +96,8 @@ Change the `model.locale` to other language, change the query, and observe the a
 
 ### Observing the indexed tokens
 
-It is possible to explore the tokens in the index.
-To do that you can run these commands **inside** the Vespa Docker container.
+It is possible to explore the tokens directly in the index.
+To do that you can run these commands **inside** the running Vespa Docker container.
 
 ```shell
 # Into the Vespa docker
@@ -123,3 +125,5 @@ vespa-index-inspect dumpwords \
 # 1	cat	1
 # 2	dog	1
 ```
+
+Have fun!
