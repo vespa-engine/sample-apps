@@ -50,12 +50,6 @@
       <version>${vespa.version}</version>
       <scope>provided</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>com.yahoo.vespa</groupId>-->
-<!--      <artifactId>configdefinitions</artifactId>-->
-<!--      <version>${vespa.version}</version>-->
-<!--      <scope>provided</scope>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>application</artifactId>
