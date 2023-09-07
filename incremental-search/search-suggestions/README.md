@@ -9,7 +9,7 @@
 This sample application is a demo of how one can build search suggestions from a document corpus.
 It uses documents from [Vespa Documentation](https://github.com/vespa-engine/documentation)
 and extracts terms and phrases.
-[Prefix match](https://docs.vespa.ai/en/text-matching-ranking.html#prefix-match) is used,
+[Prefix match](https://docs.vespa.ai/en/text-matching.html#prefix-match) is used,
 so suggestions are shown as the user types.
 
 <!-- ToDo check this after deploying new suggestions script - we might need to kill this app and point to new code -->
