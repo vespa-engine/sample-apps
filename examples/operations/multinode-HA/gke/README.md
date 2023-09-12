@@ -137,7 +137,10 @@ vespa-query-container-1   1/1     Running   0          2m41s
 At this point, all pods should be running.
 The Vespa [application package](https://docs.vespa.ai/en/application-packages.html) is not yet deployed,
 so none of the Vespa services are running.
-Deploy the application package:
+
+
+
+## Deploy the application package
 ```
 kubectl port-forward pod/vespa-configserver-0 19071
 ```
