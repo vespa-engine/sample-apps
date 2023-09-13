@@ -86,7 +86,7 @@ The following reproduces the results reported on the MIRACL Swahili(sw) dataset.
 
 Install `trec_eval`:
 <pre data-test="exec">
-$ git clone https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
+$ git clone --depth 1 --branch v9.0.8 https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
 </pre>
 
 Index the dataset, this also embed the texts and is compute intensive. On a M1 laptop,
