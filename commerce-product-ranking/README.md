@@ -185,7 +185,7 @@ $  curl -L -o test.qrels \
 Install `trec_eval` (your mileage may vary):
 
 <pre data-test="exec">
-git clone https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
+git clone --depth 1 --branch v9.0.8 https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
 </pre>
 
 Run evaluation :
