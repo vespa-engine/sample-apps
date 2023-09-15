@@ -7,11 +7,10 @@ Lucene has a battle-tested and standards compliant set of available libraries to
 
 ## Context
 
-The goals are:
+The goals of this application package are:
 - set up OpenNLP tokenizers;
 - set up Lemmagen token filters with sample resource files; 
 - construct an analyzer entirely in Java code and register it as a component;
-- set up synonym graph token filters;
 
 ## Analysis components
 
@@ -25,7 +24,6 @@ The OpenNLP library adds 1 tokenizer identified with `openNlp`, and 3 token filt
 
 Let's set a `org.apache.lucene.analysis.opennlp.OpenNLPTokenizerFactory` and
 `org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory`.
-
 
 ### Feed Documents
 

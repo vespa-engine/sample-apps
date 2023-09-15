@@ -45,6 +45,17 @@
       <version>${lucene.version}</version>
     </dependency>
     <dependency>
+      <groupId>eu.hlavki.text</groupId>
+      <artifactId>jlemmagen</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>linguistics</artifactId>
       <version>${vespa.version}</version>

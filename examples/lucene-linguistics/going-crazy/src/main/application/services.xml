@@ -96,6 +96,16 @@
                 <item><name>reversestring</name></item>
               </tokenFilters>
             </item>
+            <item key="sk">
+              <tokenFilters>
+                <item>
+                  <name>lemmagen</name>
+                  <conf>
+                    <item key="lexicon">sk/mlteast-sk.lem</item>
+                  </conf>
+                </item>
+              </tokenFilters>
+            </item>
           </analysis>
         </config>
       </component>

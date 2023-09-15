@@ -5,9 +5,7 @@
       <component id="linguistics"
                  class="com.yahoo.language.lucene.LuceneLinguistics"
                  bundle="lucene-linguistics-minimal">
-        <config name="com.yahoo.language.lucene.lucene-analysis">
-          <configDir>ext/linguistics</configDir>
-        </config>
+        <config name="com.yahoo.language.lucene.lucene-analysis"/>
       </component>
     </components>
     <document-processing/>
