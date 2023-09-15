@@ -16,6 +16,8 @@ import java.util.Map;
  * https://github.com/vhyza/elasticsearch-analysis-lemmagen
  * Loosely based on
  * https://github.com/vhyza/elasticsearch-analysis-lemmagen/blob/master/src/main/java/org/elasticsearch/index/analysis/LemmagenFilterFactory.java
+ * Also inspired by
+ * https://github.com/hlavki/jlemmagen-lucene/blob/master/src/main/java/org/apache/lucene/analysis/lemmagen/LemmagenFilterFactory.java
  */
 public class LemmagenTokenFilterFactory extends TokenFilterFactory
         implements ResourceLoaderAware {

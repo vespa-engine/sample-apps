@@ -7,7 +7,9 @@
 A couple of example of how to get started with the `lucene-linguistics`:
 
 - `non-java`: an absolute minimum to get started; 
+  - TODO: update the bundle to newest version
 - `minimal`: minimal Java based project using Lucene Linguistics;
+  - TODO: use non snapshot build
 - `advanced-configuration`: demonstrates the configurability and how to solve common problems;
 - `going-crazy`: demonstrates the advanced setup;
 
@@ -29,7 +31,7 @@ docker run --rm --detach \
   --publish 8080:8080 \
   --publish 19071:19071 \
   --publish 19050:19050 \
-  vespaengine/vespa:8.204.11
+  vespaengine/vespa:8.224.19
 
 # To observe the logs from LuceneLinguistics run in a separate terminal
 docker logs  vespa -f | grep -i "lucene"

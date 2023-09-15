@@ -101,6 +101,7 @@
                 <item>
                   <name>lemmagen</name>
                   <conf>
+                    <!-- Taken from https://github.com/hlavki/jlemmagen-lang/tree/master/src/main/resources -->
                     <item key="lexicon">sk/mlteast-sk.lem</item>
                   </conf>
                 </item>
