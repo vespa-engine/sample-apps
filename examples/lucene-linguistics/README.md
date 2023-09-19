@@ -7,7 +7,6 @@
 A couple of example of how to get started with the `lucene-linguistics`:
 
 - `non-java`: an absolute minimum to get started; 
-  - TODO: update the bundle to the newest version when released
 - `minimal`: minimal Java based project using Lucene Linguistics;
 - `advanced-configuration`: demonstrates the configurability;
 - `going-crazy`: demonstrates the advanced setup;
