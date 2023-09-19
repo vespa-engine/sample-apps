@@ -9,11 +9,8 @@ A couple of example of how to get started with the `lucene-linguistics`:
 - `non-java`: an absolute minimum to get started; 
   - TODO: update the bundle to the newest version when released
 - `minimal`: minimal Java based project using Lucene Linguistics;
-  - TODO: use non snapshot build
 - `advanced-configuration`: demonstrates the configurability;
-  - TODO: use non snapshot build
 - `going-crazy`: demonstrates the advanced setup;
-  - TODO: use non snapshot build
 
 ## Getting started
 

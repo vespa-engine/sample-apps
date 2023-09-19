@@ -4,7 +4,7 @@ In non-java projects it is possible to use Lucene Linguistics as a jar bundle.
 
 Download and add the Vespa bundle jar into the `components` directory:
 ```shell
-(mkdir -p components && cd components && curl -L https://github.com/dainiusjocas/vespa-lucene-linguistics-bundle/releases/download/v0.0.1/lucene-linguistics-bundle-0.0.1-deploy.jar --output lucene-linguistics-bundle-0.0.1-deploy.jar)
+(mkdir -p components && cd components && curl -L https://github.com/dainiusjocas/vespa-lucene-linguistics-bundle/releases/download/v0.0.2/lucene-linguistics-bundle-0.0.2-deploy.jar --output lucene-linguistics-bundle-0.0.2-deploy.jar)
 ```
 
 Deploy the application package:
