@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0">
+  <container id="container" version="1.0">
+    <component id="pl"
+               class="ai.vespa.linguistics.pl.PolishAnalyzer"
+               bundle="vespa-lucene-linguistics-crazy"/>
+    <components>
+      <component id="com.yahoo.language.lucene.LuceneLinguistics"
+                 bundle="vespa-lucene-linguistics-crazy">
+        <config name="com.yahoo.language.lucene.lucene-analysis">
+          <configDir>linguistics</configDir>
+          <analysis>
+            <item key="de">
+              <tokenizer>
+                <name>openNLP</name>
+                <conf>
+                  <item key="sentenceModel">de/opennlp-de-ud-gsd-sentence-1.0-1.9.3.bin</item>
+                  <item key="tokenizerModel">de/opennlp-de-ud-gsd-tokens-1.0-1.9.3.bin</item>
+                </conf>
+              </tokenizer>
+              <tokenFilters>
+                <item>
+                  <name>snowballPorter</name>
+                  <conf>
+                    <item key="language">German2</item>
+                  </conf>
+                </item>
+              </tokenFilters>
+            </item>
+            <item key="en">
+              <tokenizer>
+                <name>openNLP</name>
+                <conf>
+                  <item key="sentenceModel">en/opennlp-en-ud-ewt-sentence-1.0-1.9.3.bin</item>
+                  <item key="tokenizerModel">en/opennlp-en-ud-ewt-tokens-1.0-1.9.3.bin</item>
+                </conf>
+              </tokenizer>
+              <tokenFilters>
+                <item>
+                  <name>snowballPorter</name>
+                  <conf>
+                    <item key="language">English</item>
+                  </conf>
+                </item>
+              </tokenFilters>
+            </item>
+            <item key="fr">
+              <tokenizer>
+                <name>openNLP</name>
+                <conf>
+                  <item key="sentenceModel">fr/opennlp-1.0-1.9.3fr-ud-ftb-sentence-1.0-1.9.3.bin</item>
+                  <item key="tokenizerModel">fr/opennlp-fr-ud-ftb-tokens-1.0-1.9.3.bin</item>
+                </conf>
+              </tokenizer>
+              <tokenFilters>
+                <item>
+                  <name>snowballPorter</name>
+                  <conf>
+                    <item key="language">French</item>
+                  </conf>
+                </item>
+              </tokenFilters>
+            </item>
+            <item key="it">
+              <tokenizer>
+                <name>openNLP</name>
+                <conf>
+                  <item key="sentenceModel">it/opennlp-it-ud-vit-sentence-1.0-1.9.3.bin</item>
+                  <item key="tokenizerModel">it/opennlp-it-ud-vit-tokens-1.0-1.9.3.bin</item>
+                </conf>
+              </tokenizer>
+              <tokenFilters>
+                <item>
+                  <name>snowballPorter</name>
+                  <conf>
+                    <item key="language">Italian</item>
+                  </conf>
+                </item>
+              </tokenFilters>
+            </item>
+            <item key="nl">
+              <tokenizer>
+                <name>openNLP</name>
+                <conf>
+                  <item key="sentenceModel">nl/opennlp-nl-ud-alpino-sentence-1.0-1.9.3.bin</item>
+                  <item key="tokenizerModel">nl/opennlp-nl-ud-alpino-tokens-1.0-1.9.3.bin</item>
+                </conf>
+              </tokenizer>
+              <tokenFilters>
+                <item>
+                  <name>snowballPorter</name>
+                  <conf>
+                    <item key="language">Dutch</item>
+                  </conf>
+                </item>
+                <item><name>reversestring</name></item>
+              </tokenFilters>
+            </item>
+            <item key="sk">
+              <tokenFilters>
+                <item>
+                  <name>lemmagen</name>
+                  <conf>
+                    <!-- Taken from https://github.com/hlavki/jlemmagen-lang/tree/master/src/main/resources -->
+                    <item key="lexicon">sk/mlteast-sk.lem</item>
+                  </conf>
+                </item>
+              </tokenFilters>
+            </item>
+          </analysis>
+        </config>
+      </component>
+    </components>
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+  <content id="content" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="lucene" mode="index"/>
+      <document-processing cluster="container"/>
+    </documents>
+  </content>
+</services>

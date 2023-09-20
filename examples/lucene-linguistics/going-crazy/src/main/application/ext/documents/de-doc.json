@@ -1,0 +1,7 @@
+{
+  "put": "id:mynamespace:lucene::de-doc",
+  "fields": {
+    "language": "de",
+    "mytext": "Katzen und Hunde"
+  }
+}

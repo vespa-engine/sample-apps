@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0">
+  <container id="container" version="1.0">
+    <components>
+      <component id="pl"
+                 class="ai.vespa.linguistics.pl.PolishAnalyzer"
+                 bundle="vespa-lucene-linguistics-poc"/>
+      <component id="linguistics"
+                 class="com.yahoo.language.lucene.LuceneLinguistics"
+                 bundle="vespa-lucene-linguistics-poc">
+        <config name="com.yahoo.language.lucene.lucene-analysis"/>
+      </component>
+    </components>
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+  <content id="content" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="lucene" mode="index"/>
+      <document-processing cluster="container"/>
+    </documents>
+  </content>
+</services>

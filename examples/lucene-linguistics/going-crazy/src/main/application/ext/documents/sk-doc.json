@@ -1,0 +1,7 @@
+{
+  "put": "id:mynamespace:lucene::sk-doc",
+  "fields": {
+    "language": "sk",
+    "mytext": "Mačky a psy"
+  }
+}

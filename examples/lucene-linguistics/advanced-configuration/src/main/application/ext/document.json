@@ -1,0 +1,7 @@
+{
+  "put": "id:mynamespace:lucene::mydocid",
+  "fields": {
+    "language": "en",
+    "mytext": "Cats and Dogs"
+  }
+}
