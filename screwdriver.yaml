@@ -54,7 +54,7 @@ jobs:
             --directory-index-file README.html \
             --ignore-urls 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/,src/main/application/search/query-profiles' \
             --ignore-files '/tensor-playground/src/main/resources/playground/,/src/main/resources/site/index.html/,/dense-passage-retrieval-with-ann/src/main/resources/frontend/index.html/' \
-            --swap-urls '(https\://github.com.*/master/.*)#.*:\1,(https\://github.com.*/main/.*)#.*:\1,README.md:README.html,Code-of-Conduct.md:Code-of-Conduct.html,document-ranking-README.md:document-ranking-README.html,passage-ranking-README.md:passage-ranking-README.html,colbert-performance-scaling-README.md:colbert-performance-scaling-README.html,experiment-yourself.md:experiment-yourself.html,feeding.md:feeding.html,benchmarking-README.md:benchmarking-README.html' \
+            --swap-urls '(https\://github.com.*/master/.*)#.*:\1,(https\://github.com.*/main/.*)#.*:\1,(.*).md:\1.html' \
             _site
 
   build-apps:
