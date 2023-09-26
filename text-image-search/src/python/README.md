@@ -11,7 +11,7 @@ to process, feed and query Vespa. This is suitable for exploration and analysis.
 
 We are going to use the Flickr8k dataset to allow users to follow along from their laptop.
 You can use the script in `../sh/download_flickr8k.sh` to download the data,
-or manually from [the Kaggle website](https://www.kaggle.com/ming666/flicker8k-dataset).
+or manually from [the Kaggle website](https://www.kaggle.com/datasets/ming666/flicker8k-dataset).
 
 After downloading, set the `IMG_DIR` environment variable to the folder containing the PNG files.
 
