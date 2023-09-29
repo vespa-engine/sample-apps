@@ -47,7 +47,7 @@
       <min_length>300</min_length>
     </config>
 
-    <redundancy>2</redundancy>
+    <min-redundancy>2</min-redundancy>
     <documents>
       <document type='msmarco' mode="index"/>
       <document-processing cluster="text_search"/>

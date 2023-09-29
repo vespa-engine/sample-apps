@@ -18,7 +18,7 @@
   </container>
 
   <content id='graph' version='1.0'>
-    <redundancy>1</redundancy>
+    <min-redundancy>1</min-redundancy>
     <documents>
       <document mode='index' type='vector' selection='vector.in_graph==true'/>
       <document-processing cluster='default' chain='neighbor-assigner' />
@@ -38,7 +38,7 @@
   </content>
 
   <content id='if' version='1.0'>
-    <redundancy>1</redundancy>
+    <min-redundancy>1</min-redundancy>
     <documents>
       <document mode='index' type='vector' selection='vector.in_graph==false'/>
       <document-processing cluster='default' chain='neighbor-assigner' />

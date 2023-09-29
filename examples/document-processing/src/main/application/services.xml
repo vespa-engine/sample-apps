@@ -16,7 +16,7 @@
     </container>
 
     <content id="musiccluster" version="1.0">
-        <redundancy>2</redundancy>
+        <min-redundancy>2</min-redundancy>
         <documents>
             <document type="music"  mode="index" />
             <document type="lyrics" mode="index" />

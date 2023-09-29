@@ -32,7 +32,7 @@
     </container>
 
     <content id="documentation" version="1.0">
-        <redundancy>2</redundancy>
+        <min-redundancy>2</min-redundancy>
         <documents>
             <document mode="index" type="term"/>
         </documents>
