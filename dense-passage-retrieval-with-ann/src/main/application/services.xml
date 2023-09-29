@@ -50,7 +50,7 @@
     <search>
       <visibility-delay>1</visibility-delay>
     </search>
-    <redundancy>2</redundancy>
+    <min-redundancy>2</min-redundancy>
     <documents>
       <document mode='index' type='wiki'/>
       <document-processing cluster="default" chain="bert-tensorizer" />

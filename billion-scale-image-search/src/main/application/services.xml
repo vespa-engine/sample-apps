@@ -43,7 +43,7 @@
   </container>
 
   <content id='graph' version='1.0'>
-    <redundancy>1</redundancy>
+    <min-redundancy>1</min-redundancy>
     <documents>
       <document mode='index' type='centroid'/>
       <document-processing cluster='default' chain='neighbor-assigner'/>
@@ -63,7 +63,7 @@
   </content>
 
   <content id='if' version='1.0'>
-    <redundancy>1</redundancy>
+    <min-redundancy>1</min-redundancy>
     <documents>
       <document mode='index' type='image'/>
       <document-processing cluster='default' chain='neighbor-assigner'/>

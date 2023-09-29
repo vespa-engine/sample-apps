@@ -22,7 +22,7 @@
 
     <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
     <content id="mail" version="1.0">
-        <redundancy>2</redundancy>
+        <min-redundancy>2</min-redundancy>
         <documents>
             <document type="mail" mode="streaming" />
             <document-processing chain="indexing" cluster="default" />

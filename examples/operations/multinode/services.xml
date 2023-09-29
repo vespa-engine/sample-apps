@@ -28,7 +28,7 @@
     </container>
 
     <content id="music" version="1.0">
-        <redundancy>3</redundancy>
+        <min-redundancy>3</min-redundancy>
         <engine>
             <proton>
                 <searchable-copies>3</searchable-copies>

@@ -36,7 +36,7 @@
     </container>
 
     <content id="shopping" version="1.0">
-        <redundancy>2</redundancy>
+        <min-redundancy>2</min-redundancy>
         <documents>
             <document type="query" mode="index"/>
             <document type="item" mode="index"/>
