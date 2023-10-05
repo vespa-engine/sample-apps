@@ -29,7 +29,7 @@ docker run --rm --detach \
   --publish 8080:8080 \
   --publish 19071:19071 \
   --publish 19050:19050 \
-  vespaengine/vespa:8.224.19
+  vespaengine/vespa:8.237.19
 
 # To observe the logs from LuceneLinguistics run in a separate terminal
 docker logs  vespa -f | grep -i "lucene"

@@ -13,25 +13,25 @@
     <bundle-plugin.failOnWarnings>false</bundle-plugin.failOnWarnings>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
-    <vespa.version>8.227.41</vespa.version>
+    <vespa_version>8.237.19</vespa_version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>lucene-linguistics</artifactId>
-      <version>${vespa.version}</version>
+      <version>${vespa_version}</version>
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>linguistics</artifactId>
-      <version>${vespa.version}</version>
+      <version>${vespa_version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>application</artifactId>
-      <version>${vespa.version}</version>
+      <version>${vespa_version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -41,7 +41,7 @@
       <plugin>
         <groupId>com.yahoo.vespa</groupId>
         <artifactId>bundle-plugin</artifactId>
-        <version>${vespa.version}</version>
+        <version>${vespa_version}</version>
         <extensions>true</extensions>
         <configuration>
           <failOnWarnings>false</failOnWarnings>
@@ -50,7 +50,7 @@
       <plugin>
         <groupId>com.yahoo.vespa</groupId>
         <artifactId>vespa-application-maven-plugin</artifactId>
-        <version>${vespa.version}</version>
+        <version>${vespa_version}</version>
         <executions>
           <execution>
             <goals>
