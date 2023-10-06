@@ -91,7 +91,7 @@ $ docker run --detach --name node2 --hostname node2.vespanet \
 
 Notes:
 * Use fully qualified hostnames.
-* [VESPA_CONFIGSERVERS](https://docs.vespa.ai/en/reference/files-processes-and-ports.html#environment-variables)
+* [VESPA_CONFIGSERVERS](https://docs.vespa.ai/en/operations-selfhosted/files-processes-and-ports.html#environment-variables)
   lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 
 Wait for last config server to start:
