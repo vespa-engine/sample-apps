@@ -165,7 +165,7 @@ Notes:
   For this reason, it is normally a good idea to run this on a separate node, like here -
   a full disk will not impact other nodes.
 
-Check that the [config sentinel](https://docs.vespa.ai/en/operations/config-sentinel.html) is started:
+Check that the [config sentinel](https://docs.vespa.ai/en/operations-selfhosted/config-sentinel.html) is started:
 <pre data-test="exec" data-test-wait-for='FAILED connectivity check'>
 $ curl -s http://localhost:19098/state/v1/health
 </pre>
@@ -186,7 +186,7 @@ Checking logs:
       WARNING : config-sentinel  sentinel.sentinel.connectivity	Only 4 of 10 nodes are up and OK, 40.0% (min is 50%)
 
 **Important note:**
-This is the [startup sequence](https://docs.vespa.ai/en/operations/config-sentinel.html#cluster-startup) kicking in -
+This is the [startup sequence](https://docs.vespa.ai/en/operations-selfhosted/config-sentinel.html#cluster-startup) kicking in -
 container and content nodes are not started before 50% (configurable) of nodes have started.
 Meaning, here we have started only 4/10, so `logserver`, `slobrok`, `metrics-proxy` and `cluster-controller`
 are not started yet.
@@ -446,7 +446,7 @@ Notes:
   is useful to understand processes running,
   and also the [startup sequence](https://docs.vespa.ai/en/operations/config-sentinel.html#cluster-startup).
   Note that in the startup sequence, order not strictly needed as in this sample app.
-* [Config servers](https://docs.vespa.ai/en/operations/configuration-server.html) are normally started first,
+* [Config servers](https://docs.vespa.ai/en/operations-selfhosted/configuration-server.html) are normally started first,
   then application deployment - make sure to get this right before troubleshooting other services.
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
 * The [cluster controller](https://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
@@ -897,7 +897,7 @@ When the config servers are started, but not yet full initialized, the status lo
 ![Config Servers initializing](img/config-servers-init.png)
 
 If the status stays like this, troubleshoot the config server
-[startup sequence](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
+[startup sequence](https://docs.vespa.ai/en/operations-selfhosted/configuration-server.html#start-sequence).
 
 When all nodes are up, it looks like:
 

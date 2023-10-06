@@ -63,7 +63,7 @@ kubectl apply \
 
 Note that the [StatefulSet](config/configserver.yml) definition for config servers does not have a `readinessProbe`.
 This is important to start all three config servers for zookeeper quorum and subsequent OK status -
-[details](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
+[details](https://docs.vespa.ai/en/operations-selfhosted/configuration-server.html#start-sequence).
 
 Pay attention to the config server names, referred in [config/configmap.yml](config/configmap.yml) -
 `VESPA_CONFIGSERVERS` is used on all nodes to get configuration.
@@ -101,7 +101,7 @@ Observe status up:
 ```
 
 If you are not able to see this status page,
-do [troubleshooting](https://docs.vespa.ai/en/operations/configuration-server.html#start-sequence).
+do [troubleshooting](https://docs.vespa.ai/en/operations-selfhosted/configuration-server.html#start-sequence).
 Note both "configserver,services" are started in [config/configserver.yml](config/configserver.yml).
 
 
