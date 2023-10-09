@@ -733,6 +733,29 @@ $ curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/
 
 
 ## Test feed and query endpoints
+Set credentials for the [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+```
+export VESPA_CLI_DATA_PLANE_CA_CERT_FILE=pki/vespa/ca-vespa.pem
+export VESPA_CLI_DATA_PLANE_CERT_FILE=pki/client/client.pem
+export VESPA_CLI_DATA_PLANE_KEY_FILE=pki/client/client.key
+```
+Feed documents:
+```
+vespa feed -t https://localhost:8443 ../../../album-recommendation/ext/documents.jsonl 
+```
+Visit documents:
+```
+vespa visit -t https://localhost:8443
+```
+Query documents:
+```
+vespa query -t https://localhost:8445 'select * from music where true'
+```
+Note that the _feed_ and _query_ container cluster nodes are mapped to 8443 and 8445, respectively.
+
+
+
+## Test feed and query endpoints using curl
 Feed 5 documents, using the document-API endpoint in the _feed_ container cluster, here mapped to 8080/8081:
 <pre data-test="exec">
 $ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); do \
