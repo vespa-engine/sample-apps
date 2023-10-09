@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <services version='1.0' xmlns:deploy="vespa" xmlns:preprocess="properties">
-<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
   <container id='default' version='1.0'>
     <nodes count='1'/>
     <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
