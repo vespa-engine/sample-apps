@@ -444,7 +444,7 @@ $ curl http://localhost:8083/prometheus/v1/values
 Notes:
 * [Config sentinel](https://docs.vespa.ai/en/operations/config-sentinel.html)
   is useful to understand processes running,
-  and also the [startup sequence](https://docs.vespa.ai/en/operations/config-sentinel.html#cluster-startup).
+  and also the [startup sequence]([https://docs.vespa.ai/en/operations/config-sentinel.html#cluster-startup](https://docs.vespa.ai/en/operations-selfhosted/config-sentinel.html)).
   Note that in the startup sequence, order not strictly needed as in this sample app.
 * [Config servers](https://docs.vespa.ai/en/operations-selfhosted/configuration-server.html) are normally started first,
   then application deployment - make sure to get this right before troubleshooting other services.
