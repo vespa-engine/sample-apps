@@ -16,7 +16,7 @@ but you can download other data from the site above and use the scripts to conve
 
 Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is minimum.
-  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)

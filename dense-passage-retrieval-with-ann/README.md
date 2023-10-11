@@ -36,7 +36,7 @@ recreate the results in the DPR paper, see the [next section](#how-to-feed-the-e
 
 Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
-  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
@@ -146,7 +146,7 @@ $ docker rm -f vespa
 ## How to feed the entire dataset
 
 To run the full dataset, minimum **128GB** system memory for the content node is recommended.
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
 for details and troubleshooting:
 
 Since the DPR repo depends on a different version of transformers library,

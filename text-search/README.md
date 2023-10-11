@@ -17,7 +17,7 @@ The following is for deploying the end to end application including a custom fro
 ## Prerequisites
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 10GB available memory for Docker is recommended.
-  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64 
