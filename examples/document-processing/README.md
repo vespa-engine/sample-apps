@@ -30,7 +30,7 @@ Flow:
 
 ### Validate the environment:
 Make sure you see at minimum 4 GB.
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
 for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"

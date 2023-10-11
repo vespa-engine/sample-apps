@@ -16,7 +16,7 @@ Refer to [getting started](https://docs.vespa.ai/en/getting-started.html) for mo
 
 **Validate environment, should be minimum 4G:**
 
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
 for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"

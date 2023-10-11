@@ -19,7 +19,7 @@ Docker requirements same as in the [quick-start](https://docs.vespa.ai/en/vespa-
 
 **Validate environment, must be minimum 4G:**
 
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
 for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"

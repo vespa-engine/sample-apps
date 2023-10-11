@@ -10,7 +10,7 @@ Please refer to
 for more information on the basic single container example.
 Also see [Vespa quick start using Kubernetes](https://docs.vespa.ai/en/vespa-quick-start-kubernetes.html).
 Containers running Vespa should have minimum 4 GB memory available.
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
 for details and troubleshooting.
 
 See [multinode-HA/gke](../multinode-HA/gke) for a more detailed Kubernetes example.

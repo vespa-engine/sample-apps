@@ -10,7 +10,7 @@ A sample Vespa application to assist with learning how to group according to the
 **Requirements:**
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
-  Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+  Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
@@ -23,7 +23,7 @@ A sample Vespa application to assist with learning how to group according to the
 $ docker info | grep "Total Memory"
 </pre>
 
-Refer to [Docker memory](https://docs.vespa.ai/en/operations/docker-containers.html#memory)
+Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
 for details and troubleshooting:
 
 
