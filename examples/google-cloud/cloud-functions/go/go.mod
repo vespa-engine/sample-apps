@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/storage v1.29.0
-	github.com/GoogleCloudPlatform/functions-framework-go v1.6.1
+	github.com/GoogleCloudPlatform/functions-framework-go v1.8.0
 )
 
 require (
