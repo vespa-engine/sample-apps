@@ -20,6 +20,9 @@
         <module>examples/generic-request-processing</module>
         <module>examples/http-api-using-request-handlers-and-processors</module>
         <module>examples/joins</module>
+        <module>examples/lucene-linguistics/advanced-configuration</module>
+        <module>examples/lucene-linguistics/going-crazy</module>
+        <module>examples/lucene-linguistics/minimal</module>
         <module>examples/multiple-bundles-lib</module>
         <module>examples/multiple-bundles</module>
         <module>examples/operations/monitoring/album-recommendation-monitoring/album-recommendation-random-data</module>
