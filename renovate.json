@@ -7,12 +7,5 @@
   "ignorePaths": [],
   "ignoreDeps": [
     "ai.vespa.examples.multibundle:multiple-bundles-lib"
-  ],
-  "packageRules": [
-    {
-      "matchPackagePatterns": ["^com\\.yahoo\\.vespa"],
-      "matchManagers": ["maven"],
-      "enabled": false
-    }
   ]
 }
