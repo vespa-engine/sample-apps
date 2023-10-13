@@ -121,7 +121,7 @@ Notes:
 * VESPA_CONFIGSERVERS lists all nodes using exactly the same names as in [hosts.xml](hosts.xml)
 * Refer to [Docker containers](https://docs.vespa.ai/en/operations/docker-containers.html) for details.
 * Vespa separates between starting config servers and service nodes,
-  see [Vespa start/stop](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-start-configserver).
+  see [Vespa start/stop](https://docs.vespa.ai/en/operations-selfhosted/vespa-cmdline-tools.html#vespa-start-configserver).
   Normally config servers run both `configserver` and `services`, other nodes run `services` only.
   This because `services` has node infrastructure, e.g. log forwarding.
 
@@ -228,7 +228,7 @@ We now expect the `metrics-proxy` (runs on all service nodes) to be up - and oth
 
 In short, checking `/state/v1/` for services is useful to validate that services are up.
 At this point it is useful to inspect the application using
-[vespa-model-inspect](https://docs.vespa.ai/en/reference/vespa-cmdline-tools.html#vespa-model-inspect):
+[vespa-model-inspect](https://docs.vespa.ai/en/operations-selfhosted/vespa-cmdline-tools.html#vespa-model-inspect):
 ```sh
 $ docker exec -it node0 /opt/vespa/bin/vespa-model-inspect hosts
 node0.vespanet
