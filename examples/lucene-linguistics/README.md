@@ -136,55 +136,16 @@ It has an optional `configDir` configuration parameter of type `path`.
 
 There are several known problems that might happen when `configDir` is misconfigured.
 
-### `configDir` is specified but doesn't exist
+### `configDir` is specified, but doesn't exist or specified directory is empty
 
-If the `configDir` doesn't exist then `vespa deploy` would fail with such error:
+If the `configDir` doesn't exist or is empty `vespa deploy` would fail with this error:
 
 ```shell
-Uploading application package ... failed
-Error: invalid application package (400 Bad Request)
-Invalid application:
-Unable to send file specified in com.yahoo.language.lucene.lucene-analysis:
-/opt/vespa/var/db/vespa/config_server/serverdb/tenants/default/sessions/4/lucene (No such file or directory)
-```
+Uploading application package... done
 
-### Empty directory can't be referred
-
-If the `configDir` is set with `foo` which is empty then during deployment you get a misleading error message:
-```shell
-Uploading application package ... failed
-Error: invalid application package (400 Bad Request)
-Invalid application:
-Unable to send file specified in com.yahoo.language.lucene.lucene-analysis:
-/opt/vespa/var/db/vespa/config_server/serverdb/tenants/default/sessions/8/foo (No such file or directory)
-```
-
-### Application package root cannot be used as `configDir`
-
-If you try to be clever and set `<configDir>.</configDir>` then application package would be deployed(!) BUT
-not converge with the following error:
-```shell
-Uploading application package ... done
-
-Success: Deployed target/application.zip
-WARNING Jar file 'vespa-lucene-linguistics-poc-0.0.1-deploy.jar' uses non-public Vespa APIs: [com.yahoo.language.simple]
-
-Waiting up to 1m40s for query service to become available ...
-Error: service 'query' is unavailable: services have not converged
-```
-
-And Vespa logs would be filled with such warnings:
-```shell
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	Exception in thread "Rpc executorpool-6-thread-5" java.lang.RuntimeException: More than one file reference found for file 'fbcf5c3dc81d9540'
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat com.yahoo.vespa.filedistribution.FileDownloader.getFileFromFileSystem(FileDownloader.java:109)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat com.yahoo.vespa.filedistribution.FileDownloader.getFileFromFileSystem(FileDownloader.java:100)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat com.yahoo.vespa.filedistribution.FileDownloader.getFutureFile(FileDownloader.java:80)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat com.yahoo.vespa.filedistribution.FileDownloader.getFile(FileDownloader.java:70)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat com.yahoo.vespa.config.proxy.filedistribution.FileDistributionRpcServer.downloadFile(FileDistributionRpcServer.java:109)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat com.yahoo.vespa.config.proxy.filedistribution.FileDistributionRpcServer.lambda$getFile$0(FileDistributionRpcServer.java:84)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
-[2023-08-02 20:30:47.675] WARNING configproxy      stderr	\tat java.base/java.lang.Thread.run(Thread.java:833)
+Success: Triggered deployment of target/application with run ID 1
+Deployment failed: Invalid application: Invalid config in services.xml for 'com.yahoo.language.lucene.lucene-analysis': /opt/vespa/var/db/vespa/config_server/serverdb/tenants/default/sessions/8/foo (No such file or directory)
+Error: deployment run nnn incomplete after waiting up to 1m0s: aborting wait: run nnn ended with unsuccessful status: deploymentFailed
 ```
 
 ### Harmless warning
