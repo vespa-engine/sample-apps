@@ -3,7 +3,7 @@ module vespa.ai/module
 go 1.19
 
 require (
-	cloud.google.com/go/storage v1.33.0
+	cloud.google.com/go/storage v1.34.1
 	github.com/GoogleCloudPlatform/functions-framework-go v1.8.0
 )
 
