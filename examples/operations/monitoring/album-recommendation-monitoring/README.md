@@ -8,5 +8,5 @@
 Grafana/Prometheus configuration extensions for the [album-recommendation](/album-recommendation) application.
 
 Refer to 
-[monitoring with Grafana](https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana)
+[monitoring with Grafana](https://docs.vespa.ai/en/operations-selfhosted/monitoring.html#monitoring-with-grafana)
 for how to run this sample application.

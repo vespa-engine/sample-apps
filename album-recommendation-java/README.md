@@ -72,4 +72,4 @@ public class HitCountSearcher extends Searcher {
 }
 ````
 
-Also see [histograms](https://docs.vespa.ai/en/operations/metrics.html#histograms).
+Also see [histograms](https://docs.vespa.ai/en/operations-selfhosted/monitoring.html#histograms).
