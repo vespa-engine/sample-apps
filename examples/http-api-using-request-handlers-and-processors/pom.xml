@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <test.hide>true</test.hide>
         <junit.version>5.10.0</junit.version>
-        <vespa_version>8.251.23</vespa_version>
+        <vespa_version>8.252.17</vespa_version>
     </properties>
 
     <dependencies>
