@@ -2,4 +2,4 @@ protobuf >=4.24.4, <=4.24.4
 torch==1.10.2
 transformers==4.10.3
 onnx
-onnxruntime==1.16.1
+onnxruntime==1.9.0
