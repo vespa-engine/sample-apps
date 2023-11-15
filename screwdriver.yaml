@@ -125,7 +125,7 @@ jobs:
   verify-notebooks:
     requires: [~commit,~pr]
     sourcePaths: [ "examples/model-deployment/","text-image-search/" ]
-    image: quay.io/centos/centos:stream8
+    image: vespaengine/vespa-build-centos-stream8:latest
     annotations:
       screwdriver.cd/timeout: 120
       screwdriver.cd/cpu: TURBO
