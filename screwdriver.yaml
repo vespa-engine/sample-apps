@@ -143,6 +143,6 @@ jobs:
       - install-python: |
           dnf install -y python3 python3-pip python3-dateutil
           python3 -m pip install --upgrade pip
-          python3 -m pip install pytest notebook nbconvert runnb
+          python3 -m pip install pytest notebook nbconvert runnb pandas torch numpy 
       - run-notebooks: |
           (cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
