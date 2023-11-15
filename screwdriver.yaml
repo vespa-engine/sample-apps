@@ -135,14 +135,10 @@ jobs:
       screwdriver.cd/dockerRam: TURBO
       screwdriver.cd/buildPeriodically: H H(0-5) * * 1-5 # some time between 12:00 AM UTC (midnight) to 5:59 AM UTC Mon-Fri
     steps:
-      - setup-with-docker: |
-          dnf install -y git dnf-plugins-core
-          dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-          dnf install -y docker-ce-cli
-          docker system info
+      - *install-deps
       - install-python: |
           dnf install -y python3 python3-pip python3-dateutil
           python3 -m pip install --upgrade pip
-          python3 -m pip install pytest notebook nbconvert runnb pandas torch numpy scikit-learn
+          python3 -m pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn 
       - run-notebooks: |
           (cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
