@@ -13,7 +13,7 @@ shared:
         dnf -y install docker-ce protobuf-compiler protobuf-devel python3 python3-pip python3-devel --nobest
         python3 -m pip install --upgrade pip
         python3 -m pip install -qqq -r test/requirements.txt --user
-        python3 -m pip install --upgrade -qqq pytest nbmake onnx onnxruntime torch numpy transformers 
+        python3 -m pip install --upgrade -qqq pytest nbmake onnx onnxruntime torch numpy transformers
         python3 -m pip install --upgrade -qqq pytest nbmake onnx onnxruntime torch numpy transformers --user
         VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")') && \
           curl -fsSL https://github.com/vespa-engine/vespa/releases/download/v${VESPA_CLI_VERSION}/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64.tar.gz | tar -zxf - -C /opt && \
@@ -59,7 +59,7 @@ jobs:
 
   build-apps:
     requires: [~pr, ~commit]
-    image: vespaengine/vespa-build-centos-stream8:latest
+    image: vespaengine/vespa-build-almalinux-8:latest
     annotations:
       screwdriver.cd/cpu: HIGH
       screwdriver.cd/ram: HIGH
@@ -71,7 +71,7 @@ jobs:
   verify-guides:
     requires: [~pr, ~commit]
     sourcePaths: ["!billion-scale-vector-search/", "!billion-scale-image-search/", "!screwdriver.yml", "!examples/model-deployment/"]
-    image: vespaengine/vespa-build-centos-stream8:latest
+    image: vespaengine/vespa-build-almalinux-8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
@@ -89,7 +89,7 @@ jobs:
   verify-billion-scale-vector-search:
     requires: [~pr, ~commit]
     sourcePaths: ["billion-scale-vector-search/"]
-    image: vespaengine/vespa-build-centos-stream8:latest
+    image: vespaengine/vespa-build-almalinux-8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
@@ -107,7 +107,7 @@ jobs:
   verify-billion-scale-image-search:
     requires: [~pr, ~commit]
     sourcePaths: ["billion-scale-image-search/"]
-    image: vespaengine/vespa-build-centos-stream8:latest
+    image: vespaengine/vespa-build-almalinux-8:latest
     annotations:
       screwdriver.cd/cpu: TURBO
       screwdriver.cd/ram: TURBO
@@ -125,7 +125,7 @@ jobs:
   verify-notebooks:
     requires: [~commit,~pr]
     sourcePaths: [ "examples/model-deployment/","text-image-search/" ]
-    image: vespaengine/vespa-build-centos-stream8:latest
+    image: vespaengine/vespa-build-almalinux-8:latest
     annotations:
       screwdriver.cd/timeout: 120
       screwdriver.cd/cpu: TURBO
@@ -139,6 +139,6 @@ jobs:
       - install-python: |
           dnf install -y python3 python3-pip python3-dateutil
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn 
+          python3 -m pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn
       - run-notebooks: |
           (cd examples/model-deployment && runnb --allow-not-trusted ONNXModelExport.ipynb)
