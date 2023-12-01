@@ -75,7 +75,8 @@ $ vespa clone billion-scale-vector-search myapp && cd myapp
 
 ## Download Vector Data
 This sample app uses the Microsoft SPACEV vector dataset from 
-[https://big-ann-benchmarks.com/](https://big-ann-benchmarks.com/).
+https://big-ann-benchmarks.com/. 
+
 It uses the first 10M vectors of the 100M slice sample.
 This sample file is about 1GB (10M vectors):
 <pre data-test="exec">
