@@ -62,7 +62,7 @@ using the baseline BM25 function. This ensures that the re-ranking model is trai
 
 In total 330,302 queries from the training set is used , with 16,845,191 total number of data points. 
 The efficient [Vespa WeakAnd](https://docs.vespa.ai/en/using-wand-with-vespa.html)
-query operator is used to retrieve efficiently without having to score all documents matching at least one of the query terms. 
+query operator is used to retrieve efficiently without scoring all documents matching at least one of the query terms. 
 
 A set of 15 [ranking features](https://docs.vespa.ai/en/reference/rank-features.html)
 which are generally cheap to compute are used by the model.
@@ -89,9 +89,6 @@ params = {
 
 The final GBDT model consists of 533 trees, with up to 128 leaves. 
 The training script is [here](src/main/python/train.py). 
-T
-o scrape features one can follow
-[pyvespa collecting training data](https://vespa-engine.github.io/learntorank/notebooks/collect-training-data.html).
 
 Training output:
 <pre>
