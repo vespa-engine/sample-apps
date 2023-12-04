@@ -29,13 +29,13 @@ vespa document ext/3.json
 
 Example queries:
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
-vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(embedding, e)" 'input.query(e)=embed(e5-small-q, "space contains many suns")'
-vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(embedding, e)" 'input.query(e)=embed(e5-small-q-IMPROVED, "shipping stuff over the sea")' ranking.profile=improved
+vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(pembedding, e)" 'input.query(e)=embed(e5-small-q, "space contains many suns")'
+vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(pembeddingIMPROVED, e)" 'input.query(e)=embed(e5-small-q-IMPROVED, "shipping stuff over the sea")' ranking.profile=improved
 vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(embedding, e)" 'input.query(e)=embed(e5-small-q, "exchanging information by sound")'
 vespa query "yql=select * from doc where text contains 'boat'"
 vespa query "yql=select * from doc where {targetHits: 100}nearestNeighbor(embedding, e) AND text contains 'boat'" 'input.query(e)=embed(e5-small-q, "exchanging information by sound")'
-vespa query "yql=select * from doc where {targetHits: 100}nearestNeighbor(embedding, e)" 'input.query(e)=embed(e5-small-q, "many stars")' ranking.profile=improved
-vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(embedding, e)" "input.query(e)=embed(e5-small-q-IMPROVED, \"boats good\")" tracel.level=1 trace.explainLevel=2
+vespa query "yql=select * from doc where {targetHits: 100}nearestNeighbor(pembeddingIMPROVED, e)" 'input.query(e)=embed(e5-small-q-IMPROVED, "many stars")' ranking.profile=improved
+vespa query "yql=select text, paragraphs from doc where {targetHits: 100}nearestNeighbor(pembeddingIMPROVED, e)" "input.query(e)=embed(e5-small-q-IMPROVED, \"boats good\")" trace.level=1 trace.explainLevel=2
 </pre>
 
 Remove the container after use:
