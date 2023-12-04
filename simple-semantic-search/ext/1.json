@@ -1,1 +1,10 @@
-{ "put": "id:doc:doc::1", "fields": { "text": "To transport goods on water, use a boat" } }
+{
+  "put": "id:doc:doc::1",
+  "fields": {
+    "text": "To transport goods on water, use a boat",
+    "paragraphs": [
+      "Naval transport is good",
+      "it is beneficial to convey goods by the waterways"
+    ]
+  }
+}

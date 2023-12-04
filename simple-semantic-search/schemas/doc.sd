@@ -10,14 +10,35 @@ schema doc {
             index: enable-bm25
         }
 
+        field paragraphs type array<string> {
+            indexing: index | summary
+            index: enable-bm25
+        }
+
     }
 
     # See https://docs.vespa.ai/en/embedding.html#embedding-a-document-field
     # and https://docs.vespa.ai/en/approximate-nn-hnsw.html
     field embedding type tensor<float>(x[384]) {
-        indexing: input text | embed | attribute | index
+        indexing: input text | embed e5-small-q | attribute | index
         attribute {
             distance-metric: angular
+        }
+    }
+
+    # paragraph embeddings with the original model
+    field pembedding type tensor<float>(p{}, x[384]) {
+        indexing: input paragraphs | embed e5-small-q | attribute | summary | index
+        attribute {
+            distance-metric:angular
+        }
+    }
+
+    # paragraph embeddings with the IMPROVED model
+    field pembeddingIMPROVED type tensor<float>(p{}, x[384]) {
+        indexing: input paragraphs | embed e5-small-q-IMPROVED | attribute | summary | index
+        attribute {
+            distance-metric:angular
         }
     }
 
@@ -27,9 +48,20 @@ schema doc {
             query(e) tensor<float>(x[384])
         }
         first-phase {
-            expression: bm25(text) + closeness(field, embedding)
+            expression: bm25(text) * 4.3 + closeness(field, pembedding) + 2 * closeness(field, embedding) + 2
         }
     }
+
+    # rank profile using closeness to embeddings from IMPROVED model
+    rank-profile improved inherits default {
+        inputs {
+            query(e) tensor<float>(x[384])
+        }
+        first-phase {
+            expression: bm25(text) * 4.3 + closeness(field, pembeddingIMPROVED) + 2 * closeness(field, embedding) + 2
+        }
+    }
+
     # Returns cosine similarity as score instead of the angle 
     rank-profile cosine inherits default {
         first-phase {

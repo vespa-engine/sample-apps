@@ -1,1 +1,10 @@
-{ "put": "id:doc:doc::3", "fields": { "text": "The galaxy is filled with stars" } }
+{
+  "put": "id:doc:doc::3",
+  "fields": {
+    "text": "The galaxy is filled with stars",
+    "paragraphs": [
+      "the sky is full of lights",
+      "each light in the sky is a fire"
+    ]
+  }
+}

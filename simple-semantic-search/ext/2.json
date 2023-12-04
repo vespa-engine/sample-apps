@@ -1,1 +1,10 @@
-{ "put": "id:doc:doc::2", "fields": { "text": "Human interaction is often done by talking" } }
+{
+  "put": "id:doc:doc::2",
+  "fields": {
+    "text": "Human interaction is often done by talking",
+    "paragraphs": [
+      "People tend to talk to eachother",
+      "About all sorts of things"
+    ]
+  }
+}
