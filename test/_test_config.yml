@@ -3,6 +3,7 @@
 urls:
     - multilingual-search/README.md
     - multi-vector-indexing/README.md
+    - vector-streaming-search/README.md
     - custom-embeddings/README.md
     - commerce-product-ranking/README.md
     - simple-semantic-search/README.md
