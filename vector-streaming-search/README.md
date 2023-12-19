@@ -75,11 +75,11 @@ Download embedding model files, see
 
 <pre data-test="exec"> 
 $ mkdir -p model
-$ curl -L -o model/bert-base-uncased.txt \
-    https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/bert-base-uncased.txt
+$ curl -L -o model/tokenizer.json \
+    https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json
 
-$ curl -L -o model/minilm-l6-v2.onnx \
-    https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/minilm-l6-v2.onnx
+$ curl -L -o model/e5-small-v2-int8.onnx \
+    https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx
 </pre>
 
 Deploy the application : 
