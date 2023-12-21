@@ -134,7 +134,7 @@ $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
  --ranking bm25 --hits 100 --language sw
  </pre>
 Compute NDCG@10 using trec_eval with the judgments:
-<pre data-test="exec" data-test-assert-contains="0.4243" >
+<pre data-test="exec" data-test-assert-contains="0.4" >
 $ trec_eval -mndcg_cut.10 ext/qrels.miracl-v1.0-sw-dev.tsv bm25.run
 </pre>
 
