@@ -52,7 +52,7 @@ jobs:
             --typhoeus '{"connecttimeout": 10, "timeout": 30, "accept_encoding": "zstd,br,gzip,deflate"}' \
             --hydra '{"max_concurrency": 1}' \
             --directory-index-file README.html \
-            --ignore-urls 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/,src/main/application/search/query-profiles' \
+            --ignore-urls 'src/main/application/schemas/wiki.sd#L80,/localhost:8080/,src/main/application/search/query-profiles,/hub.docker.com/r/vespaengine/vespa/tags/' \
             --ignore-files '/tensor-playground/src/main/resources/playground/,/src/main/resources/site/index.html/,/dense-passage-retrieval-with-ann/src/main/resources/frontend/index.html/' \
             --swap-urls '(https\://github.com.*/master/.*)#.*:\1,(https\://github.com.*/main/.*)#.*:\1,^(?!https)(.*)\.md:\1.html' \
             _site
