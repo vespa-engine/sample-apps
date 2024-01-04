@@ -139,20 +139,23 @@ $ vespa feed if-vectors.jsonl
 Download the query vectors and the ground truth for the 10M first vectors:
 <pre data-test="exec">
 $ curl -L -o query.i8bin \
-  https://comp21storage.blob.core.windows.net/publiccontainer/comp21/spacev1b/query.i8bin
+  https://github.com/microsoft/SPTAG/raw/main/datasets/SPACEV1B/query.bin
 $ curl -L -o spacev10m_gt100.i8bin \
   https://data.vespa.oath.cloud/sample-apps-data/spacev10m_gt100.i8bin
 </pre>
 
-Run first 1K queries and evaluate recall@10. Higher number of clusters gives higher recall:
+Note, initially, the routine above used the query file from https://comp21storage.blob.core.windows.net/publiccontainer/comp21/spacev1b/query.i8bin
+but the link no longer works. 
+
+Run first 1K queries and evaluate recall@10. A higher number of clusters gives higher recall:
 <pre data-test="exec">
 $ python3 src/main/python/recall.py --endpoint http://localhost:8080/search/ \
   --query_file query.i8bin \
   --query_gt_file spacev10m_gt100.i8bin  --clusters 12 --queries 1000
 </pre>
 
-To evaluate recall using a deployment in Vespa Cloud perf zone the data plane certificate
-and key needs to be provided:
+To evaluate recall using a deployment in Vespa Cloud perf zone, the data plane certificate
+and key need to be provided:
 <pre>
 $ python3 src/main/python/recall.py --endpoint https://app.tenant.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
   --query_file query.i8bin --query_gt_file GT_10M/msspacev-10M \
