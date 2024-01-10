@@ -18,9 +18,9 @@ schema doc {
             index: enable-bm25
         }
     }
-	fieldset default {
+    fieldset default {
 	    fields: title, chunk
-	}
+    }
 
     field embedding type tensor<bfloat16>(x[384]) {
         indexing: "passage: " . (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index 
@@ -40,7 +40,7 @@ schema doc {
             query(qt) tensor<float>(qt{}, x[128])
             query(q) tensor<bfloat16>(x[384])
         }
-		function unpack() {
+        function unpack() {
             expression: unpack_bits(attribute(colbert))
         }
         function cos_sim() {
@@ -60,9 +60,9 @@ schema doc {
             }
         }
         first-phase {
-		    expression: cos_sim
+            expression: cos_sim
         }
-		second-phase {
+        second-phase {
             expression: max_sim
         }
         match-features: max_sim cos_sim bm25(title) bm25(chunk)
