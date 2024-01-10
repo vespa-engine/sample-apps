@@ -6,7 +6,7 @@
     <container id="default" version="1.0">
 
         <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
-        <component id="e5-small-q" type="hugging-face-embedder">
+        <component id="e5" type="hugging-face-embedder">
             <transformer-model path="model/e5-small-v2-int8.onnx"/>
             <tokenizer-model path="model/tokenizer.json"/>
         </component>
