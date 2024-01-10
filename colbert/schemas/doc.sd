@@ -29,7 +29,6 @@ schema doc {
 		}
     }
 
-    # See 
     field colbert type tensor<int8>(dt{}, x[16]) {
         indexing: (input title || "") . " " . (input chunk || "") | embed colbert | attribute  
     }
