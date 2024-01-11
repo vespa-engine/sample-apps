@@ -15,9 +15,6 @@ A minimal semantic search application:
 different rankings.
 
 <p data-test="run-macro init-deploy simple-semantic-search">
-This sample app requires at least Vespa 8.54.61.
-</p>
-
 
 ## To try this application
 
