@@ -9,13 +9,15 @@ schema doc {
             indexing: index | summary
             index: enable-bm25
         }
-
+    }
+    fieldset default {
+        fields: text
     }
 
     # See https://docs.vespa.ai/en/embedding.html#embedding-a-document-field
     # and https://docs.vespa.ai/en/approximate-nn-hnsw.html
     field embedding type tensor<float>(x[384]) {
-        indexing: input text | embed | attribute | index
+        indexing: "passage: " . input text | embed e5 | attribute | index
         attribute {
             distance-metric: angular
         }
@@ -27,14 +29,15 @@ schema doc {
             query(e) tensor<float>(x[384])
         }
         first-phase {
-            expression: bm25(text) + closeness(field, embedding)
+            expression: closeness(field, embedding)
+        }
+        match-features: bm25(text) closeness(field, embedding)
+        global-phase {
+            expression {
+              reciprocal_rank(closeness(field,embedding)) + 
+              reciprocal_rank(bm25(text))
+            }
         }
     }
-    # Returns cosine similarity as score instead of the angle 
-    rank-profile cosine inherits default {
-        first-phase {
-            expression: bm25(text) + cos(distance(field, embedding))
-        }
-    }
-
+   
 }
