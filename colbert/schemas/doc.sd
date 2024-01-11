@@ -4,11 +4,10 @@
 schema doc {
 
     document doc {
-        
+
         field id type string {
             indexing: summary 
         }
-
         field title type string {
             indexing: index | summary
             index: enable-bm25
@@ -23,6 +22,7 @@ schema doc {
     }
 
     field embedding type tensor<bfloat16>(x[384]) {
+        # e5 prefix instructions
         indexing: "passage: " . (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index 
 		attribute {
 		    distance-metric: angular
