@@ -287,12 +287,12 @@ $ vespa document get id:msmarco:doc::D1840066
 </pre>
 
 Do a query:
-<pre data-test="exec" data-test-assert-contains="0.153">
+<pre data-test="exec" data-test-assert-contains="D83600">
 $ vespa query query="what is the definition of business law" ranking=ltr restrict=doc
 </pre>
 
-The data set is small, but one gets a feel for how the data and how the document to query expansion work. 
-Note that negative relevance scores from the GBDT evaluation is normal. 
+The data set is small, but one can see how the data and the document-to-query expansion work. 
+Note that negative relevance scores from the GBDT evaluation are normal. 
 
 Shutdown and remove the Docker container:
 <pre data-test="after">
@@ -301,7 +301,7 @@ $ docker rm -f vespa
 
 
 ## Full Evaluation 
-Using full dataset, all 3.2M documents.
+Using the full dataset, all 3.2M documents.
 Download and index the entire data set, including the document to query expansion. 
 
 <pre>
@@ -316,7 +316,7 @@ $ ir_datasets export msmarco-document/train docs --format jsonl | \
 
 
 ## Document to query document expansion
-For document expansion we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
+For document expansion, we use [docTTTTTquery](https://github.com/castorini/docTTTTTquery) 
 Follow the instructions at 
 [https://github.com/castorini/docTTTTTquery#per-document-expansion](https://github.com/castorini/docTTTTTquery#per-document-expansion),
 but replace *paste -d" "* with *paste -d"#"*
