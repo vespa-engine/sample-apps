@@ -64,17 +64,6 @@ Download this sample application:
 $ vespa clone multi-vector-indexing my-app && cd my-app
 </pre>
 
-Download embedding model files, see 
-[text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details:
-<pre data-test="exec"> 
-$ mkdir -p model
-$ curl -L -o model/tokenizer.json \
-  https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json
-
-$ curl -L -o model/e5-small-v2-int8.onnx \
-  https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx
-</pre>
-
 Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
@@ -118,10 +107,10 @@ that keywords are highlighted in the `paragraphs` field.
 ### Semantic vector search on the paragraph level
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from wiki where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
-  'input.query(q)=embed(what does 24 mean in the context of railways)' \
+  'input.query(q)=embed(query: what does 24 mean in the context of railways)' \
   'ranking=semantic'
 </pre>
-The closest (best semantic matching) paragraph has index 4.
+The closest (best semantic match) paragraph has index 4.
 ```json
 "matchfeatures": {
     "closest(paragraph_embeddings)": {"4": 1.0}
@@ -139,7 +128,7 @@ Hybrid combining keyword search on the article level with vector search in the p
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from wiki where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
-  'input.query(q)=embed(what does 24 mean in the context of railways)' \
+  'input.query(q)=embed(query: what does 24 mean in the context of railways)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
   'hits=1'
@@ -153,14 +142,12 @@ also calculates several additional features using
 profile as `cos(distance(field, paragraph_embeddings))`.
 - `all_paragraph_similarities` returns all the similarity scores for all paragraphs.
 - `avg_paragraph_similarity` is the average similarity score across all the paragraphs.
-- `max_paragraph_similarity` is the same as `firstPhase`, but computed using a tensor expression.
 
 See the `hybrid` rank-profile in the [schema](schemas/wiki.sd) for details.
 The [Vespa Tensor Playground](https://docs.vespa.ai/playground/) is useful to play
 with tensor expressions. 
 
-These additional features are 
-calculated during [second-phase](https://docs.vespa.ai/en/phased-ranking.html) 
+These additional features are calculated during [second-phase](https://docs.vespa.ai/en/phased-ranking.html) 
 ranking to limit the number of vector computations. 
 
 ### Hybrid search and filter
@@ -169,7 +156,7 @@ Filtering is also supported, also disable bolding.
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from wiki where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
-  'input.query(q)=embed(what does 24 mean in the context of railways)' \
+  'input.query(q)=embed(query: what does 24 mean in the context of railways)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
   'bolding=false'
