@@ -166,7 +166,7 @@ These instructions use the first split file (0000) of a total of 2314 files in t
 Download the vector data file:
 
 <pre data-test="exec">
-$ curl -L -o img_emb_0000.npy \
+$ curl --http1.1 -L -o img_emb_0000.npy \
   https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
 </pre>
 
