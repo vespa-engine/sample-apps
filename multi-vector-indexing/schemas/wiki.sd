@@ -20,15 +20,20 @@ schema wiki {
 
     field paragraphs type array<string> {
       indexing: index | summary
-      index: enable-bm25
+      index: enable-bm25 # bm25 computed over all elements (bag of words)
       bolding: on 
     }
   }
 
   field paragraph_embeddings type tensor<float>(p{},x[384]) {
-    indexing: input paragraphs | embed | index | attribute
+    indexing {
+      input paragraphs |
+        for_each {
+          "passage: " . (input title || "") . " " . ( _ || "")
+        } | embed e5 | attribute | index # Index keyword enables HNSW index
+    }
     attribute {
-      distance-metric: angular
+      distance-metric: angular #match the E5 embedding model distance metric
     }
   }
 
@@ -55,38 +60,24 @@ schema wiki {
   }
 
   rank-profile hybrid inherits semantic {
-    function avg_paragraph_similarity() {
-      expression {
-        reduce(
-          sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x),
-          avg,
-          p
-        )
-      }
-    }
-    function max_paragraph_similarity() {
-      expression {
-        reduce(
-          sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x),
-          max,
-          p
-        )
-      }
-    }
 
     function all_paragraph_similarities() {
       expression {
-        sum(l2_normalize(query(q),x) * l2_normalize(attribute(paragraph_embeddings),x),x)
+        cosine_similarity(query(q),attribute(paragraph_embeddings), x)
       }
     }
 
+    function avg_paragraph_similarities() {
+      expression {
+        reduce(cosine_similarity(query(q),attribute(paragraph_embeddings), x), avg, p)
+      }
+    }
     first-phase {
       expression: cos(distance(field,paragraph_embeddings)) 
     }
-
     second-phase {
       expression {
-        firstPhase + avg_paragraph_similarity() + log( bm25(title) + bm25(paragraphs) + bm25(url))
+        firstPhase + log( bm25(title) + bm25(paragraphs) + bm25(url)) + 10*cos(distance(field,paragraph_embeddings))
       }
     }
 
@@ -95,8 +86,7 @@ schema wiki {
       closest(paragraph_embeddings)
       bm25(title)
       bm25(paragraphs)
-      avg_paragraph_similarity
-      max_paragraph_similarity
+      avg_paragraph_similarities
       all_paragraph_similarities
     }
   }
