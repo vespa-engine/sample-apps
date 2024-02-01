@@ -20,7 +20,7 @@ Solr, Elasticsearch, QihooVerticalSearch (based on Lucene) and so on.
 
 
 ### Requirements
-* [Java 17](https://openjdk.org/projects/jdk/17/) installed.
+* <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
 * [Apache Maven](https://maven.apache.org/install.html) 
 
 
