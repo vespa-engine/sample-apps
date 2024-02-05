@@ -21,7 +21,7 @@ Requires at least Vespa 8.283.46
 
 ## To try this application
 
-Follow the [vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html)
+Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
 through the <code>vespa deploy</code> step, cloning `colbert` instead of `album-recommendation`.
 
 Feed documents (this includes embed inference in Vespa):
