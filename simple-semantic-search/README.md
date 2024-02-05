@@ -18,7 +18,7 @@ different rankings.
 
 ## To try this application
 
-Follow the [vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html)
+Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
 through the <code>vespa deploy</code> step, cloning `simple-semantic-search` instead of `album-recommendation`.
 
 Feed documents (this includes embed inference in Vespa):
