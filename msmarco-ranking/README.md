@@ -120,10 +120,10 @@ $ vespa deploy --wait 300
 </pre>
 
 ## Feeding sample data
+Feed a small sample of data:
 
-Feed sample of data:
 <pre data-test="exec">
-$ ir_datasets export msmarco-passage docs --format jsonl |python3 python/to-vespa-feed.py |head -1000 | vespa feed - 
+$ vespa feed ext/docs.jsonl
 </pre>
 
 ## Query examples 
@@ -159,7 +159,12 @@ $ docker rm -f vespa
 ### Ranking Evaluation using Ms Marco Passage Ranking development queries
 
 With the [evaluate_passage_run.py](python/evaluate_passage_run.py)
-we can run retrieval and ranking using the methods demonstrated.
+we can run retrieval and ranking using the methods demonstrated. 
+
+To do so, we need to index the entire dataset as follows:
+<pre>
+ir_datasets export msmarco-passage docs --format jsonl |python3 python/to-vespa-feed.py | vespa feed - 
+</pre>
 
 Note that the ir_datasets utility will download MS Marco query evaluation data,
 so the first run will take some time to complete. 
