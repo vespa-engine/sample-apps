@@ -19,8 +19,6 @@ Blog posts with more details:
 - [Post four: Re-ranking using cross-encoders](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/).
 
 
-You can also [bring your own data](#bring-your-own-data) and index and query it. 
-
 ## Transformers for Ranking 
 ![Colbert overview](img/colbert_illustration.png)
 
@@ -160,7 +158,7 @@ $ docker rm -f vespa
 
 ### Ranking Evaluation using Ms Marco Passage Ranking development queries
 
-With the [evaluate_passage_run.py](src/main/python/evaluate_passage_run.py)
+With the [evaluate_passage_run.py](python/evaluate_passage_run.py)
 we can run retrieval and ranking using the methods demonstrated.
 
 Note that the ir_datasets utility will download MS Marco query evaluation data,
