@@ -26,14 +26,16 @@ text and semantic ranking. This app also demonstrates native embedders.
 The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) demonstrates how to 
 index multiple vectors per document field for better semantic search. 
 
-### ColBERT 
+### ColBERT multi-token level embeddings
 The [colbert](colbert) demonstrates how to 
 use the Vespa colbert-embedder for explainable semantic search with better accuracy than regular
 text embedding models. 
 
+### Multilingual semantic search
+The [multilingual](multilingual-search) sample application demonstrates multilingual semantic search. 
+
 ### Customizing embeddings 
-The [custom-embeddings](custom-embeddings/) application demonstrates how to customize frozen document embeddings for downstream tasks. This
-app also includes a deep neural network. 
+The [custom-embeddings](custom-embeddings/) application demonstrates customizing frozen document embeddings for downstream tasks. 
 
 ## More advanced sample applications
 
