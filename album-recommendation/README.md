@@ -12,6 +12,4 @@
 A simple Vespa application which can be deployed on one node,
 and does search and recommendation in music data.
 
-Follow
-[vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html)
-to deploy this.
+Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started) to deploy this.

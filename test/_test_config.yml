@@ -7,6 +7,7 @@ urls:
     - custom-embeddings/README.md
     - commerce-product-ranking/README.md
     - simple-semantic-search/README.md
+    - colbert/README.md
     - text-image-search/README.md
     - text-search/README.md
     - examples/document-processing/README.md

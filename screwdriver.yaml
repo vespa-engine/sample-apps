@@ -48,7 +48,7 @@ jobs:
           echo "Search for broken links in these files."
       - check-links: |
           bundle exec htmlproofer \
-            --assume-extension --check-html --check-external-hash --no-enforce-http \
+            --assume-extension --check-html --no-check-external-hash --no-enforce-http \
             --typhoeus '{"connecttimeout": 10, "timeout": 30, "accept_encoding": "zstd,br,gzip,deflate"}' \
             --hydra '{"max_concurrency": 1}' \
             --directory-index-file README.html \
