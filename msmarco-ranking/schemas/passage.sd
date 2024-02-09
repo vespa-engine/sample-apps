@@ -1,0 +1,163 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema passage {
+
+  document passage {
+
+     field id type string {
+      indexing: summary | attribute
+    }
+    field text type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+  }
+  fieldset default {
+    fields: text
+  }
+
+  field text_token_ids type tensor<float>(d0[64])  {
+    # hf tokenizer - token ids used by cross-encoder 
+    indexing: input text | embed tokenizer | attribute 
+    attribute: paged
+  }
+
+  field e5 type tensor<bfloat16>(x[384]) {
+    # e5 prefix instruction for document 
+    indexing: "passage: " . input text | embed e5 | attribute | index
+    attribute {
+      distance-metric: angular
+    }
+    index { # override default hnsw settings 
+      hnsw {
+        max-links-per-node: 32
+        neighbors-to-explore-at-insert: 400
+      } 
+    }
+  }
+
+  field colbert type tensor<int8>(dt{}, x[16]) {
+    # No index - used for ranking, not retrieval 
+    indexing: input text | embed colbert | attribute
+    attribute: paged
+  }
+
+  onnx-model ranker {
+    file: models/model.onnx
+    input input_ids: input_ids
+    input attention_mask: attention_mask
+    input token_type_ids: token_type_ids
+    gpu-device: 0
+  }
+
+  rank-profile bm25 {
+    first-phase {
+      expression: bm25(text)
+    }
+  }
+
+  rank-profile e5 {
+    inputs {
+      query(q) tensor<float>(x[384])
+    }
+    first-phase {
+      expression: closeness(field, e5)
+    } 
+  }
+
+  rank-profile bm25-colbert inherits e5-colbert {
+    first-phase {
+      expression: bm25(text)
+    }
+  }
+
+  rank-profile e5-colbert inherits e5 {
+    inputs {
+      query(qt) tensor<float>(qt{},x[128])
+      query(q) tensor<float>(x[384])
+    }
+    function cos_sim() {
+      expression: cos(distance(field, e5))
+    }
+    function max_sim() {
+      expression {
+        sum(
+          reduce(
+            sum(
+              query(qt) * unpack_bits(attribute(colbert)), x
+            ),
+            max, dt
+          ),
+          qt
+        )
+       }
+    }
+    
+    second-phase {
+      rerank-count: 100
+      expression: max_sim()
+    }
+    match-features: max_sim() cos_sim()
+  }
+
+  rank-profile e5-colbert-rrf inherits e5-colbert {
+   
+    global-phase {
+      rerank-count: 200
+      expression: reciprocal_rank(cos_sim) + reciprocal_rank(max_sim)
+    }
+    match-features: max_sim() cos_sim()
+  }
+
+  rank-profile e5-colbert-cross-encoder-rrf {
+    inputs {
+      query(q) tensor<float>(x[384])
+      query(qt) tensor<float>(qt{},x[128])
+      query(query_token_ids) tensor<float>(d0[32])
+    }
+    function input_ids() {
+        expression: tokenInputIds(96, query(query_token_ids), attribute(text_token_ids))
+    }
+    function token_type_ids() {
+      expression: tokenTypeIds(96, query(query_token_ids), attribute(text_token_ids))
+    }
+    function attention_mask() {
+      expression: tokenAttentionMask(96, query(query_token_ids), attribute(text_token_ids))
+    }
+    function colbert_max_sim() {
+      expression {
+        sum(
+          reduce(
+            sum(
+              query(qt) * unpack_bits(attribute(colbert)), x
+            ),
+            max, dt
+          ),
+          qt
+        )
+       }
+    }
+    function e5_cos_sim() {
+      expression: cos(distance(field, e5))
+    }
+    function cross_encoder() {
+      expression: onnx(ranker){d0:0,d1:0}
+    }
+    first-phase {
+        expression: e5_cos_sim
+    }
+    second-phase {
+      rerank-count: 1000
+      expression: colbert_max_sim()
+    }
+    global-phase {
+      rerank-count: 12
+      expression {
+        reciprocal_rank(e5_cos_sim) + 
+        reciprocal_rank(colbert_max_sim) + 
+        reciprocal_rank(cross_encoder)
+      }
+    }
+    match-features: colbert_max_sim e5_cos_sim
+  }
+}

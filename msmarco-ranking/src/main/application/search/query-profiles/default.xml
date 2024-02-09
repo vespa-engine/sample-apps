@@ -1,9 +1,0 @@
-<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<query-profile id="default">
- <field name="hits">10</field>
- <field name="maxHits">1000</field>
- <field name="maxOffset">1000</field> 
- <field name="timeout">5s</field>
- <field name="searchChain">docranking</field>
- <field name="presentation.timing">true</field>
-</query-profile>

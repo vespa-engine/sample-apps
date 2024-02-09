@@ -8,14 +8,14 @@
 
 # Multilingual Search with multilingual embeddings
 
-This sample application is used to demonstrate multilingual search
+This sample application demonstrates multilingual search
 using multilingual embeddings. 
  
 Read the [blog post](https://blog.vespa.ai/simplify-search-with-multilingual-embeddings/). 
 
 ## Quick start
 
-The following is a quick start recipe on how to get started with this application. 
+The following is a quick start recipe for getting started with this application. 
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
@@ -59,22 +59,12 @@ Download this sample application:
 $ vespa clone multilingual-search my-app && cd my-app
 </pre>
 
-Download pre-exported model, used by the [Huggingface embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder):
-
-<pre data-test="exec"> 
-$ mkdir -p model
-$ curl -L -o model/tokenizer.json \
-  https://data.vespa.oath.cloud/sample-apps-data/m-e5-small/tokenizer.json
-
-$ curl -L -o model/model.onnx \
-  https://data.vespa.oath.cloud/sample-apps-data/m-e5-small/model.onnx
-</pre>
+This sample app embedder configuration in [services.xml](services.xml) points to an exported model. 
 
 Alternatively, export your own model using [Optimum](https://huggingface.co/docs/optimum/index):
 <pre>
 $ optimum-cli export onnx --task sentence-similarity -m intfloat/multilingual-e5-small multilingual-e5-small-onnx               
 </pre>
-Then copy the generated `model.onnx` and `tokenizer.json` files to the application model directory. 
 
 Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">
@@ -93,7 +83,7 @@ Install `trec_eval`:
 $ git clone --depth 1 --branch v9.0.8 https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
 </pre>
 
-Index the dataset, this also embed the texts and is compute intensive. On a M1 laptop,
+Index the dataset, this also embeds the texts and is compute intensive. On an M1 laptop,
 this step takes about 1052 seconds (125 operations/s).
 
 <pre data-test="exec">

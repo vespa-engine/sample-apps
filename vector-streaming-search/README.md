@@ -15,7 +15,7 @@ Read the [blog post](https://blog.vespa.ai/announcing-vector-streaming-search/) 
 See [Streaming Search](https://docs.vespa.ai/en/streaming-search.html) for more details.
 
 The application uses a small synthetic sample of mail documents for two fictive users.
-The subject and content of a mail is combined and embedded into a 384-dimensional embedding space,
+The subject and content of a mail are combined and embedded into a 384-dimensional embedding space,
 using a [Bert embedder](https://docs.vespa.ai/en/reference/embedding-reference.html#bert-embedder).
 
 ## Quick start
@@ -70,18 +70,6 @@ Download this sample application:
 $ vespa clone vector-streaming-search my-app && cd my-app
 </pre>
 
-Download embedding model files, see 
-[text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details:
-
-<pre data-test="exec"> 
-$ mkdir -p model
-$ curl -L -o model/tokenizer.json \
-    https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json
-
-$ curl -L -o model/e5-small-v2-int8.onnx \
-    https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx
-</pre>
-
 Deploy the application : 
 
 <pre data-test="exec" data-test-assert-contains="Success">
@@ -95,7 +83,7 @@ It is possible to deploy this app to
 
 ## Feeding sample mail documents
 
-During feeding the `subject` and `content` of a mail document is embedded using the Bert embedding model.
+During feeding the `subject` and `content` of a mail document are embedded using the Bert embedding model.
 This is computationally expensive for CPU.
 For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu)
 instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled. 
@@ -106,7 +94,7 @@ $ vespa feed ext/docs.json
 
 ## Query and ranking examples
 The following uses [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html) to execute queries.
-Use `-v` to see the curl equivalent using HTTP api.  
+Use `-v` to see the curl equivalent using HTTP API.  
 
 ### Exact nearest neighbor search
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
@@ -115,7 +103,7 @@ $ vespa query 'yql=select * from sources * where {targetHits:10}nearestNeighbor(
   'streaming.groupname=1234'
 </pre>
 
-This searches all documents for user 1234, and returns the 10 best documents
+This searches all documents for user 1234, and returns the ten best documents
 according to the angular distance between the document embedding and the query embedding.
 
 ### Exact nearest neighbor search with timestamp filter

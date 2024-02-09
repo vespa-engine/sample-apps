@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+  <container id="default" version="1.0">
+
+    <nodes deploy:environment="dev" count="1">
+      <resources vcpu="4" memory="16Gb" disk="125Gb">
+        <gpu count="1" memory="16Gb"/>
+      </resources>
+    </nodes>
+   
+    <search/>
+    <document-api/>
+
+     <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+    <component id="e5" type="hugging-face-embedder">
+            <transformer-model url="https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx"/>
+            <tokenizer-model url="https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json"/>
+    </component>
+
+    <!-- See https://docs.vespa.ai/en/embedding.html#colbert-embedder -->
+    <component id="colbert" type="colbert-embedder">
+      <transformer-model url="https://huggingface.co/colbert-ir/colbertv2.0/resolve/main/model.onnx"/>
+      <tokenizer-model url="https://huggingface.co/colbert-ir/colbertv2.0/raw/main/tokenizer.json"/>
+    </component>
+
+     <!-- See https://docs.vespa.ai/en/reference/embedding-reference.html#huggingface-tokenizer-embedder-->
+    <component id="tokenizer" type="hugging-face-tokenizer">
+      <model path="models/tokenizer.json"/>
+    </component>
+
+  </container>
+
+  <content id="msmarco" version="1.0">
+    <min-redundancy>2</min-redundancy>
+    <documents>
+      <document mode="index" type="passage"/>
+    </documents>
+    <nodes count="2">
+      <resources vcpu="16" memory="32Gb" disk="950Gb"/>
+    </nodes> 
+    <engine>
+      <proton>
+        <tuning>
+          <searchnode>
+            <requestthreads>
+              <persearch>4</persearch>
+            </requestthreads>
+            <feeding>
+              <concurrency>1.0</concurrency>
+            </feeding>
+          </searchnode>
+        </tuning>
+      </proton>
+    </engine>
+  </content>
+
+</services>

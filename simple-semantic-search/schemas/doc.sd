@@ -29,7 +29,7 @@ schema doc {
             query(e) tensor<float>(x[384])
         }
         first-phase {
-            expression: closeness(field, embedding)
+            expression: nativeRank(text) + closeness(field, embedding)
         }
         match-features: bm25(text) closeness(field, embedding)
         global-phase {

@@ -1,8 +1,4 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-import numpy as np
-import json
-import os
-import sys
 import requests
 from requests.adapters import HTTPAdapter, Retry
 import argparse

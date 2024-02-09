@@ -23,8 +23,7 @@ urls:
     - incremental-search/search-suggestions/README.md
     - transformers/README.md
     - examples/operations/multinode-HA/README.md
-    - msmarco-ranking/passage-ranking-README.md
-    - msmarco-ranking/document-ranking-README.md
+    - msmarco-ranking/README.md
     - dense-passage-retrieval-with-ann/README.md
     - use-case-shopping/README.md
 
