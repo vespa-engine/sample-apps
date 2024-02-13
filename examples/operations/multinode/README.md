@@ -263,7 +263,7 @@ $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 The redundancy configuration in [services.xml](services.xml) is 3 replicas,
 i.e. one replica per node.
 Using [metrics](https://docs.vespa.ai/en/operations/metrics.html), expect 5 documents per node:
-<pre data-test="exec" data-test-assert-contains="content.proton.documentdb.documents.total.last">
+<pre data-test="exec" data-test-wait-for="content.proton.documentdb.documents.total.last">
 $ (for port in 19092 19093 19094; \
     do \
       curl -s http://localhost:$port/metrics/v1/values | \
