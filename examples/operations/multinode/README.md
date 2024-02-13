@@ -245,7 +245,7 @@ see [troubleshooting](/examples/operations/README.md#troubleshooting).
 
 ## Feed data, check distribution
 Make sure the three nodes are started and up - then feed 5 documents:
-<pre data-test="exec" data-test-assert-contains="id:mynamespace:music::4">
+<pre data-test="exec" data-test-wait-for="id:mynamespace:music::4">
 $ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); \
     do \
       curl -H Content-Type:application/json -d @$doc \
@@ -263,7 +263,7 @@ $ docker exec node0 bash -c "/opt/vespa/bin/vespa-visit -i"
 The redundancy configuration in [services.xml](services.xml) is 3 replicas,
 i.e. one replica per node.
 Using [metrics](https://docs.vespa.ai/en/operations/metrics.html), expect 5 documents per node:
-<pre data-test="exec" data-test-assert-contains="content.proton.documentdb.documents.total.last">
+<pre data-test="exec" data-test-wait-for="content.proton.documentdb.documents.total.last">
 $ (for port in 19092 19093 19094; \
     do \
       curl -s http://localhost:$port/metrics/v1/values | \
