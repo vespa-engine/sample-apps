@@ -1,0 +1,8 @@
+package=com.qihoo.language.config
+
+# A stopwords file: A newline-separated list of stop words
+stopwords path optional
+
+# A custom dictionary, see https://github.com/huaban/jieba-analysis
+dictionary path optional
+

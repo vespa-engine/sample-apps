@@ -3,9 +3,8 @@
 //
 package com.qihoo.language;
 
-import com.qihoo.language.config.DictsLocConfig;
+import com.qihoo.language.config.JiebaConfig;
 import com.yahoo.language.Language;
-import com.yahoo.language.LinguisticsCase;
 import com.yahoo.language.process.StemMode;
 import com.yahoo.language.process.Token;
 import com.yahoo.language.process.Tokenizer;
@@ -16,18 +15,17 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.huaban.analysis.jieba.JiebaSegmenter.SegMode;
 
 import com.yahoo.language.simple.SimpleTokenType;
-import java.nio.file.FileSystems;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.util.HashSet;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This is not multithread safe.
@@ -35,29 +33,29 @@ import java.util.logging.Logger;
  * @author Tanzhenghai
  */
 public class JiebaTokenizer implements Tokenizer {
+
     private final Set<String> stopwords;
     private final JiebaSegmenter segmenter;
 
     private final SegMode segMode;
 
-    public JiebaTokenizer(DictsLocConfig config, SegMode segMode) {
+    public JiebaTokenizer(JiebaConfig config, SegMode segMode) {
         this.segMode = segMode;
-        this.stopwords = readStopwords(config);
+        this.stopwords = readStopwords(config.stopwords());
         this.segmenter = new JiebaSegmenter();
-        if (!config.dictionaryPath().isEmpty()) {
+        if (config.dictionary().isPresent()) {
             try {
-                this.segmenter.initUserDict(FileSystems.getDefault().getPath(config.dictionaryPath()));
+                this.segmenter.initUserDict(config.dictionary().get().toAbsolutePath());
             } catch (InvalidPathException e) {
                 throw new IllegalArgumentException("Failed initializing the Jieba tokenizer: " +
-                        "Could not read dictionary file from directory '" + config.dictionaryPath() + "'");
+                                                   "Could not read dictionary file '" + config.dictionary() + "'");
             }
         }
     }
 
-    private Set<String> readStopwords(DictsLocConfig config) {
-        if (config.stopwordsPath().isEmpty()) return Set.of();
-        File stopwordsFile = new File(config.stopwordsPath());
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(stopwordsFile))) {
+    private Set<String> readStopwords(Optional<Path> stopwordsPath) {
+        if (stopwordsPath.isEmpty()) return Set.of();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(stopwordsPath.get().toFile()))) {
             Set<String> stopwords = new HashSet<>();
             String temp;
             while ((temp = bufferedReader.readLine()) != null)
@@ -65,7 +63,7 @@ public class JiebaTokenizer implements Tokenizer {
             return Collections.unmodifiableSet(stopwords);
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed initializing the Jieba tokenizer: " +
-                    "Could not read dictionary file '" + stopwordsFile + "'", e);
+                                               "Could not read dictionary file '" + stopwordsPath + "'", e);
         }
     }
 

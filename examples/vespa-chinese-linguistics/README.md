@@ -59,9 +59,9 @@ it is recommended to define &lt;component&gt; in all &lt;container&gt; sections 
 ```xml
 <container id="mycontainer" version="1.0">
     <component id="com.qihoo.language.JiebaLinguistics" bundle="vespa-chinese-linguistics" >
-        <config name="com.qihoo.language.config.dicts-loc">
-            <dictionaryPath>/opt/vespa/conf/jieba</dictionaryPath>
-            <stopwordsPath>/opt/vespa/conf/jieba/stopwords</stopwordsPath>
+        <config name="com.qihoo.language.config.jieba">
+            <dictionary>myAppPackageDir/dictionaryFile.dict</dictionary>  <!-- Optional and not usually needed -->
+            <stopwords>myAppPackageDir/stopwordsFile</stopwords>  <!-- Optional and not usually needed -->
         </config>
     </component>
 </container>
