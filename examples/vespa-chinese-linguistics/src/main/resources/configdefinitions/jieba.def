@@ -1,0 +1,8 @@
+package=com.qihoo.language.config
+
+# A stopwords file
+stopwords path optional
+
+# A dictionary
+dictionary path optional
+
