@@ -38,7 +38,7 @@ public class JiebaTokenizerTest {
     public void testJiebaTokenizerWithConfig() {
         String text = "my e-tron是Audi生产的车";
         var tokenizer = new JiebaTokenizer(new JiebaConfig.Builder()
-                                                   .dictionary(testFile("src/test/resources/dictionary"))
+                                                   .dictionary(testFile("src/test/resources/dictionary.dict"))
                                                    .stopwords(testFile("src/test/resources/stopwords"))
                                                    .build(),
                                                                JiebaSegmenter.SegMode.INDEX);
