@@ -16,7 +16,7 @@ The app demonstrates the [colbert-embedder](https://docs.vespa.ai/en/embedding.h
 the tensor expressions for performing two types of extended ColBERT late-interaction for long-context retrieval. 
 
 <p data-test="run-macro init-deploy long-colbert">
-Requires at least Vespa 8.310.1
+Requires at least Vespa 8.311.28
 </p>
 
 ## To try this application
@@ -41,14 +41,14 @@ Example query using ColBERT :
 vespa query 'yql=select * from doc where userQuery()'\
  'ranking=colbert-max-sim-context-level' 'hits=1' \
  'query=What is the frequency of Radio KP?' \
- 'input.query(qt)=embed(colbert, "What is the frequency of Radio KP?")'
+ 'input.query(qt)=embed(colbert, @query)'
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="id:en:doc::doc-en-729645">
 vespa query 'yql=select * from doc where userQuery()'\
  'ranking=colbert-max-sim-cross-context' 'hits=1'\
  'query=What is the frequency of Radio KP?' \
- 'input.query(qt)=embed(colbert, "What is the frequency of Radio KP?")'
+ 'input.query(qt)=embed(colbert, @query)'
 </pre>
 
 ## Evaluate the effectiveness on long-document retrieval using the MLDR dataset
