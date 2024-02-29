@@ -1,0 +1,82 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://docs.vespa.ai/en/schemas.html
+schema doc {
+
+    document doc {
+
+        field id type string {
+            indexing: summary 
+        }
+        field text type array<string> {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+    fieldset default {
+        fields: text
+    }
+
+    field colbert type tensor<int8>(context{}, token{}, v[16]) {
+        indexing: input text | embed colbert context | attribute
+        attribute: paged 
+    }
+
+    rank-profile bm25 {
+        rank-properties {
+            bm25(text).k1: 0.9
+            bm25(text).b: 0.4
+        }
+        first-phase {
+            expression: bm25(text)
+        }
+    }
+
+    rank-profile colbert-max-sim-context-level inherits bm25 {
+        inputs {
+            query(qt) tensor<float>(querytoken{}, v[128])
+        }
+        
+        function max_sim_per_context() {
+            expression {
+                sum(
+                    reduce(
+                        sum(
+                            query(qt) * unpack_bits(attribute(colbert)) , v
+                        ),
+                        max, token
+                    ),
+                    querytoken
+                )
+            }
+        }
+        second-phase {
+            rerank-count: 400 
+            expression: reduce(max_sim_per_context, max, context)
+        }
+    }
+
+    rank-profile colbert-max-sim-cross-context inherits bm25 {
+        inputs {
+            query(qt) tensor<float>(querytoken{}, v[128])
+        }
+        
+        function cross_max_sim() {
+            expression {
+                sum(
+                    reduce(
+                        sum(
+                            query(qt) * unpack_bits(attribute(colbert)) , v
+                        ),
+                        max, token, context
+                    ),
+                    querytoken
+                )
+            }
+        }
+        second-phase {
+            rerank-count: 400 
+            expression: cross_max_sim
+        }
+    }
+}
