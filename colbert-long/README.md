@@ -15,14 +15,16 @@ with extended context windows for long-document retrieval.
 The app demonstrates the [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder) and
 the tensor expressions for performing two types of extended ColBERT late-interaction for long-context retrieval. 
 
-<p data-test="run-macro init-deploy long-colbert">
+See [Announcing Vespa Long-Context ColBERT](https://blog.vespa.ai/announcing-long-context-colbert-in-vespa/) for details on this application.
+
+<p data-test="run-macro init-deploy colbert-long">
 Requires at least Vespa 8.311.28
 </p>
 
 ## To try this application
 
 Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
-through the <code>vespa deploy</code> step, cloning `long-colbert` instead of `album-recommendation`.
+through the <code>vespa deploy</code> step, cloning `colbert-long` instead of `album-recommendation`.
 
 Feed documents (this includes embed inference in Vespa):
 <pre data-test="exec">
