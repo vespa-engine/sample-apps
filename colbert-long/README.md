@@ -28,7 +28,7 @@ through the <code>vespa deploy</code> step, cloning `colbert-long` instead of `a
 
 Feed documents (this includes embed inference in Vespa):
 <pre data-test="exec">
-vespa feed ext/sample_feed.jsonl
+vespa feed ext/sample-docs.jsonl
 </pre>
 
 Example query using BM25:

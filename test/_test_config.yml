@@ -1,14 +1,13 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - multilingual-search/README.md
+    - colbert-long/README.md
     - multi-vector-indexing/README.md
     - vector-streaming-search/README.md
     - custom-embeddings/README.md
     - commerce-product-ranking/README.md
     - simple-semantic-search/README.md
     - colbert/README.md
-    - colbert-long/README.md
     - text-image-search/README.md
     - text-search/README.md
     - examples/document-processing/README.md
@@ -27,6 +26,7 @@ urls:
     - msmarco-ranking/README.md
     - dense-passage-retrieval-with-ann/README.md
     - use-case-shopping/README.md
+    - multilingual-search/README.md
 
     # examples/operations/album-recommendation-monitoring is tested in
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
