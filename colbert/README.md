@@ -17,7 +17,7 @@ It also features reciprocal rank fusion to fuse different rankings.
 
 
 <p data-test="run-macro init-deploy colbert">
-Requires at least Vespa 8.283.46
+Requires at least Vespa 8.311.28
 </p>
 
 ## To try this application
@@ -36,21 +36,21 @@ Example queries:
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))'\
  'input.query(q)=embed(e5, "query: space contains many suns")' \
- 'input.query(qt)=embed(colbert, "space contains many suns")' \
+ 'input.query(qt)=embed(colbert, @query)' \
  'query=space contains many suns'
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))'\
  'input.query(q)=embed(e5, "query: shipping stuff over the sea")' \
- 'input.query(qt)=embed(colbert, "shipping stuff over the sea")' \
+ 'input.query(qt)=embed(colbert, @query)' \
  'query=shipping stuff over the sea'
  </pre>
 
  <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))'\
  'input.query(q)=embed(e5, "query: exchanging information by sound")' \
- 'input.query(qt)=embed(colbert, "exchanging information by sound")' \
+ 'input.query(qt)=embed(colbert, @query)' \
  'query=exchanging information by sound'
  </pre>
 
