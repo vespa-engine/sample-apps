@@ -67,12 +67,15 @@ This simple script writes the feed file to `/tmp/vespa_feed_file_en.json`:
 python3 scripts/convert.py
 </pre>
 
-Index the dataset:
+Index the dataset (Note that if you are running this on CPU, or with longer documents you want to
+increase the default operation timeout to avoid re-trying doc operations that will never be able
+to succeed with default feed operation timeouts. 
+
 <pre>
-vespa feed /tmp/vespa_feed_file_en.json
+vespa feed /tmp/vespa_feed_file_en.json --timeout 600 --connections 1 
 </pre>
 
-Run the queries (Replace with your endpoint and mTLS cert)
+Run the queries (Replace endpoint and mTLS cert)
 <pre>
 python3 evaluate.py --endpoint https://b5af15f0.e2b4d78d.z.vespa-app.cloud/search/ \
   --ranking colbert-max-sim-context-level --dataset ext/test_queries.tsv  --rank_count 10 \
@@ -80,14 +83,14 @@ python3 evaluate.py --endpoint https://b5af15f0.e2b4d78d.z.vespa-app.cloud/searc
   --cert$HOME/.vespa/samples.long-colbert.default/data-plane-public-cert.pem
 </pre>
 
-Then, evaluate effectiveness by using e.g. `trec_eval`
-
+Then, evaluate effectiveness by using e.g. `trec_eval`. The above creates a `.run` file 
+with `ranking` argument as the file name. 
 <pre>
 trec_eval -mndcg_cut.10 ext/test_en_qrels.tsv colbert-max-sim-context-level.run 
 </pre>
 
 ## Terminate
-Remove the container after use:
+Remove the container after use (Only relevant for our automatic testing of this sample app)
 <pre data-test="exec">
 $ docker rm -f vespa
 </pre>
