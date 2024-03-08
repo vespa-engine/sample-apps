@@ -11,11 +11,6 @@
     <search/>
   </container>
   <content id="content" version="1.0">
-		<tuning>
-    	<resource-limits>
-        <disk>0.98</disk>
-    	</resource-limits>
-		</tuning>
     <min-redundancy>1</min-redundancy>
     <documents>
       <document type="doc" mode="index"/>
