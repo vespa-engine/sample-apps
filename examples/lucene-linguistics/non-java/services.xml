@@ -3,7 +3,7 @@
   <container id="container" version="1.0">
     <component id="linguistics"
                class="com.yahoo.language.lucene.LuceneLinguistics"
-               bundle="lucene-linguistics-bundle">
+               bundle="lucene-linguistics">
       <config name="com.yahoo.language.lucene.lucene-analysis"/>
     </component>
     <document-processing/>
@@ -13,8 +13,7 @@
   <content id="content" version="1.0">
     <min-redundancy>1</min-redundancy>
     <documents>
-      <document type="lucene" mode="index"/>
-      <document-processing cluster="container"/>
+      <document type="doc" mode="index"/>
     </documents>
   </content>
 </services>
