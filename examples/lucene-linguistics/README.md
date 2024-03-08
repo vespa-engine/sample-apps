@@ -136,13 +136,9 @@ Have fun!
 
 The `lucene-linguistics` component is highly configurable.
 It has an optional `configDir` configuration parameter of type `path`.
-`configDir` is a directory to store linguistics resources, e.g. dictionaries with stopwords, etc., and is relative to the VAP root directory.
+`configDir` is a directory to store linguistics resources, e.g. dictionaries with stopwords, etc., and is relative to the application package root directory.
 
-There are several known problems that might happen when `configDir` is misconfigured.
-
-### `configDir` is specified, but doesn't exist or specified directory is empty
-
-If the `configDir` doesn't exist or is empty `vespa deploy` would fail with this error:
+If the `configDir` doesn't exist or is empty, `vespa deploy` would fail with this error:
 
 ```shell
 Uploading application package... done
@@ -151,10 +147,3 @@ Success: Triggered deployment of target/application with run ID 1
 Deployment failed: Invalid application: Invalid config in services.xml for 'com.yahoo.language.lucene.lucene-analysis': /opt/vespa/var/db/vespa/config_server/serverdb/tenants/default/sessions/8/foo (No such file or directory)
 Error: deployment run nnn incomplete after waiting up to 1m0s: aborting wait: run nnn ended with unsuccessful status: deploymentFailed
 ```
-
-### Harmless warning
-`vespa deploy` always warns with:
-```shell
-WARNING Jar file 'vespa-lucene-linguistics-poc-0.0.1-deploy.jar' uses non-public Vespa APIs: [com.yahoo.language.simple]
-```
-You can ignore this warning.
