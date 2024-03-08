@@ -1,27 +1,56 @@
-# Lucene Linguistics in non-Java Vespa applications
 
-In non-java projects it is possible to use Lucene Linguistics as a jar bundle.
+<!-- Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
-Download and add the Vespa bundle jar into the `components` directory:
-```shell
-(mkdir -p components && cd components && curl -L https://github.com/dainiusjocas/vespa-lucene-linguistics-bundle/releases/download/v.0.0.3/lucene-linguistics-bundle-0.0.3-deploy.jar --output lucene-linguistics-bundle-0.0.3-deploy.jar)
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://vespa.ai/assets/vespa-ai-logo-heather.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://vespa.ai/assets/vespa-ai-logo-rock.svg">
+  <img alt="#Vespa" width="200" src="https://vespa.ai/assets/vespa-ai-logo-rock.svg" style="margin-bottom: 25px;">
+</picture>
 
-Deploy the application package:
-```shell
-vespa deploy -w 100
-```
+# Vespa sample applications - Lucene Linguistics 
 
-Run a query:
-```shell
-vespa query 'query=Vespa' 'language=lt'
-```
+This app demonstrates using [Lucene Linguistics](https://docs.vespa.ai/en/lucene-linguistics.html).
 
-The logs should contain record:
-```text
-[2023-08-16 11:21:04.847] INFO    container        Container.com.yahoo.language.lucene.AnalyzerFactory	Analyzer for language=lt is from a list of default language analyzers.
-```
 
-Profit.
+<p data-test="run-macro init-deploy examples/lucene-linguistics/non-java">
+Requires at least Vespa 8.315.19
+</p>
 
-The jar is hosted on [Github](https://github.com/dainiusjocas/vespa-lucene-linguistics-bundle/releases).
+## To try this application
+
+Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
+through the <code>vespa deploy</code> step, cloning `examples/lucene-linguistics/non-java` instead of `album-recommendation`.
+
+Feed 3 sample documents in Norwegian, Swedish, and Finnish: 
+
+<pre data-test="exec">
+vespa feed ext/*.json
+</pre>
+
+Example queries:
+
+<pre data-test="exec" data-test-assert-contains="id:no:doc::1">
+vespa query 'yql=select * from doc where userQuery()'\
+ 'language=no' 'summary=debug-text-tokens' \
+ 'query=tips til utendørsaktiviteter'
+</pre>
+
+<pre data-test="exec" data-test-assert-contains="id:sv:doc::1">
+vespa query 'yql=select * from doc where userQuery()'\
+ 'language=sv' 'summary=debug-text-tokens' \
+ 'query=tips til utomhusaktiviteter'
+</pre>
+
+<pre data-test="exec" data-test-assert-contains="id:fi:doc::1">
+vespa query 'yql=select * from doc where userQuery()'\
+ 'language=fi' 'summary=debug-text-tokens' \
+ 'query=vinkkejä ulkoilma-aktiviteetteihin'
+</pre>
+
+### Terminate container 
+
+Remove the container after use (Only relevant for local deployments)
+<pre data-test="exec">
+$ docker rm -f vespa
+</pre>
+
