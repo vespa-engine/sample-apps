@@ -1,5 +1,4 @@
 pexpect
-pyyaml
 beautifulsoup4
 numpy
 requests
