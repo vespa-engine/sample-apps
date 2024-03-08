@@ -28,6 +28,7 @@
       <groupId>com.yahoo.vespa</groupId>
       <artifactId>lucene-linguistics</artifactId>
       <version>${vespa_version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.yahoo.vespa</groupId>
