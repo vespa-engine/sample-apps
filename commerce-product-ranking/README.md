@@ -105,7 +105,7 @@ to export models from PyTorch to ONNX format.
 
 Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa deploy --wait 300 application
+$ vespa deploy --wait 600 application
 </pre>
 
 #### Deployment note
