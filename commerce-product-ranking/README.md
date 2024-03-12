@@ -108,10 +108,15 @@ Deploy the application:
 $ vespa deploy --wait 600 application
 </pre>
 
+If the above fails, check the logs:
+
+<pre data-test="exec" >
+$ docker logs vespa
+</pre>
+
 #### Deployment note
 It is possible to deploy this app to
 [Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
-
 
 ## Run basic system test
 
