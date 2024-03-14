@@ -6,23 +6,18 @@
         <document-api/>
         <search/>
         <nodes count="1"/>
-        <component id="tokenizer" class="com.yahoo.language.wordpiece.WordPieceEmbedder" bundle="linguistics-components">
-          <config name="language.wordpiece.word-piece">
-            <model>
-              <item>
-                <language>unknown</language>
-                <path>files/bert-base-uncased-vocab.txt</path>
-              </item>
-            </model>
-          </config>
+        <component id="tokenizer" type="hugging-face-tokenizer">
+          <model url="https://huggingface.co/bert-base-uncased/raw/main/tokenizer.json"/>
         </component>
-        <component id="title" type="bert-embedder">
-          <transformer-model  path="models/title_encoder.onnx"/>
-          <tokenizer-vocab path="files/bert-base-uncased-vocab.txt"/>
+        <component id="title" type="hugging-face-embedder">
+          <transformer-model  url="https://data.vespa.oath.cloud/sample-apps-data/title_encoder.onnx"/>
+          <tokenizer-model url="https://huggingface.co/bert-base-uncased/raw/main/tokenizer.json"/>
+          <transformer-output>output_0</transformer-output>
         </component>
-        <component id="description" type="bert-embedder">
-          <transformer-model  path="models/description_encoder.onnx"/>
-          <tokenizer-vocab path="files/bert-base-uncased-vocab.txt"/>
+        <component id="description" type="hugging-face-embedder">
+          <transformer-model  url="https://data.vespa.oath.cloud/sample-apps-data/description_encoder.onnx"/>
+          <tokenizer-model url="https://huggingface.co/bert-base-uncased/raw/main/tokenizer.json"/>
+          <transformer-output>output_0</transformer-output>
         </component>
     </container>
 
