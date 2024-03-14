@@ -86,17 +86,10 @@ Download this sample application:
 $ vespa clone commerce-product-ranking my-app && cd my-app
 </pre>
 
-Download ONNX models for neural ranking:
+Download cross-encoder model:
 <pre data-test="exec">
-$ mkdir -p application/models
 $ curl -L -o application/models/title_ranker.onnx \
     https://data.vespa.oath.cloud/sample-apps-data/title_ranker.onnx
-
-$ curl -L -o application/models/title_encoder.onnx \
-    https://data.vespa.oath.cloud/sample-apps-data/title_encoder.onnx
-
-$ curl -L -o application/models/description_encoder.onnx \
-    https://data.vespa.oath.cloud/sample-apps-data/description_encoder.onnx
 </pre>
 
 See [scripts/export-bi-encoder.py](scripts/export-bi-encoder.py) and
