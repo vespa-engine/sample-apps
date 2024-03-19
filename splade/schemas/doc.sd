@@ -18,13 +18,8 @@ schema doc {
         }
     }
     fieldset default {
-	    fields: title, chunk
+	      fields: title, chunk
     }
-
-   	field myid type string {
-			indexing: input documentid|summary|index
-			match:word
-   	}
 
     field splade_chunk_embedding type tensor<bfloat16>(token{}) {
         indexing: input chunk | embed splade | attribute | summary
