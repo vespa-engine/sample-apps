@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+    <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
+    <container id="default" version="1.0">
+
+        <!-- See https://docs.vespa.ai/en/embedding.html#splade-embedder -->
+        <component id="splade" type="splade-embedder">
+            <transformer-model url="https://huggingface.co/Qdrant/Splade_PP_en_v1/resolve/main/model.onnx"/>
+            <tokenizer-model url="https://huggingface.co/Qdrant/Splade_PP_en_v1/raw/main/tokenizer.json"/>
+            <term-score-threshold>0.8</term-score-threshold>
+        </component>
+
+        <document-api/>
+        <search/>
+        <nodes count="1">
+            <resources vcpu="4" memory="16Gb" disk="125Gb">
+                <gpu count="1" memory="16Gb"/>
+            </resources>
+        </nodes>
+        
+    </container>
+
+    <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
+    <content id="text" version="1.0">
+        <min-redundancy>2</min-redundancy>
+        <documents>
+            <document type="doc" mode="index" />
+        </documents>
+        <nodes count="2"/>
+    </content>
+
+</services>
