@@ -1,0 +1,51 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://docs.vespa.ai/en/schemas.html
+schema doc {
+
+    document doc {
+
+        field id type string {
+            indexing: summary 
+        }
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field chunk type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+    fieldset default {
+	      fields: title, chunk
+    }
+
+    field splade_chunk_embedding type tensor<bfloat16>(token{}) {
+        indexing: input chunk | embed splade | attribute | summary
+        attribute: paged
+    }
+    field splade_title_embedding type tensor<bfloat16>(token{}) {
+        indexing: input title | embed splade | attribute | summary
+    }
+
+    # See https://docs.vespa.ai/en/ranking.html
+    rank-profile default inherits default {
+        inputs {
+            query(q) tensor<bfloat16>(token{})
+        }
+        first-phase {
+            expression: bm25(title) + bm25(chunk)
+        }
+        function title_token_scores() {
+            expression: query(q) * attribute(splade_title_embedding)
+        }
+        function chunk_token_scores() {
+            expression: query(q) * attribute(splade_chunk_embedding)
+        }
+        second-phase {
+            expression: sum(title_token_scores()) + sum(chunk_token_scores())
+        }
+        match-features: title_token_scores chunk_token_scores bm25(title) bm25(chunk) query(q)
+    }
+}

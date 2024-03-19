@@ -35,12 +35,16 @@ text embedding models.
 The [colbert-long](colbert-long) application demonstrates how to 
 use the Vespa colbert-embedder for explainable semantic search for longer documents. 
 
+### SPLADE sparse learned weights for ranking
+The [splade](splade) application demonstrates how to 
+use the Vespa splade-embedder for semantic search. 
+
 ### Multilingual semantic search
 The [multilingual](multilingual-search) sample application demonstrates multilingual semantic search 
 with multilingual text embedding models. 
 
 ### Customizing embeddings 
-The [custom-embeddings](custom-embeddings/) application demonstrates customizing frozen document embeddings for downstream tasks. 
+The [custom-embeddings](custom-embeddings) application demonstrates customizing frozen document embeddings for downstream tasks. 
 
 ## More advanced sample applications
 
