@@ -197,7 +197,7 @@ def create_text_video_app(model_info):
 
     :return: A Vespa application package.
     """
-    app_package = ApplicationPackage(name="video_search")
+    app_package = ApplicationPackage(name="videosearch")
 
     app_package.schema.add_fields(
         Field(name="video_file_name", type="string", indexing=["summary", "attribute"]),
