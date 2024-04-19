@@ -64,14 +64,14 @@ schema item {
 
     document-summary short {
         from-disk
-        summary asin type string { source: asin }
-        summary title type string { source: title }
-        summary price type float { source: price }
-        summary brand type string { source: brand }
-        summary categories type array<string> { source: categories }
-        summary images type array<string> { source: images }
-        summary rating_stars type int { source: rating_stars }
-        summary rating_count type int { source: rating_count }
+        summary asin { source: asin }
+        summary title { source: title }
+        summary price { source: price }
+        summary brand { source: brand }
+        summary categories { source: categories }
+        summary images { source: images }
+        summary rating_stars { source: rating_stars }
+        summary rating_count { source: rating_count }
     }
 
     fieldset default {

@@ -92,7 +92,7 @@ schema wiki {
   }
 
   document-summary minimal {
-    summary id type int {}
-    summary title type string {}
+    summary id {}
+    summary title {}
   }
 }

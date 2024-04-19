@@ -16,13 +16,13 @@ schema title {
     }
 
     document-summary attribute-only {
-        summary id type string {
+        summary id {
               source: id
         }
-        summary start type long {
+        summary start {
             source:start
         }
-        summary end type long {
+        summary end {
             source:end
         }
     }
