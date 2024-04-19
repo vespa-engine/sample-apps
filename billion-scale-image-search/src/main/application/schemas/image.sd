@@ -77,9 +77,7 @@ schema image {
 
   document-summary vector-summary {
     from-disk
-    summary vector {
-      source: vector
-    }
+    summary vector { }
   }
 
   fieldset default {

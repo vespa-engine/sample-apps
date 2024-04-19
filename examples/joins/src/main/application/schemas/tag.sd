@@ -13,15 +13,9 @@ schema tag {
 
     }
     document-summary attribute-only {
-        summary id {
-              source: id
-        }
-        summary start {
-            source:start
-        }
-        summary end {
-            source:end
-        }
+        summary id { }
+        summary start { }
+        summary end { }
     }
 
     rank-profile default inherits default {
