@@ -77,9 +77,7 @@ schema image {
 
   document-summary vector-summary {
     from-disk
-    summary vector type tensor<bfloat16>(x[768]) {
-      source: vector
-    }
+    summary vector { }
   }
 
   fieldset default {

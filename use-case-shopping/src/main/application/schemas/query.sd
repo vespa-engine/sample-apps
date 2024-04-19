@@ -22,7 +22,7 @@ schema query {
         fields: query
     }
     document-summary query {
-        summary query type string {}
+        summary query {}
     }
     rank-profile default inherits default {
         first-phase {

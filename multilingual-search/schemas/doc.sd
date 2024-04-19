@@ -64,6 +64,6 @@ schema doc {
   }
 
   document-summary minimal {
-    summary doc_id type string {}
+    summary doc_id {}
   }
 }
