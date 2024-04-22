@@ -59,12 +59,9 @@ Download this sample application:
 $ vespa clone multilingual-search my-app && cd my-app
 </pre>
 
-This sample app embedder configuration in [services.xml](services.xml) points to an exported model. 
+This sample app embedder configuration in [services.xml](services.xml) points to a quantized model. 
 
-Alternatively, export your own model using [Optimum](https://huggingface.co/docs/optimum/index):
-<pre>
-$ optimum-cli export onnx --task sentence-similarity -m intfloat/multilingual-e5-small multilingual-e5-small-onnx               
-</pre>
+Alternatively, [export your model](https://docs.vespa.ai/en/onnx.html#onnx-export). 
 
 Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">

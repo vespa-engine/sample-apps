@@ -72,12 +72,19 @@ schema wiki {
         reduce(cosine_similarity(query(q),attribute(paragraph_embeddings), x), avg, p)
       }
     }
+    function keywords() {
+      expression: bm25(title) + bm25(paragraphs) + bm25(url)
+    }
+    function log_bm25() {
+      expression: if(keywords > 0, log(keywords), 0)
+    }
+
     first-phase {
       expression: cos(distance(field,paragraph_embeddings)) 
     }
     second-phase {
       expression {
-        firstPhase + log( bm25(title) + bm25(paragraphs) + bm25(url)) + 10*cos(distance(field,paragraph_embeddings))
+        firstPhase + log_bm25 + 10*cos(distance(field,paragraph_embeddings))
       }
     }
 
@@ -86,6 +93,8 @@ schema wiki {
       closest(paragraph_embeddings)
       bm25(title)
       bm25(paragraphs)
+      bm25(url)
+      log_bm25
       avg_paragraph_similarities
       all_paragraph_similarities
     }
