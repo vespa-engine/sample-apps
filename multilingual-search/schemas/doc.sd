@@ -46,8 +46,15 @@ schema doc {
   }
 
   rank-profile hybrid inherits semantic {
+    function keywords() {
+      expression: bm25(title) + bm25(text) 
+    }
+    function log_bm25() {
+      expression: if(keywords > 0, log(keywords), 0)
+    }
+
     first-phase {
-      expression: log(bm25(title) + bm25(text))/2 + 2*cos(distance(field,embedding))
+      expression: log_bm25/2 + 2*cos(distance(field,embedding))
     }
 	}
 
