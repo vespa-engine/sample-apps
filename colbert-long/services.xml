@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.311.28">
 
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">

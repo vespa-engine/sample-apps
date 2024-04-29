@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<services version="1.0">
+<services version="1.0" minimum-required-vespa-version="8.315.19">
   <container id="container" version="1.0">
     <component id="linguistics"
                class="com.yahoo.language.lucene.LuceneLinguistics"
