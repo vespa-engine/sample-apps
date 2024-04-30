@@ -49,18 +49,18 @@ schema doc {
 
   rank-profile custom-similarity inherits simple-similarity {
 
-    function query() {
+    function query_input() {
       expression: query(q) * tensor<float>(batch[1]):[1]
     }
 
-    function document() {
+    function document_input() {
       expression: attribute(embedding) * tensor<float>(batch[1]):[1]
     }
 
     onnx-model dnn {
       file: models/custom_similarity.onnx
-      input "query": query
-      input "document": document
+      input "query": query_input
+      input "document": document_input
       output "similarity": score
     }
     second-phase {
