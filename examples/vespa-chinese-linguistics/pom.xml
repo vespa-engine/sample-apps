@@ -29,7 +29,7 @@
     <target-jdk.version>17</target-jdk.version>
     <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
 
-    <vespa_version>8.332.5</vespa_version>
+    <vespa_version>8.337.85</vespa_version>
     <guice.version>7.0.0</guice.version>
     
     <kuromoji-ipadic.version>0.9.0</kuromoji-ipadic.version>
