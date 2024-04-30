@@ -65,7 +65,33 @@ especially when combined with text match features.
 Transformer-based embedding models have named inputs and outputs that must  
 be compatible with the input and output names used by the Vespa Bert embedder or the Huggingface embedder.
 
+
+### Huggingface-embedder
+See [export_hf_model_from_hf.py](export_hf_model_from_hf.py) for exporting a Huggingface sentence-transformer model to ONNX format compatible with default input and output names used by
+the [Vespa huggingface-embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder). 
+
+The following exports [intfloat/e5-small-v2](https://huggingface.co/intfloat/e5-small-v2):
+<pre>
+./export_hf_model_from_hf.py --hf_model intfloat/e5-small-v2 --output_dir model
+</pre>
+
+
+The following exports [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) using quantization:
+<pre>
+./export_hf_model_from_hf.py --hf_model intfloat/multilingual-e5-small --output_dir model --quantize
+</pre>
+
+The following exports [intfloat/multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small) using quantization and tokenizer patching
+to workaround this [issue](https://github.com/vespa-engine/vespa/issues/31086) with compatiblity problems with loading saved tokenizers:
+
+<pre>
+./export_hf_model_from_hf.py --hf_model intfloat/multilingual-e5-small --output_dir model --quantize --patch_tokenizer
+</pre>
+
+
 ### Bert-embedder
+Prefer using the [Vespa huggingface-embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder) instead. 
+
 See [export_model_from_hf.py](export_model_from_hf.py) for exporting a Huggingface sentence-transformer model to ONNX format compatible with default input and output names used by
 the [bert-embedder](https://docs.vespa.ai/en/embedding.html#bert-embedder). 
 
@@ -73,13 +99,4 @@ The following exports [intfloat/e5-small-v2](https://huggingface.co/intfloat/e5-
 in the format expected by the Vespa bert-embedder.
 <pre>
 ./export_model_from_hf.py --hf_model intfloat/e5-small-v2 --output_dir model
-</pre>
-
-### Huggingface-embedder
-See [export_hf_model_from_hf.py](export_hf_model_from_hf.py) for exporting a Huggingface sentence-transformer model to ONNX format compatible with default input and output names used by
-the [huggingface-embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder). 
-
-The following exports [intfloat/e5-small-v2](https://huggingface.co/intfloat/e5-small-v2) and saves the model parameters in an ONNX  and `tokenizer.json` files.
-<pre>
-./export_hf_model_from_hf.py --hf_model intfloat/e5-small-v2 --output_dir model
 </pre>
