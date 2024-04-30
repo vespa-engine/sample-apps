@@ -221,7 +221,7 @@ Now the application should be deployed! You can continue to the
 [querying](#querying) section below for testing this application.
 
 
-## Query examples
+## Querying
 
 Let's feed the documents:
 <pre>
