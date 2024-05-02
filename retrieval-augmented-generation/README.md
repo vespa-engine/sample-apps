@@ -56,7 +56,7 @@ $ brew install vespa-cli
 </pre>
 
 Download this sample application:
-<pre>
+<pre data-test="exec">
 $ vespa clone retrieval-augmented-generation rag && cd rag
 </pre>
 
@@ -83,14 +83,10 @@ $ podman info | grep "memTotal"
 In the following, you can replace `docker` with `podman` and this should work
 out of the box.
 
-Pull the most recent Vespa container image:
+Pull and start the most recent Vespa container image:
 <pre>
-$ docker/podman pull vespaengine/vespa
-</pre>
-
-Start the Vespa container:
-<pre>
-$ docker/podman run --detach --name vespa-rag --hostname vespa-container \
+$ docker pull vespaengine/vespa
+$ docker run --detach --name vespa-rag --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
@@ -127,7 +123,7 @@ $ vespa query --header="X-LLM-API-KEY:insert-api-key-here" ... rest of query
 Here we will use a Mistral 7B 8-bit model run locally inside the Vespa
 container to perform the generative part. This sample is in the `local`
 directory:
-<pre>
+<pre data-test="exec">
 $ cd local
 </pre>
 
@@ -145,26 +141,27 @@ $ podman info | grep "memTotal"
 In the following, you can replace `docker` with `podman` and this should work
 out of the box.
 
-Pull the most recent Vespa container image:
-<pre>
-$ docker/podman pull vespaengine/vespa
-</pre>
-
-Start the Vespa container:
-<pre>
-$ docker/podman run --detach --name vespa-rag --hostname vespa-container \
+Pull and start the most recent Vespa container image:
+<pre data-test="exec">
+$ docker pull vespaengine/vespa
+$ docker run --detach --name vespa-rag --hostname vespa-container \
   --publish 8080:8080 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
 
+We will use a local deployment using this docker image:
+<pre data-test="exec">
+$ vespa config set target local
+</pre>
+
 Verify that the configuration service (deploy API) is ready:
-<pre>
+<pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
 
 Deploy the application. We need to increase the timeout here because the model
 itself is around 7Gb and will take quite some time to download:
-<pre>
+<pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 900
 </pre>
 
@@ -224,17 +221,17 @@ Now the application should be deployed! You can continue to the
 ## Querying
 
 Let's feed the documents:
-<pre>
+<pre data-test="exec">
 $ vespa feed ../ext/docs.jsonl
 </pre>
 
 Run a query, first to check the retrieval:
-<pre>
+<pre data-test="exec" data-test-assert-contains="Manhattan">
 $ vespa query query="what was the manhattan project?" hits=5
 </pre>
 
 Now, run a query where this is used to generate a response:
-<pre>
+<pre data-test="exec" data-test-assert-contains="Manhattan">
 $ vespa query \
     --timeout 120
     query="what was the manhattan project?" \
@@ -263,10 +260,9 @@ in Vespa](https://docs.vespa.ai/en/llms-rag.html) documentation.
 
 ## Shutdown and removing the RAG application
 
-For the `openai` or `local` deployments to Docker or Podman, shutdown and
-remove this container:
-<pre>
-$ docker/podman rm -f vespa-rag
+For the `openai` or `local` deployments, shutdown and remove this container:
+<pre data-test="exec">
+$ docker rm -f vespa-rag
 </pre>
 
 To remove the application from Vespa Cloud:
