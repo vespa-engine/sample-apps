@@ -233,7 +233,7 @@ $ vespa query query="what was the manhattan project?" hits=5
 Now, run a query where this is used to generate a response:
 <pre data-test="exec" data-test-assert-contains="Manhattan">
 $ vespa query \
-    --timeout 120
+    --timeout 120 \
     query="what was the manhattan project?" \
     hits=5 \
     searchChain=rag \
