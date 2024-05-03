@@ -6,6 +6,11 @@
 
     <document-api/>
 
+    <!-- Setup the client to OpenAI -->
+    <component id="openai" class="ai.vespa.llm.clients.OpenAI" />
+
+    <!-- Setup a local inference on a Mistral 7B model -->
+    <!-- Comment out this component to avoid daownloading the model file during startup -->
     <component id="mistral" class="ai.vespa.llm.clients.LocalLLM">
       <config name="ai.vespa.llm.clients.llm-local-client">
         <model url="https://data.vespa.oath.cloud/gguf_models/mistral-7b-instruct-v0.1.Q8_0.gguf" />
@@ -15,17 +20,29 @@
     </component>
 
     <search>
-      <chain id="rag" inherits="vespa">
+
+      <chain id="openai" inherits="vespa">
+        <searcher id="ai.vespa.search.llm.RAGSearcher">
+          <config name="ai.vespa.search.llm.llm-searcher">
+            <providerId>openai</providerId>
+          </config>
+        </searcher>
+      </chain>
+
+      <chain id="local" inherits="vespa">
         <searcher id="ai.vespa.search.llm.RAGSearcher">
           <config name="ai.vespa.search.llm.llm-searcher">
             <providerId>mistral</providerId>
           </config>
         </searcher>
       </chain>
+
     </search>
 
-    <nodes>
-      <node hostalias="node1" />
+    <nodes count="1" deploy:environment="dev">
+      <resources vcpu="4.0" memory="16Gb" architecture="x86_64" storage-type="local" disk="125Gb">
+        <gpu count="1" memory="16.0Gb"/>
+      </resources>
     </nodes>
 
   </container>
