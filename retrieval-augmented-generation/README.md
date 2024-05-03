@@ -183,7 +183,7 @@ To test generation using the local LLM model, post a query which runs
 the `mistral` search chain:
 <pre data-test="exec" data-test-assert-contains="Manhattan">
 $ vespa query \
-    --timeout 120
+    --timeout 120 \
     query="what was the manhattan project?" \
     hits=5 \
     searchChain=mistral \
