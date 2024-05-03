@@ -24,7 +24,7 @@ schema passage {
 
   field e5 type tensor<bfloat16>(x[384]) {
     # e5 prefix instruction for document 
-    indexing: "passage: " . input text | embed e5 | attribute | index
+    indexing: input text | embed e5 | attribute | index
     attribute {
       distance-metric: angular
     }

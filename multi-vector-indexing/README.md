@@ -101,13 +101,13 @@ $ vespa query 'yql=select * from wiki where userQuery()' \
   'ranking=bm25'
 </pre>
 
-Notice the `relevance`, which is assigned by the rank-profile. Also note
-that keywords are highlighted in the `paragraphs` field. 
+Notice the `relevance`, which is assigned by the rank-profile expression. 
+Also, note that the matched keywords are highlighted in the `paragraphs` field. 
 
 ### Semantic vector search on the paragraph level
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from wiki where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
-  'input.query(q)=embed(query: what does 24 mean in the context of railways)' \
+  'input.query(q)=embed(what does 24 mean in the context of railways)' \
   'ranking=semantic'
 </pre>
 The closest (best semantic match) paragraph has index 4.
@@ -128,14 +128,14 @@ Hybrid combining keyword search on the article level with vector search in the p
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from wiki where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
-  'input.query(q)=embed(query: what does 24 mean in the context of railways)' \
+  'input.query(q)=embed(@query)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
   'hits=1'
 </pre>
 
-This case combines exact search with nearestNeighbor search. The `hybrid` rank-profile 
-also calculates several additional features using 
+This case combines keyword search with vector (nearestNeighbor) search. 
+The `hybrid` rank-profile also calculates several additional features using 
 [tensor expressions](https://docs.vespa.ai/en/tensor-user-guide.html):
 
 - `firstPhase` is the score of the first ranking phase, configured in the hybrid
@@ -156,7 +156,7 @@ Filtering is also supported, also disable bolding.
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
 $ vespa query 'yql=select * from wiki where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
-  'input.query(q)=embed(query: what does 24 mean in the context of railways)' \
+  'input.query(q)=embed(@query)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
   'bolding=false'

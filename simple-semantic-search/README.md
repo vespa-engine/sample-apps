@@ -15,6 +15,8 @@ A minimal semantic search application:
 different rankings.
 
 <p data-test="run-macro init-deploy simple-semantic-search">
+minimum-required-vespa-version="8.311.28"
+</p>
 
 ## To try this application
 
@@ -24,29 +26,27 @@ through the <code>vespa deploy</code> step, cloning `simple-semantic-search` ins
 Feed documents (this includes embed inference in Vespa):
 
 <pre data-test="exec">
-vespa document ext/1.json
-vespa document ext/2.json
-vespa document ext/3.json
+vespa feed ext/*.json
 </pre>
 
 Example queries using [E5-Small-V2](https://huggingface.co/intfloat/e5-small-v2) 
-embedding model that maps text to a 384-dimensional vector (the query prefix in the embed argument is an instruction to the embedding model).
+embedding model that maps text to a 384-dimensional vector representation.
 
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, e))' \
- 'input.query(e)=embed(e5, "query: space contains many suns")' \
+ 'input.query(e)=embed(e5, @query)' \
  'query=space contains many suns'
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, e))' \
- 'input.query(e)=embed(e5, "query: shipping stuff over the sea")' \
+ 'input.query(e)=embed(e5, @query)' \
  'query=shipping stuff over the sea'
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, e))' \
- 'input.query(e)=embed(e5, "query: exchanging information by sound")' \
+ 'input.query(e)=embed(e5, @query)' \
  'query=exchanging information by sound' 
 </pre>
 

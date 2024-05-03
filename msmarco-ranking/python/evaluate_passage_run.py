@@ -25,19 +25,19 @@ query_models =  {
   },
   "e5": {
     'yql': 'select id from passage where {targetHits: 10, hnsw.exploreAdditionalHits:100}nearestNeighbor(e5, q)',
-    'input.query(q)': 'embed(e5, "query: {query}")',
+    'input.query(q)': 'embed(e5, "{query}")',
     'ranking': 'e5',
   },
   "e5-colbert": {
     'yql': 'select id from passage where {targetHits: 100, hnsw.exploreAdditionalHits:100}nearestNeighbor(e5, q)',
-    'input.query(q)': 'embed(e5, "query: {query}")',
+    'input.query(q)': 'embed(e5, "{query}")',
     'input.query(qt)':'embed(colbert, "{query}")',
     'ranking': 'e5-colbert',
     'ranking.rerankCount': 100
   },
   "e5-colbert-cross-encoder-rrf": {
     'yql': 'select id from passage where {targetHits: 100,hnsw.exploreAdditionalHits:100}nearestNeighbor(e5, q)',
-    'input.query(q)': 'embed(e5, "query: {query}")',
+    'input.query(q)': 'embed(e5, "{query}")',
     'input.query(qt)':'embed(colbert, "{query}")',
     'input.query(query_token_ids)':'embed(tokenizer, "{query}")',
     'ranking': 'e5-colbert-cross-encoder-rrf',
