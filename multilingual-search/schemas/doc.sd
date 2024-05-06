@@ -26,7 +26,7 @@ schema doc {
   }
 
   field embedding type tensor<float>(x[384]) {
-    indexing: "passage: " . input title . " " . input text | embed | attribute
+    indexing: input title . " " . input text | embed | attribute
     attribute {
       distance-metric: angular
     }

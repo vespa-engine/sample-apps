@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.311.28">
 
   <container id="default" version="1.0">
 
@@ -17,6 +17,10 @@
     <component id="e5" type="hugging-face-embedder">
             <transformer-model url="https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx"/>
             <tokenizer-model url="https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json"/>
+            <prepend>
+                <query>query:</query>
+                <document>passage:</document>
+            </prepend>
     </component>
 
     <!-- See https://docs.vespa.ai/en/embedding.html#colbert-embedder -->

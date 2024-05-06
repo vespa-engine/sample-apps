@@ -14,7 +14,7 @@ def search(query_group):
     query_request = {
         'yql': 'select doc_id from doc where ({"grammar":"tokenize", "targetHits":200}userInput(@query)) or ({targetHits:200}nearestNeighbor(embedding, q))',
         'query': query, 
-        'input.query(q)': 'embed(query:' + query +  ')', 
+        'input.query(q)': f'embed({query})', 
         'ranking': args.ranking,
         'hits' : args.hits, 
         'language': args.language,

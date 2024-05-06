@@ -17,7 +17,7 @@ It also features reciprocal rank fusion to fuse different rankings.
 
 
 <p data-test="run-macro init-deploy colbert">
-Requires at least Vespa 8.311.28
+Requires at least Vespa 8.338.38
 </p>
 
 ## To try this application
@@ -27,29 +27,27 @@ through the <code>vespa deploy</code> step, cloning `colbert` instead of `album-
 
 Feed documents (this includes embed inference in Vespa):
 <pre data-test="exec">
-vespa document ext/1.json
-vespa document ext/2.json
-vespa document ext/3.json
+vespa feed ext/*.json
 </pre>
 
 Example queries:
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))'\
- 'input.query(q)=embed(e5, "query: space contains many suns")' \
+ 'input.query(q)=embed(e5, @query)' \
  'input.query(qt)=embed(colbert, @query)' \
  'query=space contains many suns'
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))'\
- 'input.query(q)=embed(e5, "query: shipping stuff over the sea")' \
+ 'input.query(q)=embed(e5, @query)' \
  'input.query(qt)=embed(colbert, @query)' \
  'query=shipping stuff over the sea'
  </pre>
 
  <pre data-test="exec" data-test-assert-contains="id:doc:doc::1">
 vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))'\
- 'input.query(q)=embed(e5, "query: exchanging information by sound")' \
+ 'input.query(q)=embed(e5, @query)' \
  'input.query(qt)=embed(colbert, @query)' \
  'query=exchanging information by sound'
  </pre>

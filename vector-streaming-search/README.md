@@ -19,8 +19,7 @@ The subject and content of a mail are combined and embedded into a 384-dimension
 using a [Bert embedder](https://docs.vespa.ai/en/reference/embedding-reference.html#bert-embedder).
 
 ## Quick start
-
-The following is a quick start recipe on how to get started with this application. 
+The following is a quick recipe for getting started with this application. 
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)

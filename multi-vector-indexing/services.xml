@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.311.28">
 
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">
@@ -9,11 +9,13 @@
         <component id="e5" type="hugging-face-embedder">
             <transformer-model url="https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx"/>
             <tokenizer-model url="https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json"/>
+            <prepend> <!-- E5 prompt instructions -->
+                <query>query:</query>
+                <document>passage:</document>
+            </prepend>
         </component>
-
         <document-api/>
         <search/>
-
         <nodes>
             <node hostalias="node1" />
         </nodes>

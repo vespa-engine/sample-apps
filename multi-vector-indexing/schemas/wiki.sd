@@ -29,7 +29,7 @@ schema wiki {
     indexing {
       input paragraphs |
         for_each {
-          "passage: " . (input title || "") . " " . ( _ || "")
+         (input title || "") . " " . ( _ || "")
         } | embed e5 | attribute | index # Index keyword enables HNSW index
     }
     attribute {

@@ -18,15 +18,14 @@ schema doc {
         }
     }
     fieldset default {
-	fields: title, chunk
+	    fields: title, chunk
     }
 
     field embedding type tensor<bfloat16>(x[384]) {
-        # e5 prefix instructions
-        indexing: "passage: " . (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index 
-	attribute {
-	    distance-metric: angular
-	}
+        indexing: (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index 
+	    attribute {
+	        distance-metric: angular
+	    }
     }
 
     field colbert type tensor<int8>(dt{}, x[16]) {

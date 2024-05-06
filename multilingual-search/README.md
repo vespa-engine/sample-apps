@@ -103,12 +103,12 @@ $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
  --ranking semantic --hits 100 --language sw
  </pre>
 
-Compute NDCG@10 using `trec_eval` with the judgments:
+Compute NDCG@10 using `trec_eval` with the dev relevance judgments:
 
 <pre data-test="exec" data-test-assert-contains="0.675" >
 $ trec_eval -mndcg_cut.10 ext/qrels.miracl-v1.0-sw-dev.tsv semantic.run
 </pre>
-
+Which should produce the following:
 <pre>
 ndcg_cut_10           	all	0.675
 </pre>
@@ -121,7 +121,7 @@ $ python3 ext/evaluate.py --endpoint http://localhost:8080/search/ \
  --query_file ext/topics.miracl-v1.0-sw-dev.tsv \
  --ranking bm25 --hits 100 --language sw
  </pre>
-Compute NDCG@10 using trec_eval with the judgments:
+Compute NDCG@10 using trec_eval with the same relevance judgments:
 <pre data-test="exec" data-test-assert-contains="0.4" >
 $ trec_eval -mndcg_cut.10 ext/qrels.miracl-v1.0-sw-dev.tsv bm25.run
 </pre>
