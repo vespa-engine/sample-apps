@@ -8,7 +8,8 @@
 </picture>
 
 # Vespa sample applications
-For operational sample applications, see [examples/operations](examples/operations). 
+For operational sample applications, see [examples/operations](examples/operations). See
+also [PyVespa examples](https://pyvespa.readthedocs.io/en/latest/examples.html). 
 
 ## Getting started - Basic Sample Applications
 
@@ -22,22 +23,33 @@ application demonstrates indexed vector search using `HNSW`,
 creating embedding vectors from a transformer language model inside Vespa, and hybrid
 text and semantic ranking. This app also demonstrates using native Vespa embedders. 
 
+### Retrieval Augmented Generation (RAG)
+The [retrieval-augmented-generation](retrieval-augmented-generation) sample application
+demonstrates how to build an end-to-end RAG pipeline with API-based and local LLMs.  
+
 ### Indexing multiple vectors per field
-The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) demonstrates how to 
-index multiple vectors per document field for better semantic search for longer documents.  
+The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) app demonstrates how to 
+index multiple vectors per document field for semantic search for longer documents.  
+
+### Vespa streaming mode for naturally partitioned data
+The [vector-streaming-search](vector-streaming-search) app 
+demonstrates how to use vector streaming search. See also [blog post](https://blog.vespa.ai/announcing-vector-streaming-search/). 
 
 ### ColBERT token-level embeddings
 The [colbert](colbert) application demonstrates how to 
-use the Vespa colbert-embedder for explainable semantic search with better accuracy than regular
+use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder) 
+for explainable semantic search with better accuracy than regular
 text embedding models. 
 
 ### ColBERT token-level embeddings for long documents
 The [colbert-long](colbert-long) application demonstrates how to 
-use the Vespa colbert-embedder for explainable semantic search for longer documents. 
+use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder) 
+for explainable semantic search for longer documents. 
 
 ### SPLADE sparse learned weights for ranking
 The [splade](splade) application demonstrates how to 
-use the Vespa splade-embedder for semantic search. 
+use the Vespa [splade-embedder](https://docs.vespa.ai/en/embedding.html#splade-embedder) for 
+semantic search using sparse vector representations. 
 
 ### Multilingual semantic search
 The [multilingual](multilingual-search) sample application demonstrates multilingual semantic search 
@@ -55,7 +67,8 @@ This application demonstrates basic search functionality.
 It also demonstrates how to build a recommendation system
 where the approximate nearest neighbor search in a shared user/item embedding space
 is used to retrieve recommended content for a user.
-This app also demonstrates using parent-child relationships.
+This app also demonstrates using [parent-child](https://docs.vespa.ai/en/parent-child.html) 
+relationships in Vespa.
 
 ### Billion-scale Image Search
 This [billion-scale-image-search](billion-scale-image-search/) app demonstrates 
@@ -66,7 +79,6 @@ This [msmarco-ranking](msmarco-ranking/) application demonstrates
 how to represent state-of-the-art text ranking using Transformer (BERT) models.
 It uses the MS Marco passage ranking datasets and features
 bi-encoders, cross-encoders, and late-interaction models (ColBERT).
-
 
 See also the more simplistic [text-search](text-search) app that demonstrates 
 traditional text search using BM25/Vespa nativeRank.
@@ -79,14 +91,6 @@ It uses the [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links
 It demonstrates building next generation E-commerce Search using Vespa. See
 also the [commerce-product-ranking](commerce-product-ranking/) sample application for using
 learning-to-rank techniques (Including `XGBoost` and `LightGBM`) for improving product search ranking.
-
-### Extractive Question Answering
-The [dense-passage-retrieval-with-ann](dense-passage-retrieval-with-ann/) application
-demonstrates end-to-end question answering using Facebook's DPR (Dense passage Retriever) model. 
-The extractive answering part extracts an answer from the evidence passage(s).
-
-See also [Efficient Open Domain Question Answering with Vespa](https://blog.vespa.ai/efficient-open-domain-question-answering-on-vespa/)
-and [Scaling Question Answering with Vespa](https://blog.vespa.ai/from-research-to-production-scaling-a-state-of-the-art-machine-learning-system/).
 
 ### Search as you type and query suggestions 
 The [incremental-search](incremental-search/) application demonstrates search-as-you-type functionality, where for each keystroke of the user, it retrieves matching documents. 
@@ -109,7 +113,7 @@ http-api-using-*
 
 ----
 
-Note: Applications with _pom.xml_ are Java/Maven projects and must be built before being deployed.
+Note: Applications with _pom.xml_ are Java/Maven projects and must be built before deployment.
 Refer to the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html) for more information.
 
 [Contribute](https://github.com/vespa-engine/vespa/blob/master/CONTRIBUTING.md) to the Vespa sample applications.
