@@ -1,6 +1,0 @@
-tensorflow
-tensorflow-hub
-tensorflow_text>=2.0.0rc0
-nltk 
-numpy<1.26.3
-requests

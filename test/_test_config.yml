@@ -26,7 +26,6 @@ urls:
     - transformers/README.md
     - examples/operations/multinode-HA/README.md
     - msmarco-ranking/README.md
-    - dense-passage-retrieval-with-ann/README.md
     - use-case-shopping/README.md
     - multilingual-search/README.md
     - retrieval-augmented-generation/README.md
