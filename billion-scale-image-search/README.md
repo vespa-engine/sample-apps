@@ -35,7 +35,7 @@ Note the following about the LAION 5B dataset
 > links may lead to strongly discomforting and disturbing content for a human viewer.
 
 The released dataset does not contain image data itself,
-but [CLIP](https://openai.com/research/clip) encoded vector representations of the images,
+but <a href="https://openai.com/research/clip" data-proofer-ignore>CLIP</a> encoded vector representations of the images,
 and metadata like `url` and `caption`.
 
 ## Use cases 
