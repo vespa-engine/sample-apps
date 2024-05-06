@@ -14,7 +14,6 @@
         <module>album-recommendation-java</module>
         <module>billion-scale-image-search</module>
         <module>billion-scale-vector-search</module>
-        <module>dense-passage-retrieval-with-ann</module>
         <module>examples/document-processing</module>
         <module>examples/embedding-service</module>
         <module>examples/generic-request-processing</module>
