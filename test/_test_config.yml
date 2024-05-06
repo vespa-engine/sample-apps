@@ -29,6 +29,7 @@ urls:
     - dense-passage-retrieval-with-ann/README.md
     - use-case-shopping/README.md
     - multilingual-search/README.md
+    - retrieval-augmented-generation/README.md
 
     # examples/operations/album-recommendation-monitoring is tested in
     # https://docs.vespa.ai/en/operations/monitoring.html#monitoring-with-grafana
