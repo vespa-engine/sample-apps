@@ -1,0 +1,48 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema msmarco {
+    document msmarco {
+
+        field id type string {
+            indexing: summary | attribute
+        }
+
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+
+        field url type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+
+        field body type string {
+            indexing: index | summary
+            summary: dynamic
+            index: enable-bm25
+        }
+
+    }
+
+    document-summary minimal {
+        summary id {}
+    }
+
+    fieldset default {
+        fields: title, body,url
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: nativeRank(title, body,url)
+        }
+    }
+
+    rank-profile bm25 inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(body) + bm25(url) 
+        }
+    }
+
+}

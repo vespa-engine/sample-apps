@@ -1,6 +1,6 @@
 #! /bin/bash
 
-DIR="msmarco/download"
+DIR="ext/download"
 
 mkdir -p $DIR
 

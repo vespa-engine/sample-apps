@@ -6,14 +6,14 @@ import csv
 import gzip
 
 
-download_dir = os.path.join("msmarco", "download")
-query_file = os.path.join("msmarco", "queries.tsv")
-docs_file = os.path.join("msmarco", "docs.tsv")
-offset_file = os.path.join("msmarco", "docs-offset.tsv")
+download_dir = os.path.join("ext", "download")
+query_file = os.path.join("ext", "queries.tsv")
+docs_file = os.path.join("ext", "docs.tsv")
+offset_file = os.path.join("ext", "docs-offset.tsv")
 
 # if data is not downloaded - use sample data
 if not os.path.isdir(download_dir):
-    download_dir = os.path.join("msmarco", "sample")
+    download_dir = os.path.join("ext", "sample")
 
 
 # The query string for each queryid is querystring[queryid]

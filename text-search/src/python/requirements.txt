@@ -1,6 +1,0 @@
-pandas
-requests
-tensorflow>=2.0.0
-tensorflow_ranking
-tensorflow_hub>=0.6.0
-sentence-transformers
