@@ -51,11 +51,7 @@ $ ./bin/convert-msmarco.sh
 </pre>
 
 <pre data-test="exec">
-$ mvn package
-</pre>
-
-<pre data-test="exec">
-$ docker run -m 12G --detach --name vespa-msmarco --hostname vespa-msmarco \
+$ docker run --detach --name vespa-msmarco --hostname vespa-msmarco \
   --publish 8080:8080 --publish 19112:19112 --publish 19071:19071 \
   vespaengine/vespa
 </pre>
@@ -65,14 +61,13 @@ $ vespa deploy --wait 300
 </pre>
 
 <pre data-test="exec">
-$ vespa feed msmarco/vespa.json
+$ vespa feed ext/vespa.json
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="What Is A  Dad Bod">
 $ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=what is dad bod' 
 </pre>
 
-[Use custom search front-end](http://localhost:8080/site/search/?q=what+is+a+dad+bod&profile=default)
 
 ### Delete container
 Remove app and data:

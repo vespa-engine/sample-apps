@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+  <container id="text_search" version="1.0">
+    <document-api/>
+    <search>
+    </search>
+    <document-processing/>
+    <nodes>
+      <node hostalias="node1" />
+    </nodes>
+  </container>
+
+  <content id="msmarco" version="1.0">
+    <min-redundancy>2</min-redundancy>
+    <documents>
+      <document type='msmarco' mode="index"/>
+    </documents>
+    <nodes>
+      <node distribution-key='0' hostalias='node1'/>
+    </nodes>
+  </content>
+
+</services>
