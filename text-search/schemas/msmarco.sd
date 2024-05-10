@@ -3,6 +3,10 @@
 schema msmarco {
     document msmarco {
 
+        field language type string {
+            indexing: "en" | set_language 
+        }
+
         field id type string {
             indexing: summary | attribute
         }
@@ -28,6 +32,16 @@ schema msmarco {
     document-summary minimal {
         summary id {}
     }
+
+    document-summary debug-tokens {
+        summary url {}
+        summary url-tokens {
+            source: url
+            tokens
+        }
+        from-disk
+    }
+
 
     fieldset default {
         fields: title, body,url
