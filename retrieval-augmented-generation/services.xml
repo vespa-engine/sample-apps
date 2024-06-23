@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.327.49">
 
   <container id="default" version="1.0">
 
