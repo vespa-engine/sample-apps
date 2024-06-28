@@ -14,7 +14,7 @@ text_splitter = RecursiveCharacterTextSplitter(
     is_separator_regex = False,
 )
 
-documents = load_dataset('Shitao/MLDR', "corpus-en", split='corpus')    
+documents = load_dataset('Shitao/MLDR', "corpus-en", split='corpus', trust_remote_code=True)
 feed_file = "/tmp/vespa_feed_file_en.json"
 with open(feed_file, "w") as f:
     for doc in documents:
