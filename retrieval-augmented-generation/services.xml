@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.327.49">
 
   <container id="default" version="1.0">
 
@@ -13,7 +13,7 @@
     <!-- Comment out this component to avoid downloading the model file during startup -->
     <component id="mistral" class="ai.vespa.llm.clients.LocalLLM">
       <config name="ai.vespa.llm.clients.llm-local-client">
-        <model url="https://data.vespa.oath.cloud/gguf_models/mistral-7b-instruct-v0.1.Q8_0.gguf" />
+        <model url="https://data.vespa.oath.cloud/gguf_models/Phi-3-mini-4k-instruct-q4.gguf" />
         <contextSize>4096</contextSize>
         <parallelRequests>1</parallelRequests>
       </config>

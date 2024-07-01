@@ -260,7 +260,6 @@ qrserver
 searchnode
 slobrok
 storagenode
-transactionlogserver
 
 $ docker exec -it node0 /opt/vespa/bin/vespa-model-inspect service container
 container @ node4.vespanet : 
