@@ -5,7 +5,7 @@
   <container id="default" version="1.0">
 
     <config name="ai.vespa.example.reranker.reranker">
-      <endpoint>https://f237494d.ae82d729.z.vespa-app.cloud/</endpoint>
+      <endpoint>[your endpoint]</endpoint>
       <rerank>
         <hits>100</hits>
         <profile>firstPhase</profile>
