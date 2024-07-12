@@ -13,11 +13,13 @@ it is useful when you want to quickly do ranking experiments without rewriting a
 1. Make sure the application to rerank has a 
 [token endpoint](https://cloud.vespa.ai/en/security/guide#application-key).
 2. `vespa clone examples/reranker`
-3. Add the endpoint and any defaults to the reranker config in `src/main/application/services.xml`
-   (parameters can also be passed in the request).
+3. Add your endpoint to the reranker config in `src/main/application/services.xml`
+   and optionally change reranker parameters (these can also be passed in the request).
 4. Add the model(s) to use for reranking to the `models` directory.
-5. `mvn install && vespa deploy`
-6. Issue queries. All request parameters including the token header will be passed through to the application to be reranked.
+5. `vespa config set application my-tenant.reranker.default`
+6. `vespa auth cert`
+6. `mvn install && vespa deploy`
+7. Issue queries. All request parameters including the token header will be passed through to the application to be reranked.
 
 Example requests:
 
