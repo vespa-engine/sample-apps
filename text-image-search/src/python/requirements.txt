@@ -1,5 +1,5 @@
 # torch 2.0 has an ONNX opset mismatch with the current code, use 1 until fixed. ToDo
-torch == 1.*
+torch ==2.*
 
 torchvision
 ftfy
