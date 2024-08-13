@@ -1,0 +1,38 @@
+name: Link checker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "00 3 * * 1-5"
+
+jobs:
+  test:
+    uses: vespa-engine/gh-actions/.github/workflows/jekyll-link-checker.yml@remove-redirect-files-before-link-check
+    with:
+      additional-args: "--directory-index-file README.html"
+      add-no-render-with-liquid: "true"
+      build-plugins: |
+        _plugins-linkcheck
+      pre-check-script: |
+        mv links-to-check.html _site
+        echo "Broken links in links-to-check.html are extracted from services/hosts/deployment.xml in the sample apps, as well as links in javadoc."
+        echo "Search for broken links in these files."
+      ignore-files: |-
+        /tensor-playground/src/main/resources/playground/
+        /src/main/resources/site/index.html/
+        /dense-passage-retrieval-with-ann/src/main/resources/frontend/index.html/
+      ignore-urls: |-
+        src/main/application/schemas/wiki.sd#L80
+        /localhost:8080/
+        src/main/application/search/query-profiles
+        /hub.docker.com/r/vespaengine/vespa/tags/
+      swap-urls: |-
+        (https\://github.com.*/master/.*)#.*:\1
+        (https\://github.com.*/main/.*)#.*:\1
+        ^(?!https)(.*)\.md:\1.html
