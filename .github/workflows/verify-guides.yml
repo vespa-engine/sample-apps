@@ -1,0 +1,51 @@
+name: Verify Giudes
+
+on:
+  workflow_call:
+    inputs:
+      test-config-path:
+        description: |
+          The path to the test configuration file, relative to the repository root.
+
+          ::warning:: This is mutually exclusive with `test-file`.
+
+          Example: `test/_test_config.yml`
+        type: string
+        required: false
+      test-file:
+        description: |
+          The path to the test file, relative to the repository root. This is used to run tests for a specific guide.
+
+          ::warning:: This is mutually exclusive with `test-config-path` and will take precedence over it.
+
+          Example: `billion-scale-vector-search/README.md`
+        type: string
+        required: false
+
+defaults:
+  run:
+    # Specify to ensure "pipefail and errexit" are set.
+    # Ref: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#defaultsrunshell
+    shell: bash
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      LANG: "C.UTF-8"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/free-space
+
+      - uses: ./.github/actions/install-deps
+
+      - name: run-tests (config)
+        if: ${{ inputs.test-config-path  && !inputs.test-file }}
+        run: |
+          ./test/test.py -w $GITHUB_WORKSPACE -c ${{ inputs.test-config-path }}
+
+      - name: run-tests (file)
+        if: ${{ inputs.test-file && !inputs.test-config-path }}
+        run: |
+          ./test/test.py -w $GITHUB_WORKSPACE ${{ inputs.test-file }}

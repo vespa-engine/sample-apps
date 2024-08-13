@@ -1,0 +1,20 @@
+name: Verify Giudes (billion scale vector search)
+
+on:
+  workflow_dispatch: # Allow manual triggering of this workflow.
+
+  push:
+    branches: ["master"]
+    paths:
+      - "billion-scale-vector-search/"
+
+  pull_request:
+    branches: ["master"]
+    paths:
+      - "billion-scale-vector-search/"
+
+jobs:
+  main:
+    uses: ./.github/workflows/verify-guides.yml
+    with:
+      test-file: "billion-scale-vector-search/README.md"
