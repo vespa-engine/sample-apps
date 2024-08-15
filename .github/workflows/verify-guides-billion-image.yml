@@ -1,0 +1,22 @@
+name: Verify Giudes (billion scale image search)
+
+on:
+  workflow_dispatch: # Allow manual triggering of this workflow.
+
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/verify-guides-billion-image.yml" # Test changes to this file
+      - "billion-scale-image-search/"
+
+  pull_request:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/verify-guides-billion-image.yml" # Test changes to this file
+      - "billion-scale-image-search/"
+
+jobs:
+  test:
+    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@verify-markdown-guides
+    with:
+      test-file: "billion-scale-image-search/README.md"
