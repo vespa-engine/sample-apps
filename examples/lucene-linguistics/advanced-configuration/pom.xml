@@ -13,7 +13,7 @@
     <bundle-plugin.failOnWarnings>false</bundle-plugin.failOnWarnings>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <test.hide>true</test.hide>
-    <vespa_version>8.393.3</vespa_version>
+    <vespa_version>8.395.28</vespa_version>
     <junit.version>5.10.1</junit.version>
     <lucene.version>9.8.0</lucene.version>
   </properties>
