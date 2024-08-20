@@ -9,6 +9,8 @@ on:
       - "billion-scale-vector-search/"
       - "billion-scale-image-search/"
       - "examples/model-deployment/"
+      - ".github/**"
+      - "!.github/workflows/verify-guides-main.yml"
 
   pull_request:
     branches: ["master"]
@@ -16,6 +18,8 @@ on:
       - "billion-scale-vector-search/"
       - "billion-scale-image-search/"
       - "examples/model-deployment/"
+      - ".github/**"
+      - "!.github/workflows/verify-guides-main.yml"
 
 jobs:
   main:
