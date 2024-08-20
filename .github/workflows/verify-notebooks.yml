@@ -1,0 +1,38 @@
+name: Verify Notebooks
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/verify-notebooks.yml"
+      - "examples/model-deployment/"
+      - "text-image-search/"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/verify-notebooks.yml"
+      - "examples/model-deployment/"
+      - "text-image-search/"
+
+defaults:
+  run:
+    # Specify to ensure "pipefail and errexit" are set.
+    # Ref: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#defaultsrunshell
+    shell: bash
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn
+
+      - name: Run Notebooks
+        working-directory: examples/model-deployment
+        run: |
+          runnb --allow-not-trusted ONNXModelExport.ipynb
