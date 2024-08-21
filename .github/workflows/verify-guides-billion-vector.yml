@@ -17,6 +17,6 @@ on:
 
 jobs:
   test:
-    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@verify-markdown-guides
+    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main
     with:
       test-file: "billion-scale-vector-search/README.md"
