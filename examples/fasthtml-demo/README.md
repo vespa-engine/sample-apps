@@ -43,7 +43,7 @@ This sample-app can serve as an example of how you can build and deploy a simple
 
 #### 1. Clone this folder to your local machine 📂
 
-The command below will clone the repository and only fetch the `fasthtml-frontend` folder.
+The command below will clone the repository and only fetch the `fasthtml-demo` directory.
 
 ```bash
 git clone --depth 1 --filter=blob:none --sparse https://github.com/vespa-engine/sample-apps.git temp-sample-apps && cd temp-sample-apps && git sparse-checkout set fasthtml-demo && mkdir -p ../fasthtml-demo && mv fasthtml-demo/* ../fasthtml-demp/ && cd .. && rm -rf temp-sample-apps
