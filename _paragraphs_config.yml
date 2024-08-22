@@ -6,18 +6,23 @@ search:
   do_feed  : true
   do_index_removal_before_feed: false
   feed_endpoints:
-    - url: https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
-      indexes:
-        - paragraph_index.json 
-    - url: https://vespacloud-docsearch.vespa-team.gcp-us-central1-f.z.vespa-app.cloud/
-      indexes:
-        - paragraph_index.json 
-    - url: https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud/
-      indexes:
-        - paragraph_index.json 
-    - url: https://enclave.vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/
+    # vespacloud-docsearch // aws // us-east-1c
+    - url: https://b671e1db.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - paragraph_index.json
-    - url: https://enclave.vespacloud-docsearch.vespa-team.gcp-us-central1-f.z.vespa-app.cloud/
+    # vespacloud-docsearch // gcp // us-central1-f
+    - url: https://a341952a.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - paragraph_index.json
+    # vespacloud-docsearch // aws // us-west-1a
+    - url: https://ed053d52.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - paragraph_index.json
+    # vespacloud-docsearch // aws (enclave) // us-west-1a
+    - url: https://f10d3607.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - paragraph_index.json
+    # vespacloud-docsearch // gcp (enclave) // us-central1-f
+    - url: https://ac5f3559.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - paragraph_index.json
