@@ -61,7 +61,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-At this point, you should be able to access the app at `http://localhost:5001`
+At this point, you should be able to access the app at [http://localhost:5001](http://localhost:5001).
 
 But, you will _not_ be able to search for anything, as your environment variables are not set up.
 
