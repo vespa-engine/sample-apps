@@ -14,11 +14,11 @@ search:
     - url: https://a341952a.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - paragraph_index.json
-    # vespacloud-docsearch // aws // us-west-1a
+    # vespacloud-docsearch // aws // eu-west-1a
     - url: https://ed053d52.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - paragraph_index.json
-    # vespacloud-docsearch // aws (enclave) // us-west-1a
+    # vespacloud-docsearch // aws (enclave) // us-west-1c
     - url: https://f10d3607.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - paragraph_index.json
