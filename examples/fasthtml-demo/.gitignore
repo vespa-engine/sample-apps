@@ -1,0 +1,15 @@
+ft/
+db/
+session/
+todo/
+fasthtml/
+.venv/
+__pycache__/
+.python-version
+# Python stuff
+*.pyc
+*.pyo
+
+
+.env
+.sesskey
