@@ -1,4 +1,3 @@
-# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 from fasthtml_hf import setup_hf_backup
 from fasthtml.common import (
     picolink,
@@ -150,6 +149,7 @@ bware = Beforeware(
         "/document/.*",
         "/expand/.*",
         "/source",
+        "/about",
     ],
 )
 
@@ -663,6 +663,13 @@ def get_source(auth, sess):
 
 @app.get("/about")
 def get_about(auth, sess):
+    with open("README.md") as f:
+        readme = f.read()
+    # Strip everything before the FIRST # in the README
+    stripped_readme = re.sub(
+        r"^.*?(?=# FastHTML Vespa frontend)", "", readme, flags=re.DOTALL
+    )
+
     return (
         Title("About this app"),
         get_navbar(auth),
@@ -676,7 +683,7 @@ def get_about(auth, sess):
                     style="margin: 10px;",
                 ),
                 Div(
-                    """# About this app \n We wanted to see if we could build a simple search interface using Vespa and fastHTML. This is the result!""",
+                    stripped_readme,
                     cls="marked",
                     style="margin: 10px;",
                 ),
