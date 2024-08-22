@@ -198,7 +198,7 @@ def get_navbar(admin: bool):
             ),
             A(
                 I(cls="fab fa-github fa-2x"),
-                href="https://github.com/thomasht86/fasthtml-vespa-demo/",
+                href="https://github.com/vespa-engine/sample-apps/tree/master/examples/fasthtml-demo",
                 style="margin: 10px;",
                 target="_blank",
                 title="View source code on GitHub",
