@@ -145,14 +145,19 @@ headers = (
     spinner_css,
 )
 
+# Read file contents once before starting the server
+with open("README.md") as f:
+    README = f.read()
+with open("main.py") as f:
+    SOURCE = f.read()
+
 # Sesskey
 sess_key_path = "session/.sesskey"
 # Make sure session directory exists
 os.makedirs("session", exist_ok=True)
 
+
 # Middleware
-
-
 class XFrameOptionsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         response = await call_next(request)
@@ -742,8 +747,6 @@ def get_admin(auth, page: int = 1):
 
 @app.get("/source")
 def get_source(auth, sess):
-    with open("main.py") as f:
-        source = f.read()
     # Back icon to go back to main page in top left corner
     return (
         Title("Source code"),
@@ -758,7 +761,7 @@ def get_source(auth, sess):
                     style="margin: 10px;",
                 ),
                 Div(
-                    f"""### main.py - This is the whole source code for this app (!)\n```python\n{source}\n```""",
+                    f"""### `main.py`\n### This is the complete source code for this app \n```python\n{SOURCE}\n```""",
                     cls="marked",
                     style="margin: 10px;",
                 ),
@@ -770,11 +773,9 @@ def get_source(auth, sess):
 
 @app.get("/about")
 def get_about(auth, sess):
-    with open("README.md") as f:
-        readme = f.read()
     # Strip everything before the FIRST # in the README
     stripped_readme = re.sub(
-        r"^.*?(?=# FastHTML Vespa frontend)", "", readme, flags=re.DOTALL
+        r"^.*?(?=# FastHTML Vespa frontend)", "", README, flags=re.DOTALL
     )
 
     return (
