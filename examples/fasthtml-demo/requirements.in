@@ -1,0 +1,6 @@
+python-fasthtml==0.4.4
+huggingface-hub
+git+https://github.com/AnswerDotAI/fasthtml-hf@a7ae831a1bd01105a9f771fb3a4e4c454ddc3176 # latest released version did not work
+pyvespa
+vespacli
+python-dotenv
