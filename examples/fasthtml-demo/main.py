@@ -58,7 +58,7 @@ from enum import Enum
 from typing import Tuple as T
 from urllib.parse import quote
 
-DEV_MODE = True
+DEV_MODE = False
 
 if DEV_MODE:
     print("Running in DEV_MODE - Hot reload enabled")
@@ -66,12 +66,19 @@ if DEV_MODE:
     from dotenv import load_dotenv
 
     load_dotenv()
+else:
+    print("DEV_MODE disabled - environment variables loaded from system")
+
+vespa_app_url = os.getenv("VESPA_APP_URL", None)
+if vespa_app_url is None:
+    print("Please set the VESPA_APP_URL environment variable")
+    exit(1)
 
 ADMIN_NAME = os.getenv("ADMIN_NAME", "admin")
 ADMIN_PWD = os.getenv("ADMIN_PWD", "admin")
 
 vespa_app: Vespa = Vespa(
-    url=os.getenv("VESPA_APP_URL"),
+    url=vespa_app_url,
     vespa_cloud_secret_token=os.getenv("VESPA_CLOUD_SECRET_TOKEN"),
 )
 status = vespa_app.get_application_status()
@@ -286,7 +293,6 @@ def get(sess):
         "Alkylphenol Endocrine Disruptors",
         "Testing Turmeric on Smokers",
         "The Role of Pesticides in Parkinson's Disease",
-        "Vitamin D for sleep quality in older adults",
     ]
     return (
         Title("Vespa demo"),
@@ -336,7 +342,6 @@ def get(sess):
                         hx_include="input[name=ranking]:checked",
                         hx_target="#results",
                         hx_indicator="#spinner",
-                        # Set the value of #userquery on click
                         hx_on_click=f"document.getElementById('userquery').value='{query}'",
                         style="margin: 10px; padding: 5px;",
                         cls="secondary outline",
