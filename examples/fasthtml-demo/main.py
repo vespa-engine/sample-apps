@@ -37,9 +37,11 @@ from fasthtml.common import (
     Beforeware,
     Hidden,
     Request,
+    H3,
+    Style,
 )
 from fasthtml.components import Nav, Article, Header, Mark
-from fasthtml.pico import Search
+from fasthtml.pico import Search, Grid, Fieldset, Label
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -52,11 +54,15 @@ from hmac import compare_digest
 from io import StringIO
 import csv
 import tempfile
+from enum import Enum
+from typing import Tuple as T
+from urllib.parse import quote
 
-DEV_MODE = True
+DEV_MODE = False
 
 if DEV_MODE:
     print("Running in DEV_MODE - Hot reload enabled")
+    print("Loading environment variables from .env")
     from dotenv import load_dotenv
 
     load_dotenv()
@@ -84,7 +90,9 @@ db = database(DB_FILE)
 queries = db.t.queries
 if queries not in db.t:
     # You can pass a dict, or kwargs, to most MiniDataAPI methods.
-    queries.create(dict(qid=int, query=str, sess_id=str, timestamp=int), pk="qid")
+    queries.create(
+        dict(qid=int, query=str, ranking=str, sess_id=str, timestamp=int), pk="qid"
+    )
     # Add autoincrement to the qid column
     db.query("ALTER TABLE queries ADD COLUMN qid INTEGER PRIMARY KEY AUTOINCREMENT")
 Query = queries.dataclass()
@@ -111,7 +119,24 @@ def user_auth_before(req, sess):
         return login_redir
 
 
-headers = (picolink, MarkdownJS(), HighlightJS(langs=["json", "python"]), favicon, fa)
+spinner_css = Style("""
+    .htmx-indicator {
+        display: none; /* Hide spinner by default */
+    }
+
+    .htmx-indicator.htmx-request {
+        display: block;    
+    }
+""")
+
+headers = (
+    picolink,
+    MarkdownJS(),
+    HighlightJS(langs=["json", "python"]),
+    favicon,
+    fa,
+    spinner_css,
+)
 
 # Sesskey
 sess_key_path = "session/.sesskey"
@@ -165,6 +190,13 @@ app, rt = fast_app(
 
 sesskey = get_key(fname=sess_key_path)
 print(f"Session key: {sesskey}")
+
+
+# enum class for rank profiles
+class RankProfile(str, Enum):
+    bm25 = "bm25"
+    semantic = "semantic"
+    fusion = "fusion"
 
 
 def get_navbar(admin: bool):
@@ -230,10 +262,32 @@ def get_navbar(admin: bool):
     return bar
 
 
+def spinner_div(hidden: bool = False):
+    return Div(
+        A(
+            id="spinner",
+            aria_busy="true",
+            cls="htmx-indicator",
+            style="font-size: 2em;",
+        ),
+        style="text-align: center; margin-top: 40px;"
+        if not hidden
+        else "display: none;",
+    )
+
+
 @app.route("/")
 def get(sess):
     # Can not get auth directly, as it is skipped in beforeware
     auth = sess.get("auth", False)
+    queries = [
+        "Breast Cancer Cells Feed on Cholesterol",
+        "Treating Asthma With Plants vs. Pills",
+        "Alkylphenol Endocrine Disruptors",
+        "Testing Turmeric on Smokers",
+        "The Role of Pesticides in Parkinson's Disease",
+        "Vitamin D for sleep quality in older adults",
+    ]
     return (
         Title("Vespa demo"),
         get_navbar(auth),
@@ -249,11 +303,47 @@ def get(sess):
                 Button(
                     "Search",
                     hx_get="/search",
-                    hx_include="#userquery",
+                    # include userquery and id of selected ranking radio button
+                    hx_include="#userquery, input[name=ranking]:checked",
                     hx_target="#results",
                     hx_indicator="#spinner",
                 ),
                 style="margin: 10% 10px 0 0;",
+            ),
+            Fieldset(
+                Input(type="radio", id="bm25", name="ranking", value="bm25"),
+                Label("BM25", htmlfor="bm25"),
+                Input(type="radio", id="semantic", name="ranking", value="semantic"),
+                Label("Semantic", htmlfor="semantic"),
+                Input(
+                    type="radio",
+                    id="fusion",
+                    name="ranking",
+                    value="fusion",
+                    checked="",
+                ),
+                Label("Reciprocal Rank fusion", htmlfor="fusion"),
+                style="margin: 10px; text-align: center;",
+                id="ranking",
+            ),
+            H3("Example queries"),
+            # Buttons with predefined search queries
+            Grid(
+                *[
+                    Button(
+                        query,
+                        hx_get="/search?userquery=" + query,
+                        hx_include="input[name=ranking]:checked",
+                        hx_target="#results",
+                        hx_indicator="#spinner",
+                        style="margin: 10px; padding: 5px;",
+                        cls="secondary outline",
+                        id=f"example-{qid}",
+                    )
+                    for qid, query in enumerate(queries)
+                ],
+                # Make the grid buttons have same height and distribute evenly and center align
+                style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));",
             ),
             # Section(
             #     Input(
@@ -276,16 +366,9 @@ def get(sess):
             #         ),
             #     id="suggestions",
             # ),
+            # Display spinner div only if it #spinner does not exist
             Section(
-                Div(
-                    A(
-                        id="spinner",
-                        aria_busy="true",
-                        cls="htmx-indicator",
-                        style="font-size: 2em;",
-                    ),
-                    style="text-align: center; margin-top: 40px;",
-                ),
+                spinner_div(),
                 id="results",
                 hx_swap="innerHTML",
                 style="margin: 20px;",
@@ -356,9 +439,9 @@ def replace_hi_with_strong(text):
     return elements
 
 
-def log_query_to_db(query, sess):
+def log_query_to_db(query, ranking, sess):
     return queries.insert(
-        Query(query=query, sess_id=sesskey, timestamp=int(time.time()))
+        Query(query=query, ranking=ranking, sess_id=sesskey, timestamp=int(time.time()))
     )
 
 
@@ -432,22 +515,38 @@ async def expand(request: Request, docid: str, expand: bool):
     )
 
 
+# Returns tuple of (yql, body(dict)) based on the ranking profile
+def get_yql(ranking: RankProfile, userquery: str) -> T[str, dict]:
+    if ranking == RankProfile.bm25:
+        yql = "select * from sources * where userQuery() limit 10"
+        body = {}
+    elif ranking == RankProfile.semantic:
+        yql = "select * from sources * where ({targetHits:10}nearestNeighbor(embedding,q)) limit 10"
+        body = {"input.query(q)": f"embed({userquery})"}
+    elif ranking == RankProfile.fusion:
+        yql = "select * from sources * where rank({targetHits:1000}nearestNeighbor(embedding,q), userQuery()) limit 10"
+        body = {"input.query(q)": f"embed({userquery})"}
+    return yql, body
+
+
 @app.get("/search")
-async def search(userquery: str, sess):
+async def search(userquery: str, ranking: str, sess):
     print(sess)
     if "queries" not in sess:
         sess["queries"] = []
-    else:
-        sess["queries"].append(userquery)
+    quoted = quote(userquery) + "&ranking=" + ranking
+    sess["queries"].append(quoted)
     print(f"Searching for: {userquery}")
-    log_query_to_db(userquery, sess)
+    print(f"Ranking: {ranking}")
+    log_query_to_db(userquery, ranking, sess)
+    yql, body = get_yql(ranking, userquery)
     async with vespa_app.asyncio() as session:
         resp = await session.query(
-            yql="select * from sources * where userQuery() or ({targetHits:1000}nearestNeighbor(embedding,q)) limit 10;",
+            yql=yql,
             query=userquery,
             hits=10,
-            ranking="fusion",
-            body={"input.query(q)": f"embed({userquery})"},
+            ranking=str(ranking),
+            body=body,
         )
     records = []
     fields = ["id", "title", "body"]
@@ -459,6 +558,7 @@ async def search(userquery: str, sess):
     results = parse_results(records)
     json_dump = json.dumps(resp.get_json(), indent=4)
     return Div(
+        spinner_div(),
         # Accordion (with Details)
         Details(
             Summary("Full JSON response"),
