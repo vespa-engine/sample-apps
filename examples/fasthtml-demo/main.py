@@ -58,7 +58,7 @@ from enum import Enum
 from typing import Tuple as T
 from urllib.parse import quote
 
-DEV_MODE = False
+DEV_MODE = True
 
 if DEV_MODE:
     print("Running in DEV_MODE - Hot reload enabled")
@@ -336,6 +336,8 @@ def get(sess):
                         hx_include="input[name=ranking]:checked",
                         hx_target="#results",
                         hx_indicator="#spinner",
+                        # Set the value of #userquery on click
+                        hx_on_click=f"document.getElementById('userquery').value='{query}'",
                         style="margin: 10px; padding: 5px;",
                         cls="secondary outline",
                         id=f"example-{qid}",
