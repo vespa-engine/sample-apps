@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+  <container id="default" version="1.0">
+
+    <config name="ai.vespa.example.reranker.reranker">
+      <endpoint>[your endpoint]</endpoint>
+      <rerank>
+        <hits>100</hits>
+        <profile>firstPhase</profile>
+        <model>xgboost_model_example</model>
+      </rerank>
+    </config>
+
+    <model-evaluation/>
+
+    <search>
+      <chain id="default" inherits="native">
+        <searcher id="ai.vespa.example.reranker.RerankingSearcher" bundle="reranker"/>
+        <searcher id="ai.vespa.example.reranker.VespaSearcher" bundle="reranker"/>
+      </chain>
+    </search>
+
+    <nodes count="1"/>
+  </container>
+
+</services>

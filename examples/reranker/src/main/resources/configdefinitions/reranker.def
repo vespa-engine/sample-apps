@@ -1,0 +1,18 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+package=ai.vespa.example.reranker
+
+# The *token* endpoint of the application whose results should be reranked
+# See https://cloud.vespa.ai/en/security/guide#application-key to create a token endpoint
+endpoint string
+
+# The default number of hits to rerank from the underlying endpoint, if not specified in the request.
+rerank.hits int
+
+# The default rank profile to use in the underlying endpoint,
+# if not specified by the ranking.profile (aka 'ranking') parameter in the request.
+# This profile must contain all summary features used in the model of this reranker.
+rerank.profile string
+
+# The default model to use for reranking in this, if not specified in the request.
+# Must be contained in the models/ directory.
+rerank.model string
