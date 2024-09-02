@@ -56,7 +56,7 @@ vespa query 'yql=select * from doc where userQuery() or ({targetHits: 100}neares
 ### Export ColBERT models from HF 
 See the [model2onnx.py](model2onnx.py) script for exporting the ColBERT model from Hugging Face to ONNX format. 
 
-Notice that these three models uses different embedding dimensionality. 
+Notice that these three models use different embedding dimensionality.
 
 Example usage:
 
