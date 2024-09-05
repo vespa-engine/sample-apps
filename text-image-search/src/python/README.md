@@ -51,4 +51,4 @@ Run the app:
 streamlit run app.py
 ```
 
-[Animation](https://data.vespa.oath.cloud/sample-apps-data/image_demo.gif)
+[Animation](https://data.vespa-cloud.com/sample-apps-data/image_demo.gif)

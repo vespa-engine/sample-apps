@@ -89,7 +89,7 @@ $ vespa clone commerce-product-ranking my-app && cd my-app
 Download cross-encoder model:
 <pre data-test="exec">
 $ curl -L -o application/models/title_ranker.onnx \
-    https://data.vespa.oath.cloud/sample-apps-data/title_ranker.onnx
+    https://data.vespa-cloud.com/sample-apps-data/title_ranker.onnx
 </pre>
 
 See [scripts/export-bi-encoder.py](scripts/export-bi-encoder.py) and
@@ -181,7 +181,7 @@ This run file can then be evaluated using the [trec_eval](https://github.com/usn
 Download a pre-processed query-product relevance judgments in TREC format:
 <pre data-test="exec">
 $  curl -L -o test.qrels \
-    https://data.vespa.oath.cloud/sample-apps-data/test.qrels
+    https://data.vespa-cloud.com/sample-apps-data/test.qrels
 </pre>
 
 Install `trec_eval` (your mileage may vary):
@@ -237,7 +237,7 @@ Download a pre-processed feed file with all (1,215,854) products:
 
 <pre>
 $  curl -L -o product-search-products.jsonl.zstd \
-    https://data.vespa.oath.cloud/sample-apps-data/product-search-products.jsonl.zstd
+    https://data.vespa-cloud.com/sample-apps-data/product-search-products.jsonl.zstd
 </pre>
 
 This step is resource intensive as the semantic embedding model encodes 

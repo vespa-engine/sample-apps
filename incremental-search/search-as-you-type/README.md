@@ -61,7 +61,7 @@ $ mvn clean package -U
 Download feed file:
 <pre data-test="exec">
 $ curl -L -o search-as-you-type-index.jsonl \
-  https://data.vespa.oath.cloud/sample-apps-data/search-as-you-type-index.jsonl 
+  https://data.vespa-cloud.com/sample-apps-data/search-as-you-type-index.jsonl 
 </pre>
 
 Verify that configuration service (deploy api) is ready:

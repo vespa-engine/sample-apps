@@ -10,12 +10,12 @@
           <model url="https://huggingface.co/bert-base-uncased/raw/main/tokenizer.json"/>
         </component>
         <component id="title" type="hugging-face-embedder">
-          <transformer-model  url="https://data.vespa.oath.cloud/sample-apps-data/title_encoder.onnx"/>
+          <transformer-model  url="https://data.vespa-cloud.com/sample-apps-data/title_encoder.onnx"/>
           <tokenizer-model url="https://huggingface.co/bert-base-uncased/raw/main/tokenizer.json"/>
           <transformer-output>output_0</transformer-output>
         </component>
         <component id="description" type="hugging-face-embedder">
-          <transformer-model  url="https://data.vespa.oath.cloud/sample-apps-data/description_encoder.onnx"/>
+          <transformer-model  url="https://data.vespa-cloud.com/sample-apps-data/description_encoder.onnx"/>
           <tokenizer-model url="https://huggingface.co/bert-base-uncased/raw/main/tokenizer.json"/>
           <transformer-output>output_0</transformer-output>
         </component>
