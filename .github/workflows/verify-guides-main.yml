@@ -1,0 +1,28 @@
+name: Verify Giudes (Main)
+
+on:
+  workflow_dispatch: # Allow manual triggering of this workflow.
+
+  push:
+    branches: ["master"]
+    paths-ignore:
+      - "billion-scale-vector-search/"
+      - "billion-scale-image-search/"
+      - "examples/model-deployment/"
+      - ".github/**"
+      - "!.github/workflows/verify-guides-main.yml"
+
+  pull_request:
+    branches: ["master"]
+    paths-ignore:
+      - "billion-scale-vector-search/"
+      - "billion-scale-image-search/"
+      - "examples/model-deployment/"
+      - ".github/**"
+      - "!.github/workflows/verify-guides-main.yml"
+
+jobs:
+  main:
+    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main
+    with:
+      test-config-path: "test/_test_config.yml"
