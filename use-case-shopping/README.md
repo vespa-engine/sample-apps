@@ -90,13 +90,13 @@ $ vespa test src/test/application/tests/system-test/product-search-test.json
 
 First, create data feed for products:
 <pre data-test="exec">
-$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa.oath.cloud/sample-apps-data/meta_sports_20k_sample.json.zst 
+$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst 
 $ zstdcat meta_sports_20k_sample.json.zst | ./convert_meta.py > feed_items.json
 </pre>
 
 Next, data feed for reviews:
 <pre data-test="exec">
-$ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa.oath.cloud/sample-apps-data/reviews_sports_24k_sample.json.zst
+$ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/reviews_sports_24k_sample.json.zst
 $ zstdcat reviews_sports_24k_sample.json.zst | ./convert_reviews.py > feed_reviews.json
 </pre>
 

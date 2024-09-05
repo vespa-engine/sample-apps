@@ -32,7 +32,7 @@ def get_video(video_file_name, video_dir):
 
 def get_predefined_queries():
     return get(
-        "https://data.vespa.oath.cloud/blog/ucf101/predefined_queries.txt"
+        "https://data.vespa-cloud.com/blog/ucf101/predefined_queries.txt"
     ).text.split("\n")[:-1]
 
 

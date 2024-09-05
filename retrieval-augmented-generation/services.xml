@@ -13,7 +13,7 @@
     <!-- Comment out this component to avoid downloading the model file during startup -->
     <component id="mistral" class="ai.vespa.llm.clients.LocalLLM">
       <config name="ai.vespa.llm.clients.llm-local-client">
-        <model url="https://data.vespa.oath.cloud/gguf_models/Phi-3-mini-4k-instruct-q4.gguf" />
+        <model url="https://data.vespa-cloud.com/gguf_models/Phi-3-mini-4k-instruct-q4.gguf" />
         <contextSize>4096</contextSize>
         <parallelRequests>1</parallelRequests>
       </config>

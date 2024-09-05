@@ -24,9 +24,9 @@ which takes a string as an input and returns a vector embedding of that string.
 ```
 mkdir -p src/main/application/embedder-models/e5-small-v2
 curl -o src/main/application/embedder-models/e5-small-v2/model.onnx \
-  https://data.vespa.oath.cloud/onnx_models/e5-small-v2/model.onnx
+  https://data.vespa-cloud.com/onnx_models/e5-small-v2/model.onnx
 curl -o src/main/application/embedder-models/e5-small-v2/tokenizer.json \
-  https://data.vespa.oath.cloud/onnx_models/e5-small-v2/tokenizer.json
+  https://data.vespa-cloud.com/onnx_models/e5-small-v2/tokenizer.json
 ```
 4. Add a public certificate: ``vespa auth cert``
 5. Compile and deploy the application: ``mvn install && vespa deploy --wait 600``
@@ -44,8 +44,8 @@ Check out ``services.xml`` for more information.
 3. Download the models:
 ```
 mkdir -p src/main/application/embedder-models/e5-small-v2
-curl -o src/main/application/embedder-models/e5-small-v2/model.onnx https://data.vespa.oath.cloud/onnx_models/e5-small-v2/model.onnx
-curl -o src/main/application/embedder-models/e5-small-v2/tokenizer.json https://data.vespa.oath.cloud/onnx_models/e5-small-v2/tokenizer.json
+curl -o src/main/application/embedder-models/e5-small-v2/model.onnx https://data.vespa-cloud.com/onnx_models/e5-small-v2/model.onnx
+curl -o src/main/application/embedder-models/e5-small-v2/tokenizer.json https://data.vespa-cloud.com/onnx_models/e5-small-v2/tokenizer.json
 ```
 4. Compile and deploy the application: ``mvn install && vespa deploy --wait 300``
 

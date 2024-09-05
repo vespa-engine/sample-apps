@@ -9,8 +9,8 @@ if [ -f "$FILE" ]; then
     echo "$FILE exists."
 else 
     echo "$FILE does not exist."
-    echo "Downloading model https://data.vespa.oath.cloud/sample-apps-data/clip_text_transformer.onnx" 
+    echo "Downloading model https://data.vespa-cloud.com/sample-apps-data/clip_text_transformer.onnx" 
     curl -L -o $DIR/text_transformer.onnx \
-      https://data.vespa.oath.cloud/sample-apps-data/clip_text_transformer.onnx
+      https://data.vespa-cloud.com/sample-apps-data/clip_text_transformer.onnx
 fi
 

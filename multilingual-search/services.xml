@@ -7,8 +7,8 @@
 
         <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
         <component id="e5" type="hugging-face-embedder">
-            <transformer-model url="https://data.vespa.oath.cloud/sample-apps-data/m-e5-small/model.onnx"/>
-            <tokenizer-model url="https://data.vespa.oath.cloud/sample-apps-data/m-e5-small/tokenizer.json"/>
+            <transformer-model url="https://data.vespa-cloud.com/sample-apps-data/m-e5-small/model.onnx"/>
+            <tokenizer-model url="https://data.vespa-cloud.com/sample-apps-data/m-e5-small/tokenizer.json"/>
             <!-- E5 prompt instructions -->
             <prepend>
                 <query>query:</query>

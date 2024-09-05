@@ -39,7 +39,7 @@ which is suitable for exploration and analysis.
 The other is a stand-alone Vespa application, which is more suitable for production (below).
 The Python sample app includes a streamlit user interface:
 
-[Animation](https://data.vespa.oath.cloud/sample-apps-data/image_demo.gif)
+[Animation](https://data.vespa-cloud.com/sample-apps-data/image_demo.gif)
 
 The application takes a textual description and returns the file names of the
 images that best match the description. The main difference between this app
@@ -144,7 +144,7 @@ $ python3 src/python/clip_feed.py
 Alternatively, instead of computing the embeddings, use the pre-computed embeddings:
 <pre data-test="exec">
 $ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
-    https://data.vespa.oath.cloud/sample-apps-data/flickr-8k-clip-embeddings.jsonl.zst 
+    https://data.vespa-cloud.com/sample-apps-data/flickr-8k-clip-embeddings.jsonl.zst 
 </pre>
 
 <pre data-test="exec">

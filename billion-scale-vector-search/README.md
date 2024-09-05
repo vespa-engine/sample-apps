@@ -85,7 +85,7 @@ It uses the first 10M vectors of the 100M slice sample.
 This sample file is about 1GB (10M vectors):
 <pre data-test="exec">
 $ curl -L -o spacev10m_base.i8bin \
-  https://data.vespa.oath.cloud/sample-apps-data/spacev10m_base.i8bin
+  https://data.vespa-cloud.com/sample-apps-data/spacev10m_base.i8bin
 </pre>
 
 Generate the feed file for the first 10M vectors from the 100M sample. 
@@ -141,7 +141,7 @@ Download the query vectors and the ground truth for the 10M first vectors:
 $ curl -L -o query.i8bin \
   https://github.com/microsoft/SPTAG/raw/main/datasets/SPACEV1B/query.bin
 $ curl -L -o spacev10m_gt100.i8bin \
-  https://data.vespa.oath.cloud/sample-apps-data/spacev10m_gt100.i8bin
+  https://data.vespa-cloud.com/sample-apps-data/spacev10m_gt100.i8bin
 </pre>
 
 Note, initially, the routine above used the query file from https://comp21storage.blob.core.windows.net/publiccontainer/comp21/spacev1b/query.i8bin
