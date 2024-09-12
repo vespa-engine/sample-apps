@@ -20,7 +20,7 @@ The second part secures the application using [mTLS](https://docs.vespa.ai/en/mt
 
 A sample [docker-compose.yaml](docker-compose.yaml) is provided, refer to [Docker Compose](#docker-compose).
 
-**Troubleshooting:** The [troubleshooting-startup-multinode](https://vespa.ai/resources#troubleshooting-startup-multinode)
+**Troubleshooting:** The [troubleshooting-startup-multinode](https://www.youtube.com/embed/BG7XZmXpIzo)
 training video goes through various issues to help set up a multinode cluster.
 See this if getting problems during the procedures below.
 
