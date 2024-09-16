@@ -29,7 +29,7 @@ The repository contains scripts and notebooks to:
 1. Generate rules describing dataset
 2. Use rules to create a new prompt for generating queries from documents
 3. Use the prompt and example queries to get an LLM to generate one or more queries for a given document
-4. Generate additional [qrels](https://trec.nist.gov/data/qrels_eng/) (optional)
+4. Generate additional <a href="https://trec.nist.gov/data/qrels_eng/" data-proofer-ignore>qrels</a> (optional)
     1. Query Vespa using a generated query
     2. Ask an LLM to determine whether each returned document is relevant or not
 
