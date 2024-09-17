@@ -19,7 +19,6 @@ termination_grace_period: 2m
 # FastHTML Vespa frontend
 
 This is a simple frontend for Vespa search engine. It is built using [FastHTML](https://www.fastht.ml/) and written in pure Python.
-Check out the [live demo](https://huggingface.co/spaces/vespa-engine/fasthtml-vespa) on Huggingface Spaces.
 
 Search page             |  Login page         |  Query logs
 :-------------------------:|:-------------------------:|:-------------------------:
