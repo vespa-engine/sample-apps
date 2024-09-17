@@ -1,0 +1,4 @@
+{"put": "id:ecommerce:product::1", "fields": {"title": "phone", "price": 2.0}}
+{"put": "id:ecommerce:product::2", "fields": {"title": "pen", "price": 4.2}}
+{"put": "id:ecommerce:product::3", "fields": {"title": "new laptop", "price": 3.5}}
+

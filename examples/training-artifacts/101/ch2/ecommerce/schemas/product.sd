@@ -1,0 +1,21 @@
+schema product {
+    document product {
+        field field1 type string {
+            indexing: summary | attribute
+        }
+
+        field field2 type string {
+            indexing: summary | index
+        }
+    }
+
+    fieldset default {
+        fields: field1, field2
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: nativeRank(field1,field2)
+        }
+    }
+}
