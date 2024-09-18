@@ -1,4 +1,4 @@
-name: Verify Giudes (billion scale image search)
+name: Verify Guides (billion scale image search)
 
 on:
   workflow_dispatch: # Allow manual triggering of this workflow.
