@@ -1,0 +1,106 @@
+### group by item. Show first 3
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true | all(
+    group(item)
+    max(3)
+    each(
+      output(count())
+    )
+  )"
+}'
+
+### order by count descending
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true | all(
+    # group by item
+    group(item)
+    # order by count descending
+    order(-count())
+    max(3)
+    # show the actual count value for each group
+    each(
+        output(count())
+    )
+  )"
+}'
+
+### use total $$$ instead of count. But output count as well
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true | all(
+    group(item)
+    order(-sum(price))
+    each(
+        output(sum(price))
+        output(count())
+    )
+  )"
+}'
+
+### sales by day
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true | all(
+    group(
+      # this will take the epoch timestamp and create
+      # one bucket per day
+      time.date(date)
+    )
+    each(
+        output(sum(price))
+        output(count())
+    )
+  )"
+}'
+
+### sales by day, by item
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true | all(
+    group(time.date(date))
+    each(
+        output(-sum(price))
+        output(count())
+
+        # within each bucket, take all orders
+        all(
+            # group them by item
+            group(item)
+
+            # order by revenue descending, like we did before
+            order(-sum(price))
+            each(
+                output(sum(price))
+                output(count())
+            )
+        )
+    )
+  )"
+}'
+
+### top items, but also show 3 sample orders
+# --> limit 0 to not show order list below
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true limit 0 | all(
+    # group by item as before
+    group(item)
+    order(-sum(price))
+    each(
+        output(sum(price))
+        output(count())
+
+        # top 3 orders for each item
+        max(3)
+
+        # show the actual order (i.e. summary)
+        each(
+            output(summary())
+        )
+    )
+  )"
+}'
+
+### item cardinality (HyperLogLog++) and highest price
+curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from purchase where true | all(
+    group(item)
+    output(count())
+  )"
+}'
