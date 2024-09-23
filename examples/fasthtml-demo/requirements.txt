@@ -11,8 +11,6 @@ anyio==4.4.0
     #   httpx
     #   starlette
     #   watchfiles
-async-timeout==4.0.3
-    # via aiohttp
 attrs==24.2.0
     # via aiohttp
 beautifulsoup4==4.12.3
@@ -28,12 +26,10 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via uvicorn
-cryptography==43.0.0
+cryptography==43.0.1
     # via pyvespa
 docker==7.1.0
     # via pyvespa
-exceptiongroup==1.2.2
-    # via anyio
 fastcore==1.7.1
     # via
     #   fasthtml-hf
@@ -64,7 +60,7 @@ httpcore==1.0.5
     # via httpx
 httptools==0.6.1
     # via uvicorn
-httpx==0.27.0
+httpx[http2]==0.27.0
     # via
     #   python-fasthtml
     #   pyvespa
@@ -142,15 +138,13 @@ tqdm==4.66.5
     # via huggingface-hub
 typing-extensions==4.12.2
     # via
-    #   anyio
     #   huggingface-hub
     #   pyvespa
-    #   uvicorn
 urllib3==2.2.2
     # via
     #   docker
     #   requests
-uvicorn==0.30.6
+uvicorn[standard]==0.30.6
     # via python-fasthtml
 uvloop==0.20.0
     # via uvicorn
