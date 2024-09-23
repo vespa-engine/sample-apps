@@ -30,6 +30,7 @@ jobs:
       ignore-urls: |-
         src/main/application/schemas/wiki.sd#L80
         /localhost:8080/
+        /localhost:5001/
         src/main/application/search/query-profiles
         /hub.docker.com/r/vespaengine/vespa/tags/
       swap-urls: |-

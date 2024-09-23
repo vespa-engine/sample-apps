@@ -1,0 +1,16 @@
+FROM python:3.10
+# Set working directory
+WORKDIR /code
+# Copy only the requirements file to leverage Docker cache
+COPY --chown=1000 requirements.txt .
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+# Copy the rest of the application code
+COPY --chown=1000 . .
+# Create necessary directories with appropriate permissions
+RUN mkdir -p /tmp/cache/ session/ \
+    && chmod a+rwx -R /tmp/cache/ session/
+# Set environment variable
+ENV PYTHONUNBUFFERED=1
+# Define the command to run the application
+CMD ["python", "main.py"]
