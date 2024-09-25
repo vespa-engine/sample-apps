@@ -2,6 +2,8 @@ name: Vespa Sampleapps Search Feed
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - Gemfile.lock
 
 env:
   DATA_PLANE_PUBLIC_KEY     : ${{ secrets.VESPA_TEAM_DATA_PLANE_PUBLIC_CERT }}
