@@ -1,7 +1,7 @@
 from fasthtml.common import *
 from shad4fast import *
 
-app, rt = fast_app(pico=False, hdrs=(ShadHead(tw_cdn=True),))
+app, rt = fast_app(pico=False, hdrs=(ShadHead(tw_cdn=False),))
 
 
 @rt("/")
