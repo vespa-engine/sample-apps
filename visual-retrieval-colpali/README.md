@@ -7,3 +7,32 @@
 </picture>
 
 # Visual Retrieval ColPali
+
+
+# Developing
+
+First, install `uv`:
+  
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Then, in this directory, run:
+
+```bash
+uv sync --extra dev
+```
+
+This will generate a virtual environment with the required dependencies at `.venv`.
+
+To activate the virtual environment, run:
+
+```bash
+source .venv/bin/activate
+```
+
+And run development server:
+
+```bash
+python hello.py
+```
