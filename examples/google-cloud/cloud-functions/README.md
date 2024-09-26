@@ -54,11 +54,11 @@ $ gcloud functions deploy get-page-tls \
 ```
 Test using:
 ```
-$ curl --data '{"url":"https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/document/v1/open/doc/docid"}' \
+$ curl --data '{"url":"https://c360c4e6.b68a8c0d.g.vespa-app.cloud//document/v1/open/doc/docid"}' \
   https://get-page-tls-abc5tvbrvq-ew.a.run.app
 
 $ curl -v --data '{
-  "url":"https://vespacloud-docsearch.vespa-team.aws-us-east-1c.z.vespa-app.cloud/document/v1/open/doc/docid",
+  "url":"https://c360c4e6.b68a8c0d.g.vespa-app.cloud//document/v1/open/doc/docid",
   "bucket":"my_bucket",
   "object":"my_docs"}' \
   https://store-page-abc5tvbrvq-ew.a.run.app
@@ -67,7 +67,7 @@ $ curl --max-time 60 --data '{
   "contentCluster":"documentation",
   "chunkCount":100,
   "selection":"doc",
-  "endpoint":"https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud"}' \
+  "endpoint":"https://c360c4e6.b68a8c0d.g.vespa-app.cloud/"}' \
   https://visit-abc5tvbrvq-ew.a.run.app
 ```
 To install - in same directory:
@@ -90,7 +90,7 @@ $ curl --max-time 60 --data '{
   "contentCluster":"documentation",
   "chunkCount":100,
   "selection":"doc",
-  "endpoint":"https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud"}' \
+  "endpoint":"https://c360c4e6.b68a8c0d.g.vespa-app.cloud/"}' \
   https://backup-abc5tvbrvq-ew.a.run.app
 ```
 

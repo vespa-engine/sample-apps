@@ -141,7 +141,7 @@ func visit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var service Service
-	service.BaseURL = d.Endpoint //"https://vespacloud-docsearch.vespa-team.aws-eu-west-1a.z.vespa-app.cloud"
+	service.BaseURL = d.Endpoint //"https://c360c4e6.b68a8c0d.g.vespa-app.cloud/"
 	service.Cert = cert
 
 	res := visitClusters(vArgs, &service)
