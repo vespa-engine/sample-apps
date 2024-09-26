@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.338.38">
+
+    <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
+    <container id="default" version="1.0">
+
+        <clients>
+            <!-- 
+              Required for mTLS to still work, the below
+              configuration is equivalent to using a single
+              security/clients.pem
+            -->
+            <client id="mtls" permissions="read,write">
+              <certificate file="security/clients.pem"/>
+            </client>
+        </clients>
+
+        <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+        <!-- TODO -->
+
+        <!-- Setup the client to OpenAI -->
+        <!-- TODO -->
+
+        <!--
+            <document-api> tells the container that it should accept documents for indexing. Through the
+            Document REST API you can PUT new documents, UPDATE existing documents, and DELETE documents
+            already in the cluster.
+
+            Documents sent to the Document REST API will be passed through document processors on the way
+            to the content cluster.
+
+            See:
+             - Reference: https://docs.vespa.ai/en/reference/services-container.html#document-api
+             - Operations: https://docs.vespa.ai/en/document-v1-api-guide.html
+        -->
+        <document-api/>
+
+        <!--
+            <search> tells the container to answers queries and serve results for those queries.
+            Inside the <search /> cluster you can configure chains of "searchers" -
+            Java components processing the query and/or result.
+
+            See:
+             - Reference: https://docs.vespa.ai/en/query-api.html
+             - Searchers: https://docs.vespa.ai/en/searcher-development.html
+        -->
+        <search/> <!-- TODO in here, define a search chain pointing to your OpenAI client -->
+
+        <!--
+            <nodes> specifies the nodes that should run this cluster.
+        -->
+        <nodes>
+            <node hostalias="node1" />
+        </nodes>
+        
+    </container>
+
+    <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
+    <content id="text" version="1.0">
+        <min-redundancy>2</min-redundancy>
+        <documents>
+            <document type="product" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+
+</services>
