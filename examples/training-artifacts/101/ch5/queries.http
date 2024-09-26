@@ -1,0 +1,47 @@
+### did we successfully feed?
+curl -H "Content-Type:application/json" https://e6384e36.c4ba1d52.z.vespa-app.cloud/search/ -d '{
+  "yql": "select * from product where true",
+  "presentation.summary": "medium"
+}'
+
+### ANN
+curl -H "Content-Type:application/json" https://e6384e36.c4ba1d52.z.vespa-app.cloud/search/ -d '{
+    "yql": "select * from product where ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "closeness",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'
+
+
+### RRF
+curl -H "Content-Type:application/json" https://e6384e36.c4ba1d52.z.vespa-app.cloud/search/ -d '{
+    "yql": "select * from product where title contains @query_text OR ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "rrf",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'
+
+### OpenAI command
+vespa query \
+    --timeout 60 \
+    --header="X-LLM-API-KEY:insert-api-key-here" \
+    query="what kind of mini stencils do you have for sale?" \
+    hits=5 \
+    searchChain=openai \
+    format=sse \
+    traceLevel=1
+
+### OpenAI HTTP command. The response comes back as a stream
+curl -H "Content-Type:application/json" -H "X-LLM-API-KEY:insert-api-key-here" https://e6384e36.c4ba1d52.z.vespa-app.cloud/search/ -d '{
+    "yql": "select * from product where title contains @query_text OR ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "rrf",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)",
+    "query": "what kind of mini stencils do you have for sale?",
+    "searchChain": "openai",
+    "format": "sse",
+    "traceLevel": 0
+}'
