@@ -10,6 +10,7 @@ on:
       - "billion-scale-image-search/"
       - "examples/model-deployment/"
       - ".github/**"
+      - Gemfile.lock
       - "!.github/workflows/verify-guides-main.yml"
 
   pull_request:
@@ -19,6 +20,7 @@ on:
       - "billion-scale-image-search/"
       - "examples/model-deployment/"
       - ".github/**"
+      - Gemfile.lock
       - "!.github/workflows/verify-guides-main.yml"
 
 jobs:
