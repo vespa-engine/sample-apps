@@ -1,0 +1,44 @@
+name: Vespa Sampleapps Search Feed
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - glebashnik/sample-apps-code-search
+
+env:
+  DATA_PLANE_PUBLIC_KEY     : ${{ secrets.VESPA_TEAM_DATA_PLANE_PUBLIC_CERT }}
+  DATA_PLANE_PRIVATE_KEY    : ${{ secrets.VESPA_TEAM_DATA_PLANE_PRIVATE_KEY }}
+  VESPA_CLI_DATA_PLANE_CERT : ${{ secrets.VESPA_TEAM_VESPA_CLI_DATA_PLANE_CERT }}
+  VESPA_CLI_DATA_PLANE_KEY  : ${{ secrets.VESPA_TEAM_VESPA_CLI_DATA_PLANE_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip3 install PyYAML mmh3 requests html5lib beautifulsoup4 markdownify tiktoken
+
+    - name: Get Vespa CLI - update to later versions as needed
+      run: |
+        apt update && apt -y install curl
+        curl -SsLo vespa-cli.tar.gz https://github.com/vespa-engine/vespa/releases/download/v8.209.11/vespa-cli_8.209.11_linux_amd64.tar.gz
+        tar -xvf vespa-cli.tar.gz && ln -fs vespa-cli_8.209.11_linux_amd64/bin/vespa
+
+    - name: Feed code snippets
+      run: |
+        export VESPA_CLI_DATA_PLANE_CERT
+        export VESPA_CLI_DATA_PLANE_KEY
+        export VESPA_CLI_API_KEY=
+        ./feed_to_vespa.py _code_snippets_config.yml
