@@ -6,10 +6,12 @@ import os
 import re
 import subprocess
 import sys
-import yaml
-import requests
-from requests.adapters import HTTPAdapter, Retry
 import urllib.parse
+
+import requests
+import yaml
+from requests.adapters import HTTPAdapter, Retry
+
 
 def find(json, path, separator = "."):
     if len(path) == 0: return json
@@ -107,6 +109,8 @@ def get_feed_docids(feed, namespace, doc_type):
     elif doc_type == "term":
         return set(["id:{0}:term::".format(namespace) + str(find(doc, "fields.hash")) for doc in feed_json])
     elif doc_type == "paragraph":
+        return set([doc['put'] for doc in feed_json])
+    elif doc_type == "code_snippet":
         return set([doc['put'] for doc in feed_json])
 
 

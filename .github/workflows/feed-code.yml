@@ -1,4 +1,4 @@
-name: Vespa Sampleapps Search Feed
+name: Vespa sample-apps code snippets search feed
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ env:
   VESPA_CLI_DATA_PLANE_KEY  : ${{ secrets.VESPA_TEAM_VESPA_CLI_DATA_PLANE_KEY }}
 
 jobs:
-  build:
+  feed:
     runs-on: ubuntu-latest
 
     steps:
