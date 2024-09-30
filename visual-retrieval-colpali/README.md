@@ -36,3 +36,38 @@ And run development server:
 ```bash
 python hello.py
 ```
+
+## Preparation
+
+### Deploying the Vespa app
+
+To deploy the Vespa app, run:
+
+```bash
+python deploy_vespa_app.py --tenant_name mytenant --vespa_application_name myapp --token_id_write mytokenid_write --token_id_read mytokenid_read
+```
+
+You should get an output like:
+
+```bash
+Found token endpoint: https://abcde.z.vespa-app.cloud
+````
+
+### Feeding the data
+
+First, you need to create a huggingface token, after you have accepted the term to use the model at https://huggingface.co/google/paligemma-3b-mix-448.
+Add the token to your environment variables as `HF_TOKEN`:
+
+```bash
+export HF_TOKEN=yourtoken
+```
+
+To feed the data, run:
+
+```bash
+python feed_vespa_app.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_cloud_secret_token mysecrettoken
+```
+
+### Connect to the Vespa app and query
+
+TBC :D 
