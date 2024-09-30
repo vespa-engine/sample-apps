@@ -2142,6 +2142,15 @@ wheels = [
 ]
 
 [[package]]
+name = "setuptools"
+version = "75.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/b8/f21073fde99492b33ca357876430822e4800cdf522011f18041351dfa74b/setuptools-75.1.0.tar.gz", hash = "sha256:d59a21b17a275fb872a9c3dae73963160ae079f1049ed956880cd7c09b120538", size = 1348057 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ff/ae/f19306b5a221f6a436d8f2238d5b80925004093fa3edea59835b514d9057/setuptools-75.1.0-py3-none-any.whl", hash = "sha256:35ab7fd3bcd95e6b7fd704e4a1539513edad446c097797f2985e0e4b960772f2", size = 1248506 },
+]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 source = { registry = "https://pypi.org/simple" }
@@ -2516,6 +2525,7 @@ dependencies = [
     { name = "pypdf" },
     { name = "python-fasthtml" },
     { name = "pyvespa" },
+    { name = "setuptools" },
     { name = "torch" },
     { name = "vespacli" },
     { name = "vidore-benchmark", extra = ["interpretability"] },
@@ -2537,6 +2547,7 @@ requires-dist = [
     { name = "python-fasthtml" },
     { name = "pyvespa" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "setuptools" },
     { name = "torch" },
     { name = "vespacli" },
     { name = "vidore-benchmark", extras = ["interpretability"], specifier = ">=4.0.0,<5.0.0" },
