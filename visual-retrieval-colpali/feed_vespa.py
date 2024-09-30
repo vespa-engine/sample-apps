@@ -104,7 +104,7 @@ def main():
             pdf["images"],
             batch_size=2,
             shuffle=False,
-            collate_fn=lambda x: process_images(processor, x),
+            collate_fn=lambda x: processor.process_images(x),
         )
         for batch_doc in tqdm(dataloader):
             with torch.no_grad():
