@@ -55,6 +55,15 @@ Found token endpoint: https://abcde.z.vespa-app.cloud
 
 ### Feeding the data
 
+#### Dependencies
+
+In addition to the python dependencies, you also need `poppler`
+On Mac:
+
+```bash
+brew install poppler
+```
+
 First, you need to create a huggingface token, after you have accepted the term to use the model at https://huggingface.co/google/paligemma-3b-mix-448.
 Add the token to your environment variables as `HF_TOKEN`:
 
