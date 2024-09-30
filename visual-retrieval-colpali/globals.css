@@ -80,9 +80,10 @@
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
+
     /* Hide scrollbar for IE, Edge and Firefox */
     .no-scrollbar {
-        -webkit-overflow-scrolling:touch;
+        -webkit-overflow-scrolling: touch;
         -ms-overflow-style: none;
         /* IE and Edge */
         scrollbar-width: none;
@@ -125,4 +126,32 @@
     .toast {
         animation-name: slideInFromBottom;
     }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+}
+
+.animate-slide-up {
+    animation: slide-up 1s ease-out forwards;
 }
