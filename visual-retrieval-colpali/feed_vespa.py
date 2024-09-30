@@ -16,6 +16,7 @@ from pdf2image import convert_from_path
 from pypdf import PdfReader
 import numpy as np
 from vespa.application import Vespa
+from vespa.io import VespaResponse
 
 
 def main():
@@ -135,25 +136,29 @@ def main():
                 embedding_dict[idx] = binary_vector
             page = {
                 "id": str(hash(url + str(page_number))),
-                "url": url,
-                "title": title,
-                "page_number": page_number,
-                "image": base_64_image,
-                "text": page_text,
-                "embedding": embedding_dict,
+                "fields": {
+                    "url": url,
+                    "title": title,
+                    "page_number": page_number,
+                    "image": base_64_image,
+                    "text": page_text,
+                    "embedding": embedding_dict,
+                },
             }
             vespa_feed.append(page)
 
     # Instantiate Vespa connection using token
     app = Vespa(url=vespa_app_url, vespa_cloud_secret_token=vespa_cloud_secret_token)
 
-    def callback(response):
-        if response.status_code != 200:
-            print(response.text)
+    def callback(response: VespaResponse, id: str):
+        if not response.is_successful():
+            print(
+                f"Failed to feed document {id} with status code {response.status_code}: Reason {response.get_json()}"
+            )
 
     # Feed data into Vespa
 
-    app.feed_async_iterable(vespa_feed, callback=callback)
+    app.feed_async_iterable(vespa_feed, schema="pdf_page", callback=callback)
 
 
 if __name__ == "__main__":
