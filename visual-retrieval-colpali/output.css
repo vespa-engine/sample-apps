@@ -898,16 +898,16 @@ body {
   height: var(--radix-select-trigger-height);
 }
 
+.h-auto {
+  height: auto;
+}
+
 .h-full {
   height: 100%;
 }
 
 .h-px {
   height: 1px;
-}
-
-.h-auto {
-  height: auto;
 }
 
 .max-h-96 {
@@ -922,16 +922,16 @@ body {
   max-height: 100vh;
 }
 
+.min-h-\[34px\] {
+  min-height: 34px;
+}
+
 .min-h-\[80px\] {
   min-height: 80px;
 }
 
 .min-h-screen {
   min-height: 100vh;
-}
-
-.min-h-\[55px\] {
-  min-height: 55px;
 }
 
 .w-10 {
@@ -986,16 +986,16 @@ body {
   min-width: var(--radix-select-trigger-width);
 }
 
+.max-w-full {
+  max-width: 100%;
+}
+
 .max-w-lg {
   max-width: 32rem;
 }
 
 .max-w-screen-md {
   max-width: 768px;
-}
-
-.max-w-full {
-  max-width: 100%;
 }
 
 .flex-1 {
@@ -1125,10 +1125,6 @@ body {
 
 .gap-8 {
   gap: 2rem;
-}
-
-.gap-1 {
-  gap: 0.25rem;
 }
 
 .gap-px {
@@ -1401,14 +1397,13 @@ body {
   padding-bottom: 0.5rem;
 }
 
-.px-2 {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+
+.pl-10 {
+  padding-left: 2.5rem;
 }
 
 .pl-4 {
@@ -1417,6 +1412,10 @@ body {
 
 .pl-8 {
   padding-left: 2rem;
+}
+
+.pr-14 {
+  padding-right: 3.5rem;
 }
 
 .pr-2 {
@@ -1433,14 +1432,6 @@ body {
 
 .pt-4 {
   padding-top: 1rem;
-}
-
-.pl-10 {
-  padding-left: 2.5rem;
-}
-
-.pr-14 {
-  padding-right: 3.5rem;
 }
 
 .text-left {
@@ -1485,14 +1476,14 @@ body {
   line-height: 1.25rem;
 }
 
-.text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
-}
-
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 
 .font-bold {

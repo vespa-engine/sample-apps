@@ -1,6 +1,16 @@
-from fasthtml.components import Div, Img, H2, P
+from fasthtml.common import Div, Pre, Code
+from fasthtml.components import Img, H2, P
 from lucide_fasthtml import Lucide
 from shad4fast import Textarea, Button
+
+code_example = """
+import datetime
+import time
+
+for i in range(10):
+    print(f"{datetime.datetime.now()}")
+    time.sleep(1)
+"""
 
 
 def SearchBox():
@@ -9,7 +19,7 @@ def SearchBox():
             Lucide(icon="search", cls="absolute left-2 top-2 text-muted-foreground"),
             Textarea(
                 placeholder="Enter your search query...",
-                cls="min-h-[55px] max-h-[377px] pl-10 pr-14 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent text-base resize-y overflow-hidden appearance-none",
+                cls="min-h-[34px] max-h-[377px] pl-10 pr-14 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent text-base resize-y overflow-hidden appearance-none",
             ),
             Button(Lucide(icon="arrow-right", size="21"), size="sm", cls="absolute right-2 top-2"),
             cls="relative"
@@ -31,6 +41,7 @@ def SearchResult():
                     H2("Vespa Ai Black Logo", cls="text-xl font-semibold"),
                     P("This is a description for the Vespa AI logo in black. Vespa is a platform for real-time AI and search applications. It provides advanced services for fast, relevant, and scalable search results.",
                       cls="text-muted-foreground"),
+                    Pre(Code(code_example)),
                     cls="text-sm grid gap-y-4"
                 ),
                 cls="bg-background px-3 py-5"
@@ -82,6 +93,7 @@ def SearchResult():
                     H2("Another Result for Vespa Logo White", cls="text-xl font-semibold"),
                     P("Here we see another search result referring to the white Vespa logo. This design is perfect for dark backgrounds where the white logo stands out clearly.",
                       cls="text-muted-foreground"),
+                    Pre(Code(code_example)),
                     cls="text-sm grid gap-y-4"
                 ),
                 cls="bg-background px-3 py-5"
