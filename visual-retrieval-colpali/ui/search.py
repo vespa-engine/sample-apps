@@ -1,4 +1,4 @@
-from fasthtml.components import Div
+from fasthtml.components import Div, Img, H2, P
 from lucide_fasthtml import Lucide
 from shad4fast import Textarea, Button
 
@@ -18,10 +18,85 @@ def SearchBox():
     )
 
 
+def SearchResult():
+    return Div(
+        Div(
+            Div(
+                Img(src='https://assets.vespa.ai/logos/vespa-logo-black.svg', alt='Vespa Logo Black',
+                    cls='max-w-full h-auto'),
+                cls="bg-background px-3 py-5"
+            ),
+            Div(
+                Div(
+                    H2("Vespa Ai Black Logo", cls="text-xl font-semibold"),
+                    P("This is a description for the Vespa AI logo in black. Vespa is a platform for real-time AI and search applications. It provides advanced services for fast, relevant, and scalable search results.",
+                      cls="text-muted-foreground"),
+                    cls="text-sm grid gap-y-4"
+                ),
+                cls="bg-background px-3 py-5"
+            ),
+            cls="grid grid-cols-subgrid col-span-2 "
+        ),
+        Div(
+            Div(
+                Img(src='https://assets.vespa.ai/logos/vespa-logo-white.svg', alt='Vespa Logo White',
+                    cls='max-w-full h-auto'),
+                cls="bg-background px-3 py-5"
+            ),
+            Div(
+                Div(
+                    H2("Vespa Ai White Logo", cls="text-xl font-semibold"),
+                    P("This is a description for the Vespa AI logo in white. It highlights the adaptability of the brand and its applications across different visual media and backgrounds.",
+                      cls="text-muted-foreground"),
+                    cls="text-sm grid gap-y-4"
+                ),
+                cls="bg-background px-3 py-5"
+            ),
+            cls="grid grid-cols-subgrid col-span-2 "
+        ),
+        Div(
+            Div(
+                Img(src='https://assets.vespa.ai/logos/vespa-logo-black.svg', alt='Vespa Logo Black',
+                    cls='max-w-full h-auto'),
+                cls="bg-background px-3 py-5"
+            ),
+            Div(
+                Div(
+                    H2("Another Result for Vespa Logo Black", cls="text-xl font-semibold"),
+                    P("This result refers to an alternative context where the black Vespa logo is used. It's commonly seen in dark-themed interfaces.",
+                      cls="text-muted-foreground"),
+                    cls="text-sm grid gap-y-4"
+                ),
+                cls="bg-background px-3 py-5"
+            ),
+            cls="grid grid-cols-subgrid col-span-2 "
+        ),
+        Div(
+            Div(
+                Img(src='https://assets.vespa.ai/logos/vespa-logo-white.svg', alt='Vespa Logo White',
+                    cls='max-w-full h-auto'),
+                cls="bg-background px-3 py-5"
+            ),
+            Div(
+                Div(
+                    H2("Another Result for Vespa Logo White", cls="text-xl font-semibold"),
+                    P("Here we see another search result referring to the white Vespa logo. This design is perfect for dark backgrounds where the white logo stands out clearly.",
+                      cls="text-muted-foreground"),
+                    cls="text-sm grid gap-y-4"
+                ),
+                cls="bg-background px-3 py-5"
+            ),
+            cls="grid grid-cols-subgrid col-span-2 "
+        ),
+        cls="grid grid-cols-2 gap-px bg-border"
+    )
+
+
 def Search():
     return Div(
         Div(
             SearchBox(),
+            SearchResult(),
             cls="grid"
         ),
         cls="grid",

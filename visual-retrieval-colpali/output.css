@@ -754,32 +754,16 @@ body {
   top: 50%;
 }
 
-.left-4 {
-  left: 1rem;
-}
-
-.left-3 {
-  left: 0.75rem;
-}
-
-.top-3 {
-  top: 0.75rem;
-}
-
-.-left-3 {
-  left: -0.75rem;
-}
-
-.right-3 {
-  right: 0.75rem;
-}
-
 .z-50 {
   z-index: 50;
 }
 
 .z-\[100\] {
   z-index: 100;
+}
+
+.col-span-2 {
+  grid-column: span 2 / span 2;
 }
 
 .-mx-1 {
@@ -922,6 +906,10 @@ body {
   height: 1px;
 }
 
+.h-auto {
+  height: auto;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -944,10 +932,6 @@ body {
 
 .min-h-\[55px\] {
   min-height: 55px;
-}
-
-.min-h-\[21px\] {
-  min-height: 21px;
 }
 
 .w-10 {
@@ -1008,6 +992,10 @@ body {
 
 .max-w-screen-md {
   max-width: 768px;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .flex-1 {
@@ -1099,12 +1087,8 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.grid-cols-\[200px_minmax\(900px\2c _1fr\)_100px\] {
-  grid-template-columns: 200px minmax(900px, 1fr) 100px;
-}
-
-.grid-cols-\[1fr_max-content\] {
-  grid-template-columns: 1fr max-content;
+.grid-cols-subgrid {
+  grid-template-columns: subgrid;
 }
 
 .flex-col {
@@ -1141,6 +1125,18 @@ body {
 
 .gap-8 {
   gap: 2rem;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-px {
+  gap: 1px;
+}
+
+.gap-y-4 {
+  row-gap: 1rem;
 }
 
 .space-x-3 > :not([hidden]) ~ :not([hidden]) {
@@ -1405,9 +1401,14 @@ body {
   padding-bottom: 0.5rem;
 }
 
-.px-12 {
-  padding-left: 3rem;
-  padding-right: 3rem;
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.py-5 {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
 }
 
 .pl-4 {
@@ -1434,44 +1435,12 @@ body {
   padding-top: 1rem;
 }
 
-.pl-12 {
-  padding-left: 3rem;
-}
-
-.pr-12 {
-  padding-right: 3rem;
-}
-
-.pr-24 {
-  padding-right: 6rem;
-}
-
-.pr-20 {
-  padding-right: 5rem;
-}
-
-.pl-16 {
-  padding-left: 4rem;
-}
-
-.pr-16 {
-  padding-right: 4rem;
-}
-
-.pr-14 {
-  padding-right: 3.5rem;
-}
-
-.pl-11 {
-  padding-left: 2.75rem;
-}
-
 .pl-10 {
   padding-left: 2.5rem;
 }
 
-.pl-9 {
-  padding-left: 2.25rem;
+.pr-14 {
+  padding-right: 3.5rem;
 }
 
 .text-left {
@@ -1519,6 +1488,11 @@ body {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
 }
 
 .font-bold {
@@ -1601,11 +1575,6 @@ body {
 
 .text-transparent {
   color: transparent;
-}
-
-.text-\[\#999999\] {
-  --tw-text-opacity: 1;
-  color: rgb(153 153 153 / var(--tw-text-opacity));
 }
 
 .underline-offset-4 {
