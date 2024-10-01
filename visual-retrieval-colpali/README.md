@@ -39,6 +39,10 @@ python hello.py
 
 ## Preparation
 
+First, set up your `.env` file by renaming `.env.example` to `.env` and filling in the required values.
+(Token can be shared with 1password, `HF_TOKEN` is personal and must be created at huggingface)
+If you are just connecting to a deployed Vespa app, you can skip to [Connecting to the Vespa app](#connecting-to-the-vespa-app).
+
 ### Deploying the Vespa app
 
 To deploy the Vespa app, run:
@@ -77,6 +81,10 @@ To feed the data, run:
 python feed_vespa_app.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_cloud_secret_token mysecrettoken
 ```
 
-### Connect to the Vespa app and query
+### Connecting to the Vespa app and querying
 
-TBC :D 
+As a first step, until we hook up to frontend, you can run the `query_vespa.py` script to run some sample queries against the Vespa app:
+
+```bash
+python query_vespa.py
+```
