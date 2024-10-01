@@ -15,6 +15,7 @@ dependencies = [
     "einops",
     "pypdf",
     "setuptools",
+    "python-dotenv",
 ]
 license = "Apache-2.0"
 
