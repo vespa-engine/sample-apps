@@ -922,8 +922,12 @@ body {
   max-height: 100vh;
 }
 
-.min-h-\[34px\] {
-  min-height: 34px;
+.min-h-12 {
+  min-height: 3rem;
+}
+
+.min-h-\[55px\] {
+  min-height: 55px;
 }
 
 .min-h-\[80px\] {

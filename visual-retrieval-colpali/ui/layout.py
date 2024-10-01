@@ -47,14 +47,14 @@ def Layout(*c, **kwargs):
         Title('Visual Retrieval ColPali'),
         Body(
             Header(
-                Logo(),
+                A(Logo(), href="/"),
                 Links(),
-                cls='h-[55px] w-full flex items-center justify-between px-4'
+                cls='min-h-[55px] h-[55px] w-full flex items-center justify-between px-4'
             ),
             Main(
                 *c, **kwargs,
                 cls='flex-1 h-full'
             ),
-            cls='min-h-screen h-full flex flex-col'
+            cls='h-full flex flex-col'
         ),
     )

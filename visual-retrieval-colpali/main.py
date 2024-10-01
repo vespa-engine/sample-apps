@@ -24,8 +24,8 @@ theme_script = Script('''
             const link = document.getElementById('highlight-theme');
             const preferredTheme = getPreferredTheme();
             link.href = preferredTheme === 'dark' ? 
-                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/atom-one-dark.min.css' :
-                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css';
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github-dark.min.css' :
+                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css';
         }
 
         // Apply the correct theme immediately
@@ -37,7 +37,7 @@ theme_script = Script('''
     })();
 ''')
 
-highlight_js = HighlightJS(langs=['python', 'javascript', 'java', 'json', 'xml'])
+highlight_js = HighlightJS(langs=['python', 'javascript', 'java', 'json', 'xml'], dark="github-dark", light="github")
 
 app, rt = fast_app(
     hdrs=(ShadHead(tw_cdn=False, theme_handle=True), highlight_js, highlight_theme_link, theme_script),

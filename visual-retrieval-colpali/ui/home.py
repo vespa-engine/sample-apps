@@ -1,4 +1,4 @@
-from fasthtml.components import Div, H1, P, Span
+from fasthtml.components import Div, H1, P, Span, A
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Textarea
 
@@ -32,8 +32,8 @@ def SearchBox():
                 "tests",
                 cls="text-muted-foreground"
             ),
-            Span(
-                Button(Lucide(icon="arrow-right", size="21"), size="sm"),
+            Div(
+                A(Button(Lucide(icon="arrow-right", size="21"), size="sm"), href="/search"),
             ),
             cls="flex justify-between"
         ),

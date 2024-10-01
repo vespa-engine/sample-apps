@@ -19,7 +19,7 @@ def SearchBox():
             Lucide(icon="search", cls="absolute left-2 top-2 text-muted-foreground"),
             Textarea(
                 placeholder="Enter your search query...",
-                cls="min-h-[34px] max-h-[377px] pl-10 pr-14 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent text-base resize-y overflow-hidden appearance-none",
+                cls="min-h-12 max-h-[377px] pl-10 pr-14 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent text-base resize-y overflow-hidden appearance-none",
             ),
             Button(Lucide(icon="arrow-right", size="21"), size="sm", cls="absolute right-2 top-2"),
             cls="relative"
