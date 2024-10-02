@@ -16,6 +16,7 @@ dependencies = [
     "pypdf",
     "setuptools",
     "python-dotenv",
+    "shad4fast>=1.2.1",
 ]
 license = "Apache-2.0"
 
