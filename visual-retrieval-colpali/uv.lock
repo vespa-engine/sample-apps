@@ -1691,6 +1691,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pypdf"
+version = "5.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9d/28/6bc2ca8a521512f2904e6aa3028af43a864fe2b66c77ea01bbbc97f52b98/pypdf-5.0.1.tar.gz", hash = "sha256:a361c3c372b4a659f9c8dd438d5ce29a753c79c620dc6e1fd66977651f5547ea", size = 4999113 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/48/8f/9bbf22ba6a00001a45dbc54337e5bbbd43e7d8f34c8158c92cddc45736af/pypdf-5.0.1-py3-none-any.whl", hash = "sha256:ff8a32da6c7a63fea9c32fa4dd837cdd0db7966adf6c14f043e3f12592e992db", size = 294470 },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -2189,6 +2201,12 @@ wheels = [
 ]
 
 [[package]]
+name = "setuptools"
+version = "75.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/b8/f21073fde99492b33ca357876430822e4800cdf522011f18041351dfa74b/setuptools-75.1.0.tar.gz", hash = "sha256:d59a21b17a275fb872a9c3dae73963160ae079f1049ed956880cd7c09b120538", size = 1348057 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ff/ae/f19306b5a221f6a436d8f2238d5b80925004093fa3edea59835b514d9057/setuptools-75.1.0-py3-none-any.whl", hash = "sha256:35ab7fd3bcd95e6b7fd704e4a1539513edad446c097797f2985e0e4b960772f2", size = 1248506 },
 name = "shad4fast"
 version = "1.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2573,8 +2591,11 @@ dependencies = [
     { name = "colpali-engine" },
     { name = "einops" },
     { name = "huggingface-hub" },
+    { name = "pypdf" },
+    { name = "python-dotenv" },
     { name = "python-fasthtml" },
     { name = "pyvespa" },
+    { name = "setuptools" },
     { name = "shad4fast" },
     { name = "torch" },
     { name = "vespacli" },
@@ -2592,10 +2613,13 @@ requires-dist = [
     { name = "colpali-engine" },
     { name = "einops" },
     { name = "huggingface-hub" },
+    { name = "pypdf" },
+    { name = "python-dotenv" },
     { name = "python-dotenv", marker = "extra == 'dev'" },
     { name = "python-fasthtml" },
     { name = "pyvespa" },
     { name = "ruff", marker = "extra == 'dev'" },
+    { name = "setuptools" },
     { name = "shad4fast", specifier = ">=1.2.1" },
     { name = "torch" },
     { name = "vespacli" },
