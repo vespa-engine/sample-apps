@@ -83,7 +83,7 @@ def get():
     return Layout(Div(P(f"Connected to Vespa at {app.url}")))
 
 
-@rt("/embed")
+@rt("/run_query")
 def get(query: str, nn: bool = False):
     # dummy-function to avoid running the query every time
     result = get_result_dummy(query, nn)
