@@ -660,6 +660,10 @@ body {
   pointer-events: auto;
 }
 
+.static {
+  position: static;
+}
+
 .fixed {
   position: fixed;
 }
@@ -936,6 +940,14 @@ body {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.min-h-10 {
+  min-height: 2.5rem;
+}
+
+.min-h-0 {
+  min-height: 0px;
 }
 
 .w-10 {
