@@ -9,49 +9,19 @@ from backend.vespa_app import get_vespa_app
 from backend.colpali import load_model, get_result_dummy
 from vespa.application import Vespa
 
-highlight_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
-
-theme_script = Script("""
-    (function() {
-        function getPreferredTheme() {
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                return 'dark';
-            }
-            return 'light';
-        }
-
-        function syncHighlightTheme() {
-            const link = document.getElementById('highlight-theme');
-            const preferredTheme = getPreferredTheme();
-            link.href = preferredTheme === 'dark' ? 
-                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github-dark.min.css' :
-                'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css';
-        }
-
-        // Apply the correct theme immediately
-        syncHighlightTheme();
-
-        // Observe changes in the 'dark' class on the <html> element
-        const observer = new MutationObserver(syncHighlightTheme);
-        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    })();
-""")
-
-highlight_js = HighlightJS(
-    langs=["python", "javascript", "java", "json", "xml"],
-    dark="github-dark",
-    light="github",
-)
+highlight_js_theme_link = Link(id='highlight-theme', rel="stylesheet", href="")
+highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
+highlight_js = HighlightJS(langs=['python', 'javascript', 'java', 'json', 'xml'], dark="github-dark", light="github")
 
 app, rt = fast_app(
+    htmlkw={'cls': "h-full"},
+    pico=False,
     hdrs=(
         ShadHead(tw_cdn=False, theme_handle=True),
         highlight_js,
-        highlight_theme_link,
-        theme_script,
+        highlight_js_theme_link,
+        highlight_js_theme
     ),
-    pico=False,
-    htmlkw={"cls": "h-full"},
 )
 vespa_app: Vespa = get_vespa_app()
 
@@ -66,6 +36,11 @@ def get_model_and_processor():
     if model is None or processor is None:
         model, processor = load_model()
     return model, processor
+
+
+@rt("/static/{filepath:path}")
+def serve_static(filepath: str):
+    return FileResponse(f'./static/{filepath}')
 
 
 @rt("/")
