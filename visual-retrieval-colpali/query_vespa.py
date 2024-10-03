@@ -55,7 +55,7 @@ async def query_vespa_default(app, queries, qs):
         for idx, query in enumerate(queries):
             query_embedding = {k: v.tolist() for k, v in enumerate(qs[idx])}
             response: VespaQueryResponse = await session.query(
-                yql="select title,url,image,page_number from pdf_page where userInput(@userQuery)",
+                yql="select documentid,title,url,image,page_number from pdf_page where userInput(@userQuery)",
                 ranking="default",
                 userQuery=query,
                 timeout=120,
@@ -108,7 +108,7 @@ async def query_vespa_nearest_neighbor(app, queries, qs):
                 body={
                     **query_tensors,
                     "presentation.timing": True,
-                    "yql": f"select title, url, image, page_number from pdf_page where {nn}",
+                    "yql": f"select documentid, title, url, image, page_number from pdf_page where {nn}",
                     "ranking.profile": "retrieval-and-rerank",
                     "timeout": 120,
                     "hits": 3,
