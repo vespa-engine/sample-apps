@@ -8,6 +8,7 @@ from io import BytesIO
 from typing import cast
 import os
 import json
+import hashlib
 
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
@@ -167,9 +168,12 @@ def main():
                         .hex()
                     )
                     embedding_dict[idx] = binary_vector
+                # id_hash should be md5 hash of url and page_number
+                id_hash = hashlib.md5(f"{url}_{page_number}".encode()).hexdigest()
                 page = {
-                    "id": str(hash(url + str(page_number))),
+                    "id": id_hash,
                     "fields": {
+                        "id": id_hash,
                         "url": url,
                         "title": title,
                         "page_number": page_number,
@@ -196,7 +200,7 @@ def main():
             )
 
     # Feed data into Vespa
-    app.feed_async_iterable(vespa_feed, schema=schema_name, callback=callback)
+    app.feed_iterable(vespa_feed, schema=schema_name, callback=callback)
 
 
 if __name__ == "__main__":
