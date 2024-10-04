@@ -13,8 +13,10 @@ from colpali_engine.utils.torch_utils import get_torch_device
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
 from dotenv import load_dotenv
+from pathlib import Path
 
 MAX_QUERY_TERMS = 64
+SAVEDIR = Path(__file__) / "output" / "images"
 load_dotenv()
 
 
@@ -45,7 +47,8 @@ def display_query_results(query, response, hits=5):
         result_text += f"ID: {_id}\n"
         # Optionally, save or display the image
         # img_data = base64.b64decode(image)
-        # with open(f"result_{i+1}.png", "wb") as f:
+        # img_path = SAVEDIR / f"{title}.png"
+        # with open(f"{img_path}", "wb") as f:
         #     f.write(img_data)
     print(result_text)
 
