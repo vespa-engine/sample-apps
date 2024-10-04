@@ -1,8 +1,35 @@
 from urllib.parse import quote_plus
 
-from fasthtml.components import Div, H1, P, Img, H2, Form
+from fasthtml.components import Div, H1, P, Img, H2, Form, Span
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Input
+
+
+def get_mock_results(query):
+    # Mock data simulating search results for the query
+    mock_data = [
+        {
+            "title": "Conocophillips - 2023 Sustainability Report",
+            "description": "Our policies require nature-related risks be assessed in business planning...",
+            "image": "/static/img/sustainability.png"
+        },
+        {
+            "title": "Sustainable Energy in the 21st Century",
+            "description": "An overview of sustainable energy practices and future technologies...",
+            "image": "/static/img/energy.png"
+        },
+        {
+            "title": "Reducing Carbon Emissions by 2030",
+            "description": "Steps we can take to reduce global carbon emissions by the year 2030...",
+            "image": "/static/img/carbon.png"
+        }
+    ]
+
+    # For simulation
+    if query:
+        return [result for result in mock_data if query.lower() in result['title'].lower()]
+
+    return mock_data
 
 
 def SearchBox(with_border=False, query_value=""):
@@ -25,6 +52,10 @@ def SearchBox(with_border=False, query_value=""):
             cls="relative"
         ),
         Div(
+            Span(
+                "controls",
+                cls="text-muted-foreground"
+            ),
             Button(Lucide(icon="arrow-right", size="21"), size="sm", type="submit"),
             cls="flex justify-between"
         ),
@@ -61,36 +92,43 @@ def Home():
 
 def Search(request):
     # Extract the 'query' parameter from the URL using query_params
-    query_value = request.query_params.get('query', '').strip()  # Default to an empty string if not present
+    query_value = request.query_params.get('query', '').strip()
+
+    # Get mock search results based on the query
+    search_results = get_mock_results(query_value)
 
     return Div(
         Div(
             SearchBox(query_value=query_value),  # Pass the query value to pre-fill the SearchBox
-            SearchResult(),
+            SearchResult(results=search_results),
             cls="grid"
         ),
         cls="grid",
     )
 
 
-def SearchResult():
-    return Div(
-        Div(
-            Div(
-                Img(src='/static/img/sustainability.png', alt='Sustainability',
-                    cls='max-w-full h-auto'),
-                cls="bg-background px-3 py-5"
-            ),
+def SearchResult(results=[]):
+    result_items = []
+    for result in results:
+        result_items.append(
             Div(
                 Div(
-                    H2("Conocophillips - 2023 Sustainability Report", cls="text-xl font-semibold"),
-                    P("Our policies require nature-related risks be assessed in business planning. We disclose our approach to governance, strategy, management and performance related to nature.",
-                      cls="text-muted-foreground"),
-                    cls="text-sm grid gap-y-4"
+                    Img(src=result['image'], alt=result['title'], cls='max-w-full h-auto'),
+                    cls="bg-background px-3 py-5"
                 ),
-                cls="bg-background px-3 py-5"
-            ),
-            cls="grid grid-cols-subgrid col-span-2 "
-        ),
+                Div(
+                    Div(
+                        H2(result['title'], cls="text-xl font-semibold"),
+                        P(result['description'], cls="text-muted-foreground"),
+                        cls="text-sm grid gap-y-4"
+                    ),
+                    cls="bg-background px-3 py-5"
+                ),
+                cls="grid grid-cols-subgrid col-span-2"
+            )
+        )
+
+    return Div(
+        *result_items,
         cls="grid grid-cols-2 gap-px bg-border"
     )
