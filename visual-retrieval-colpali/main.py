@@ -49,8 +49,8 @@ def get():
 
 
 @rt("/search")
-def get():
-    return Layout(Search())
+def get(request):
+    return Layout(Search(request))
 
 
 @rt("/app")

@@ -1,33 +1,35 @@
-from fasthtml.components import Div, H1, P, Span, A, Img, H2
+from urllib.parse import quote_plus
+
+from fasthtml.components import Div, H1, P, Img, H2, Form
 from lucide_fasthtml import Lucide
-from shad4fast import Textarea, Button
+from shad4fast import Button, Input
 
 
-def SearchBox(with_border=False):
-    grid_cls = "grid items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
+def SearchBox(with_border=False, query_value=""):
+    grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
 
     if with_border:
         grid_cls = "grid gap-2 p-3 rounded-md border border-input bg-muted/80 dark:bg-muted/40 w-full ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:border-input"
 
-    return Div(
+    return Form(
         Div(
             Lucide(icon="search", cls="absolute left-2 top-2 text-muted-foreground"),
-            Textarea(
+            Input(
                 placeholder="Enter your search query...",
-                cls="max-h-[377px] pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent text-base resize-y overflow-hidden appearance-none",
+                name="query",
+                value=query_value,
+                cls="text-base pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent",
+                style='font-size: 1rem',
+                autofocus=True,
             ),
             cls="relative"
         ),
         Div(
-            Span(
-                "tests",
-                cls="text-muted-foreground"
-            ),
-            Div(
-                A(Button(Lucide(icon="arrow-right", size="21"), size="sm"), href="/search"),
-            ),
+            Button(Lucide(icon="arrow-right", size="21"), size="sm", type="submit"),
             cls="flex justify-between"
         ),
+        action=f"/search?query={quote_plus(query_value)}",
+        method="GET",
         cls=grid_cls,
     )
 
@@ -57,10 +59,13 @@ def Home():
     )
 
 
-def Search():
+def Search(request):
+    # Extract the 'query' parameter from the URL using query_params
+    query_value = request.query_params.get('query', '').strip()  # Default to an empty string if not present
+
     return Div(
         Div(
-            SearchBox(),
+            SearchBox(query_value=query_value),  # Pass the query value to pre-fill the SearchBox
             SearchResult(),
             cls="grid"
         ),
