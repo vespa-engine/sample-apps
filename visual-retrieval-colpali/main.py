@@ -1,13 +1,13 @@
-from fasthtml.common import *
-from shad4fast import *
 import json
 
-from ui.home import Home
-from ui.layout import Layout
-from ui.search import Search
-from backend.vespa_app import get_vespa_app
-from backend.colpali import load_model, get_result_dummy
+from fasthtml.common import *
+from shad4fast import *
 from vespa.application import Vespa
+
+from backend.colpali import load_model, get_result_dummy
+from backend.vespa_app import get_vespa_app
+from frontend.app import Home, Search
+from frontend.layout import Layout
 
 highlight_js_theme_link = Link(id='highlight-theme', rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -55,7 +55,12 @@ def get():
 
 @rt("/app")
 def get():
-    return Layout(Div(P(f"Connected to Vespa at {app.url}")))
+    return Layout(
+        Div(
+            P(f"Connected to Vespa at {vespa_app.url}"),
+            cls="p-4"
+        )
+    )
 
 
 @rt("/run_query")
@@ -65,12 +70,13 @@ def get(query: str, nn: bool = False):
     # If we want to run real, uncomment the following lines
     # model, processor = get_model_and_processor()
     # result = asyncio.run(
-    # get_result_from_query(vespa_app, processor=processor, model=model, query=query, nn=nn)
+    #     get_result_from_query(vespa_app, processor=processor, model=model, query=query, nn=nn)
     # )
     return Layout(
         Div(
             H1("Result"),
-            Pre(Code(json.dumps(result))),
+            Pre(Code(json.dumps(result, indent=2))),
+            cls="p-4"
         )
     )
 
