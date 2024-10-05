@@ -1,9 +1,9 @@
 from urllib.parse import quote_plus
 
 from fasthtml.components import Div, H1, P, Img, H2, Form, Span
-from fasthtml.xtend import Script
+from fasthtml.xtend import Script, A
 from lucide_fasthtml import Lucide
-from shad4fast import Button, Input
+from shad4fast import Button, Input, Badge
 
 
 def get_mock_results(query):
@@ -88,6 +88,34 @@ def SearchBox(with_border=False, query_value=""):
     )
 
 
+def SampleQueries():
+    sample_queries = [
+        "What is the future of energy storage?",
+        "What is sustainable energy?",
+        "How to reduce carbon emissions?"
+    ]
+
+    query_badges = []
+    for query in sample_queries:
+        query_badges.append(
+            A(
+                Badge(
+                    Div(
+                        Lucide(icon="text-search", size="18", cls="text-muted-foreground"),
+                        Span(query, cls="text-base font-normal"),
+                        cls="flex gap-2 items-center",
+                    ),
+                    variant="outline",
+                    cls="text-base font-normal text-muted-foreground"
+                ),
+                href=f"/search?query={quote_plus(query)}",
+                cls="no-underline"
+            )
+        )
+
+    return Div(*query_badges, cls="grid gap-2 justify-items-center")
+
+
 def Hero():
     return Div(
         H1(
@@ -107,6 +135,7 @@ def Home():
         Div(
             Hero(),
             SearchBox(with_border=True),
+            SampleQueries(),
             cls="grid gap-8 -mt-[34vh]"
         ),
         cls="grid w-full h-full max-w-screen-md items-center gap-4 mx-auto"
