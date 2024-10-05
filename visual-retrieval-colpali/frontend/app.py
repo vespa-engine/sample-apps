@@ -1,6 +1,7 @@
 from urllib.parse import quote_plus
 
 from fasthtml.components import Div, H1, P, Img, H2, Form, Span
+from fasthtml.xtend import Script
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Input
 
@@ -32,6 +33,20 @@ def get_mock_results(query):
     return mock_data
 
 
+def check_input_script():
+    return Script(
+        """
+        window.onload = function() {
+            const input = document.getElementById('search-input');
+            const button = document.querySelector('[data-button="search-button"]');
+            function checkInputValue() { button.disabled = input.value.trim() === ""; }
+            input.addEventListener('input', checkInputValue);
+            checkInputValue();
+        };
+        """
+    )
+
+
 def SearchBox(with_border=False, query_value=""):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
 
@@ -45,9 +60,10 @@ def SearchBox(with_border=False, query_value=""):
                 placeholder="Enter your search query...",
                 name="query",
                 value=query_value,
+                id="search-input",
                 cls="text-base pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent",
                 style='font-size: 1rem',
-                autofocus=True,
+                autofocus=True
             ),
             cls="relative"
         ),
@@ -56,10 +72,17 @@ def SearchBox(with_border=False, query_value=""):
                 "controls",
                 cls="text-muted-foreground"
             ),
-            Button(Lucide(icon="arrow-right", size="21"), size="sm", type="submit"),
+            Button(
+                Lucide(icon="arrow-right", size="21"),
+                size="sm",
+                type="submit",
+                data_button="search-button",
+                disabled=True,
+            ),
             cls="flex justify-between"
         ),
-        action=f"/search?query={quote_plus(query_value)}",
+        check_input_script(),  # Include the script that handles the input changes
+        action=f"/search?query={quote_plus(query_value)}",  # The query value is added to the URL
         method="GET",
         cls=grid_cls,
     )
