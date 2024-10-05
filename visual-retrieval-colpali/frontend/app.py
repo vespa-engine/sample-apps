@@ -131,6 +131,16 @@ def Search(request):
 
 
 def SearchResult(results=[]):
+    if not results:
+        return Div(
+            P(
+                "No results found for your query.",
+                cls="text-muted-foreground text-base text-center"
+            ),
+            cls="grid p-10"
+        )
+
+    # Otherwise, display the search results
     result_items = []
     for result in results:
         result_items.append(

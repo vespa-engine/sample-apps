@@ -809,10 +809,6 @@ body {
   display: block;
 }
 
-.inline {
-  display: inline;
-}
-
 .flex {
   display: flex;
 }
@@ -1125,16 +1121,8 @@ body {
   gap: 1px;
 }
 
-.gap-3 {
-  gap: 0.75rem;
-}
-
 .gap-y-4 {
   row-gap: 1rem;
-}
-
-.gap-y-3 {
-  row-gap: 0.75rem;
 }
 
 .space-x-3 > :not([hidden]) ~ :not([hidden]) {
@@ -1343,6 +1331,10 @@ body {
   padding: 0.25rem;
 }
 
+.p-16 {
+  padding: 4rem;
+}
+
 .p-3 {
   padding: 0.75rem;
 }
@@ -1357,6 +1349,10 @@ body {
 
 .p-\[1px\] {
   padding: 1px;
+}
+
+.p-10 {
+  padding: 2.5rem;
 }
 
 .px-2\.5 {
@@ -1397,11 +1393,6 @@ body {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .py-5 {
@@ -1464,6 +1455,11 @@ body {
   line-height: 1;
 }
 
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -1482,11 +1478,6 @@ body {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-base {
-  font-size: 1rem;
-  line-height: 1.5rem;
 }
 
 .font-bold {
