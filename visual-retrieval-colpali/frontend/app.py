@@ -1,3 +1,4 @@
+import asyncio
 from urllib.parse import quote_plus
 
 from fasthtml.components import Div, H1, P, Img, H2, Form, Span
@@ -5,32 +6,16 @@ from fasthtml.xtend import Script, A
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Input, Badge
 
+from backend.colpali import get_result_from_query
 
-def get_mock_results(query):
-    # Mock data simulating search results for the query
-    mock_data = [
-        {
-            "title": "Conocophillips - 2023 Sustainability Report",
-            "description": "Our policies require nature-related risks be assessed in business planning...",
-            "image": "/static/img/sustainability.png"
-        },
-        {
-            "title": "Sustainable Energy in the 21st Century",
-            "description": "An overview of sustainable energy practices and future technologies...",
-            "image": "/static/img/energy.png"
-        },
-        {
-            "title": "Reducing Carbon Emissions by 2030",
-            "description": "Steps we can take to reduce global carbon emissions by the year 2030...",
-            "image": "/static/img/carbon.png"
-        }
-    ]
 
-    # For simulation
-    if query:
-        return [result for result in mock_data if query.lower() in result['title'].lower()]
-
-    return mock_data
+def fetch_real_data(query, vespa_app, model, processor, nn=10):
+    # Call the function to run the query and fetch the result
+    result = asyncio.run(
+        get_result_from_query(vespa_app, processor=processor, model=model, query=query, nn=nn)
+    )
+    # Extract the 'children' field from the result's 'root'
+    return result['root']['children'] if 'root' in result and 'children' in result['root'] else []
 
 
 def check_input_script():
@@ -142,17 +127,14 @@ def Home():
     )
 
 
-def Search(request):
+def Search(request, search_results=[]):
     # Extract the 'query' parameter from the URL using query_params
     query_value = request.query_params.get('query', '').strip()
-
-    # Get mock search results based on the query
-    search_results = get_mock_results(query_value)
 
     return Div(
         Div(
             SearchBox(query_value=query_value),  # Pass the query value to pre-fill the SearchBox
-            SearchResult(results=search_results),
+            SearchResult(results=search_results),  # Pass the real search results to SearchResult
             cls="grid"
         ),
         cls="grid",
@@ -172,16 +154,19 @@ def SearchResult(results=[]):
     # Otherwise, display the search results
     result_items = []
     for result in results:
+        fields = result['fields']  # Extract the 'fields' part of each result
+        base64_image = f"data:image/jpeg;base64,{fields['image']}"  # Format base64 image
+
         result_items.append(
             Div(
                 Div(
-                    Img(src=result['image'], alt=result['title'], cls='max-w-full h-auto'),
+                    Img(src=base64_image, alt=fields['title'], cls='max-w-full h-auto'),
                     cls="bg-background px-3 py-5"
                 ),
                 Div(
                     Div(
-                        H2(result['title'], cls="text-xl font-semibold"),
-                        P(result['description'], cls="text-muted-foreground"),
+                        H2(fields['title'], cls="text-xl font-semibold"),
+                        P(fields['url'], cls="text-muted-foreground"),  # Use the URL as the description
                         cls="text-sm grid gap-y-4"
                     ),
                     cls="bg-background px-3 py-5"

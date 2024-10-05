@@ -6,7 +6,7 @@ from vespa.application import Vespa
 
 from backend.colpali import load_model, get_result_dummy
 from backend.vespa_app import get_vespa_app
-from frontend.app import Home, Search
+from frontend.app import Home, Search, fetch_real_data
 from frontend.layout import Layout
 
 highlight_js_theme_link = Link(id='highlight-theme', rel="stylesheet", href="")
@@ -50,7 +50,17 @@ def get():
 
 @rt("/search")
 def get(request):
-    return Layout(Search(request))
+    # Extract the 'query' parameter from the URL using query_params
+    query_value = request.query_params.get('query', '').strip()
+
+    # Get model and processor for Vespa app
+    model, processor = get_model_and_processor()
+
+    # Fetch real search results from Vespa using the query
+    search_results = fetch_real_data(query=query_value, vespa_app=vespa_app, model=model, processor=processor)
+
+    # Pass the search results to the Search function
+    return Layout(Search(request, search_results=search_results))
 
 
 @rt("/app")
