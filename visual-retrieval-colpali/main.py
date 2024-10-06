@@ -25,17 +25,26 @@ app, rt = fast_app(
 )
 vespa_app: Vespa = get_vespa_app()
 
-# Initialize variables to None
-model = None
-processor = None
 
+class ModelManager:
+    _instance = None
+    model = None
+    processor = None
 
-# Define a function to get the model and processor
-def get_model_and_processor():
-    global model, processor
-    if model is None or processor is None:
-        model, processor = load_model()
-    return model, processor
+    @staticmethod
+    def get_instance():
+        if ModelManager._instance is None:
+            ModelManager._instance = ModelManager()
+            ModelManager._instance.initialize_model_and_processor()
+        return ModelManager._instance
+
+    def initialize_model_and_processor(self):
+        if self.model is None or self.processor is None:  # Ensure no reinitialization
+            self.model, self.processor = load_model()
+            if self.model is None or self.processor is None:
+                print("Failed to initialize model or processor at startup")
+            else:
+                print("Model and processor loaded at startup")
 
 
 @rt("/static/{filepath:path}")
@@ -50,16 +59,12 @@ def get():
 
 @rt("/search")
 def get(request):
-    # Extract the 'query' parameter from the URL using query_params
+    manager = ModelManager.get_instance()
+    model = manager.model
+    processor = manager.processor
+
     query_value = request.query_params.get('query', '').strip()
-
-    # Get model and processor for Vespa app
-    model, processor = get_model_and_processor()
-
-    # Fetch real search results from Vespa using the query
     search_results = fetch_real_data(query=query_value, vespa_app=vespa_app, model=model, processor=processor)
-
-    # Pass the search results to the Search function
     return Layout(Search(request, search_results=search_results))
 
 
@@ -91,4 +96,6 @@ def get(query: str, nn: bool = False):
     )
 
 
-serve()
+if __name__ == "__main__":
+    # ModelManager.get_instance()  # Initialize once at startup
+    serve()
