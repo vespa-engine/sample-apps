@@ -1,21 +1,9 @@
-import asyncio
 from urllib.parse import quote_plus
 
 from fasthtml.components import Div, H1, P, Img, H2, Form, Span
 from fasthtml.xtend import Script, A
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Input, Badge
-
-from backend.colpali import get_result_from_query
-
-
-def fetch_real_data(query, vespa_app, model, processor, nn=10):
-    # Call the function to run the query and fetch the result
-    result = asyncio.run(
-        get_result_from_query(vespa_app, processor=processor, model=model, query=query, nn=nn)
-    )
-    # Extract the 'children' field from the result's 'root'
-    return result['root']['children'] if 'root' in result and 'children' in result['root'] else []
 
 
 def check_input_script():
@@ -66,9 +54,14 @@ def SearchBox(with_border=False, query_value=""):
             ),
             cls="flex justify-between"
         ),
-        check_input_script(),  # Include the script that handles the input changes
-        action=f"/search?query={quote_plus(query_value)}",  # The query value is added to the URL
+        check_input_script(),
+        action=f"/search?query={quote_plus(query_value)}",  # This takes the user to /search with the loading message
         method="GET",
+        hx_get=f"/fetch_results?query={quote_plus(query_value)}",  # This fetches the results asynchronously
+        hx_trigger="load",  # Trigger this after the page loads
+        hx_target="#search-results",  # Update the search results div dynamically
+        hx_swap="outerHTML",  # Replace the search results div entirely
+        hx_indicator="#loading-indicator",  # Show the loading indicator while fetching results
         cls=grid_cls,
     )
 
@@ -128,16 +121,26 @@ def Home():
 
 
 def Search(request, search_results=[]):
-    # Extract the 'query' parameter from the URL using query_params
     query_value = request.query_params.get('query', '').strip()
 
     return Div(
         Div(
             SearchBox(query_value=query_value),  # Pass the query value to pre-fill the SearchBox
-            SearchResult(results=search_results),  # Pass the real search results to SearchResult
+            Div(
+                LoadingMessage(),  # Show the loading message initially
+                id="search-results"  # This will be replaced by the search results
+            ),
             cls="grid"
         ),
         cls="grid",
+    )
+
+
+def LoadingMessage():
+    return Div(
+        P("Loading... Please wait.", cls="text-base text-center"),
+        cls="p-10 text-center text-muted-foreground",
+        id="loading-indicator"
     )
 
 
@@ -177,5 +180,6 @@ def SearchResult(results=[]):
 
     return Div(
         *result_items,
-        cls="grid grid-cols-2 gap-px bg-border"
+        cls="grid grid-cols-2 gap-px bg-border",
+        id="search-results"  # This will be the target for HTMX updates
     )

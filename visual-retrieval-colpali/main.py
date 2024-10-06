@@ -1,12 +1,13 @@
+import asyncio
 import json
 
 from fasthtml.common import *
 from shad4fast import *
 from vespa.application import Vespa
 
-from backend.colpali import load_model, get_result_dummy
+from backend.colpali import load_model, get_result_dummy, get_result_from_query
 from backend.vespa_app import get_vespa_app
-from frontend.app import Home, Search, fetch_real_data
+from frontend.app import Home, Search, SearchResult, SearchBox
 from frontend.layout import Layout
 
 highlight_js_theme_link = Link(id='highlight-theme', rel="stylesheet", href="")
@@ -59,13 +60,51 @@ def get():
 
 @rt("/search")
 def get(request):
+    # Extract the 'query' parameter from the URL using query_params
+    query_value = request.query_params.get('query', '').strip()
+
+    # Always render the SearchBox first
+    if not query_value:
+        # Show SearchBox and a message for missing query
+        return Layout(
+            Div(
+                SearchBox(query_value=query_value),
+                Div(
+                    P("No query provided. Please enter a query.", cls="text-center text-muted-foreground"),
+                    cls="p-10"
+                ),
+                cls="grid"
+            )
+        )
+
+    # Show the loading message if a query is provided
+    return Layout(Search(request))  # Show SearchBox and Loading message initially
+
+
+@rt("/fetch_results")
+def get(request):
+    # Check if the request came from HTMX; if not, redirect to /search
+    if 'hx-request' not in request.headers:
+        return RedirectResponse("/search")
+
+    # Extract the 'query' parameter from the URL
+    query_value = request.query_params.get('query', '').strip()
+
+    # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
 
-    query_value = request.query_params.get('query', '').strip()
-    search_results = fetch_real_data(query=query_value, vespa_app=vespa_app, model=model, processor=processor)
-    return Layout(Search(request, search_results=search_results))
+    # Fetch real search results from Vespa
+    result = asyncio.run(
+        get_result_from_query(vespa_app, processor=processor, model=model, query=query_value, nn=10)
+    )
+
+    # Extract search results from the result payload
+    search_results = result['root']['children'] if 'root' in result and 'children' in result['root'] else []
+
+    # Directly return the search results without the full page layout
+    return SearchResult(search_results)
 
 
 @rt("/app")
