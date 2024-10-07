@@ -63,7 +63,7 @@ def main():
                 Field(
                     name="text",
                     type="string",
-                    indexing=["index"],
+                    indexing=["summary", "index"],
                     match=["text"],
                     index="enable-bm25",
                 ),
@@ -82,7 +82,10 @@ def main():
                 ),
             ]
         ),
-        fieldsets=[FieldSet(name="default", fields=["title", "text"])],
+        fieldsets=[
+            FieldSet(name="default", fields=["title", "url", "page_number", "text"]),
+            FieldSet(name="image", fields=["image"]),
+        ],
     )
 
     # Define rank profiles
