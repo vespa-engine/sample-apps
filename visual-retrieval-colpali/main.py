@@ -109,7 +109,7 @@ def get(request, query: str, nn: bool = True):
             model=model,
             query=query,
             nn=nn,
-            gen_sim_map=True,
+            gen_sim_map=False,
         )
     )
 
