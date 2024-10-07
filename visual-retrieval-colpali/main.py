@@ -149,4 +149,4 @@ def get(query: str, nn: bool = False):
 
 if __name__ == "__main__":
     # ModelManager.get_instance()  # Initialize once at startup
-    serve()
+    serve(port=7860)
