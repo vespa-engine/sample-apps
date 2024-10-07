@@ -918,16 +918,8 @@ body {
   max-height: 24rem;
 }
 
-.max-h-\[377px\] {
-  max-height: 377px;
-}
-
 .max-h-screen {
   max-height: 100vh;
-}
-
-.min-h-12 {
-  min-height: 3rem;
 }
 
 .min-h-\[55px\] {
@@ -940,14 +932,6 @@ body {
 
 .min-h-screen {
   min-height: 100vh;
-}
-
-.min-h-10 {
-  min-height: 2.5rem;
-}
-
-.min-h-0 {
-  min-height: 0px;
 }
 
 .w-10 {
@@ -1085,18 +1069,8 @@ body {
           user-select: none;
 }
 
-.resize-y {
-  resize: vertical;
-}
-
 .resize {
   resize: both;
-}
-
-.appearance-none {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
 }
 
 .grid-cols-2 {
@@ -1127,6 +1101,10 @@ body {
   justify-content: space-between;
 }
 
+.justify-items-center {
+  justify-items: center;
+}
+
 .gap-2 {
   gap: 0.5rem;
 }
@@ -1145,6 +1123,10 @@ body {
 
 .gap-px {
   gap: 1px;
+}
+
+.gap-3 {
+  gap: 0.75rem;
 }
 
 .gap-y-4 {
@@ -1357,6 +1339,10 @@ body {
   padding: 0.25rem;
 }
 
+.p-16 {
+  padding: 4rem;
+}
+
 .p-3 {
   padding: 0.75rem;
 }
@@ -1371,6 +1357,10 @@ body {
 
 .p-\[1px\] {
   padding: 1px;
+}
+
+.p-10 {
+  padding: 2.5rem;
 }
 
 .px-2\.5 {
@@ -1428,10 +1418,6 @@ body {
 
 .pl-8 {
   padding-left: 2rem;
-}
-
-.pr-14 {
-  padding-right: 3.5rem;
 }
 
 .pr-2 {
@@ -1514,6 +1500,10 @@ body {
   font-weight: 600;
 }
 
+.font-normal {
+  font-weight: 400;
+}
+
 .leading-none {
   line-height: 1;
 }
@@ -1582,6 +1572,14 @@ body {
 
 .text-transparent {
   color: transparent;
+}
+
+.underline {
+  text-decoration-line: underline;
+}
+
+.no-underline {
+  text-decoration-line: none;
 }
 
 .underline-offset-4 {
@@ -1966,6 +1964,15 @@ body {
   --tw-ring-offset-width: 2px;
 }
 
+.hover\:border-white:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity));
+}
+
+.hover\:border-\[text-muted-foreground\]:hover {
+  border-color: text-muted-foreground;
+}
+
 .hover\:bg-accent:hover {
   background-color: hsl(var(--accent));
 }
@@ -1994,12 +2001,24 @@ body {
   background-color: hsl(var(--secondary) / 0.8);
 }
 
+.hover\:bg-secondary:hover {
+  background-color: hsl(var(--secondary));
+}
+
 .hover\:text-accent-foreground:hover {
   color: hsl(var(--accent-foreground));
 }
 
 .hover\:text-foreground:hover {
   color: hsl(var(--foreground));
+}
+
+.hover\:text-primary-foreground:hover {
+  color: hsl(var(--primary-foreground));
+}
+
+.hover\:text-muted-foreground:hover {
+  color: hsl(var(--muted-foreground));
 }
 
 .hover\:underline:hover {
@@ -2439,6 +2458,16 @@ body {
 
 .dark\:to-gray-300:where(.dark, .dark *) {
   --tw-gradient-to: #d1d5db var(--tw-gradient-to-position);
+}
+
+.dark\:hover\:border-black:hover:where(.dark, .dark *) {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity));
+}
+
+.hover\:dark\:border-black:where(.dark, .dark *):hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 
 .\[\&\:has\(\[role\=checkbox\]\)\]\:pr-0:has([role=checkbox]) {

@@ -1,14 +1,16 @@
-from fasthtml.common import *
-from shad4fast import *
+import asyncio
 import json
 
-from ui.home import Home
-from ui.layout import Layout
-from ui.search import Search
+from fasthtml.common import *
+from shad4fast import *
+from vespa.application import Vespa
+
+from backend.colpali import load_model, get_result_dummy, get_result_from_query
 from backend.vespa_app import get_vespa_app
-from backend.colpali import load_model, get_result_from_query
 from vespa.application import Vespa
 import asyncio
+from frontend.app import Home, Search, SearchResult, SearchBox
+from frontend.layout import Layout
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -30,17 +32,26 @@ app, rt = fast_app(
 )
 vespa_app: Vespa = get_vespa_app()
 
-# Initialize variables to None
-model = None
-processor = None
 
+class ModelManager:
+    _instance = None
+    model = None
+    processor = None
 
-# Define a function to get the model and processor
-def get_model_and_processor():
-    global model, processor
-    if model is None or processor is None:
-        model, processor = load_model()
-    return model, processor
+    @staticmethod
+    def get_instance():
+        if ModelManager._instance is None:
+            ModelManager._instance = ModelManager()
+            ModelManager._instance.initialize_model_and_processor()
+        return ModelManager._instance
+
+    def initialize_model_and_processor(self):
+        if self.model is None or self.processor is None:  # Ensure no reinitialization
+            self.model, self.processor = load_model()
+            if self.model is None or self.processor is None:
+                print("Failed to initialize model or processor at startup")
+            else:
+                print("Model and processor loaded at startup")
 
 
 @rt("/static/{filepath:path}")
@@ -54,13 +65,62 @@ def get():
 
 
 @rt("/search")
-def get():
-    return Layout(Search())
+def get(request):
+    # Extract the 'query' parameter from the URL using query_params
+    query_value = request.query_params.get('query', '').strip()
+
+    # Always render the SearchBox first
+    if not query_value:
+        # Show SearchBox and a message for missing query
+        return Layout(
+            Div(
+                SearchBox(query_value=query_value),
+                Div(
+                    P("No query provided. Please enter a query.", cls="text-center text-muted-foreground"),
+                    cls="p-10"
+                ),
+                cls="grid"
+            )
+        )
+
+    # Show the loading message if a query is provided
+    return Layout(Search(request))  # Show SearchBox and Loading message initially
+
+
+@rt("/fetch_results")
+def get(request):
+    # Check if the request came from HTMX; if not, redirect to /search
+    if 'hx-request' not in request.headers:
+        return RedirectResponse("/search")
+
+    # Extract the 'query' parameter from the URL
+    query_value = request.query_params.get('query', '').strip()
+
+    # Fetch model and processor
+    manager = ModelManager.get_instance()
+    model = manager.model
+    processor = manager.processor
+
+    # Fetch real search results from Vespa
+    result = asyncio.run(
+        get_result_from_query(vespa_app, processor=processor, model=model, query=query_value, nn=10)
+    )
+
+    # Extract search results from the result payload
+    search_results = result['root']['children'] if 'root' in result and 'children' in result['root'] else []
+
+    # Directly return the search results without the full page layout
+    return SearchResult(search_results)
 
 
 @rt("/app")
 def get():
-    return Layout(Div(P(f"Connected to Vespa at {app.url}")))
+    return Layout(
+        Div(
+            P(f"Connected to Vespa at {vespa_app.url}"),
+            cls="p-4"
+        )
+    )
 
 
 @rt("/run_query")
@@ -74,12 +134,19 @@ def get(query: str, nn: bool = False):
             vespa_app, processor=processor, model=model, query=query, nn=nn
         )
     )
+    # model, processor = get_model_and_processor()
+    # result = asyncio.run(
+    #     get_result_from_query(vespa_app, processor=processor, model=model, query=query, nn=nn)
+    # )
     return Layout(
         Div(
             H1("Result"),
-            Pre(Code(json.dumps(result))),
+            Pre(Code(json.dumps(result, indent=2))),
+            cls="p-4"
         )
     )
 
 
-serve()
+if __name__ == "__main__":
+    # ModelManager.get_instance()  # Initialize once at startup
+    serve()

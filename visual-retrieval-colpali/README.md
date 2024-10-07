@@ -78,7 +78,7 @@ export HF_TOKEN=yourtoken
 To feed the data, run:
 
 ```bash
-python feed_vespa_app.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_cloud_secret_token mysecrettoken
+python feed_vespa.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_cloud_secret_token mysecrettoken
 ```
 
 ### Connecting to the Vespa app and querying
