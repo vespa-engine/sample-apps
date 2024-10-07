@@ -27,22 +27,8 @@ from vespa.io import VespaQueryResponse
 matplotlib.use("Agg")
 
 MAX_QUERY_TERMS = 64
-# OUTPUT_DIR = Path(__file__).parent.parent / "output" / "sim_maps"
-# OUTPUT_DIR.mkdir(exist_ok=True)
 
-COLPALI_GEMMA_MODEL_ID = "vidore--colpaligemma-3b-pt-448-base"
-COLPALI_GEMMA_MODEL_SNAPSHOT = "12c59eb7e23bc4c26876f7be7c17760d5d3a1ffa"
-COLPALI_GEMMA_MODEL_PATH = (
-    Path().home()
-    / f".cache/huggingface/hub/models--{COLPALI_GEMMA_MODEL_ID}/snapshots/{COLPALI_GEMMA_MODEL_SNAPSHOT}"
-)
-COLPALI_MODEL_ID = "vidore--colpali-v1.2"
-COLPALI_MODEL_SNAPSHOT = "9912ce6f8a462d8cf2269f5606eabbd2784e764f"
-COLPALI_MODEL_PATH = (
-    Path().home()
-    / f".cache/huggingface/hub/models--{COLPALI_MODEL_ID}/snapshots/{COLPALI_MODEL_SNAPSHOT}"
-)
-COLPALI_GEMMA_MODEL_NAME = COLPALI_GEMMA_MODEL_ID.replace("--", "/")
+COLPALI_GEMMA_MODEL_NAME = "vidore/colpaligemma-3b-pt-448-base"
 
 
 def load_model() -> Tuple[ColPali, ColPaliProcessor]:
