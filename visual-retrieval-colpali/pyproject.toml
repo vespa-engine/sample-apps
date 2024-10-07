@@ -25,4 +25,5 @@ dependencies = [
 dev = [
     "ruff",
     "python-dotenv",
+    "huggingface_hub[cli]"
 ]
