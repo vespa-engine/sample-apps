@@ -4,10 +4,11 @@ version = "0.1.0"
 description = "Visual retrieval with ColPali"
 readme = "README.md"
 requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
 dependencies = [
     "python-fasthtml",
     "huggingface-hub",
-    "pyvespa",
+    "pyvespa@git+https://github.com/vespa-engine/pyvespa",
     "vespacli",
     "torch",
     "vidore-benchmark[interpretability]>=4.0.0,<5.0.0",
@@ -18,7 +19,6 @@ dependencies = [
     "python-dotenv",
     "shad4fast>=1.2.1",
 ]
-license = "Apache-2.0"
 
 # dev-dependencies
 [project.optional-dependencies]
