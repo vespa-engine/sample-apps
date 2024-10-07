@@ -27,8 +27,8 @@ from vespa.io import VespaQueryResponse
 matplotlib.use("Agg")
 
 MAX_QUERY_TERMS = 64
-OUTPUT_DIR = Path(__file__).parent.parent / "output" / "sim_maps"
-OUTPUT_DIR.mkdir(exist_ok=True)
+# OUTPUT_DIR = Path(__file__).parent.parent / "output" / "sim_maps"
+# OUTPUT_DIR.mkdir(exist_ok=True)
 
 COLPALI_GEMMA_MODEL_ID = "vidore--colpaligemma-3b-pt-448-base"
 COLPALI_GEMMA_MODEL_SNAPSHOT = "12c59eb7e23bc4c26876f7be7c17760d5d3a1ffa"
@@ -156,12 +156,12 @@ def gen_similarity_map(
     return fig, ax
 
 
-def save_figure(fig, filename: str = "similarity_map.png"):
-    fig.savefig(
-        OUTPUT_DIR / filename,
-        bbox_inches="tight",
-        pad_inches=0,
-    )
+# def save_figure(fig, filename: str = "similarity_map.png"):
+#     fig.savefig(
+#         OUTPUT_DIR / filename,
+#         bbox_inches="tight",
+#         pad_inches=0,
+#     )
 
 
 def annotate_plot(ax, query, selected_token):
@@ -256,7 +256,7 @@ def gen_similarity_map_new(
     )
     ax = annotate_plot(ax, query, token_to_show)
     # save the figure
-    save_figure(fig, f"similarity_map_{token_to_show}.png")
+    # save_figure(fig, f"similarity_map_{token_to_show}.png")
     return fig, ax
 
 
