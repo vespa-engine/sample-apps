@@ -10,6 +10,7 @@ import base64
 from io import BytesIO
 from typing import Union, Tuple
 import matplotlib
+import re
 
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
@@ -28,6 +29,20 @@ matplotlib.use("Agg")
 MAX_QUERY_TERMS = 64
 OUTPUT_DIR = Path(__file__).parent.parent / "output" / "sim_maps"
 OUTPUT_DIR.mkdir(exist_ok=True)
+
+COLPALI_GEMMA_MODEL_ID = "vidore--colpaligemma-3b-pt-448-base"
+COLPALI_GEMMA_MODEL_SNAPSHOT = "12c59eb7e23bc4c26876f7be7c17760d5d3a1ffa"
+COLPALI_GEMMA_MODEL_PATH = (
+    Path().home()
+    / f".cache/huggingface/hub/models--{COLPALI_GEMMA_MODEL_ID}/snapshots/{COLPALI_GEMMA_MODEL_SNAPSHOT}"
+)
+COLPALI_MODEL_ID = "vidore--colpali-v1.2"
+COLPALI_MODEL_SNAPSHOT = "9912ce6f8a462d8cf2269f5606eabbd2784e764f"
+COLPALI_MODEL_PATH = (
+    Path().home()
+    / f".cache/huggingface/hub/models--{COLPALI_MODEL_ID}/snapshots/{COLPALI_MODEL_SNAPSHOT}"
+)
+COLPALI_GEMMA_MODEL_NAME = COLPALI_GEMMA_MODEL_ID.replace("--", "/")
 
 
 def load_model() -> Tuple[ColPali, ColPaliProcessor]:
@@ -53,7 +68,8 @@ def load_model() -> Tuple[ColPali, ColPaliProcessor]:
 
 def load_vit_config(model):
     # Load the ViT config
-    vit_config = VIT_CONFIG[model.config.name_or_path]
+    print(f"VIT config: {VIT_CONFIG}")
+    vit_config = VIT_CONFIG[COLPALI_GEMMA_MODEL_NAME]
     return vit_config
 
 
@@ -280,7 +296,7 @@ async def query_vespa_default(
         query_embedding = format_q_embs(q_emb)
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,image,page_number from pdf_page where userQuery();",
+                "yql": "select id,title,url,image,page_number,text from pdf_page where userQuery();",
                 "ranking": "default",
                 "query": query,
                 "timeout": timeout,
@@ -355,7 +371,7 @@ async def query_vespa_nearest_neighbor(
             body={
                 **query_tensors,
                 "presentation.timing": True,
-                "yql": f"select id,title, url, image, page_number from pdf_page where {nn_string}",
+                "yql": f"select id,title,text,url,image,page_number from pdf_page where {nn_string}",
                 "ranking.profile": "retrieval-and-rerank",
                 "timeout": timeout,
                 "hits": hits,
@@ -366,8 +382,21 @@ async def query_vespa_nearest_neighbor(
     return format_query_results(query, response)
 
 
+def is_special_token(token: str) -> bool:
+    # Pattern for tokens that start with '<', numbers, whitespace, or single characters
+    pattern = re.compile(r"^<.*$|^\d+$|^\s+$|^.$")
+    if pattern.match(token):
+        return True
+    return False
+
+
 async def get_result_from_query(
-    app: Vespa, processor: ColPaliProcessor, model: ColPali, query: str, nn=False
+    app: Vespa,
+    processor: ColPaliProcessor,
+    model: ColPali,
+    query: str,
+    nn=False,
+    gen_sim_map=False,
 ):
     # Get the query embeddings and token map
     print(query)
@@ -377,25 +406,37 @@ async def get_result_from_query(
     print(token_to_idx)
     # Use the token map to choose a token randomly for now
     # Dynamically select a token containing 'water'
-    token = next((t for t in token_to_idx if "water" in t), None)
-    if token is None:
-        raise ValueError("Token containing 'water' not found")
+
     if nn:
         result = await query_vespa_nearest_neighbor(app, query, q_embs)
     else:
         result = await query_vespa_default(app, query, q_embs)
-    img = result["root"]["children"][0]["fields"]["image"]
-    fig, ax = gen_similarity_map_new(
-        processor,
-        model,
-        model.device,
-        load_vit_config(model),
-        query,
-        q_embs,
-        token_to_idx,
-        token,
-        img,
-    )
+    # Print score, title id and text of the results
+    for idx, child in enumerate(result["root"]["children"]):
+        print(
+            f"Result {idx+1}: {child['relevance']}, {child['fields']['title']}, {child['fields']['id']}"
+        )
+
+    if gen_sim_map:
+        for single_result in result["root"]["children"]:
+            img = single_result["fields"]["image"]
+            for token in token_to_idx:
+                if is_special_token(token):
+                    print(f"Skipping special token: {token}")
+                    continue
+                fig, ax = gen_similarity_map_new(
+                    processor,
+                    model,
+                    model.device,
+                    load_vit_config(model),
+                    query,
+                    q_embs,
+                    token_to_idx,
+                    token,
+                    img,
+                )
+                sim_map = base64.b64encode(fig.canvas.tostring_rgb()).decode("utf-8")
+                single_result["fields"][f"sim_map_{token}"] = sim_map
     return result
 
 
