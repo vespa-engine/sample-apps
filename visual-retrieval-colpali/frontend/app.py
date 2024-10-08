@@ -161,7 +161,7 @@ def SearchResult(results=[]):
     for result in results:
         fields = result["fields"]  # Extract the 'fields' part of each result
         base64_image = (
-            f"data:image/jpeg;base64,{fields['image']}"  # Format base64 image
+            f"data:image/jpeg;base64,{fields['full_image']}"  # Format base64 image
         )
         # Print the fields that start with 'sim_map'
         # Choose a random one to display
