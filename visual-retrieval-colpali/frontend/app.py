@@ -1,4 +1,5 @@
 from urllib.parse import quote_plus
+import random
 
 from fasthtml.components import Div, H1, P, Img, H2, Form, Span
 from fasthtml.xtend import Script, A
@@ -65,9 +66,9 @@ def SearchBox(with_border=False, query_value=""):
 
 def SampleQueries():
     sample_queries = [
-        "What is the future of energy storage?",
-        "What is sustainable energy?",
-        "How to reduce carbon emissions?",
+        "Percentage of non-fresh water as source?",
+        "Policies related to nature risk?",
+        "How much of produced water is recycled?",
     ]
 
     query_badges = []
@@ -96,7 +97,7 @@ def SampleQueries():
 def Hero():
     return Div(
         H1(
-            "Vespa.Ai + ColPali",
+            "Vespa.ai + ColPali",
             cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
         ),
         P(
@@ -163,9 +164,17 @@ def SearchResult(results=[]):
             f"data:image/jpeg;base64,{fields['image']}"  # Format base64 image
         )
         # Print the fields that start with 'sim_map'
+        # Choose a random one to display
+        sim_map_fields = []
         for key, value in fields.items():
             if key.startswith("sim_map"):
-                print(f"{key}")
+                sim_map_fields.append(key)
+        if sim_map_fields:
+            print(f"Sim map fields: {sim_map_fields}")
+            # Just choose a random sim_map field for now
+            selected_sim_map = random.choice(sim_map_fields)
+            print(f"Selected sim_map: {selected_sim_map}")
+            _sim_map_base64 = f"data:image/jpeg;base64,{fields[selected_sim_map]}"
         result_items.append(
             Div(
                 Div(
