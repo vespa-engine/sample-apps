@@ -23,7 +23,7 @@ schema pdf_page {
             indexing: summary
         }
         field text type string {
-            indexing: index
+            indexing: summary | index
             index: enable-bm25
             match {
                 text
