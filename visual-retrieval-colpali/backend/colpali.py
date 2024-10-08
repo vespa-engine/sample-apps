@@ -228,7 +228,7 @@ async def query_vespa_default(
         query_embedding = format_q_embs(q_emb)
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,image,page_number,text from pdf_page where userQuery();",
+                "yql": "select id,title,url,full_image,page_number,text from pdf_page where userQuery();",
                 "ranking": "default",
                 "query": query,
                 "timeout": timeout,
@@ -303,7 +303,7 @@ async def query_vespa_nearest_neighbor(
             body={
                 **query_tensors,
                 "presentation.timing": True,
-                "yql": f"select id,title,text,url,image,page_number from pdf_page where {nn_string}",
+                "yql": f"select id,title,text,url,full_image,page_number from pdf_page where {nn_string}",
                 "ranking.profile": "retrieval-and-rerank",
                 "timeout": timeout,
                 "hits": hits,
