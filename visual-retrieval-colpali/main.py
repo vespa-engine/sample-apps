@@ -94,8 +94,6 @@ def get(request, query: str, nn: bool = True):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
-    # Extract the 'query' parameter from the URL
-
     # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
