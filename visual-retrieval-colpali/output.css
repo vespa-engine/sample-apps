@@ -898,6 +898,10 @@ body {
   height: 55px;
 }
 
+.h-\[90vh\] {
+  height: 90vh;
+}
+
 .h-\[var\(--radix-select-trigger-height\)\] {
   height: var(--radix-select-trigger-height);
 }
@@ -968,6 +972,10 @@ body {
 
 .w-\[1\.5px\] {
   width: 1.5px;
+}
+
+.w-\[90vw\] {
+  width: 90vw;
 }
 
 .w-full {
@@ -1125,10 +1133,6 @@ body {
   gap: 1px;
 }
 
-.gap-3 {
-  gap: 0.75rem;
-}
-
 .gap-y-4 {
   row-gap: 1rem;
 }
@@ -1253,6 +1257,11 @@ body {
   background-color: hsl(var(--background));
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
 .bg-black\/80 {
   background-color: rgb(0 0 0 / 0.8);
 }
@@ -1312,6 +1321,15 @@ body {
   background-color: hsl(var(--secondary));
 }
 
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-opacity-75 {
+  --tw-bg-opacity: 0.75;
+}
+
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -1335,12 +1353,17 @@ body {
   fill: currentColor;
 }
 
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
 .p-1 {
   padding: 0.25rem;
 }
 
-.p-16 {
-  padding: 4rem;
+.p-10 {
+  padding: 2.5rem;
 }
 
 .p-3 {
@@ -1357,10 +1380,6 @@ body {
 
 .p-\[1px\] {
   padding: 1px;
-}
-
-.p-10 {
-  padding: 2.5rem;
 }
 
 .px-2\.5 {
@@ -1496,12 +1515,12 @@ body {
   font-weight: 500;
 }
 
-.font-semibold {
-  font-weight: 600;
-}
-
 .font-normal {
   font-weight: 400;
+}
+
+.font-semibold {
+  font-weight: 600;
 }
 
 .leading-none {
@@ -1514,6 +1533,11 @@ body {
 
 .tracking-wide {
   letter-spacing: 0.025em;
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-card-foreground {
@@ -1572,10 +1596,6 @@ body {
 
 .text-transparent {
   color: transparent;
-}
-
-.underline {
-  text-decoration-line: underline;
 }
 
 .no-underline {
@@ -1908,6 +1928,13 @@ body {
   animation: slide-up 1s ease-out forwards;
 }
 
+.modal-image {
+  max-width: none;
+  /* Disable the global max-width rule */
+  width: auto;
+  /* Ensure the width can scale according to Tailwind classes */
+}
+
 :root:has(.data-\[state\=open\]\:no-bg-scroll[data-state="open"]) {
   overflow: hidden;
 }
@@ -1964,15 +1991,6 @@ body {
   --tw-ring-offset-width: 2px;
 }
 
-.hover\:border-white:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(255 255 255 / var(--tw-border-opacity));
-}
-
-.hover\:border-\[text-muted-foreground\]:hover {
-  border-color: text-muted-foreground;
-}
-
 .hover\:bg-accent:hover {
   background-color: hsl(var(--accent));
 }
@@ -2001,24 +2019,12 @@ body {
   background-color: hsl(var(--secondary) / 0.8);
 }
 
-.hover\:bg-secondary:hover {
-  background-color: hsl(var(--secondary));
-}
-
 .hover\:text-accent-foreground:hover {
   color: hsl(var(--accent-foreground));
 }
 
 .hover\:text-foreground:hover {
   color: hsl(var(--foreground));
-}
-
-.hover\:text-primary-foreground:hover {
-  color: hsl(var(--primary-foreground));
-}
-
-.hover\:text-muted-foreground:hover {
-  color: hsl(var(--muted-foreground));
 }
 
 .hover\:underline:hover {
@@ -2458,16 +2464,6 @@ body {
 
 .dark\:to-gray-300:where(.dark, .dark *) {
   --tw-gradient-to: #d1d5db var(--tw-gradient-to-position);
-}
-
-.dark\:hover\:border-black:hover:where(.dark, .dark *) {
-  --tw-border-opacity: 1;
-  border-color: rgb(0 0 0 / var(--tw-border-opacity));
-}
-
-.hover\:dark\:border-black:where(.dark, .dark *):hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
 
 .\[\&\:has\(\[role\=checkbox\]\)\]\:pr-0:has([role=checkbox]) {

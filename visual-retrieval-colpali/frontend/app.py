@@ -1,10 +1,10 @@
 from urllib.parse import quote_plus
 import random
 
-from fasthtml.components import Div, H1, P, Img, H2, Form, Span
-from fasthtml.xtend import Script, A
+from fasthtml.components import H1, H2, Div, Form, Img, P, Span
+from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
-from shad4fast import Button, Input, Badge
+from shad4fast import Badge, Button, Input
 
 
 def check_input_script():
@@ -17,6 +17,33 @@ def check_input_script():
             input.addEventListener('input', checkInputValue);
             checkInputValue();
         };
+        """
+    )
+
+
+def image_modal():
+    return Script(
+        """
+        // Function to open modal with the correct image
+        document.querySelectorAll('.openModal').forEach(button => {
+          button.addEventListener('click', function () {
+            const imageSrc = this.getAttribute('data-image-src');
+            document.getElementById('modalImage').setAttribute('src', imageSrc);
+            document.getElementById('imageModal').classList.remove('hidden');
+          });
+        });
+        
+        // Close modal when close button is clicked
+        document.getElementById('closeModal').addEventListener('click', function () {
+          document.getElementById('imageModal').classList.add('hidden');
+        });
+        
+        // Optional: Close modal when clicking outside the image
+        document.getElementById('imageModal').addEventListener('click', function (e) {
+          if (e.target === this) {
+            this.classList.add('hidden');
+          }
+        });
         """
     )
 
@@ -184,18 +211,41 @@ def SearchResult(results=[], show_sim_map=False):
                         alt=fields["title"],
                         cls="max-w-full h-auto",
                     ),
-                    cls="bg-background px-3 py-5",
+                    Button(
+                        Lucide(icon="fullscreen"),
+                        size="icon",
+                        variant="ghost",
+                        data_image_src=base64_image,
+                        cls="openModal absolute top-2 right-2",
+                    ),
+                    cls="relative bg-background px-3 py-5",
                 ),
                 Div(
                     Div(
                         H2(fields["title"], cls="text-xl font-semibold"),
-                        P(
-                            fields["text"], cls="text-muted-foreground"
-                        ),  # Use the URL as the description
+                        P(fields["text"], cls="text-muted-foreground"),
                         cls="text-sm grid gap-y-4",
                     ),
                     cls="bg-background px-3 py-5",
                 ),
+                Div(
+                    Div(
+                        Img(
+                            id="modalImage",
+                            alt="Full Screen Image",
+                            cls="modal-image w-[90vw] h-[90vh] object-contain",
+                        ),
+                        Button(
+                            "Close ",
+                            id="closeModal",
+                            cls="absolute top-2 right-2 bg-white text-black",
+                        ),
+                        cls="relative",
+                    ),
+                    id="imageModal",
+                    cls="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center z-50",
+                ),
+                image_modal(),
                 cls="grid grid-cols-subgrid col-span-2",
             )
         )
