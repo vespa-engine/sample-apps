@@ -22,6 +22,9 @@ schema pdf_page {
         field image type raw {
             indexing: summary
         }
+        field full_image type raw {
+            indexing: summary
+        }
         field text type string {
             indexing: summary | index
             index: enable-bm25
@@ -43,7 +46,10 @@ schema pdf_page {
         }
     }
     fieldset default {
-        fields: title, text
+        fields: title, url, page_number, text
+    }
+    fieldset image {
+        fields: image
     }
     rank-profile default {
         inputs {

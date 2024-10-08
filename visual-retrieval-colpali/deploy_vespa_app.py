@@ -60,6 +60,7 @@ def main():
                     name="page_number", type="int", indexing=["summary", "attribute"]
                 ),
                 Field(name="image", type="raw", indexing=["summary"]),
+                Field(name="full_image", type="raw", indexing=["summary"]),
                 Field(
                     name="text",
                     type="string",

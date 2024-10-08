@@ -159,6 +159,7 @@ def main():
                 base_64_image = get_base64_image(
                     scale_image(image, 640), add_url_prefix=False
                 )
+                base_64_full_image = get_base64_image(image, add_url_prefix=False)
                 embedding_dict = dict()
                 for idx, patch_embedding in enumerate(embedding):
                     binary_vector = (
@@ -178,6 +179,7 @@ def main():
                         "title": title,
                         "page_number": page_number,
                         "image": base_64_image,
+                        "full_image": base_64_full_image,
                         "text": page_text,
                         "embedding": embedding_dict,
                     },

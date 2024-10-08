@@ -228,7 +228,7 @@ async def query_vespa_default(
         query_embedding = format_q_embs(q_emb)
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,image,page_number,text from pdf_page where userQuery();",
+                "yql": "select id,title,url,full_image,page_number,text from pdf_page where userQuery();",
                 "ranking": "default",
                 "query": query,
                 "timeout": timeout,
@@ -303,7 +303,7 @@ async def query_vespa_nearest_neighbor(
             body={
                 **query_tensors,
                 "presentation.timing": True,
-                "yql": f"select id,title,text,url,image,page_number from pdf_page where {nn_string}",
+                "yql": f"select id,title,text,url,full_image,page_number from pdf_page where {nn_string}",
                 "ranking.profile": "retrieval-and-rerank",
                 "timeout": timeout,
                 "hits": hits,
@@ -368,7 +368,7 @@ def add_sim_maps_to_result(
     vit_config = load_vit_config(model)
     imgs: List[str] = []
     for single_result in result["root"]["children"]:
-        img = single_result["fields"]["image"]
+        img = single_result["fields"]["full_image"]
         if img:
             imgs.append(img)
     figs_imgs = gen_similarity_maps(
