@@ -368,7 +368,7 @@ def add_sim_maps_to_result(
     vit_config = load_vit_config(model)
     imgs: List[str] = []
     for single_result in result["root"]["children"]:
-        img = single_result["fields"]["image"]
+        img = single_result["fields"]["full_image"]
         if img:
             imgs.append(img)
     figs_imgs = gen_similarity_maps(
