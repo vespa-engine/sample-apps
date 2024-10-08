@@ -89,7 +89,7 @@ def get(request):
 
 
 @rt("/fetch_results")
-def get(request, query: str, nn: bool = True):
+def get(request, query: str, nn: bool = True, sim_map: bool = False):
     # Check if the request came from HTMX; if not, redirect to /search
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
@@ -98,7 +98,6 @@ def get(request, query: str, nn: bool = True):
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
-
     # Fetch real search results from Vespa
     result = asyncio.run(
         get_result_from_query(
@@ -107,7 +106,7 @@ def get(request, query: str, nn: bool = True):
             model=model,
             query=query,
             nn=nn,
-            gen_sim_map=False,
+            gen_sim_map=sim_map,
         )
     )
 
@@ -119,7 +118,7 @@ def get(request, query: str, nn: bool = True):
     )
 
     # Directly return the search results without the full page layout
-    return SearchResult(search_results)
+    return SearchResult(search_results, show_sim_map=sim_map)
 
 
 @rt("/app")
