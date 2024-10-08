@@ -111,7 +111,7 @@ def SampleQueries():
                         cls="flex gap-2 items-center",
                     ),
                     variant="outline",
-                    cls="text-base font-normal text-muted-foreground",
+                    cls="text-base font-normal text-muted-foreground hover:border-black dark:hover:border-white",
                 ),
                 href=f"/search?query={quote_plus(query)}",
                 cls="no-underline",
