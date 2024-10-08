@@ -758,6 +758,22 @@ body {
   top: 50%;
 }
 
+.top-3 {
+  top: 0.75rem;
+}
+
+.right-3 {
+  right: 0.75rem;
+}
+
+.top-5 {
+  top: 1.25rem;
+}
+
+.top-6 {
+  top: 1.5rem;
+}
+
 .z-50 {
   z-index: 50;
 }

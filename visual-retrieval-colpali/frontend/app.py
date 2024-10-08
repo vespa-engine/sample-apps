@@ -1,5 +1,5 @@
-from urllib.parse import quote_plus
 import random
+from urllib.parse import quote_plus
 
 from fasthtml.components import H1, H2, Div, Form, Img, P, Span
 from fasthtml.xtend import A, Script
@@ -216,7 +216,7 @@ def SearchResult(results=[], show_sim_map=False):
                         size="icon",
                         variant="ghost",
                         data_image_src=base64_image,
-                        cls="openModal absolute top-2 right-2",
+                        cls="openModal absolute top-6 right-4 text-black",
                     ),
                     cls="relative bg-background px-3 py-5",
                 ),
@@ -238,7 +238,7 @@ def SearchResult(results=[], show_sim_map=False):
                         Button(
                             "Close ",
                             id="closeModal",
-                            cls="absolute top-2 right-2 bg-white text-black",
+                            cls="absolute top-3 right-3 bg-white text-black",
                         ),
                         cls="relative",
                     ),
