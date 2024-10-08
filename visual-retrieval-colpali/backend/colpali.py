@@ -4,13 +4,13 @@ import torch
 from PIL import Image
 import numpy as np
 from typing import cast
-import pprint
 from pathlib import Path
 import base64
 from io import BytesIO
-from typing import Union, Tuple
+from typing import Union, Tuple, List, Dict, Any
 import matplotlib
 import re
+import io
 
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
@@ -20,7 +20,6 @@ from vidore_benchmark.interpretability.torch_utils import (
     normalize_similarity_map_per_query_token,
 )
 from vidore_benchmark.interpretability.vit_configs import VIT_CONFIG
-from vidore_benchmark.utils.image_utils import scale_image
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
 
@@ -59,155 +58,92 @@ def load_vit_config(model):
     return vit_config
 
 
-# Create dummy image
-dummy_image = Image.new("RGB", (448, 448), (255, 255, 255))
-
-
-def gen_similarity_map(
-    model, processor, device, vit_config, query, image: Union[Path, str]
-):
-    # Should take in the b64 image from Vespa query result
-    # And possibly the tensor representing the output_image
-    if isinstance(image, Path):
-        # image is a file path
-        try:
-            image = Image.open(image)
-        except Exception as e:
-            raise ValueError(f"Failed to open image from path: {e}")
-    elif isinstance(image, str):
-        # image is b64 string
-        try:
-            image = Image.open(BytesIO(base64.b64decode(image)))
-        except Exception as e:
-            raise ValueError(f"Failed to open image from b64: {e}")
-
-    # Preview the image
-    scale_image(image, 512)
-    # Preprocess inputs
-    input_text_processed = processor.process_queries([query]).to(device)
-    input_image_processed = processor.process_images([image]).to(device)
-    # Forward passes
-    with torch.no_grad():
-        output_text = model.forward(**input_text_processed)
-        output_image = model.forward(**input_image_processed)
-    # output_image is the tensor that we could get from the Vespa query
-    # Print shape of output_text and output_image
-    # Output image shape: torch.Size([1, 1030, 128])
-    # Remove the special tokens from the output
-    output_image = output_image[
-        :, : processor.image_seq_length, :
-    ]  # (1, n_patches_x * n_patches_y, dim)
-
-    # Rearrange the output image tensor to explicitly represent the 2D grid of patches
-    output_image = rearrange(
-        output_image,
-        "b (h w) c -> b h w c",
-        h=vit_config.n_patch_per_dim,
-        w=vit_config.n_patch_per_dim,
-    )  # (1, n_patches_x, n_patches_y, dim)
-    # Get the similarity map
-    similarity_map = torch.einsum(
-        "bnk,bijk->bnij", output_text, output_image
-    )  # (1, query_tokens, n_patches_x, n_patches_y)
-
-    # Normalize the similarity map
-    similarity_map_normalized = normalize_similarity_map_per_query_token(
-        similarity_map
-    )  # (1, query_tokens, n_patches_x, n_patches_y)
-    # Use this cell output to choose a token using its index
-    query_tokens = processor.tokenizer.tokenize(
-        processor.decode(input_text_processed.input_ids[0])
-    )
-    # Choose a token
-    token_idx = (
-        10  # e.g. if "12: '▁Kazakhstan',", set 12 to choose the token 'Kazakhstan'
-    )
-    selected_token = processor.decode(input_text_processed.input_ids[0, token_idx])
-    # strip whitespace
-    selected_token = selected_token.strip()
-    print(f"Selected token: `{selected_token}`")
-    # Retrieve the similarity map for the chosen token
-    pprint.pprint({idx: val for idx, val in enumerate(query_tokens)})
-    # Resize the image to square
-    input_image_square = image.resize((vit_config.resolution, vit_config.resolution))
-
-    # Plot the similarity map
-    fig, ax = plot_similarity_heatmap(
-        input_image_square,
-        patch_size=vit_config.patch_size,
-        image_resolution=vit_config.resolution,
-        similarity_map=similarity_map_normalized[0, token_idx, :, :],
-    )
-    ax = annotate_plot(ax, selected_token)
-    return fig, ax
-
-
-# def save_figure(fig, filename: str = "similarity_map.png"):
-#     fig.savefig(
-#         OUTPUT_DIR / filename,
-#         bbox_inches="tight",
-#         pad_inches=0,
-#     )
+def save_figure(fig, filename: str = "similarity_map.png"):
+    try:
+        OUTPUT_DIR = Path(__file__).parent.parent / "output" / "sim_maps"
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        fig.savefig(
+            OUTPUT_DIR / filename,
+            bbox_inches="tight",
+            pad_inches=0,
+        )
+    except Exception as e:
+        print(f"Failed to save figure: {e}")
 
 
 def annotate_plot(ax, query, selected_token):
-    # Add the query text
-    ax.set_title(query, fontsize=18)
-    # Add annotation with selected token
-    ax.annotate(
-        f"Selected token:`{selected_token}`",
-        xy=(0.5, 0.95),
-        xycoords="axes fraction",
+    # Add the query text as a title over the image with opacity
+    ax.text(
+        0.5,
+        0.95,  # Adjust the position to be on the image (y=0.1 is 10% from the bottom)
+        query,
+        fontsize=18,
+        color="white",
         ha="center",
         va="center",
+        alpha=0.8,  # Set opacity (1 is fully opaque, 0 is fully transparent)
+        bbox=dict(
+            boxstyle="round,pad=0.5", fc="black", ec="none", lw=0, alpha=0.5
+        ),  # Add a semi-transparent background
+        transform=ax.transAxes,  # Ensure the coordinates are relative to the axes
+    )
+
+    # Add annotation with the selected token over the image with opacity
+    ax.text(
+        0.5,
+        0.05,  # Position towards the top of the image
+        f"Selected token: `{selected_token}`",
         fontsize=18,
-        color="black",
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=1),
+        color="white",
+        ha="center",
+        va="center",
+        alpha=0.8,  # Set opacity for the text
+        bbox=dict(
+            boxstyle="round,pad=0.3", fc="black", ec="none", lw=0, alpha=0.5
+        ),  # Semi-transparent background
+        transform=ax.transAxes,  # Keep the coordinates relative to the axes
     )
     return ax
 
 
-def gen_similarity_map_new(
-    processor: ColPaliProcessor,
+def gen_similarity_maps(
     model: ColPali,
+    processor: ColPaliProcessor,
     device,
     vit_config,
     query: str,
     query_embs: torch.Tensor,
     token_idx_map: dict,
-    token_to_show: str,
-    image: Union[Path, str],
-):
-    if isinstance(image, Path):
-        # image is a file path
-        try:
-            image = Image.open(image)
-        except Exception as e:
-            raise ValueError(f"Failed to open image from path: {e}")
-    elif isinstance(image, str):
-        # image is b64 string
-        try:
-            image = Image.open(BytesIO(base64.b64decode(image)))
-        except Exception as e:
-            raise ValueError(f"Failed to open image from b64: {e}")
-    token_idx = token_idx_map[token_to_show]
-    print(f"Selected token: `{token_to_show}`")
-    # strip whitespace
-    # Preview the image
-    # scale_image(image, 512)
+    images: List[Union[Path, str]],
+) -> List[Dict[str, Tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]]]:
+    # Process images
+    processed_images = []
+    for img in images:
+        if isinstance(img, Path):
+            # image is a file path
+            try:
+                img = Image.open(img)
+                processed_images.append(img)
+            except Exception as e:
+                raise ValueError(f"Failed to open image from path: {e}")
+        elif isinstance(img, str):
+            # image is b64 string
+            try:
+                img = Image.open(BytesIO(base64.b64decode(img)))
+                processed_images.append(img)
+            except Exception as e:
+                raise ValueError(f"Failed to open image from b64: {e}")
+        else:
+            raise ValueError(f"Unsupported image type: {type(img)}")
+
     # Preprocess inputs
-    input_image_processed = processor.process_images([image]).to(device)
+    input_image_processed = processor.process_images(processed_images).to(device)
     # Forward passes
     with torch.no_grad():
         output_image = model.forward(**input_image_processed)
-    # output_image is the tensor that we could get from the Vespa query
-    # Print shape of output_text and output_image
-    # Output image shape: torch.Size([1, 1030, 128])
     # Remove the special tokens from the output
     print(f"Output image shape before dim: {output_image.shape}")
-    output_image = output_image[
-        :, : processor.image_seq_length, :
-    ]  # (1, n_patches_x * n_patches_y, dim)
+    output_image = output_image[:, : processor.image_seq_length, :]
     print(f"Output image shape after dim: {output_image.shape}")
     # Rearrange the output image tensor to explicitly represent the 2D grid of patches
     output_image = rearrange(
@@ -215,39 +151,49 @@ def gen_similarity_map_new(
         "b (h w) c -> b h w c",
         h=vit_config.n_patch_per_dim,
         w=vit_config.n_patch_per_dim,
-    )  # (1, n_patches_x, n_patches_y, dim)
+    )
     # Get the similarity map
     print(f"Query embs shape: {query_embs.shape}")
-    # Add 1 extra dim to start of query_embs
-    query_embs = query_embs.unsqueeze(0).to(device)
+    # Ensure query_embs has batch dimension of 1
+    if query_embs.dim() == 2:
+        query_embs = query_embs.unsqueeze(0).to(device)
     print(f"Output image shape: {output_image.shape}")
     similarity_map = torch.einsum(
-        "bnk,bijk->bnij", query_embs, output_image
-    )  # (1, query_tokens, n_patches_x, n_patches_y)
+        "bnk,bhwk->bnhw", query_embs, output_image
+    )  # (batch_size, query_tokens, h, w)
     print(f"Similarity map shape: {similarity_map.shape}")
     # Normalize the similarity map
-    similarity_map_normalized = normalize_similarity_map_per_query_token(
-        similarity_map
-    )  # (1, query_tokens, n_patches_x, n_patches_y)
+    similarity_map_normalized = normalize_similarity_map_per_query_token(similarity_map)
     print(f"Similarity map normalized shape: {similarity_map_normalized.shape}")
-    # Use this cell output to choose a token using its index
-    input_image_square = image.resize((vit_config.resolution, vit_config.resolution))
-
-    # Plot the similarity map
-    fig, ax = plot_similarity_heatmap(
-        input_image_square,
-        patch_size=vit_config.patch_size,
-        image_resolution=vit_config.resolution,
-        similarity_map=similarity_map_normalized[0, token_idx, :, :],
-    )
-    ax = annotate_plot(ax, query, token_to_show)
-    # save the figure
-    # save_figure(fig, f"similarity_map_{token_to_show}.png")
-    return fig, ax
+    # For each image, generate a dict with the tokens and their similarity maps
+    figs_image = []
+    for idx, img in enumerate(processed_images):
+        # Resize the image
+        input_image_square = img.resize((vit_config.resolution, vit_config.resolution))
+        figs_token = {}
+        # Choose a token
+        for token, token_idx in token_idx_map.items():
+            if is_special_token(token):
+                print(f"Skipping special token: {token}")
+                continue
+            print(f"Selected token: `{token}`")
+            # Get the similarity map for this image and the selected token
+            sim_map = similarity_map_normalized[idx, token_idx, :, :]
+            # Plot the similarity map
+            fig, ax = plot_similarity_heatmap(
+                input_image_square,
+                patch_size=vit_config.patch_size,
+                image_resolution=vit_config.resolution,
+                similarity_map=sim_map,
+            )
+            ax = annotate_plot(ax, query, token)
+            figs_token[token] = (fig, ax)
+        figs_image.append(figs_token)
+    return figs_image
 
 
 def get_query_embeddings_and_token_map(
-    processor, model, query, image
+    processor, model, query
 ) -> Tuple[torch.Tensor, dict]:
     inputs = processor.process_queries([query]).to(model.device)
     with torch.no_grad():
@@ -369,8 +315,8 @@ async def query_vespa_nearest_neighbor(
 
 
 def is_special_token(token: str) -> bool:
-    # Pattern for tokens that start with '<', numbers, whitespace, or single characters
-    pattern = re.compile(r"^<.*$|^\d+$|^\s+$|^.$")
+    # Pattern for tokens that start with '<', numbers, whitespace, or single characters, or the string 'Question'
+    pattern = re.compile(r"^<.*$|^\d+$|^\s+$|^\w$|^Question$")
     if pattern.match(token):
         return True
     return False
@@ -381,111 +327,70 @@ async def get_result_from_query(
     processor: ColPaliProcessor,
     model: ColPali,
     query: str,
-    nn=False,
-    gen_sim_map=False,
-):
+    nn: bool = False,
+    gen_sim_map: bool = True,
+) -> Dict[str, Any]:
     # Get the query embeddings and token map
     print(query)
-    q_embs, token_to_idx = get_query_embeddings_and_token_map(
-        processor, model, query, dummy_image
-    )
+    q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
     print(token_to_idx)
-    # Use the token map to choose a token randomly for now
-    # Dynamically select a token containing 'water'
-
     if nn:
         result = await query_vespa_nearest_neighbor(app, query, q_embs)
     else:
         result = await query_vespa_default(app, query, q_embs)
-    # Print score, title id and text of the results
+    # Print score, title id, and text of the results
     for idx, child in enumerate(result["root"]["children"]):
         print(
             f"Result {idx+1}: {child['relevance']}, {child['fields']['title']}, {child['fields']['id']}"
         )
-
     if gen_sim_map:
-        for single_result in result["root"]["children"]:
-            img = single_result["fields"]["image"]
-            for token in token_to_idx:
-                if is_special_token(token):
-                    print(f"Skipping special token: {token}")
-                    continue
-                fig, ax = gen_similarity_map_new(
-                    processor,
-                    model,
-                    model.device,
-                    load_vit_config(model),
-                    query,
-                    q_embs,
-                    token_to_idx,
-                    token,
-                    img,
-                )
-                sim_map = base64.b64encode(fig.canvas.tostring_rgb()).decode("utf-8")
-                single_result["fields"][f"sim_map_{token}"] = sim_map
+        result = add_sim_maps_to_result(
+            result=result,
+            model=model,
+            processor=processor,
+            query=query,
+            q_embs=q_embs,
+            token_to_idx=token_to_idx,
+        )
+    for single_result in result["root"]["children"]:
+        print(single_result["fields"].keys())
     return result
 
 
-def get_result_dummy(query: str, nn: bool = False):
-    result = {}
-    result["timing"] = {}
-    result["timing"]["querytime"] = 0.23700000000000002
-    result["timing"]["summaryfetchtime"] = 0.001
-    result["timing"]["searchtime"] = 0.23900000000000002
-    result["root"] = {}
-    result["root"]["id"] = "toplevel"
-    result["root"]["relevance"] = 1
-    result["root"]["fields"] = {}
-    result["root"]["fields"]["totalCount"] = 59
-    result["root"]["coverage"] = {}
-    result["root"]["coverage"]["coverage"] = 100
-    result["root"]["coverage"]["documents"] = 155
-    result["root"]["coverage"]["full"] = True
-    result["root"]["coverage"]["nodes"] = 1
-    result["root"]["coverage"]["results"] = 1
-    result["root"]["coverage"]["resultsFull"] = 1
-    result["root"]["children"] = []
-    elt0 = {}
-    elt0["id"] = "index:colpalidemo_content/0/424c85e7dece761d226f060f"
-    elt0["relevance"] = 2354.050122871995
-    elt0["source"] = "colpalidemo_content"
-    elt0["fields"] = {}
-    elt0["fields"]["id"] = "a767cb1868be9a776cd56b768347b089"
-    elt0["fields"]["url"] = (
-        "https://static.conocophillips.com/files/resources/conocophillips-2023-sustainability-report.pdf"
+def add_sim_maps_to_result(
+    result: Dict[str, Any],
+    model: ColPali,
+    processor: ColPaliProcessor,
+    query: str,
+    q_embs: Any,
+    token_to_idx: Dict[str, int],
+) -> Dict[str, Any]:
+    vit_config = load_vit_config(model)
+    imgs: List[str] = []
+    for single_result in result["root"]["children"]:
+        img = single_result["fields"]["image"]
+        if img:
+            imgs.append(img)
+    figs_imgs = gen_similarity_maps(
+        model=model,
+        processor=processor,
+        device=model.device,
+        vit_config=vit_config,
+        query=query,
+        query_embs=q_embs,
+        token_idx_map=token_to_idx,
+        images=imgs,
     )
-    elt0["fields"]["title"] = "ConocoPhillips 2023 Sustainability Report"
-    elt0["fields"]["page_number"] = 50
-    elt0["fields"]["image"] = "empty for now - is base64 encoded image"
-    result["root"]["children"].append(elt0)
-    elt1 = {}
-    elt1["id"] = "index:colpalidemo_content/0/b927c4979f0beaf0d7fab8e9"
-    elt1["relevance"] = 2313.7529950886965
-    elt1["source"] = "colpalidemo_content"
-    elt1["fields"] = {}
-    elt1["fields"]["id"] = "9f2fc0aa02c9561adfaa1451c875658f"
-    elt1["fields"]["url"] = (
-        "https://static.conocophillips.com/files/resources/conocophillips-2023-managing-climate-related-risks.pdf"
-    )
-    elt1["fields"]["title"] = "ConocoPhillips Managing Climate Related Risks"
-    elt1["fields"]["page_number"] = 44
-    elt1["fields"]["image"] = "empty for now - is base64 encoded image"
-    result["root"]["children"].append(elt1)
-    elt2 = {}
-    elt2["id"] = "index:colpalidemo_content/0/9632d72238829d6afefba6c9"
-    elt2["relevance"] = 2312.230182081461
-    elt2["source"] = "colpalidemo_content"
-    elt2["fields"] = {}
-    elt2["fields"]["id"] = "d638ded1ddcb446268b289b3f65430fd"
-    elt2["fields"]["url"] = (
-        "https://static.conocophillips.com/files/resources/24-0976-sustainability-highlights_nature.pdf"
-    )
-    elt2["fields"]["title"] = (
-        "ConocoPhillips Sustainability Highlights - Nature (24-0976)"
-    )
-    elt2["fields"]["page_number"] = 0
-    elt2["fields"]["image"] = "empty for now - is base64 encoded image"
-    result["root"]["children"].append(elt2)
+    for single_result, fig_token in zip(result["root"]["children"], figs_imgs):
+        for token, (fig, ax) in fig_token.items():
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png")
+            buf.seek(0)
+            img_bytes = buf.read()
+            sim_map = base64.b64encode(img_bytes).decode("utf-8")
+            # Close the figure
+            fig.clf()
+            single_result["fields"][f"sim_map_{token}"] = sim_map
     return result
 
 
@@ -499,9 +404,23 @@ if __name__ == "__main__":
         / "assets"
         / "ConocoPhillips Sustainability Highlights - Nature (24-0976).png"
     )
-    gen_similarity_map(
-        model, processor, model.device, vit_config, query=query, image=image_filepath
+    q_embs, token_to_idx = get_query_embeddings_and_token_map(
+        processor,
+        model,
+        query,
     )
-    result = get_result_dummy("dummy query")
-    print(result)
+    figs_images = gen_similarity_maps(
+        model,
+        processor,
+        model.device,
+        vit_config,
+        query=query,
+        query_embs=q_embs,
+        token_idx_map=token_to_idx,
+        images=[image_filepath],
+    )
+    for fig_token in figs_images:
+        for token, (fig, ax) in fig_token.items():
+            print(f"Token: {token}")
+            save_figure(fig, f"similarity_map_{token}.png")
     print("Done")
