@@ -146,7 +146,7 @@ def LoadingMessage():
     )
 
 
-def SearchResult(results=[]):
+def SearchResult(results=[], show_sim_map=False):
     if not results:
         return Div(
             P(
@@ -165,20 +165,25 @@ def SearchResult(results=[]):
         )
         # Print the fields that start with 'sim_map'
         # Choose a random one to display
-        sim_map_fields = []
-        for key, value in fields.items():
-            if key.startswith("sim_map"):
-                sim_map_fields.append(key)
-        if sim_map_fields:
-            print(f"Sim map fields: {sim_map_fields}")
-            # Just choose a random sim_map field for now
-            selected_sim_map = random.choice(sim_map_fields)
-            print(f"Selected sim_map: {selected_sim_map}")
-            _sim_map_base64 = f"data:image/jpeg;base64,{fields[selected_sim_map]}"
+        if show_sim_map:
+            sim_map_fields = []
+            for key, value in fields.items():
+                if key.startswith("sim_map"):
+                    sim_map_fields.append(key)
+            if sim_map_fields:
+                print(f"Sim map fields: {sim_map_fields}")
+                # Just choose a random sim_map field for now
+                selected_sim_map = random.choice(sim_map_fields)
+                print(f"Selected sim_map: {selected_sim_map}")
+                sim_map_base64 = f"data:image/jpeg;base64,{fields[selected_sim_map]}"
         result_items.append(
             Div(
                 Div(
-                    Img(src=base64_image, alt=fields["title"], cls="max-w-full h-auto"),
+                    Img(
+                        src=base64_image if not show_sim_map else sim_map_base64,
+                        alt=fields["title"],
+                        cls="max-w-full h-auto",
+                    ),
                     cls="bg-background px-3 py-5",
                 ),
                 Div(
