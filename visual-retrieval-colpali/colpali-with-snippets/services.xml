@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services version="1.0">
+    <container id="colpali_container" version="1.0">
+        <search></search>
+        <document-api></document-api>
+        <document-processing></document-processing>
+        <clients>
+            <client id="mtls" permissions="read,write">
+                <certificate file="security/clients.pem" />
+            </client>
+            <client id="token_write" permissions="read,write">
+                <token id="colpali-write" />
+            </client>
+            <client id="token_read" permissions="read">
+                <token id="colpali-read" />
+            </client>
+        </clients>
+    </container>
+    <content id="colpali_content" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="pdf_page" mode="index"></document>
+        </documents>
+        <nodes>
+            <node distribution-key="0" hostalias="node1"></node>
+        </nodes>
+        <config name="vespa.config.search.summary.juniperrc">
+            <max_matches>2</max_matches>
+            <length>1000</length>
+            <surround_max>500</surround_max>
+            <min_length>300</min_length>
+        </config>
+    </content>
+</services>
