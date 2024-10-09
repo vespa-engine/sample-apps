@@ -5,9 +5,9 @@ from fasthtml.common import *
 from shad4fast import *
 from vespa.application import Vespa
 
-from backend.colpali import load_model, get_result_from_query
+from backend.colpali import get_result_from_query, load_model
 from backend.vespa_app import get_vespa_app
-from frontend.app import Home, Search, SearchResult, SearchBox
+from frontend.app import Home, Search, SearchBox, SearchResult
 from frontend.layout import Layout
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
@@ -89,7 +89,7 @@ def get(request):
 
 
 @rt("/fetch_results")
-def get(request, query: str, nn: bool = True, sim_map: bool = False):
+def get(request, query: str, nn: bool = True, sim_map: bool = True):
     # Check if the request came from HTMX; if not, redirect to /search
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")

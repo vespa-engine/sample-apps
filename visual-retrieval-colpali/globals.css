@@ -155,8 +155,3 @@
 .animate-slide-up {
     animation: slide-up 1s ease-out forwards;
 }
-
-.modal-image {
-    max-width: none; /* Disable the global max-width rule */
-    width: auto;     /* Ensure the width can scale according to Tailwind classes */
-}
