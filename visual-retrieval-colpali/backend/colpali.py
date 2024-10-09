@@ -327,12 +327,13 @@ async def get_result_from_query(
     processor: ColPaliProcessor,
     model: ColPali,
     query: str,
+    q_embs: torch.Tensor,
+    token_to_idx: Dict[str, int],
     nn: bool = False,
-    gen_sim_map: bool = True,
 ) -> Dict[str, Any]:
     # Get the query embeddings and token map
     print(query)
-    q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
+
     print(token_to_idx)
     if nn:
         result = await query_vespa_nearest_neighbor(app, query, q_embs)
@@ -342,15 +343,6 @@ async def get_result_from_query(
     for idx, child in enumerate(result["root"]["children"]):
         print(
             f"Result {idx+1}: {child['relevance']}, {child['fields']['title']}, {child['fields']['id']}"
-        )
-    if gen_sim_map:
-        result = add_sim_maps_to_result(
-            result=result,
-            model=model,
-            processor=processor,
-            query=query,
-            q_embs=q_embs,
-            token_to_idx=token_to_idx,
         )
     for single_result in result["root"]["children"]:
         print(single_result["fields"].keys())
