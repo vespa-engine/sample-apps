@@ -16,6 +16,7 @@ from vespa.package import (
 )
 from vespa.deployment import VespaCloud
 import os
+from pathlib import Path
 
 
 def main():
@@ -191,10 +192,12 @@ def main():
         tenant=tenant_name,
         application=vespa_app_name,
         key_content=vespa_team_api_key,
-        application_package=vespa_application_package,
+        application_root="colpali-with-snippets",
+        #application_package=vespa_application_package,
     )
 
-    app = vespa_cloud.deploy()
+    #app = vespa_cloud.deploy()
+    vespa_cloud.deploy_from_disk("default", "colpali-with-snippets")
 
     # Output the endpoint URL
     endpoint_url = vespa_cloud.get_token_endpoint()
