@@ -1133,6 +1133,10 @@ body {
   gap: 1px;
 }
 
+.gap-\[3px\] {
+  gap: 3px;
+}
+
 .gap-y-4 {
   row-gap: 1rem;
 }
@@ -1318,6 +1322,11 @@ body {
 
 .bg-secondary {
   background-color: hsl(var(--secondary));
+}
+
+.bg-\[\#61D790\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(97 215 144 / var(--tw-bg-opacity));
 }
 
 .bg-gradient-to-r {
@@ -1585,6 +1594,16 @@ body {
 
 .text-transparent {
   color: transparent;
+}
+
+.text-\[\#61D790\] {
+  --tw-text-opacity: 1;
+  color: rgb(97 215 144 / var(--tw-text-opacity));
+}
+
+.text-\[\#2E2F27\] {
+  --tw-text-opacity: 1;
+  color: rgb(46 47 39 / var(--tw-text-opacity));
 }
 
 .no-underline {

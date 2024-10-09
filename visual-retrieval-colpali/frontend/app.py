@@ -202,10 +202,19 @@ def SearchResult(results=[], show_sim_map=False):
             cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
 
+        # Add "Tokens" button - this has no action, just a placeholder
+        tokens_button = Button(
+            Lucide(icon="images", size="15"),
+            "Tokens",
+            size="sm",
+            cls="bg-[#61D790] text-[#2E2F27] flex gap-[3px] font-bold pointer-events-none font-mono text-xs h-5 rounded-none px-2",
+        )
+
         result_items.append(
             Div(
                 Div(
                     Div(
+                        tokens_button,
                         *sim_map_buttons,
                         reset_button,
                         cls="flex flex-wrap gap-px w-full  pointer-events-none",
