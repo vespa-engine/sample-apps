@@ -3,7 +3,7 @@ from urllib.parse import quote_plus
 from fasthtml.components import H1, H2, Div, Form, Img, P, Span
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
-from shad4fast import Badge, Button, Input
+from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem
 
 # JavaScript to check the input value and enable/disable the search button
 check_input_script = Script(
@@ -53,7 +53,30 @@ def SearchBox(with_border=False, query_value=""):
             cls="relative",
         ),
         Div(
-            Span("controls", cls="text-muted-foreground"),
+            Div(
+                Span("Ranking by:", cls="text-muted-foreground text-xs font-semibold"),
+                RadioGroup(
+                    Div(
+                        RadioGroupItem(value="option1", id="option1"),
+                        Label("option1", htmlFor="option1"),
+                        cls="flex items-center space-x-2",
+                    ),
+                    Div(
+                        RadioGroupItem(value="option2", id="option2"),
+                        Label("option2", htmlFor="option2"),
+                        cls="flex items-center space-x-2",
+                    ),
+                    Div(
+                        RadioGroupItem(value="option3", id="option3"),
+                        Label("option3", htmlFor="option3"),
+                        cls="flex items-center space-x-2",
+                    ),
+                    name="radio-demo",
+                    default_value="option1",
+                    cls="grid-flow-col gap-x-5 text-muted-foreground",
+                ),
+                cls="grid grid-flow-col items-center gap-x-3 border border-input px-3 rounded-sm",
+            ),
             Button(
                 Lucide(icon="arrow-right", size="21"),
                 size="sm",
