@@ -1,4 +1,3 @@
-import random
 from urllib.parse import quote_plus
 
 from fasthtml.components import H1, H2, Div, Form, Img, P, Span
@@ -173,7 +172,7 @@ def LoadingMessage():
     )
 
 
-def SearchResult(results=[], show_sim_map=False):
+def SearchResult(results: list, map_id: str):
     if not results:
         return Div(
             P(
@@ -192,22 +191,34 @@ def SearchResult(results=[], show_sim_map=False):
         )
         # Print the fields that start with 'sim_map'
         # Choose a random one to display
-        if show_sim_map:
-            sim_map_fields = []
-            for key, value in fields.items():
-                if key.startswith("sim_map"):
-                    sim_map_fields.append(key)
-            if sim_map_fields:
-                print(f"Sim map fields: {sim_map_fields}")
-                # Just choose a random sim_map field for now
-                selected_sim_map = random.choice(sim_map_fields)
-                print(f"Selected sim_map: {selected_sim_map}")
-                sim_map_base64 = f"data:image/jpeg;base64,{fields[selected_sim_map]}"
+        # if show_sim_map:
+        #     sim_map_fields = []
+        #     for key, value in fields.items():
+        #         if key.startswith("sim_map"):
+        #             sim_map_fields.append(key)
+        #     if sim_map_fields:
+        #         print(f"Sim map fields: {sim_map_fields}")
+        #         # Just choose a random sim_map field for now
+        #         selected_sim_map = random.choice(sim_map_fields)
+        #         print(f"Selected sim_map: {selected_sim_map}")
+        #         sim_map_base64 = f"data:image/jpeg;base64,{fields[selected_sim_map]}"
         result_items.append(
             Div(
                 Div(
+                    # Just a placeholder for the similarity map
+                    # Show it above the image
+                    Div(
+                        id="similarity-map",
+                        # Set up the SSE connection to receive the similarity map
+                        hx_ext="sse",
+                        # Include the map_id in the SSE connection URL
+                        sse_connect=f"/similarity-map?map_id={map_id}",
+                        sse_swap="update",  # SSE event name to listen for
+                        sse_close="close",  # Event to signal closing the SSE connection
+                        hx_swap="innerHTML",  # Swap the content of this Div when similarity map arrives
+                    ),
                     Img(
-                        src=base64_image if not show_sim_map else sim_map_base64,
+                        src=base64_image,
                         alt=fields["title"],
                         cls="max-w-full h-auto",
                     ),
