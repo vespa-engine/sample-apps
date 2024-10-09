@@ -5,17 +5,26 @@ from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem
 
-# JavaScript to check the input value and enable/disable the search button
+# JavaScript to check the input value and enable/disable the search button and radio buttons
 check_input_script = Script(
     """
         window.onload = function() {
             const input = document.getElementById('search-input');
             const button = document.querySelector('[data-button="search-button"]');
-            function checkInputValue() { button.disabled = input.value.trim() === ""; }
-            input.addEventListener('input', checkInputValue);
-            checkInputValue();
+            const radioGroupItems = document.querySelectorAll('button[data-ref="radio-item"]');  // Get all radio buttons
+            
+            function checkInputValue() {
+                const isInputEmpty = input.value.trim() === "";
+                button.disabled = isInputEmpty;  // Disable the submit button
+                radioGroupItems.forEach(item => {
+                    item.disabled = isInputEmpty;  // Disable/enable the radio buttons
+                });
+            }
+
+            input.addEventListener('input', checkInputValue);  // Listen for input changes
+            checkInputValue();  // Initial check when the page loads
         };
-        """
+    """
 )
 
 # JavaScript to handle the image swapping and reset button on the search results
@@ -32,7 +41,7 @@ image_swapping = Script(
 )
 
 
-def SearchBox(with_border=False, query_value=""):
+def SearchBox(with_border=False, query_value="", ranking_value="option1"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
 
     if with_border:
@@ -71,8 +80,8 @@ def SearchBox(with_border=False, query_value=""):
                         Label("option3", htmlFor="option3"),
                         cls="flex items-center space-x-2",
                     ),
-                    name="radio-demo",
-                    default_value="option1",
+                    name="ranking",
+                    default_value=ranking_value,
                     cls="grid-flow-col gap-x-5 text-muted-foreground",
                 ),
                 cls="grid grid-flow-col items-center gap-x-3 border border-input px-3 rounded-sm",
@@ -87,13 +96,13 @@ def SearchBox(with_border=False, query_value=""):
             cls="flex justify-between",
         ),
         check_input_script,
-        action=f"/search?query={quote_plus(query_value)}",  # This takes the user to /search with the loading message
+        action=f"/search?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
         method="GET",
-        hx_get=f"/fetch_results?query={quote_plus(query_value)}",  # This fetches the results asynchronously
-        hx_trigger="load",  # Trigger this after the page loads
-        hx_target="#search-results",  # Update the search results div dynamically
-        hx_swap="outerHTML",  # Replace the search results div entirely
-        hx_indicator="#loading-indicator",  # Show the loading indicator while fetching results
+        hx_get=f"/fetch_results?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
+        hx_trigger="load",
+        hx_target="#search-results",
+        hx_swap="outerHTML",
+        hx_indicator="#loading-indicator",
         cls=grid_cls,
     )
 
@@ -156,12 +165,14 @@ def Home():
 
 def Search(request, search_results=[]):
     query_value = request.query_params.get("query", "").strip()
+    ranking_value = request.query_params.get("ranking", "option1")
+    print(
+        f"Search: Fetching results for query: {query_value}, ranking: {ranking_value}"
+    )
 
     return Div(
         Div(
-            SearchBox(
-                query_value=query_value
-            ),  # Pass the query value to pre-fill the SearchBox
+            SearchBox(query_value=query_value, ranking_value=ranking_value),
             Div(
                 LoadingMessage(),  # Show the loading message initially
                 id="search-results",  # This will be replaced by the search results
