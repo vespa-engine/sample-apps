@@ -5,10 +5,9 @@ from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input
 
-
-def check_input_script():
-    return Script(
-        """
+# JavaScript to check the input value and enable/disable the search button
+check_input_script = Script(
+    """
         window.onload = function() {
             const input = document.getElementById('search-input');
             const button = document.querySelector('[data-button="search-button"]');
@@ -17,34 +16,20 @@ def check_input_script():
             checkInputValue();
         };
         """
-    )
+)
 
-
-def image_modal():
-    return Script(
-        """
-        // Function to open modal with the correct image
-        document.querySelectorAll('.openModal').forEach(button => {
-          button.addEventListener('click', function () {
-            const imageSrc = this.getAttribute('data-image-src');
-            document.getElementById('modalImage').setAttribute('src', imageSrc);
-            document.getElementById('imageModal').classList.remove('hidden');
-          });
-        });
-        
-        // Close modal when close button is clicked
-        document.getElementById('closeModal').addEventListener('click', function () {
-          document.getElementById('imageModal').classList.add('hidden');
-        });
-        
-        // Optional: Close modal when clicking outside the image
-        document.getElementById('imageModal').addEventListener('click', function (e) {
-          if (e.target === this) {
-            this.classList.add('hidden');
-          }
-        });
-        """
-    )
+# JavaScript to handle the image swapping and reset button on the search results
+image_swapping = Script(
+    """
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('sim-map-button') || e.target.classList.contains('reset-button')) {
+            const newSrc = e.target.getAttribute('data-image-src');
+            const img = e.target.closest('.relative').querySelector('.result-image');
+            img.src = newSrc;
+        }
+    });
+    """
+)
 
 
 def SearchBox(with_border=False, query_value=""):
@@ -78,7 +63,7 @@ def SearchBox(with_border=False, query_value=""):
             ),
             cls="flex justify-between",
         ),
-        check_input_script(),
+        check_input_script,
         action=f"/search?query={quote_plus(query_value)}",  # This takes the user to /search with the loading message
         method="GET",
         hx_get=f"/fetch_results?query={quote_plus(query_value)}",  # This fetches the results asynchronously
@@ -186,27 +171,39 @@ def SearchResult(results: list, map_id: str):
     result_items = []
     for result in results:
         fields = result["fields"]  # Extract the 'fields' part of each result
-        base64_image = (
-            f"data:image/jpeg;base64,{fields['full_image']}"  # Format base64 image
+        full_image_base64 = f"data:image/jpeg;base64,{fields['full_image']}"
+
+        # Filter sim_map fields that are words with 4 or more characters
+        sim_map_fields = {
+            key: value
+            for key, value in fields.items()
+            if key.startswith("sim_map_") and len(key.split("_")[-1]) >= 4
+        }
+
+        # Generate buttons for the sim_map fields
+        sim_map_buttons = []
+        for key, value in sim_map_fields.items():
+            sim_map_base64 = f"data:image/jpeg;base64,{value}"
+            sim_map_buttons.append(
+                Button(
+                    key.split("_")[-1],
+                    size="sm",
+                    data_image_src=sim_map_base64,
+                    cls="sim-map-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
+                )
+            )
+
+        # Add "Reset Image" button to restore the full image
+        reset_button = Button(
+            "Reset",
+            variant="outline",
+            size="sm",
+            data_image_src=full_image_base64,
+            cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
-        # Print the fields that start with 'sim_map'
-        # Choose a random one to display
-        # if show_sim_map:
-        #     sim_map_fields = []
-        #     for key, value in fields.items():
-        #         if key.startswith("sim_map"):
-        #             sim_map_fields.append(key)
-        #     if sim_map_fields:
-        #         print(f"Sim map fields: {sim_map_fields}")
-        #         # Just choose a random sim_map field for now
-        #         selected_sim_map = random.choice(sim_map_fields)
-        #         print(f"Selected sim_map: {selected_sim_map}")
-        #         sim_map_base64 = f"data:image/jpeg;base64,{fields[selected_sim_map]}"
         result_items.append(
             Div(
                 Div(
-                    # Just a placeholder for the similarity map
-                    # Show it above the image
                     Div(
                         id="similarity-map",
                         # Set up the SSE connection to receive the similarity map
@@ -217,19 +214,17 @@ def SearchResult(results: list, map_id: str):
                         sse_close="close",  # Event to signal closing the SSE connection
                         hx_swap="innerHTML",  # Swap the content of this Div when similarity map arrives
                     ),
+                    Div(
+                        *sim_map_buttons,
+                        reset_button,
+                        cls="flex flex-wrap gap-px w-full  pointer-events-none",
+                    ),
                     Img(
-                        src=base64_image,
+                        src=full_image_base64,
                         alt=fields["title"],
-                        cls="max-w-full h-auto",
+                        cls="result-image max-w-full h-auto",
                     ),
-                    Button(
-                        Lucide(icon="fullscreen"),
-                        size="icon",
-                        variant="ghost",
-                        data_image_src=base64_image,
-                        cls="openModal absolute top-6 right-4 text-black",
-                    ),
-                    cls="relative bg-background px-3 py-5",
+                    cls="relative grid gap-px content-start bg-background px-3 py-5",
                 ),
                 Div(
                     Div(
@@ -237,32 +232,15 @@ def SearchResult(results: list, map_id: str):
                         P(fields["text"], cls="text-muted-foreground"),
                         cls="text-sm grid gap-y-4",
                     ),
-                    cls="bg-background px-3 py-5",
+                    cls="bg-background px-3 py-5 hidden md:block",
                 ),
-                Div(
-                    Div(
-                        Img(
-                            id="modalImage",
-                            alt="Full Screen Image",
-                            cls="modal-image w-[90vw] h-[90vh] object-contain",
-                        ),
-                        Button(
-                            "Close ",
-                            id="closeModal",
-                            cls="absolute top-3 right-3 bg-white text-black",
-                        ),
-                        cls="relative",
-                    ),
-                    id="imageModal",
-                    cls="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center z-50",
-                ),
-                image_modal(),
-                cls="grid grid-cols-subgrid col-span-2",
+                cls="grid grid-cols-1 md:grid-cols-2 col-span-2",
             )
         )
 
     return Div(
         *result_items,
+        image_swapping,
+        id="search-results",
         cls="grid grid-cols-2 gap-px bg-border",
-        id="search-results",  # This will be the target for HTMX updates
     )
