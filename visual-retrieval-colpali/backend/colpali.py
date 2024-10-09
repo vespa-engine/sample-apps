@@ -15,7 +15,6 @@ import io
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
 from einops import rearrange
-from vidore_benchmark.interpretability.plot_utils import plot_similarity_heatmap
 from vidore_benchmark.interpretability.torch_utils import (
     normalize_similarity_map_per_query_token,
 )
@@ -115,92 +114,6 @@ def gen_similarity_maps(
     query_embs: torch.Tensor,
     token_idx_map: dict,
     images: List[Union[Path, str]],
-) -> List[Dict[str, Tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]]]:
-    # Process images
-    processed_images = []
-    for img in images:
-        if isinstance(img, Path):
-            # image is a file path
-            try:
-                img = Image.open(img)
-                processed_images.append(img)
-            except Exception as e:
-                raise ValueError(f"Failed to open image from path: {e}")
-        elif isinstance(img, str):
-            # image is b64 string
-            try:
-                img = Image.open(BytesIO(base64.b64decode(img)))
-                processed_images.append(img)
-            except Exception as e:
-                raise ValueError(f"Failed to open image from b64: {e}")
-        else:
-            raise ValueError(f"Unsupported image type: {type(img)}")
-
-    # Preprocess inputs
-    input_image_processed = processor.process_images(processed_images).to(device)
-    # Forward passes
-    with torch.no_grad():
-        output_image = model.forward(**input_image_processed)
-    # Remove the special tokens from the output
-    print(f"Output image shape before dim: {output_image.shape}")
-    output_image = output_image[:, : processor.image_seq_length, :]
-    print(f"Output image shape after dim: {output_image.shape}")
-    # Rearrange the output image tensor to explicitly represent the 2D grid of patches
-    output_image = rearrange(
-        output_image,
-        "b (h w) c -> b h w c",
-        h=vit_config.n_patch_per_dim,
-        w=vit_config.n_patch_per_dim,
-    )
-    # Get the similarity map
-    print(f"Query embs shape: {query_embs.shape}")
-    # Ensure query_embs has batch dimension of 1
-    if query_embs.dim() == 2:
-        query_embs = query_embs.unsqueeze(0).to(device)
-    print(f"Output image shape: {output_image.shape}")
-    similarity_map = torch.einsum(
-        "bnk,bhwk->bnhw", query_embs, output_image
-    )  # (batch_size, query_tokens, h, w)
-    print(f"Similarity map shape: {similarity_map.shape}")
-    # Normalize the similarity map
-    similarity_map_normalized = normalize_similarity_map_per_query_token(similarity_map)
-    print(f"Similarity map normalized shape: {similarity_map_normalized.shape}")
-    # For each image, generate a dict with the tokens and their similarity maps
-    figs_image = []
-    for idx, img in enumerate(processed_images):
-        # Resize the image
-        input_image_square = img.resize((vit_config.resolution, vit_config.resolution))
-        figs_token = {}
-        # Choose a token
-        for token, token_idx in token_idx_map.items():
-            if is_special_token(token):
-                print(f"Skipping special token: {token}")
-                continue
-            print(f"Selected token: `{token}`")
-            # Get the similarity map for this image and the selected token
-            sim_map = similarity_map_normalized[idx, token_idx, :, :]
-            # Plot the similarity map
-            fig, ax = plot_similarity_heatmap(
-                input_image_square,
-                patch_size=vit_config.patch_size,
-                image_resolution=vit_config.resolution,
-                similarity_map=sim_map,
-            )
-            ax = annotate_plot(ax, query, token)
-            figs_token[token] = (fig, ax)
-        figs_image.append(figs_token)
-    return figs_image
-
-
-def gen_similarity_maps_new(
-    model: ColPali,
-    processor: ColPaliProcessor,
-    device,
-    vit_config,
-    query: str,
-    query_embs: torch.Tensor,
-    token_idx_map: dict,
-    images: List[Union[Path, str]],
 ) -> List[Dict[str, str]]:
     """
     Generate similarity maps for the given images and query, and return base64-encoded blended images.
@@ -220,7 +133,6 @@ def gen_similarity_maps_new(
     """
     import numpy as np
     import matplotlib.cm as cm
-    import base64
 
     # Prepare the colormap once to avoid recomputation
     colormap = cm.get_cmap("viridis")
@@ -518,7 +430,7 @@ def add_sim_maps_to_result(
         img = single_result["fields"]["full_image"]
         if img:
             imgs.append(img)
-    sim_map_imgs = gen_similarity_maps_new(
+    sim_map_imgs = gen_similarity_maps(
         model=model,
         processor=processor,
         device=model.device,
