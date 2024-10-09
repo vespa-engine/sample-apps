@@ -102,8 +102,14 @@ python feed_vespa.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_clo
 
 ### Connecting to the Vespa app and querying
 
-As a first step, until we hook up to frontend, you can run the `query_vespa.py` script to run some sample queries against the Vespa app:
+As a first step, you can run the `query_vespa.py` script to run some sample queries against the Vespa app:
 
 ```bash
 python query_vespa.py
+```
+
+### Starting the front-end
+
+```bash
+python main.py
 ```
