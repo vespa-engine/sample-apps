@@ -303,10 +303,11 @@ async def query_vespa_nearest_neighbor(
             body={
                 **query_tensors,
                 "presentation.timing": True,
-                "yql": f"select id,title,text,url,full_image,page_number from pdf_page where {nn_string}",
+                "yql": f"select id,title,snippet,text,url,full_image,page_number from pdf_page where {nn_string} or userQuery()", # if we use rank({nn_string}, userQuery()), dynamic summary doesn't work
                 "ranking.profile": "retrieval-and-rerank",
                 "timeout": timeout,
                 "hits": hits,
+                "query": query,
                 **kwargs,
             },
         )

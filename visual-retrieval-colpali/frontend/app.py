@@ -223,6 +223,7 @@ def SearchResult(results=[], show_sim_map=False):
                 Div(
                     Div(
                         H2(fields["title"], cls="text-xl font-semibold"),
+                        P(fields["snippet"], cls="text-muted-foreground"),
                         P(fields["text"], cls="text-muted-foreground"),
                         cls="text-sm grid gap-y-4",
                     ),
