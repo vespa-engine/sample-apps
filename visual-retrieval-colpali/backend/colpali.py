@@ -192,6 +192,153 @@ def gen_similarity_maps(
     return figs_image
 
 
+def gen_similarity_maps_new(
+    model: ColPali,
+    processor: ColPaliProcessor,
+    device,
+    vit_config,
+    query: str,
+    query_embs: torch.Tensor,
+    token_idx_map: dict,
+    images: List[Union[Path, str]],
+) -> List[Dict[str, str]]:
+    """
+    Generate similarity maps for the given images and query, and return base64-encoded blended images.
+
+    Args:
+        model (ColPali): The model used for generating embeddings.
+        processor (ColPaliProcessor): Processor for images and text.
+        device: Device to run the computations on.
+        vit_config: Configuration for the Vision Transformer.
+        query (str): The query string.
+        query_embs (torch.Tensor): Query embeddings.
+        token_idx_map (dict): Mapping from tokens to their indices.
+        images (List[Union[Path, str]]): List of image paths or base64-encoded strings.
+
+    Returns:
+        List[Dict[str, str]]: A list where each item is a dictionary mapping tokens to base64-encoded blended images.
+    """
+    import numpy as np
+    import matplotlib.cm as cm
+    import base64
+
+    # Prepare the colormap once to avoid recomputation
+    colormap = cm.get_cmap("viridis")
+
+    # Process images and store original images and sizes
+    processed_images = []
+    original_images = []
+    original_sizes = []
+    for img in images:
+        if isinstance(img, Path):
+            try:
+                img_pil = Image.open(img).convert("RGB")
+            except Exception as e:
+                raise ValueError(f"Failed to open image from path: {e}")
+        elif isinstance(img, str):
+            try:
+                img_pil = Image.open(BytesIO(base64.b64decode(img))).convert("RGB")
+            except Exception as e:
+                raise ValueError(f"Failed to open image from base64 string: {e}")
+        else:
+            raise ValueError(f"Unsupported image type: {type(img)}")
+        original_images.append(img_pil.copy())
+        original_sizes.append(img_pil.size)  # (width, height)
+        processed_images.append(img_pil)
+
+    # Preprocess inputs
+    input_image_processed = processor.process_images(processed_images).to(device)
+
+    # Forward passes
+    with torch.no_grad():
+        output_image = model.forward(**input_image_processed)
+
+    # Remove the special tokens from the output
+    output_image = output_image[:, : processor.image_seq_length, :]
+
+    # Rearrange the output image tensor to represent the 2D grid of patches
+    output_image = rearrange(
+        output_image,
+        "b (h w) c -> b h w c",
+        h=vit_config.n_patch_per_dim,
+        w=vit_config.n_patch_per_dim,
+    )
+
+    # Ensure query_embs has batch dimension
+    if query_embs.dim() == 2:
+        query_embs = query_embs.unsqueeze(0).to(device)
+    else:
+        query_embs = query_embs.to(device)
+
+    # Compute the similarity map
+    similarity_map = torch.einsum(
+        "bnk,bhwk->bnhw", query_embs, output_image
+    )  # Shape: (batch_size, query_tokens, h, w)
+
+    # Normalize the similarity map per query token
+    similarity_map_normalized = normalize_similarity_map_per_query_token(similarity_map)
+
+    # Collect the blended images
+    results = []
+    for idx, img in enumerate(original_images):
+        original_size = original_sizes[idx]  # (width, height)
+        result_per_image = {}
+        for token, token_idx in token_idx_map.items():
+            if is_special_token(token):
+                continue
+
+            # Get the similarity map for this image and the selected token
+            sim_map = similarity_map_normalized[idx, token_idx, :, :]  # Shape: (h, w)
+
+            # Move the similarity map to CPU and convert to NumPy array
+            sim_map_np = sim_map.cpu().numpy()
+
+            # Resize the similarity map to the original image size
+            sim_map_img = Image.fromarray(sim_map_np)
+            sim_map_resized = sim_map_img.resize(original_size, resample=Image.BICUBIC)
+
+            # Convert the resized similarity map to a NumPy array
+            sim_map_resized_np = np.array(sim_map_resized, dtype=np.float32)
+
+            # Normalize the similarity map to range [0, 1]
+            sim_map_min = sim_map_resized_np.min()
+            sim_map_max = sim_map_resized_np.max()
+            if sim_map_max - sim_map_min > 1e-6:
+                sim_map_normalized = (sim_map_resized_np - sim_map_min) / (
+                    sim_map_max - sim_map_min
+                )
+            else:
+                sim_map_normalized = np.zeros_like(sim_map_resized_np)
+
+            # Apply a colormap to the normalized similarity map
+            heatmap = colormap(sim_map_normalized)  # Returns an RGBA array
+
+            # Convert the heatmap to a PIL Image
+            heatmap_uint8 = (heatmap * 255).astype(np.uint8)
+            heatmap_img = Image.fromarray(heatmap_uint8)
+
+            # Ensure both images are in RGBA mode
+            original_img_rgba = img.convert("RGBA")
+            heatmap_img_rgba = heatmap_img.convert("RGBA")
+
+            # Overlay the heatmap onto the original image
+            blended_img = Image.blend(
+                original_img_rgba, heatmap_img_rgba, alpha=0.4
+            )  # Adjust alpha as needed
+            # Save the blended image to a BytesIO buffer
+            buffer = io.BytesIO()
+            blended_img.save(buffer, format="PNG")
+            buffer.seek(0)
+
+            # Encode the image to base64
+            blended_img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
+
+            # Store the base64-encoded image
+            result_per_image[token] = blended_img_base64
+        results.append(result_per_image)
+    return results
+
+
 def get_query_embeddings_and_token_map(
     processor, model, query
 ) -> Tuple[torch.Tensor, dict]:
@@ -371,7 +518,7 @@ def add_sim_maps_to_result(
         img = single_result["fields"]["full_image"]
         if img:
             imgs.append(img)
-    figs_imgs = gen_similarity_maps(
+    sim_map_imgs = gen_similarity_maps_new(
         model=model,
         processor=processor,
         device=model.device,
@@ -381,16 +528,9 @@ def add_sim_maps_to_result(
         token_idx_map=token_to_idx,
         images=imgs,
     )
-    for single_result, fig_token in zip(result["root"]["children"], figs_imgs):
-        for token, (fig, ax) in fig_token.items():
-            buf = io.BytesIO()
-            fig.savefig(buf, format="png")
-            buf.seek(0)
-            img_bytes = buf.read()
-            sim_map = base64.b64encode(img_bytes).decode("utf-8")
-            # Close the figure
-            fig.clf()
-            single_result["fields"][f"sim_map_{token}"] = sim_map
+    for single_result, sim_map_dict in zip(result["root"]["children"], sim_map_imgs):
+        for token, sim_mapb64 in sim_map_dict.items():
+            single_result["fields"][f"sim_map_{token}"] = sim_mapb64
     return result
 
 
