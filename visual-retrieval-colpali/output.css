@@ -758,22 +758,6 @@ body {
   top: 50%;
 }
 
-.top-3 {
-  top: 0.75rem;
-}
-
-.right-3 {
-  right: 0.75rem;
-}
-
-.top-5 {
-  top: 1.25rem;
-}
-
-.top-6 {
-  top: 1.5rem;
-}
-
 .z-50 {
   z-index: 50;
 }
@@ -914,10 +898,6 @@ body {
   height: 55px;
 }
 
-.h-\[90vh\] {
-  height: 90vh;
-}
-
 .h-\[var\(--radix-select-trigger-height\)\] {
   height: var(--radix-select-trigger-height);
 }
@@ -988,10 +968,6 @@ body {
 
 .w-\[1\.5px\] {
   width: 1.5px;
-}
-
-.w-\[90vw\] {
-  width: 90vw;
 }
 
 .w-full {
@@ -1097,12 +1073,16 @@ body {
   resize: both;
 }
 
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.grid-flow-col {
+  grid-auto-flow: column;
 }
 
-.grid-cols-subgrid {
-  grid-template-columns: subgrid;
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .flex-col {
@@ -1111,6 +1091,14 @@ body {
 
 .flex-col-reverse {
   flex-direction: column-reverse;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.content-start {
+  align-content: flex-start;
 }
 
 .items-center {
@@ -1145,12 +1133,32 @@ body {
   gap: 2rem;
 }
 
+.gap-\[3px\] {
+  gap: 3px;
+}
+
 .gap-px {
   gap: 1px;
 }
 
+.gap-x-3 {
+  -moz-column-gap: 0.75rem;
+       column-gap: 0.75rem;
+}
+
+.gap-x-5 {
+  -moz-column-gap: 1.25rem;
+       column-gap: 1.25rem;
+}
+
 .gap-y-4 {
   row-gap: 1rem;
+}
+
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .space-x-3 > :not([hidden]) ~ :not([hidden]) {
@@ -1213,6 +1221,10 @@ body {
   border-radius: calc(var(--radius) - 2px);
 }
 
+.rounded-none {
+  border-radius: 0px;
+}
+
 .rounded-sm {
   border-radius: calc(var(--radius) - 4px);
 }
@@ -1271,11 +1283,6 @@ body {
 
 .bg-background {
   background-color: hsl(var(--background));
-}
-
-.bg-black {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
 .bg-black\/80 {
@@ -1337,15 +1344,6 @@ body {
   background-color: hsl(var(--secondary));
 }
 
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-opacity-75 {
-  --tw-bg-opacity: 0.75;
-}
-
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -1367,11 +1365,6 @@ body {
 
 .fill-current {
   fill: currentColor;
-}
-
-.object-contain {
-  -o-object-fit: contain;
-     object-fit: contain;
 }
 
 .p-1 {
@@ -1396,6 +1389,11 @@ body {
 
 .p-\[1px\] {
   padding: 1px;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .px-2\.5 {
@@ -1483,6 +1481,10 @@ body {
   vertical-align: middle;
 }
 
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -1549,11 +1551,6 @@ body {
 
 .tracking-wide {
   letter-spacing: 0.025em;
-}
-
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-card-foreground {
@@ -1944,11 +1941,17 @@ body {
   animation: slide-up 1s ease-out forwards;
 }
 
-.modal-image {
-  max-width: none;
-  /* Disable the global max-width rule */
-  width: auto;
-  /* Ensure the width can scale according to Tailwind classes */
+.sim-map-button.active {
+  background-color: #61D790;
+  color: #2E2F27;
+  &:hover {
+    background-color: #61D790;
+  }
+}
+
+.tokens-button {
+  background-color: #B7E2F1;
+  color: #2E2F27;
 }
 
 :root:has(.data-\[state\=open\]\:no-bg-scroll[data-state="open"]) {
@@ -2434,8 +2437,16 @@ body {
 }
 
 @media (min-width: 768px) {
+  .md\:block {
+    display: block;
+  }
+
   .md\:max-w-\[420px\] {
     max-width: 420px;
+  }
+
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .md\:text-2xl {

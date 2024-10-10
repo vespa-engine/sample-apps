@@ -5,9 +5,9 @@ from fasthtml.common import *
 from shad4fast import *
 from vespa.application import Vespa
 
-from backend.colpali import load_model, get_result_from_query
+from backend.colpali import get_result_from_query, load_model
 from backend.vespa_app import get_vespa_app
-from frontend.app import Home, Search, SearchResult, SearchBox
+from frontend.app import Home, Search, SearchBox, SearchResult
 from frontend.layout import Layout
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
@@ -64,15 +64,17 @@ def get():
 
 @rt("/search")
 def get(request):
-    # Extract the 'query' parameter from the URL using query_params
+    # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
+    ranking_value = request.query_params.get("ranking", "option1")
+    print("/search: Fetching results for ranking_value:", ranking_value)
 
     # Always render the SearchBox first
     if not query_value:
         # Show SearchBox and a message for missing query
         return Layout(
             Div(
-                SearchBox(query_value=query_value),
+                SearchBox(query_value=query_value, ranking_value=ranking_value),
                 Div(
                     P(
                         "No query provided. Please enter a query.",
@@ -89,15 +91,25 @@ def get(request):
 
 
 @rt("/fetch_results")
-def get(request, query: str, nn: bool = True, sim_map: bool = False):
+def get(request, query: str, nn: bool = True, sim_map: bool = True):
     # Check if the request came from HTMX; if not, redirect to /search
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
+
+    # Extract ranking option from the request
+    ranking_value = request.query_params.get("ranking", "option1")
+    print(
+        f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
+    )
+
+    if "bm25" in ranking_value:
+        nn = False
 
     # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
+
     # Fetch real search results from Vespa
     result = asyncio.run(
         get_result_from_query(

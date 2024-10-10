@@ -156,7 +156,16 @@
     animation: slide-up 1s ease-out forwards;
 }
 
-.modal-image {
-    max-width: none; /* Disable the global max-width rule */
-    width: auto;     /* Ensure the width can scale according to Tailwind classes */
+.sim-map-button.active {
+    background-color: #61D790;
+    color: #2E2F27;
+
+    &:hover {
+        background-color: #61D790;
+    }
+}
+
+.tokens-button {
+    background-color: #B7E2F1;
+    color: #2E2F27;
 }
