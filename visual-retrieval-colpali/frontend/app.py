@@ -78,13 +78,13 @@ def SearchBox(with_border=False, query_value="", ranking_value="option1"):
                 Span("Ranking by:", cls="text-muted-foreground text-xs font-semibold"),
                 RadioGroup(
                     Div(
-                        RadioGroupItem(value="option1", id="option1"),
-                        Label("option1", htmlFor="option1"),
+                        RadioGroupItem(value="colpali", id="colpali"),
+                        Label("colpali", htmlFor="colpali"),
                         cls="flex items-center space-x-2",
                     ),
                     Div(
-                        RadioGroupItem(value="option2", id="option2"),
-                        Label("option2", htmlFor="option2"),
+                        RadioGroupItem(value="bm25", id="bm25"),
+                        Label("bm25", htmlFor="bm25"),
                         cls="flex items-center space-x-2",
                     ),
                     Div(
@@ -265,6 +265,8 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                 Div(
                     Div(
                         H2(fields["title"], cls="text-xl font-semibold"),
+                        P("Page " + str(fields["page_number"]), cls="text-muted-foreground"),
+                        P("Relevance score: " + str(result["relevance"]), cls="text-muted-foreground"),
                         P(fields["text"], cls="text-muted-foreground"),
                         cls="text-sm grid gap-y-4",
                     ),

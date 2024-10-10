@@ -144,6 +144,10 @@ async def get(request, query: str, nn: bool = True):
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
 
+    if "bm25" in ranking_value:
+        nn = False
+
+    # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
