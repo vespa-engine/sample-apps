@@ -1,7 +1,7 @@
 from urllib.parse import quote_plus
 from typing import Optional
 
-from fasthtml.components import H1, H2, Div, Form, Img, P, Span
+from fasthtml.components import H1, H2, Div, Form, Img, P, Span, NotStr
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem
@@ -53,7 +53,7 @@ image_swapping = Script(
 )
 
 
-def SearchBox(with_border=False, query_value="", ranking_value="option1"):
+def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
 
     if with_border:
@@ -78,18 +78,18 @@ def SearchBox(with_border=False, query_value="", ranking_value="option1"):
                 Span("Ranking by:", cls="text-muted-foreground text-xs font-semibold"),
                 RadioGroup(
                     Div(
-                        RadioGroupItem(value="colpali", id="colpali"),
-                        Label("colpali", htmlFor="colpali"),
+                        RadioGroupItem(value="nn+colpali", id="nn+colpali"),
+                        Label("nn+colpali", htmlFor="nn+colpali"),
+                        cls="flex items-center space-x-2",
+                    ),
+                    Div(
+                        RadioGroupItem(value="bm25+colpali", id="bm25+colpali"),
+                        Label("bm25+colpali", htmlFor="bm25+colpali"),
                         cls="flex items-center space-x-2",
                     ),
                     Div(
                         RadioGroupItem(value="bm25", id="bm25"),
                         Label("bm25", htmlFor="bm25"),
-                        cls="flex items-center space-x-2",
-                    ),
-                    Div(
-                        RadioGroupItem(value="option3", id="option3"),
-                        Label("option3", htmlFor="option3"),
                         cls="flex items-center space-x-2",
                     ),
                     name="ranking",
@@ -177,7 +177,7 @@ def Home():
 
 def Search(request, search_results=[]):
     query_value = request.query_params.get("query", "").strip()
-    ranking_value = request.query_params.get("ranking", "option1")
+    ranking_value = request.query_params.get("ranking", "nn+colpali")
     print(
         f"Search: Fetching results for query: {query_value}, ranking: {ranking_value}"
     )
@@ -281,7 +281,8 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             "Relevance score: " + str(result["relevance"]),
                             cls="text-muted-foreground",
                         ),
-                        P(fields["text"], cls="text-muted-foreground"),
+                        P(NotStr(fields["snippet"]), cls="text-muted-foreground"),
+                        P(NotStr(fields["text"]), cls="text-muted-foreground"),
                         cls="text-sm grid gap-y-4",
                     ),
                     cls="bg-background px-3 py-5 hidden md:block",

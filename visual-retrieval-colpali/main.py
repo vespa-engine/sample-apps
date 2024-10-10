@@ -60,7 +60,7 @@ def get():
 def get(request):
     # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
-    ranking_value = request.query_params.get("ranking", "option1")
+    ranking_value = request.query_params.get("ranking", "nn+colpali")
     print("/search: Fetching results for ranking_value:", ranking_value)
 
     # Always render the SearchBox first
@@ -89,15 +89,13 @@ async def get(request, query: str, nn: bool = True):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
-    ranking_value = request.query_params.get("ranking", "option1")
+    # Extract ranking option from the request
+    ranking_value = request.query_params.get("ranking")
     print(
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
     # Generate a unique query_id based on the query and ranking value
     query_id = generate_query_id(query + ranking_value)
-
-    if "bm25" in ranking_value:
-        nn = False
 
     # Fetch model and processor
     manager = ModelManager.get_instance()
@@ -113,7 +111,7 @@ async def get(request, query: str, nn: bool = True):
         query=query,
         q_embs=q_embs,
         token_to_idx=token_to_idx,
-        nn=nn,
+        ranking=ranking_value,
     )
     # Start generating the similarity map in the background
     asyncio.create_task(
