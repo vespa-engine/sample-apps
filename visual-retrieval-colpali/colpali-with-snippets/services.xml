@@ -15,6 +15,15 @@
                 <token id="colpali-read" />
             </client>
         </clients>
+        <config name="container.qr-searchers">
+            <tag>
+                <bold>
+                    <open>&lt;strong&gt;</open>
+                    <close>&lt;/strong&gt;</close>
+                </bold>
+                <separator>...</separator>
+            </tag>
+        </config>
     </container>
     <content id="colpali_content" version="1.0">
         <redundancy>1</redundancy>

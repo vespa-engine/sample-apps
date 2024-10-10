@@ -97,13 +97,10 @@ def get(request, query: str, nn: bool = True, sim_map: bool = True):
         return RedirectResponse("/search")
 
     # Extract ranking option from the request
-    ranking_value = request.query_params.get("ranking", "option1")
+    ranking_value = request.query_params.get("ranking")
     print(
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
-
-    if "bm25" in ranking_value:
-        nn = False
 
     # Fetch model and processor
     manager = ModelManager.get_instance()
@@ -117,7 +114,7 @@ def get(request, query: str, nn: bool = True, sim_map: bool = True):
             processor=processor,
             model=model,
             query=query,
-            nn=nn,
+            ranking=ranking_value,
             gen_sim_map=sim_map,
         )
     )

@@ -65,6 +65,13 @@ schema pdf_page {
     fieldset image {
         fields: image
     }
+
+    rank-profile bm25 {
+        first-phase {
+            expression: bm25(title) + bm25(text)
+        }
+    }
+
     rank-profile default {
         inputs {
             query(qt) tensor<float>(querytoken{}, v[128])             
