@@ -7,42 +7,16 @@ from shad4fast import *
 from vespa.application import Vespa
 
 from backend.colpali import (
-    load_model,
     get_result_from_query,
     get_query_embeddings_and_token_map,
     add_sim_maps_to_result,
 )
 from backend.vespa_app import get_vespa_app
+from backend.cache import LRUCache
+from backend.modelmanager import ModelManager
 from frontend.app import Home, Search, SearchBox, SearchResult
 from frontend.layout import Layout
 import hashlib
-from collections import OrderedDict
-
-
-# Initialize LRU Cache
-class LRUCache:
-    def __init__(self, max_size=20):
-        self.max_size = max_size
-        self.cache = OrderedDict()
-
-    def get(self, key):
-        if key in self.cache:
-            self.cache.move_to_end(key)
-            return self.cache[key]
-        return None
-
-    def set(self, key, value):
-        if key in self.cache:
-            self.cache.move_to_end(key)
-        else:
-            if len(self.cache) >= self.max_size:
-                self.cache.popitem(last=False)
-        self.cache[key] = value
-
-    def delete(self, key):
-        if key in self.cache:
-            del self.cache[key]
-
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -51,8 +25,6 @@ highlight_js = HighlightJS(
     dark="github-dark",
     light="github",
 )
-sselink = Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js")
-
 
 app, rt = fast_app(
     htmlkw={"cls": "h-full"},
@@ -62,38 +34,16 @@ app, rt = fast_app(
         highlight_js,
         highlight_js_theme_link,
         highlight_js_theme,
-        sselink,
     ),
 )
 vespa_app: Vespa = get_vespa_app()
 
-result_cache = LRUCache(max_size=20)
+result_cache = LRUCache(max_size=20)  # Each result can be ~10MB
 thread_pool = ThreadPoolExecutor()
 
 
 def generate_query_id(query):
     return hashlib.md5(query.encode("utf-8")).hexdigest()
-
-
-class ModelManager:
-    _instance = None
-    model = None
-    processor = None
-
-    @staticmethod
-    def get_instance():
-        if ModelManager._instance is None:
-            ModelManager._instance = ModelManager()
-            ModelManager._instance.initialize_model_and_processor()
-        return ModelManager._instance
-
-    def initialize_model_and_processor(self):
-        if self.model is None or self.processor is None:  # Ensure no reinitialization
-            self.model, self.processor = load_model()
-            if self.model is None or self.processor is None:
-                print("Failed to initialize model or processor at startup")
-            else:
-                print("Model and processor loaded at startup")
 
 
 @rt("/static/{filepath:path}")
