@@ -1,5 +1,4 @@
 import asyncio
-import uuid
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
@@ -16,6 +15,34 @@ from backend.colpali import (
 from backend.vespa_app import get_vespa_app
 from frontend.app import Home, Search, SearchBox, SearchResult
 from frontend.layout import Layout
+import hashlib
+from collections import OrderedDict
+
+
+# Initialize LRU Cache
+class LRUCache:
+    def __init__(self, max_size=20):
+        self.max_size = max_size
+        self.cache = OrderedDict()
+
+    def get(self, key):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        return None
+
+    def set(self, key, value):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        else:
+            if len(self.cache) >= self.max_size:
+                self.cache.popitem(last=False)
+        self.cache[key] = value
+
+    def delete(self, key):
+        if key in self.cache:
+            del self.cache[key]
+
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -40,11 +67,12 @@ app, rt = fast_app(
 )
 vespa_app: Vespa = get_vespa_app()
 
-# In-memory storage for the data associated with similarity maps
-sim_map_data = {}
-# In-memory storage for events to signal when similarity maps are ready
-sim_map_events = {}
+sim_map_data = LRUCache(max_size=20)
 thread_pool = ThreadPoolExecutor()
+
+
+def generate_query_id(query):
+    return hashlib.md5(query.encode("utf-8")).hexdigest()
 
 
 class ModelManager:
@@ -108,27 +136,23 @@ def get(request):
 
 @rt("/fetch_results")
 async def get(request, query: str, nn: bool = True):
-    # Check if the request came from HTMX; if not, redirect to /search
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
-    # Extract ranking option from the request
     ranking_value = request.query_params.get("ranking", "option1")
     print(
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
 
-    # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
     q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
-    # Generate a unique identifier for this request
-    map_id = str(uuid.uuid4())
-    # Create an asyncio Event for this map_id
-    sim_map_events[map_id] = asyncio.Event()
 
-    # Fetch real search results from Vespa in a separate thread
+    # Generate a unique query_id
+    query_id = generate_query_id(query)
+
+    # Fetch real search results from Vespa
     result = await get_result_from_query(
         app=vespa_app,
         processor=processor,
@@ -138,27 +162,23 @@ async def get(request, query: str, nn: bool = True):
         token_to_idx=token_to_idx,
         nn=nn,
     )
-    print("Search results fetched")
-
     # Start generating the similarity map in the background
     asyncio.create_task(
         generate_similarity_map(
-            model, processor, query, q_embs, token_to_idx, result, map_id
+            model, processor, query, q_embs, token_to_idx, result, query_id
         )
     )
-    # Extract search results from the result payload
+    print("Search results fetched")
     search_results = (
         result["root"]["children"]
         if "root" in result and "children" in result["root"]
         else []
     )
-    # Directly return the search results without the full page layout
-    return SearchResult(search_results, map_id)
+    return SearchResult(search_results, query_id)
 
 
-# Async function to generate and store the similarity map
 async def generate_similarity_map(
-    model, processor, query, q_embs, token_to_idx, result, map_id
+    model, processor, query, q_embs, token_to_idx, result, query_id
 ):
     loop = asyncio.get_event_loop()
     sim_map_task = partial(
@@ -170,53 +190,23 @@ async def generate_similarity_map(
         q_embs=q_embs,
         token_to_idx=token_to_idx,
     )
-    # Run add_sim_maps_to_result in a thread pool to avoid blocking the main loop
     sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
-    # Store the similarity map data on the server associated with the map_id
-
-    sim_map_data[map_id] = sim_map_result
-    # Signal that the similarity map is ready by setting the event
-    sim_map_events[map_id].set()
+    sim_map_data.set(query_id, sim_map_result)
 
 
-# Async generator to yield the similarity map via SSE
-async def similarity_map_generator(map_id):
-    # Retrieve the event associated with the map_id
-    event = sim_map_events.get(map_id)
-    if event is None:
-        # If event not found, inform the client and close the connection
-        yield "event: error\ndata: Similarity map not found.\n\n"
-        yield "event: close\ndata: \n\n"
-        return
-    # Wait until the similarity map is ready
-    await event.wait()
-    # Similarity map should now be ready; retrieve it
-    data = sim_map_data.get(map_id)
+@app.get("/updated_search_results")
+async def updated_search_results(query_id: str):
+    data = sim_map_data.get(query_id)
     if data is None:
-        # Data not found even after event is set
-        yield "event: error\ndata: Similarity map not found after event.\n\n"
-        yield "event: close\ndata: \n\n"
-        return
-    # Prepare the similarity map content using the stored data
-    # You can serialize the data to JSON if needed
-    similarity_map_content = "true"  # or json.dumps(data)
-    print("Similarity map created")
-    print(f"Type of data: {type(data)}")
-    # Yield the similarity map via SSE
-    yield f"event: update\ndata: {similarity_map_content}\n\n"
-    # Signal that the SSE stream can be closed
-    yield "event: close\ndata: \n\n"
-    # Clean up the stored data and event
-    del sim_map_data[map_id]
-    del sim_map_events[map_id]
-
-
-# SSE endpoint to stream the similarity map, accepting the map_id parameter
-@app.get("/similarity-map")
-async def similarity_map(map_id: str):
-    return StreamingResponse(
-        similarity_map_generator(map_id), media_type="text/event-stream"
+        return HTMLResponse(status_code=204)
+    search_results = (
+        data["root"]["children"]
+        if "root" in data and "children" in data["root"]
+        else []
     )
+    updated_content = SearchResult(results=search_results, query_id=None)
+    sim_map_data.delete(query_id)
+    return updated_content
 
 
 @rt("/app")

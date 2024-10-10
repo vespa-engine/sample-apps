@@ -1,4 +1,5 @@
 from urllib.parse import quote_plus
+from typing import Optional
 
 from fasthtml.components import H1, H2, Div, Form, Img, P, Span
 from fasthtml.xtend import A, Script
@@ -202,7 +203,7 @@ def LoadingMessage():
     )
 
 
-def SearchResult(results: list, map_id: str):
+def SearchResult(results: list, query_id: Optional[str] = None):
     if not results:
         return Div(
             P(
@@ -250,16 +251,6 @@ def SearchResult(results: list, map_id: str):
             Div(
                 Div(
                     Div(
-                        id="similarity-map",
-                        # Set up the SSE connection to receive the similarity map
-                        hx_ext="sse",
-                        # Include the map_id in the SSE connection URL
-                        sse_connect=f"/similarity-map?map_id={map_id}",
-                        sse_swap="update",  # SSE event name to listen for
-                        sse_close="close",  # Event to signal closing the SSE connection
-                        hx_swap="innerHTML",  # Swap the content of this Div when similarity map arrives
-                    ),
-                    Div(
                         *sim_map_buttons,
                         reset_button,
                         cls="flex flex-wrap gap-px w-full  pointer-events-none",
@@ -283,9 +274,21 @@ def SearchResult(results: list, map_id: str):
             )
         )
 
-    return Div(
-        *result_items,
-        image_swapping,
-        id="search-results",
-        cls="grid grid-cols-2 gap-px bg-border",
-    )
+    if query_id is not None:
+        return Div(
+            *result_items,
+            image_swapping,
+            hx_get=f"/updated_search_results?query_id={query_id}",
+            hx_trigger="every 1s",
+            hx_target="#search-results",
+            hx_swap="outerHTML",
+            id="search-results",
+            cls="grid grid-cols-2 gap-px bg-border",
+        )
+    else:
+        return Div(
+            *result_items,
+            image_swapping,
+            id="search-results",
+            cls="grid grid-cols-2 gap-px bg-border",
+        )
