@@ -1,5 +1,7 @@
 import asyncio
 import uuid
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 
 from fasthtml.common import *
 from shad4fast import *
@@ -9,6 +11,7 @@ from backend.colpali import (
     load_model,
     get_result_from_query,
     get_query_embeddings_and_token_map,
+    add_sim_maps_to_result,
 )
 from backend.vespa_app import get_vespa_app
 from frontend.app import Home, Search, SearchBox, SearchResult
@@ -41,6 +44,7 @@ vespa_app: Vespa = get_vespa_app()
 sim_map_data = {}
 # In-memory storage for events to signal when similarity maps are ready
 sim_map_events = {}
+thread_pool = ThreadPoolExecutor()
 
 
 class ModelManager:
@@ -115,17 +119,24 @@ async def get(request, query: str, nn: bool = True):
     map_id = str(uuid.uuid4())
     # Create an asyncio Event for this map_id
     sim_map_events[map_id] = asyncio.Event()
-    # Start generating the similarity map in the background
-    asyncio.create_task(generate_similarity_map(map_id, query))
-    # Fetch real search results from Vespa
+
+    # Fetch real search results from Vespa in a separate thread
     result = await get_result_from_query(
-        vespa_app,
+        app=vespa_app,
         processor=processor,
         model=model,
         query=query,
         q_embs=q_embs,
         token_to_idx=token_to_idx,
         nn=nn,
+    )
+    print("Search results fetched")
+
+    # Start generating the similarity map in the background
+    asyncio.create_task(
+        generate_similarity_map(
+            model, processor, query, q_embs, token_to_idx, result, map_id
+        )
     )
     # Extract search results from the result payload
     search_results = (
@@ -138,26 +149,24 @@ async def get(request, query: str, nn: bool = True):
 
 
 # Async function to generate and store the similarity map
-async def generate_similarity_map(map_id, query):
-    # Simulate a slow calculation for generating the similarity map (e.g., taking 2 seconds)
-    await asyncio.sleep(7)
-    # manager = ModelManager.get_instance()
-    # model = manager.model
-    # processor = manager.processor
-    # sim_map_result = add_sim_maps_to_result(
-    #     result=result,
-    #     model=model,
-    #     processor=processor,
-    #     query=query,
-    #     q_embs=q_embs,
-    #     token_to_idx=token_to_idx,
-    # )
-    # Simulate generating the similarity map data
-    similarity_map = (
-        f"SimilarityMapData for query '{query}'"  # Replace with actual calculation
+async def generate_similarity_map(
+    model, processor, query, q_embs, token_to_idx, result, map_id
+):
+    loop = asyncio.get_event_loop()
+    sim_map_task = partial(
+        add_sim_maps_to_result,
+        result=result,
+        model=model,
+        processor=processor,
+        query=query,
+        q_embs=q_embs,
+        token_to_idx=token_to_idx,
     )
-    # Store the similarity map data on the server associated with the map_id as a Div
-    sim_map_data[map_id] = {"query": query, "similarity_map": similarity_map}
+    # Run add_sim_maps_to_result in a thread pool to avoid blocking the main loop
+    sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
+    # Store the similarity map data on the server associated with the map_id
+
+    sim_map_data[map_id] = sim_map_result
     # Signal that the similarity map is ready by setting the event
     sim_map_events[map_id].set()
 
@@ -181,9 +190,10 @@ async def similarity_map_generator(map_id):
         yield "event: close\ndata: \n\n"
         return
     # Prepare the similarity map content using the stored data
-    similarity_map_content = (
-        f"Similarity Map for query '{data['query']}': {data['similarity_map']}"
-    )
+    # You can serialize the data to JSON if needed
+    similarity_map_content = "true"  # or json.dumps(data)
+    print("Similarity map created")
+    print(f"Type of data: {type(data)}")
     # Yield the similarity map via SSE
     yield f"event: update\ndata: {similarity_map_content}\n\n"
     # Signal that the SSE stream can be closed
