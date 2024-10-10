@@ -12,6 +12,9 @@ import matplotlib
 import re
 import io
 
+import json
+import time
+
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
 from einops import rearrange
@@ -285,9 +288,11 @@ async def query_vespa_default(
 ) -> dict:
     async with app.asyncio(connections=1, total_timeout=120) as session:
         query_embedding = format_q_embs(q_emb)
+
+        start = time.perf_counter()
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,full_image,page_number,snippet,text from pdf_page where userQuery();",
+                "yql": "select id,title,url,full_image,page_number,snippet,text,summaryfeatures from pdf_page where userQuery();",
                 "ranking": "default",
                 "query": query,
                 "timeout": timeout,
@@ -298,6 +303,9 @@ async def query_vespa_default(
             },
         )
         assert response.is_successful(), response.json
+        stop = time.perf_counter()
+        print(f"Query time + data transfer took: {stop - start} s, vespa said searchtime was {response.json.get('timing', {}).get('searchtime', -1)} s")
+        open("response.json", "w").write(json.dumps(response.json))
     return format_query_results(query, response)
 
 
