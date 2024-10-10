@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services version="1.0">
-    <container id="colpali_container" version="1.0">
+    <container id="colpalidemo_container" version="1.0">
         <search></search>
         <document-api></document-api>
         <document-processing></document-processing>
@@ -9,10 +9,10 @@
                 <certificate file="security/clients.pem" />
             </client>
             <client id="token_write" permissions="read,write">
-                <token id="colpali-write" />
+                <token id="colpalidemo_write" />
             </client>
             <client id="token_read" permissions="read">
-                <token id="colpali-read" />
+                <token id="colpalidemo_read" />
             </client>
         </clients>
         <config name="container.qr-searchers">
@@ -25,7 +25,7 @@
             </tag>
         </config>
     </container>
-    <content id="colpali_content" version="1.0">
+    <content id="colpalidemo_content" version="1.0">
         <redundancy>1</redundancy>
         <documents>
             <document type="pdf_page" mode="index"></document>
