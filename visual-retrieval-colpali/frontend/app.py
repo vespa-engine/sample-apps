@@ -1,4 +1,5 @@
 from urllib.parse import quote_plus
+from typing import Optional
 
 from fasthtml.components import H1, H2, Div, Form, Img, P, Span, NotStr
 from fasthtml.xtend import A, Script
@@ -202,7 +203,7 @@ def LoadingMessage():
     )
 
 
-def SearchResult(results=[], show_sim_map=False):
+def SearchResult(results: list, query_id: Optional[str] = None):
     if not results:
         return Div(
             P(
@@ -246,7 +247,6 @@ def SearchResult(results=[], show_sim_map=False):
             data_image_src=full_image_base64,
             cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
-
         # Add "Tokens" button - this has no action, just a placeholder
         tokens_button = Button(
             Lucide(icon="images", size="15"),
@@ -254,7 +254,6 @@ def SearchResult(results=[], show_sim_map=False):
             size="sm",
             cls="tokens-button flex gap-[3px] font-bold pointer-events-none font-mono text-xs h-5 rounded-none px-2",
         )
-
         result_items.append(
             Div(
                 Div(
@@ -274,8 +273,14 @@ def SearchResult(results=[], show_sim_map=False):
                 Div(
                     Div(
                         H2(fields["title"], cls="text-xl font-semibold"),
-                        P("Page " + str(fields["page_number"]), cls="text-muted-foreground"),
-                        P("Relevance score: " + str(result["relevance"]), cls="text-muted-foreground"),
+                        P(
+                            "Page " + str(fields["page_number"]),
+                            cls="text-muted-foreground",
+                        ),
+                        P(
+                            "Relevance score: " + str(result["relevance"]),
+                            cls="text-muted-foreground",
+                        ),
                         P(NotStr(fields["snippet"]), cls="text-muted-foreground"),
                         P(NotStr(fields["text"]), cls="text-muted-foreground"),
                         cls="text-sm grid gap-y-4",
@@ -286,9 +291,21 @@ def SearchResult(results=[], show_sim_map=False):
             )
         )
 
-    return Div(
-        *result_items,
-        image_swapping,
-        id="search-results",
-        cls="grid grid-cols-2 gap-px bg-border",
-    )
+    if query_id is not None:
+        return Div(
+            *result_items,
+            image_swapping,
+            hx_get=f"/updated_search_results?query_id={query_id}",
+            hx_trigger="every 1s",
+            hx_target="#search-results",
+            hx_swap="outerHTML",
+            id="search-results",
+            cls="grid grid-cols-2 gap-px bg-border",
+        )
+    else:
+        return Div(
+            *result_items,
+            image_swapping,
+            id="search-results",
+            cls="grid grid-cols-2 gap-px bg-border",
+        )

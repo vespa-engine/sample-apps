@@ -1,14 +1,22 @@
 import asyncio
-import json
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 
 from fasthtml.common import *
 from shad4fast import *
 from vespa.application import Vespa
 
-from backend.colpali import get_result_from_query, load_model
+from backend.colpali import (
+    get_result_from_query,
+    get_query_embeddings_and_token_map,
+    add_sim_maps_to_result,
+)
 from backend.vespa_app import get_vespa_app
+from backend.cache import LRUCache
+from backend.modelmanager import ModelManager
 from frontend.app import Home, Search, SearchBox, SearchResult
 from frontend.layout import Layout
+import hashlib
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -30,26 +38,12 @@ app, rt = fast_app(
 )
 vespa_app: Vespa = get_vespa_app()
 
+result_cache = LRUCache(max_size=20)  # Each result can be ~10MB
+thread_pool = ThreadPoolExecutor()
 
-class ModelManager:
-    _instance = None
-    model = None
-    processor = None
 
-    @staticmethod
-    def get_instance():
-        if ModelManager._instance is None:
-            ModelManager._instance = ModelManager()
-            ModelManager._instance.initialize_model_and_processor()
-        return ModelManager._instance
-
-    def initialize_model_and_processor(self):
-        if self.model is None or self.processor is None:  # Ensure no reinitialization
-            self.model, self.processor = load_model()
-            if self.model is None or self.processor is None:
-                print("Failed to initialize model or processor at startup")
-            else:
-                print("Model and processor loaded at startup")
+def generate_query_id(query):
+    return hashlib.md5(query.encode("utf-8")).hexdigest()
 
 
 @rt("/static/{filepath:path}")
@@ -91,8 +85,7 @@ def get(request):
 
 
 @rt("/fetch_results")
-def get(request, query: str, nn: bool = True, sim_map: bool = True):
-    # Check if the request came from HTMX; if not, redirect to /search
+async def get(request, query: str, nn: bool = True):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
@@ -101,56 +94,74 @@ def get(request, query: str, nn: bool = True, sim_map: bool = True):
     print(
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
+    # Generate a unique query_id based on the query and ranking value
+    query_id = generate_query_id(query + ranking_value)
 
     # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
+    q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
 
     # Fetch real search results from Vespa
-    result = asyncio.run(
-        get_result_from_query(
-            vespa_app,
-            processor=processor,
-            model=model,
-            query=query,
-            ranking=ranking_value,
-            gen_sim_map=sim_map,
+    result = await get_result_from_query(
+        app=vespa_app,
+        processor=processor,
+        model=model,
+        query=query,
+        q_embs=q_embs,
+        token_to_idx=token_to_idx,
+        ranking=ranking_value,
+    )
+    # Start generating the similarity map in the background
+    asyncio.create_task(
+        generate_similarity_map(
+            model, processor, query, q_embs, token_to_idx, result, query_id
         )
     )
-
-    # Extract search results from the result payload
+    print("Search results fetched")
     search_results = (
         result["root"]["children"]
         if "root" in result and "children" in result["root"]
         else []
     )
+    return SearchResult(search_results, query_id)
 
-    # Directly return the search results without the full page layout
-    return SearchResult(search_results, show_sim_map=sim_map)
+
+async def generate_similarity_map(
+    model, processor, query, q_embs, token_to_idx, result, query_id
+):
+    loop = asyncio.get_event_loop()
+    sim_map_task = partial(
+        add_sim_maps_to_result,
+        result=result,
+        model=model,
+        processor=processor,
+        query=query,
+        q_embs=q_embs,
+        token_to_idx=token_to_idx,
+    )
+    sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
+    result_cache.set(query_id, sim_map_result)
+
+
+@app.get("/updated_search_results")
+async def updated_search_results(query_id: str):
+    data = result_cache.get(query_id)
+    if data is None:
+        return HTMLResponse(status_code=204)
+    search_results = (
+        data["root"]["children"]
+        if "root" in data and "children" in data["root"]
+        else []
+    )
+    updated_content = SearchResult(results=search_results, query_id=None)
+    return updated_content
 
 
 @rt("/app")
 def get():
     return Layout(Div(P(f"Connected to Vespa at {vespa_app.url}"), cls="p-4"))
-
-
-@rt("/run_query")
-def get(query: str, nn: bool = False):
-    # dummy-function to avoid running the query every time
-    # result = get_result_dummy(query, nn)
-    # If we want to run real, uncomment the following lines
-    model, processor = get_model_and_processor()
-    result = asyncio.run(
-        get_result_from_query(
-            vespa_app, processor=processor, model=model, query=query, nn=nn
-        )
-    )
-    # model, processor = get_model_and_processor()
-    # result = asyncio.run(
-    #     get_result_from_query(vespa_app, processor=processor, model=model, query=query, nn=nn)
-    # )
-    return Layout(Div(H1("Result"), Pre(Code(json.dumps(result, indent=2))), cls="p-4"))
 
 
 if __name__ == "__main__":

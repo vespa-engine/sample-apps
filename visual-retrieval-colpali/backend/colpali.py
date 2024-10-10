@@ -300,6 +300,7 @@ async def query_vespa_default(
         assert response.is_successful(), response.json
     return format_query_results(query, response)
 
+
 async def query_vespa_bm25(
     app: Vespa,
     query: str,
@@ -321,6 +322,7 @@ async def query_vespa_bm25(
         )
         assert response.is_successful(), response.json
     return format_query_results(query, response)
+
 
 def float_to_binary_embedding(float_query_embedding: dict) -> dict:
     binary_query_embeddings = {}
@@ -409,12 +411,13 @@ async def get_result_from_query(
     processor: ColPaliProcessor,
     model: ColPali,
     query: str,
+    q_embs: torch.Tensor,
+    token_to_idx: Dict[str, int],
     ranking: str,
-    gen_sim_map: bool = True,
 ) -> Dict[str, Any]:
     # Get the query embeddings and token map
     print(query)
-    q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
+
     print(token_to_idx)
     if ranking == "nn+colpali":
         result = await query_vespa_nearest_neighbor(app, query, q_embs)
@@ -428,15 +431,6 @@ async def get_result_from_query(
     for idx, child in enumerate(result["root"]["children"]):
         print(
             f"Result {idx+1}: {child['relevance']}, {child['fields']['title']}, {child['fields']['id']}"
-        )
-    if gen_sim_map:
-        result = add_sim_maps_to_result(
-            result=result,
-            model=model,
-            processor=processor,
-            query=query,
-            q_embs=q_embs,
-            token_to_idx=token_to_idx,
         )
     for single_result in result["root"]["children"]:
         print(single_result["fields"].keys())
