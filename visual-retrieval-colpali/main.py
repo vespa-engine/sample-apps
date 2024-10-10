@@ -67,7 +67,7 @@ app, rt = fast_app(
 )
 vespa_app: Vespa = get_vespa_app()
 
-sim_map_data = LRUCache(max_size=20)
+result_cache = LRUCache(max_size=20)
 thread_pool = ThreadPoolExecutor()
 
 
@@ -143,6 +143,8 @@ async def get(request, query: str, nn: bool = True):
     print(
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
+    # Generate a unique query_id based on the query and ranking value
+    query_id = generate_query_id(query + ranking_value)
 
     if "bm25" in ranking_value:
         nn = False
@@ -152,9 +154,6 @@ async def get(request, query: str, nn: bool = True):
     model = manager.model
     processor = manager.processor
     q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
-
-    # Generate a unique query_id
-    query_id = generate_query_id(query)
 
     # Fetch real search results from Vespa
     result = await get_result_from_query(
@@ -195,12 +194,12 @@ async def generate_similarity_map(
         token_to_idx=token_to_idx,
     )
     sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
-    sim_map_data.set(query_id, sim_map_result)
+    result_cache.set(query_id, sim_map_result)
 
 
 @app.get("/updated_search_results")
 async def updated_search_results(query_id: str):
-    data = sim_map_data.get(query_id)
+    data = result_cache.get(query_id)
     if data is None:
         return HTMLResponse(status_code=204)
     search_results = (
@@ -209,7 +208,6 @@ async def updated_search_results(query_id: str):
         else []
     )
     updated_content = SearchResult(results=search_results, query_id=None)
-    sim_map_data.delete(query_id)
     return updated_content
 
 
