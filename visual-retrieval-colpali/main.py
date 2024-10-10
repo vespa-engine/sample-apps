@@ -80,15 +80,17 @@ def get():
 
 @rt("/search")
 def get(request):
-    # Extract the 'query' parameter from the URL using query_params
+    # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
+    ranking_value = request.query_params.get("ranking", "option1")
+    print("/search: Fetching results for ranking_value:", ranking_value)
 
     # Always render the SearchBox first
     if not query_value:
         # Show SearchBox and a message for missing query
         return Layout(
             Div(
-                SearchBox(query_value=query_value),
+                SearchBox(query_value=query_value, ranking_value=ranking_value),
                 Div(
                     P(
                         "No query provided. Please enter a query.",
@@ -109,6 +111,12 @@ async def get(request, query: str, nn: bool = True):
     # Check if the request came from HTMX; if not, redirect to /search
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
+
+    # Extract ranking option from the request
+    ranking_value = request.query_params.get("ranking", "option1")
+    print(
+        f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
+    )
 
     # Fetch model and processor
     manager = ModelManager.get_instance()
