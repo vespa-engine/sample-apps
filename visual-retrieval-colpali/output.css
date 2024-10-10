@@ -1133,16 +1133,17 @@ body {
   gap: 2rem;
 }
 
-.gap-px {
-  gap: 1px;
-}
-
 .gap-\[3px\] {
   gap: 3px;
 }
 
-.gap-y-4 {
-  row-gap: 1rem;
+.gap-px {
+  gap: 1px;
+}
+
+.gap-x-3 {
+  -moz-column-gap: 0.75rem;
+       column-gap: 0.75rem;
 }
 
 .gap-x-5 {
@@ -1150,9 +1151,14 @@ body {
        column-gap: 1.25rem;
 }
 
-.gap-x-3 {
-  -moz-column-gap: 0.75rem;
-       column-gap: 0.75rem;
+.gap-y-4 {
+  row-gap: 1rem;
+}
+
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .space-x-3 > :not([hidden]) ~ :not([hidden]) {
@@ -1177,12 +1183,6 @@ body {
   --tw-space-y-reverse: 0;
   margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
-}
-
-.space-x-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .self-stretch {
@@ -1342,11 +1342,6 @@ body {
 
 .bg-secondary {
   background-color: hsl(var(--secondary));
-}
-
-.bg-\[\#61D790\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(97 215 144 / var(--tw-bg-opacity));
 }
 
 .bg-gradient-to-r {
@@ -1614,16 +1609,6 @@ body {
 
 .text-transparent {
   color: transparent;
-}
-
-.text-\[\#61D790\] {
-  --tw-text-opacity: 1;
-  color: rgb(97 215 144 / var(--tw-text-opacity));
-}
-
-.text-\[\#2E2F27\] {
-  --tw-text-opacity: 1;
-  color: rgb(46 47 39 / var(--tw-text-opacity));
 }
 
 .no-underline {
@@ -1954,6 +1939,19 @@ body {
 
 .animate-slide-up {
   animation: slide-up 1s ease-out forwards;
+}
+
+.sim-map-button.active {
+  background-color: #61D790;
+  color: #2E2F27;
+  &:hover {
+    background-color: #61D790;
+  }
+}
+
+.tokens-button {
+  background-color: #B7E2F1;
+  color: #2E2F27;
 }
 
 :root:has(.data-\[state\=open\]\:no-bg-scroll[data-state="open"]) {

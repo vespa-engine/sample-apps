@@ -27,7 +27,7 @@ check_input_script = Script(
     """
 )
 
-# JavaScript to handle the image swapping and reset button on the search results
+# JavaScript to handle the image swapping, reset button, and active class toggling
 image_swapping = Script(
     """
     document.addEventListener('click', function (e) {
@@ -35,6 +35,17 @@ image_swapping = Script(
             const newSrc = e.target.getAttribute('data-image-src');
             const img = e.target.closest('.relative').querySelector('.result-image');
             img.src = newSrc;
+
+            // Remove 'active' class from previously active button
+            const activeButton = document.querySelector('.sim-map-button.active');
+            if (activeButton) {
+                activeButton.classList.remove('active');
+            }
+
+            // Add 'active' class to the clicked button (if it's a sim-map button)
+            if (e.target.classList.contains('sim-map-button')) {
+                e.target.classList.add('active');
+            }
         }
     });
     """
@@ -241,7 +252,7 @@ def SearchResult(results=[], show_sim_map=False):
             Lucide(icon="images", size="15"),
             "Tokens",
             size="sm",
-            cls="bg-[#61D790] text-[#2E2F27] flex gap-[3px] font-bold pointer-events-none font-mono text-xs h-5 rounded-none px-2",
+            cls="tokens-button flex gap-[3px] font-bold pointer-events-none font-mono text-xs h-5 rounded-none px-2",
         )
 
         result_items.append(
