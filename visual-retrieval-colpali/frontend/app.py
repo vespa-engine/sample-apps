@@ -52,7 +52,7 @@ image_swapping = Script(
 )
 
 
-def SearchBox(with_border=False, query_value="", ranking_value="option1"):
+def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
 
     if with_border:
@@ -176,7 +176,7 @@ def Home():
 
 def Search(request, search_results=[]):
     query_value = request.query_params.get("query", "").strip()
-    ranking_value = request.query_params.get("ranking", "option1")
+    ranking_value = request.query_params.get("ranking", "nn+colpali")
     print(
         f"Search: Fetching results for query: {query_value}, ranking: {ranking_value}"
     )

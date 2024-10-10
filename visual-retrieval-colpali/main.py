@@ -66,7 +66,7 @@ def get():
 def get(request):
     # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
-    ranking_value = request.query_params.get("ranking", "option1")
+    ranking_value = request.query_params.get("ranking", "nn+colpali")
     print("/search: Fetching results for ranking_value:", ranking_value)
 
     # Always render the SearchBox first
