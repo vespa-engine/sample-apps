@@ -64,15 +64,17 @@ def get():
 
 @rt("/search")
 def get(request):
-    # Extract the 'query' parameter from the URL using query_params
+    # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
+    ranking_value = request.query_params.get("ranking", "option1")
+    print("/search: Fetching results for ranking_value:", ranking_value)
 
     # Always render the SearchBox first
     if not query_value:
         # Show SearchBox and a message for missing query
         return Layout(
             Div(
-                SearchBox(query_value=query_value),
+                SearchBox(query_value=query_value, ranking_value=ranking_value),
                 Div(
                     P(
                         "No query provided. Please enter a query.",
@@ -94,10 +96,17 @@ def get(request, query: str, nn: bool = True, sim_map: bool = True):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
+    # Extract ranking option from the request
+    ranking_value = request.query_params.get("ranking", "option1")
+    print(
+        f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
+    )
+
     # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
     processor = manager.processor
+
     # Fetch real search results from Vespa
     result = asyncio.run(
         get_result_from_query(
