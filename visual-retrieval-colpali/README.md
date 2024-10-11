@@ -27,11 +27,10 @@ preload_from_hub:
 
 # Visual Retrieval ColPali
 
-
 # Developing
 
 First, install `uv`:
-  
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
@@ -60,7 +59,8 @@ python hello.py
 
 First, set up your `.env` file by renaming `.env.example` to `.env` and filling in the required values.
 (Token can be shared with 1password, `HF_TOKEN` is personal and must be created at huggingface)
-If you are just connecting to a deployed Vespa app, you can skip to [Connecting to the Vespa app](#connecting-to-the-vespa-app-and-querying).
+If you are just connecting to a deployed Vespa app, you can skip
+to [Connecting to the Vespa app](#connecting-to-the-vespa-app-and-querying).
 
 ### Deploying the Vespa app
 
@@ -87,7 +87,8 @@ On Mac:
 brew install poppler
 ```
 
-First, you need to create a huggingface token, after you have accepted the term to use the model at https://huggingface.co/google/paligemma-3b-mix-448.
+First, you need to create a huggingface token, after you have accepted the term to use the model
+at https://huggingface.co/google/paligemma-3b-mix-448.
 Add the token to your environment variables as `HF_TOKEN`:
 
 ```bash
@@ -122,13 +123,19 @@ To deploy, run
 huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval . . --repo-type=space
 ```
 
-Note that you need to set `HF_TOKEN` environment variable first. 
-This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens). 
+Note that you need to set `HF_TOKEN` environment variable first.
+This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens).
 Make sure the token has `write` access.
-Be ware that this will not delete existing files, only modify or add, see [huggingface-cli](https://huggingface.co/docs/huggingface_hub/en/guides/upload#upload-from-the-cli) for more information.
+Be ware that this will not delete existing files, only modify or add,
+see [huggingface-cli](https://huggingface.co/docs/huggingface_hub/en/guides/upload#upload-from-the-cli) for more
+information.
 
 ### Making changes to CSS
-To make changes to global.css apply, run
+
+To make changes to output.css apply, run
+
 ```bash
-shad4fast build
+shad4fast watch # watches all files passed through the tailwind.config.js content section
+
+shad4fast build # minifies the current output.css file to reduce bundle size in production.
 ```
