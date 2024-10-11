@@ -366,23 +366,32 @@ async def query_vespa_default(
 async def query_vespa_bm25(
     app: Vespa,
     query: str,
+    q_emb: torch.Tensor,
     hits: int = 3,
     timeout: str = "10s",
     **kwargs,
 ) -> dict:
     async with app.asyncio(connections=1, total_timeout=120) as session:
+        query_embedding = format_q_embs(q_emb)
+
+        start = time.perf_counter()
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,full_image,page_number,snippet,text from pdf_page where userQuery();",
+                "yql": "select id,title,url,full_image,page_number,snippet,text,summaryfeatures from pdf_page where userQuery();",
                 "ranking": "bm25",
                 "query": query,
                 "timeout": timeout,
                 "hits": hits,
+                "input.query(qt)": query_embedding,
                 "presentation.timing": True,
                 **kwargs,
             },
         )
         assert response.is_successful(), response.json
+        stop = time.perf_counter()
+        print(
+            f"Query time + data transfer took: {stop - start} s, vespa said searchtime was {response.json.get('timing', {}).get('searchtime', -1)} s"
+        )
     return format_query_results(query, response)
 
 
@@ -448,7 +457,7 @@ async def query_vespa_nearest_neighbor(
                 **query_tensors,
                 "presentation.timing": True,
                 # if we use rank({nn_string}, userQuery()), dynamic summary doesn't work, see https://github.com/vespa-engine/vespa/issues/28704
-                "yql": f"select id,title,snippet,text,url,full_image,page_number from pdf_page where {nn_string} or userQuery()",
+                "yql": f"select id,title,snippet,text,url,full_image,page_number,summaryfeatures from pdf_page where {nn_string} or userQuery()",
                 "ranking.profile": "retrieval-and-rerank",
                 "timeout": timeout,
                 "hits": hits,
@@ -486,7 +495,7 @@ async def get_result_from_query(
     elif ranking == "bm25+colpali":
         result = await query_vespa_default(app, query, q_embs)
     elif ranking == "bm25":
-        result = await query_vespa_bm25(app, query)
+        result = await query_vespa_bm25(app, query, q_embs)
     else:
         raise ValueError(f"Unsupported ranking: {ranking}")
     # Print score, title id, and text of the results
