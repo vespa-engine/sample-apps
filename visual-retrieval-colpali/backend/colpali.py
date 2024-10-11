@@ -471,8 +471,9 @@ async def query_vespa_nearest_neighbor(
 
 def is_special_token(token: str) -> bool:
     # Pattern for tokens that start with '<', numbers, whitespace, or single characters, or the string 'Question'
+    # Will exclude these tokens from the similarity map generation
     pattern = re.compile(r"^<.*$|^\d+$|^\s+$|^\w$|^Question$")
-    if pattern.match(token):
+    if (len(token) < 3) or pattern.match(token):
         return True
     return False
 
