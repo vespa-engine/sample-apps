@@ -9,6 +9,7 @@ import base64
 from io import BytesIO
 from typing import Union, Tuple, List, Dict, Any
 import matplotlib
+import matplotlib.cm as cm
 import re
 import io
 
@@ -117,6 +118,7 @@ def gen_similarity_maps(
     query_embs: torch.Tensor,
     token_idx_map: dict,
     images: List[Union[Path, str]],
+    vespa_sim_maps: List[str],
 ) -> List[Dict[str, str]]:
     """
     Generate similarity maps for the given images and query, and return base64-encoded blended images.
@@ -134,8 +136,8 @@ def gen_similarity_maps(
     Returns:
         List[Dict[str, str]]: A list where each item is a dictionary mapping tokens to base64-encoded blended images.
     """
-    import numpy as np
-    import matplotlib.cm as cm
+
+    start = time.perf_counter()
 
     # Prepare the colormap once to avoid recomputation
     colormap = cm.get_cmap("viridis")
@@ -161,39 +163,74 @@ def gen_similarity_maps(
         original_sizes.append(img_pil.size)  # (width, height)
         processed_images.append(img_pil)
 
-    # Preprocess inputs
-    input_image_processed = processor.process_images(processed_images).to(device)
+    # If similarity maps are provided, use them instead of computing them
+    if vespa_sim_maps:
+        print("Using provided similarity maps")
+        # A sim map looks like this:
+        # "similarities": [
+        #      {
+        #        "address": {
+        #          "patch": "0",
+        #          "querytoken": "0"
+        #        },
+        #        "value": 1.2599412202835083
+        #      },
+        # ... and so on.
+        # Now turn these into a tensor of same shape as previous similarity map
+        vespa_sim_map_tensor = torch.zeros(
+                (len(vespa_sim_maps), query_embs.size(dim=1), vit_config.n_patch_per_dim, vit_config.n_patch_per_dim)
+            )
+        for idx, vespa_sim_map in enumerate(vespa_sim_maps):
+            for cell in vespa_sim_map["similarities"]["cells"]:
+                patch = int(cell["address"]["patch"])
+                if patch >= processor.image_seq_length:
+                    continue
+                query_token = int(cell["address"]["querytoken"])
+                value = cell["value"]
+                vespa_sim_map_tensor[idx, int(query_token), int(patch) // vit_config.n_patch_per_dim, int(patch) % vit_config.n_patch_per_dim] = value            
 
-    # Forward passes
-    with torch.no_grad():
-        output_image = model.forward(**input_image_processed)
-
-    # Remove the special tokens from the output
-    output_image = output_image[:, : processor.image_seq_length, :]
-
-    # Rearrange the output image tensor to represent the 2D grid of patches
-    output_image = rearrange(
-        output_image,
-        "b (h w) c -> b h w c",
-        h=vit_config.n_patch_per_dim,
-        w=vit_config.n_patch_per_dim,
-    )
-
-    # Ensure query_embs has batch dimension
-    if query_embs.dim() == 2:
-        query_embs = query_embs.unsqueeze(0).to(device)
+        # Normalize the similarity map per query token
+        similarity_map_normalized = normalize_similarity_map_per_query_token(vespa_sim_map_tensor)
     else:
-        query_embs = query_embs.to(device)
+        # Preprocess inputs
+        print("Computing similarity maps")
+        start2 = time.perf_counter()
+        input_image_processed = processor.process_images(processed_images).to(device)
 
-    # Compute the similarity map
-    similarity_map = torch.einsum(
-        "bnk,bhwk->bnhw", query_embs, output_image
-    )  # Shape: (batch_size, query_tokens, h, w)
+        # Forward passes
+        with torch.no_grad():
+            output_image = model.forward(**input_image_processed)
 
-    # Normalize the similarity map per query token
-    similarity_map_normalized = normalize_similarity_map_per_query_token(similarity_map)
+        # Remove the special tokens from the output
+        output_image = output_image[:, : processor.image_seq_length, :]
+
+        # Rearrange the output image tensor to represent the 2D grid of patches
+        output_image = rearrange(
+            output_image,
+            "b (h w) c -> b h w c",
+            h=vit_config.n_patch_per_dim,
+            w=vit_config.n_patch_per_dim,
+        )
+
+        # Ensure query_embs has batch dimension
+        if query_embs.dim() == 2:
+            query_embs = query_embs.unsqueeze(0).to(device)
+        else:
+            query_embs = query_embs.to(device)
+
+        # Compute the similarity map
+        similarity_map = torch.einsum(
+            "bnk,bhwk->bnhw", query_embs, output_image
+        )  # Shape: (batch_size, query_tokens, h, w)
+
+        end2 = time.perf_counter()
+        print(f"Similarity map computation took: {end2 - start2} s")
+
+        # Normalize the similarity map per query token
+        similarity_map_normalized = normalize_similarity_map_per_query_token(similarity_map)
 
     # Collect the blended images
+    start3 = time.perf_counter()
     results = []
     for idx, img in enumerate(original_images):
         original_size = original_sizes[idx]  # (width, height)
@@ -251,6 +288,9 @@ def gen_similarity_maps(
             # Store the base64-encoded image
             result_per_image[token] = blended_img_base64
         results.append(result_per_image)
+    end3 = time.perf_counter()
+    print(f"Collecting blended images took: {end3 - start3} s")
+    print(f"Total heatmap generation took: {end3 - start} s")
     return results
 
 
@@ -455,10 +495,14 @@ def add_sim_maps_to_result(
 ) -> Dict[str, Any]:
     vit_config = load_vit_config(model)
     imgs: List[str] = []
+    vespa_sim_maps: List[str] = []
     for single_result in result["root"]["children"]:
         img = single_result["fields"]["full_image"]
         if img:
             imgs.append(img)
+        vespa_sim_map = single_result["fields"].get("summaryfeatures", None)
+        if vespa_sim_map:
+            vespa_sim_maps.append(vespa_sim_map)
     sim_map_imgs = gen_similarity_maps(
         model=model,
         processor=processor,
@@ -468,6 +512,7 @@ def add_sim_maps_to_result(
         query_embs=q_embs,
         token_idx_map=token_to_idx,
         images=imgs,
+        vespa_sim_maps=vespa_sim_maps
     )
     for single_result, sim_map_dict in zip(result["root"]["children"], sim_map_imgs):
         for token, sim_mapb64 in sim_map_dict.items():
@@ -499,6 +544,7 @@ if __name__ == "__main__":
         query_embs=q_embs,
         token_idx_map=token_to_idx,
         images=[image_filepath],
+        vespa_sim_maps=None,
     )
     for fig_token in figs_images:
         for token, (fig, ax) in fig_token.items():
