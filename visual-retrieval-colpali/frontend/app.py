@@ -1,7 +1,7 @@
-from urllib.parse import quote_plus
 from typing import Optional
+from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, Div, Form, Img, P, Span, NotStr
+from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem
@@ -275,14 +275,22 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         H2(fields["title"], cls="text-xl font-semibold"),
                         P(
                             "Page " + str(fields["page_number"]),
-                            cls="text-muted-foreground",
+                            cls="text-foreground font-mono bold",
+                        ),
+                        Div(
+                            Badge(
+                                "Relevance score: " + str(result["relevance"]),
+                                cls="flex gap-1.5 items-center justify-center",
+                            ),
                         ),
                         P(
-                            "Relevance score: " + str(result["relevance"]),
-                            cls="text-muted-foreground",
+                            NotStr(fields.get("snippet", "")),
+                            cls="text-highlight text-muted-foreground",
                         ),
-                        P(NotStr(fields.get("snippet", "")), cls="text-muted-foreground"),
-                        P(NotStr(fields.get("text", "")), cls="text-muted-foreground"),
+                        P(
+                            NotStr(fields.get("text", "")),
+                            cls="text-highlight text-muted-foreground",
+                        ),
                         cls="text-sm grid gap-y-4",
                     ),
                     cls="bg-background px-3 py-5 hidden md:block",
