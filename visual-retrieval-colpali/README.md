@@ -113,3 +113,9 @@ python query_vespa.py
 ```bash
 python main.py
 ```
+
+### Making changes to CSS
+To make changes to global.css apply, run
+```bash
+shad4fast build
+```
