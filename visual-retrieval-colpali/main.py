@@ -27,6 +27,7 @@ highlight_js = HighlightJS(
     light="github",
 )
 
+
 app, rt = fast_app(
     htmlkw={"cls": "h-full"},
     pico=False,
@@ -44,6 +45,12 @@ task_cache = LRUCache(
     max_size=1000
 )  # Map from query_id to boolean value - False if not all results are ready.
 thread_pool = ThreadPoolExecutor()
+
+
+@app.on_event("startup")
+def load_model_on_startup():
+    app.manager = ModelManager.get_instance()
+    return
 
 
 def generate_query_id(query):
@@ -111,10 +118,8 @@ async def get(request, query: str, nn: bool = True):
         # If task is not completed, return the results with query_id
         return SearchResult(search_results, query_id)
     task_cache.set(query_id, False)
-    # Fetch model and processor
-    manager = ModelManager.get_instance()
-    model = manager.model
-    processor = manager.processor
+    model = app.manager.model
+    processor = app.manager.processor
     q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
 
     start = time.perf_counter()
