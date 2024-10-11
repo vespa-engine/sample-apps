@@ -197,9 +197,9 @@ def Search(request, search_results=[]):
 
 def LoadingMessage():
     return Div(
-        P(Lucide(icon="loader-circle", size="50", cls="animate-rotate htmx-indicator")),
-        P("Retrieving search results", cls="text-base text-center"),
-        cls="p-10 text-center text-muted-foreground",
+        Lucide(icon="loader-circle", cls="size-5 mr-1.5 animate-spin"),
+        Span("Retrieving search results", cls="text-base text-center"),
+        cls="p-10 text-muted-foreground flex items-center justify-center",
         id="loading-indicator",
     )
 
