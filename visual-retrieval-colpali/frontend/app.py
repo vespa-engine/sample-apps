@@ -279,7 +279,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         ),
                         Div(
                             Badge(
-                                "Relevance score: " + str(result["relevance"]),
+                                f"Relevance score: {result['relevance']:.4f}",
                                 cls="flex gap-1.5 items-center justify-center",
                             ),
                         ),
