@@ -5,6 +5,7 @@ from functools import partial
 from fasthtml.common import *
 from shad4fast import *
 from vespa.application import Vespa
+import time
 
 from backend.colpali import (
     get_result_from_query,
@@ -103,6 +104,7 @@ async def get(request, query: str, nn: bool = True):
     processor = manager.processor
     q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
 
+    start = time.perf_counter()
     # Fetch real search results from Vespa
     result = await get_result_from_query(
         app=vespa_app,
@@ -113,13 +115,14 @@ async def get(request, query: str, nn: bool = True):
         token_to_idx=token_to_idx,
         ranking=ranking_value,
     )
+    end = time.perf_counter()
+    print(f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds")
     # Start generating the similarity map in the background
     asyncio.create_task(
         generate_similarity_map(
             model, processor, query, q_embs, token_to_idx, result, query_id
         )
     )
-    print("Search results fetched")
     search_results = (
         result["root"]["children"]
         if "root" in result and "children" in result["root"]
