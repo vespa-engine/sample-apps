@@ -40,6 +40,9 @@ app, rt = fast_app(
 vespa_app: Vespa = get_vespa_app()
 
 result_cache = LRUCache(max_size=20)  # Each result can be ~10MB
+task_cache = LRUCache(
+    max_size=1000
+)  # Map from query_id to boolean value - False if not all results are ready.
 thread_pool = ThreadPoolExecutor()
 
 
@@ -97,7 +100,17 @@ async def get(request, query: str, nn: bool = True):
     )
     # Generate a unique query_id based on the query and ranking value
     query_id = generate_query_id(query + ranking_value)
-
+    # See if results are already in cache
+    if result_cache.get(query_id):
+        print(f"Results for query_id {query_id} already in cache")
+        result = result_cache.get(query_id)
+        search_results = get_results_children(result)
+        # If task is completed, return the results, but no query_id
+        if task_cache.get(query_id):
+            return SearchResult(search_results, None)
+        # If task is not completed, return the results with query_id
+        return SearchResult(search_results, query_id)
+    task_cache.set(query_id, False)
     # Fetch model and processor
     manager = ModelManager.get_instance()
     model = manager.model
@@ -116,19 +129,26 @@ async def get(request, query: str, nn: bool = True):
         ranking=ranking_value,
     )
     end = time.perf_counter()
-    print(f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds")
+    print(
+        f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
+    )
     # Start generating the similarity map in the background
     asyncio.create_task(
         generate_similarity_map(
             model, processor, query, q_embs, token_to_idx, result, query_id
         )
     )
+    search_results = get_results_children(result)
+    return SearchResult(search_results, query_id)
+
+
+def get_results_children(result):
     search_results = (
         result["root"]["children"]
         if "root" in result and "children" in result["root"]
         else []
     )
-    return SearchResult(search_results, query_id)
+    return search_results
 
 
 async def generate_similarity_map(
@@ -143,22 +163,25 @@ async def generate_similarity_map(
         query=query,
         q_embs=q_embs,
         token_to_idx=token_to_idx,
+        query_id=query_id,
+        result_cache=result_cache,
     )
     sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
     result_cache.set(query_id, sim_map_result)
+    task_cache.set(query_id, True)
 
 
 @app.get("/updated_search_results")
 async def updated_search_results(query_id: str):
-    data = result_cache.get(query_id)
-    if data is None:
+    result = result_cache.get(query_id)
+    if result is None:
         return HTMLResponse(status_code=204)
-    search_results = (
-        data["root"]["children"]
-        if "root" in data and "children" in data["root"]
-        else []
-    )
-    updated_content = SearchResult(results=search_results, query_id=None)
+    search_results = get_results_children(result)
+    # Check if task is completed - Stop polling if it is
+    if task_cache.get(query_id):
+        updated_content = SearchResult(results=search_results, query_id=None)
+    else:
+        updated_content = SearchResult(results=search_results, query_id=query_id)
     return updated_content
 
 
