@@ -126,3 +126,9 @@ Note that you need to set `HF_TOKEN` environment variable first.
 This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens). 
 Make sure the token has `write` access.
 Be ware that this will not delete existing files, only modify or add, see [huggingface-cli](https://huggingface.co/docs/huggingface_hub/en/guides/upload#upload-from-the-cli) for more information.
+
+### Making changes to CSS
+To make changes to global.css apply, run
+```bash
+shad4fast build
+```

@@ -248,13 +248,21 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             data_image_src=full_image_base64,
             cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
+
+        tokens_icon = (
+            Lucide(icon="loader-circle", size="15", cls="animate-spin")
+            if query_id is not None
+            else Lucide(icon="images", size="15")
+        )
+
         # Add "Tokens" button - this has no action, just a placeholder
         tokens_button = Button(
-            Lucide(icon="images", size="15"),
+            tokens_icon,
             "Tokens",
             size="sm",
             cls="tokens-button flex gap-[3px] font-bold pointer-events-none font-mono text-xs h-5 rounded-none px-2",
         )
+
         result_items.append(
             Div(
                 Div(
