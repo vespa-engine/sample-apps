@@ -113,3 +113,16 @@ python query_vespa.py
 ```bash
 python main.py
 ```
+
+## Deploy to huggingface 🤗
+
+To deploy, run
+
+```bash
+huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval . . --repo-type=space
+```
+
+Note that you need to set `HF_TOKEN` environment variable first. 
+This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens). 
+Make sure the token has `write` access.
+Be ware that this will not delete existing files, only modify or add, see 
