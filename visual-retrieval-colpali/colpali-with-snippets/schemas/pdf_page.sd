@@ -67,15 +67,28 @@ schema pdf_page {
     }
 
     rank-profile bm25 {
+
+        inputs {
+            query(qt) tensor<float>(querytoken{}, v[128]) # only used here to generate image similarity map
+        }
+
         first-phase {
             expression: bm25(title) + bm25(text)
         }
+
+    function similarities() {
+            expression  {
+                            sum(
+                                query(qt) * unpack_bits(attribute(embedding)), v
+                            )
+            }
+        }
+        summary-features: similarities
     }
 
     rank-profile default {
         inputs {
-            query(qt) tensor<float>(querytoken{}, v[128])             
-        
+            query(qt) tensor<float>(querytoken{}, v[128])
         }
         function max_sim() {
             expression {
@@ -92,13 +105,6 @@ schema pdf_page {
                                 
             }
         }
-        function similarities() {
-            expression  {
-                            sum(
-                                query(qt) * unpack_bits(attribute(embedding)), v
-                            )
-            }
-        }
         function bm25_score() {
             expression {
                 bm25(title) + bm25(text)
@@ -113,6 +119,13 @@ schema pdf_page {
             rerank-count: 10
             expression {
                 max_sim
+            }
+        }
+        function similarities() {
+            expression  {
+                            sum(
+                                query(qt) * unpack_bits(attribute(embedding)), v
+                            )
             }
         }
         summary-features: similarities
@@ -229,5 +242,13 @@ schema pdf_page {
                 max_sim
             }
         }
+        function similarities() {
+            expression  {
+                            sum(
+                                query(qt) * unpack_bits(attribute(embedding)), v
+                            )
+            }
+        }
+        summary-features: similarities
     }
 }
