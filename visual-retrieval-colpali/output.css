@@ -930,10 +930,6 @@ body {
   min-height: 80px;
 }
 
-.min-h-screen {
-  min-height: 100vh;
-}
-
 .w-10 {
   width: 2.5rem;
 }
@@ -1293,11 +1289,6 @@ body {
   background-color: rgb(0 0 0 / 0.8);
 }
 
-.bg-blue-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
-}
-
 .bg-border {
   background-color: hsl(var(--border));
 }
@@ -1332,16 +1323,6 @@ body {
 
 .bg-primary {
   background-color: hsl(var(--primary));
-}
-
-.bg-red-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(252 165 165 / var(--tw-bg-opacity));
-}
-
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .bg-secondary {
@@ -1494,11 +1475,6 @@ body {
   line-height: 2rem;
 }
 
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
 .text-5xl {
   font-size: 3rem;
   line-height: 1;
@@ -1579,16 +1555,6 @@ body {
 
 .text-foreground\/50 {
   color: hsl(var(--foreground) / 0.5);
-}
-
-.text-gray-800 {
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity));
-}
-
-.text-gray-900 {
-  --tw-text-opacity: 1;
-  color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
 .text-muted-foreground {
@@ -1937,12 +1903,27 @@ body {
   }
 }
 
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 1s ease-out forwards;
 }
 
 .animate-slide-up {
   animation: slide-up 1s ease-out forwards;
+}
+
+.animate-rotate {
+  animation: rotate 2s linear infinite;
+  display: inline;
 }
 
 .sim-map-button.active {

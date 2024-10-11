@@ -148,12 +148,26 @@
     }
 }
 
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .animate-fade-in {
     animation: fade-in 1s ease-out forwards;
 }
 
 .animate-slide-up {
     animation: slide-up 1s ease-out forwards;
+}
+
+.animate-rotate {
+    animation: rotate 2s linear infinite;
+    display: inline;
 }
 
 .sim-map-button.active {
