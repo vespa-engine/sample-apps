@@ -260,7 +260,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         query_id=query_id,
                         idx=idx,
                         token=key.split("_")[-1],
-                        image_src=sim_map_base64,
+                        img_src=sim_map_base64,
                     )
                 )
             else:
