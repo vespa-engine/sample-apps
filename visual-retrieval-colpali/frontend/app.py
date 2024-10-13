@@ -222,6 +222,7 @@ def SimMapButtonPoll(query_id, idx, token):
         # Poll every x seconds, where x is 0.3 x idx, formatted to 2 decimals
         hx_trigger=f"every {(idx+1)*0.3:.2f}s",
         hx_swap="outerHTML",
+        cls="pointer-events-auto text-xs h-5 rounded-none px-2",
     )
 
 
