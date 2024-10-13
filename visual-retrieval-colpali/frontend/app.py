@@ -181,12 +181,11 @@ def Search(request, search_results=[]):
     print(
         f"Search: Fetching results for query: {query_value}, ranking: {ranking_value}"
     )
-
     return Div(
         Div(
             SearchBox(query_value=query_value, ranking_value=ranking_value),
             Div(
-                LoadingMessage(),  # Show the loading message initially
+                LoadingMessage(),
                 id="search-results",  # This will be replaced by the search results
             ),
             cls="grid",
@@ -204,6 +203,28 @@ def LoadingMessage():
     )
 
 
+def SimMapButtonReady(query_id, idx, token, img_src):
+    return Button(
+        token,
+        size="sm",
+        data_image_src=img_src,
+        id=f"sim-map-button-{query_id}-{idx}-{token}",
+        cls="sim-map-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
+    )
+
+
+def SimMapButtonPoll(query_id, idx, token):
+    return Button(
+        Lucide(icon="loader-circle", size="15", cls="animate-spin"),
+        size="sm",
+        disabled=True,
+        hx_get=f"/get_sim_map?query_id={query_id}&idx={idx}&token={token}",
+        # Poll every x seconds, where x is 0.3 x idx, formatted to 2 decimals
+        hx_trigger=f"every {(idx+1)*0.3:.2f}s",
+        hx_swap="outerHTML",
+    )
+
+
 def SearchResult(results: list, query_id: Optional[str] = None):
     if not results:
         return Div(
@@ -216,7 +237,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
     # Otherwise, display the search results
     result_items = []
-    for result in results:
+    for idx, result in enumerate(results):
         fields = result["fields"]  # Extract the 'fields' part of each result
         full_image_base64 = f"data:image/jpeg;base64,{fields['full_image']}"
 
@@ -224,21 +245,30 @@ def SearchResult(results: list, query_id: Optional[str] = None):
         sim_map_fields = {
             key: value
             for key, value in fields.items()
-            if key.startswith("sim_map_") and len(key.split("_")[-1]) >= 4
+            if key.startswith(
+                "sim_map_"
+            )  # filtering is done before creating with 'is_special_token'-function
         }
 
         # Generate buttons for the sim_map fields
         sim_map_buttons = []
         for key, value in sim_map_fields.items():
-            sim_map_base64 = f"data:image/jpeg;base64,{value}"
-            sim_map_buttons.append(
-                Button(
-                    key.split("_")[-1],
-                    size="sm",
-                    data_image_src=sim_map_base64,
-                    cls="sim-map-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
+            if value is not None:
+                sim_map_base64 = f"data:image/jpeg;base64,{value}"
+                sim_map_buttons.append(
+                    SimMapButtonReady(
+                        query_id=query_id,
+                        idx=idx,
+                        token=key.split("_")[-1],
+                        img_src=sim_map_base64,
+                    )
                 )
-            )
+            else:
+                sim_map_buttons.append(
+                    SimMapButtonPoll(
+                        query_id=query_id, idx=idx, token=key.split("_")[-1]
+                    )
+                )
 
         # Add "Reset Image" button to restore the full image
         reset_button = Button(
@@ -249,11 +279,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
 
-        tokens_icon = (
-            Lucide(icon="loader-circle", size="15", cls="animate-spin")
-            if query_id is not None
-            else Lucide(icon="images", size="15")
-        )
+        tokens_icon = Lucide(icon="images", size="15")
 
         # Add "Tokens" button - this has no action, just a placeholder
         tokens_button = Button(
@@ -307,22 +333,9 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                 cls="grid grid-cols-1 md:grid-cols-2 col-span-2",
             )
         )
-
-    if query_id is not None:
-        return Div(
-            *result_items,
-            image_swapping,
-            hx_get=f"/updated_search_results?query_id={query_id}",
-            hx_trigger="every 1s",
-            hx_target="#search-results",
-            hx_swap="outerHTML",
-            id="search-results",
-            cls="grid grid-cols-2 gap-px bg-border",
-        )
-    else:
-        return Div(
-            *result_items,
-            image_swapping,
-            id="search-results",
-            cls="grid grid-cols-2 gap-px bg-border",
-        )
+    return Div(
+        *result_items,
+        image_swapping,
+        id="search-results",
+        cls="grid grid-cols-2 gap-px bg-border",
+    )

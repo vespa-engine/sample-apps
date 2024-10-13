@@ -11,11 +11,19 @@ from backend.colpali import (
     get_result_from_query,
     get_query_embeddings_and_token_map,
     add_sim_maps_to_result,
+    is_special_token,
 )
 from backend.vespa_app import get_vespa_app
 from backend.cache import LRUCache
 from backend.modelmanager import ModelManager
-from frontend.app import Home, Search, SearchBox, SearchResult
+from frontend.app import (
+    Home,
+    Search,
+    SearchBox,
+    SearchResult,
+    SimMapButtonPoll,
+    SimMapButtonReady,
+)
 from frontend.layout import Layout
 import hashlib
 
@@ -90,7 +98,14 @@ def get(request):
                 cls="grid",
             )
         )
-
+    # Generate a unique query_id based on the query and ranking value
+    query_id = generate_query_id(query_value + ranking_value)
+    # See if results are already in cache
+    # if result_cache.get(query_id) is not None:
+    #     print(f"Results for query_id {query_id} already in cache")
+    #     result = result_cache.get(query_id)
+    #     search_results = get_results_children(result)
+    #     return Layout(Search(request, search_results))
     # Show the loading message if a query is provided
     return Layout(Search(request))  # Show SearchBox and Loading message initially
 
@@ -108,15 +123,12 @@ async def get(request, query: str, nn: bool = True):
     # Generate a unique query_id based on the query and ranking value
     query_id = generate_query_id(query + ranking_value)
     # See if results are already in cache
-    if result_cache.get(query_id):
-        print(f"Results for query_id {query_id} already in cache")
-        result = result_cache.get(query_id)
-        search_results = get_results_children(result)
-        # If task is completed, return the results, but no query_id
-        if task_cache.get(query_id):
-            return SearchResult(search_results, None)
-        # If task is not completed, return the results with query_id
-        return SearchResult(search_results, query_id)
+    # if result_cache.get(query_id) is not None:
+    #     print(f"Results for query_id {query_id} already in cache")
+    #     result = result_cache.get(query_id)
+    #     search_results = get_results_children(result)
+    #     return SearchResult(search_results, query_id)
+    # Run the embedding and query against Vespa app
     task_cache.set(query_id, False)
     model = app.manager.model
     processor = app.manager.processor
@@ -143,7 +155,15 @@ async def get(request, query: str, nn: bool = True):
             model, processor, query, q_embs, token_to_idx, result, query_id
         )
     )
+    fields_to_add = [
+        f"sim_map_{token}"
+        for token in token_to_idx.keys()
+        if not is_special_token(token)
+    ]
     search_results = get_results_children(result)
+    for result in search_results:
+        for sim_map_key in fields_to_add:
+            result["fields"][sim_map_key] = None
     return SearchResult(search_results, query_id)
 
 
@@ -176,18 +196,29 @@ async def generate_similarity_map(
     task_cache.set(query_id, True)
 
 
-@app.get("/updated_search_results")
-async def updated_search_results(query_id: str):
+@app.get("/get_sim_map")
+async def get_sim_map(query_id: str, idx: int, token: str):
+    """
+    Endpoint that each of the sim map button polls to get the sim map image
+    when it is ready. If it is not ready, returns a SimMapButtonPoll, that
+    continues to poll every 1 second.
+    """
     result = result_cache.get(query_id)
     if result is None:
-        return HTMLResponse(status_code=204)
+        return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
     search_results = get_results_children(result)
-    # Check if task is completed - Stop polling if it is
-    if task_cache.get(query_id):
-        updated_content = SearchResult(results=search_results, query_id=None)
+    # Check if idx exists in list of children
+    if idx >= len(search_results):
+        return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
     else:
-        updated_content = SearchResult(results=search_results, query_id=query_id)
-    return updated_content
+        sim_map_key = f"sim_map_{token}"
+        sim_map_b64 = search_results[idx]["fields"].get(sim_map_key, None)
+        if sim_map_b64 is None:
+            return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
+        sim_map_img_src = f"data:image/jpeg;base64,{sim_map_b64}"
+        return SimMapButtonReady(
+            query_id=query_id, idx=idx, token=token, img_src=sim_map_img_src
+        )
 
 
 @rt("/app")
