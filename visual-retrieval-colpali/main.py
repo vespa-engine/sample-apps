@@ -101,11 +101,11 @@ def get(request):
     # Generate a unique query_id based on the query and ranking value
     query_id = generate_query_id(query_value + ranking_value)
     # See if results are already in cache
-    if result_cache.get(query_id) is not None:
-        print(f"Results for query_id {query_id} already in cache")
-        result = result_cache.get(query_id)
-        search_results = get_results_children(result)
-        return Layout(Search(request, search_results))
+    # if result_cache.get(query_id) is not None:
+    #     print(f"Results for query_id {query_id} already in cache")
+    #     result = result_cache.get(query_id)
+    #     search_results = get_results_children(result)
+    #     return Layout(Search(request, search_results))
     # Show the loading message if a query is provided
     return Layout(Search(request))  # Show SearchBox and Loading message initially
 
@@ -123,11 +123,11 @@ async def get(request, query: str, nn: bool = True):
     # Generate a unique query_id based on the query and ranking value
     query_id = generate_query_id(query + ranking_value)
     # See if results are already in cache
-    if result_cache.get(query_id) is not None:
-        print(f"Results for query_id {query_id} already in cache")
-        result = result_cache.get(query_id)
-        search_results = get_results_children(result)
-        return SearchResult(search_results, query_id)
+    # if result_cache.get(query_id) is not None:
+    #     print(f"Results for query_id {query_id} already in cache")
+    #     result = result_cache.get(query_id)
+    #     search_results = get_results_children(result)
+    #     return SearchResult(search_results, query_id)
     # Run the embedding and query against Vespa app
     task_cache.set(query_id, False)
     model = app.manager.model

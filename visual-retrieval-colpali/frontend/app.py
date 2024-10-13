@@ -187,9 +187,7 @@ def Search(request, search_results=[]):
             Div(
                 LoadingMessage(),
                 id="search-results",  # This will be replaced by the search results
-            )
-            if not search_results
-            else SearchResult(search_results),
+            ),
             cls="grid",
         ),
         cls="grid",
@@ -221,7 +219,8 @@ def SimMapButtonPoll(query_id, idx, token):
         size="sm",
         disabled=True,
         hx_get=f"/get_sim_map?query_id={query_id}&idx={idx}&token={token}",
-        hx_trigger="every 1s",
+        # Poll every x seconds, where x is 0.3 x idx, formatted to 2 decimals
+        hx_trigger=f"every {(idx+1)*0.3:.2f}s",
         hx_swap="outerHTML",
     )
 
