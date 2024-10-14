@@ -8,7 +8,7 @@
 </picture>
 
 # Vespa sample applications - Categorize using an LLM
-This is a set of scripts/installs to back up our presentation at 
+This is a set of scripts/installs to back up our presentation at:
 * [MLCon](https://mlconference.ai/machine-learning-advanced-development/adaptive-incontext-learning/)
 * [data science connect COLLIDE](https://datasciconnect.com/events/collide/agenda/)
 
@@ -33,7 +33,7 @@ podman run --detach --name vespa --hostname vespa-container \
   
 vespa deploy app --wait 600
 ```
-Use _podman_ or _docker_ of any tool to run Vespa on your laptop.
+Use e.g. _podman_ or _docker_ to run the `vespaengine/vespa` image on a laptop.
 
 
 ### Generate data
@@ -61,4 +61,4 @@ category	size	relevance	retrieved_label	predicted_label	label_text	text
 ```
 
 ### Other
-Use the `@timer_decorator` to time runtime of the functions.
+Use the `@timer_decorator` to time execution time of the functions.
