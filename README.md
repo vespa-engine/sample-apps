@@ -106,7 +106,7 @@ Model versioning and feature processing pipeline.
 
 <!--
 [travis](travis)
-[part-purchases-demo](part-purchases-demo): A sample Vespa application to assist with with learning how to group according to the [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
+[part-purchases-demo](part-purchases-demo): A sample Vespa application to assist with learning how to group according to the [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
 [generic-request-processing](generic-request-processing)
 http-api-using-*
 -->
