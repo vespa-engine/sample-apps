@@ -1,0 +1,89 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema train {
+
+    document train {
+
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25 
+        }
+
+        field label type string {
+            indexing: summary | attribute 
+        }
+    }
+
+    field doc_embedding_arctic type tensor<float>(x[384]) {
+        indexing: input text | embed arctic | attribute
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    field doc_embedding_e5 type tensor<float>(x[384]) {
+        indexing: input text | embed e5 | attribute
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    fieldset default {
+        fields: text
+    }
+
+    rank-profile bm25 inherits default {
+        inputs {
+            query(user_profile) tensor<float>(cat{})
+        }
+        first-phase {
+            expression: bm25(text) 
+        }
+    }
+
+    rank-profile hybrid_e5_normalized_bm25 inherits default {
+        inputs {
+            query(query_embedding) tensor<float>(x[384])
+        }
+        function normalized(val) {
+            expression: 2*atan(val/8)/(3.14159)
+        }
+        first-phase {
+            expression {
+                closeness(field, doc_embedding_e5) + normalized(bm25(text))
+            }
+        }
+        match-features {
+            closeness(field, doc_embedding_e5)
+            bm25(text)
+        }
+    }
+
+    rank-profile sim_e5 inherits default {
+        inputs {
+            query(query_embedding) tensor<float>(x[384])
+        }
+        first-phase {
+            expression {
+                closeness(field, doc_embedding_e5)
+            }
+        }
+        match-features {
+            closeness(field, doc_embedding_e5)
+        }
+    }
+
+    rank-profile sim_arctic inherits default {
+        inputs {
+            query(query_embedding) tensor<float>(x[384])
+        }
+        first-phase {
+            expression {
+                closeness(field, doc_embedding_arctic)
+            }
+        }
+        match-features {
+            closeness(field, doc_embedding_arctic)
+        }
+    }
+}

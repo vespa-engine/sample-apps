@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+
+    <container id="default" version="1.0">
+        <component id="e5" type="hugging-face-embedder">
+            <transformer-model url="https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx"/>
+            <tokenizer-model url="https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json"/>
+            <!-- E5 prompt instructions -->
+            <prepend>
+                <query>query:</query>
+                <document>passage:</document>
+            </prepend>
+        </component>
+        <component id="arctic" type="hugging-face-embedder">
+            <transformer-model url="https://huggingface.co/Snowflake/snowflake-arctic-embed-xs/resolve/main/onnx/model_quantized.onnx"/>
+            <tokenizer-model url="https://huggingface.co/Snowflake/snowflake-arctic-embed-xs/raw/main/tokenizer.json"/>
+            <pooling-strategy>cls</pooling-strategy>
+            <prepend>
+                <query>Represent this sentence for searching relevant passages: </query>
+            </prepend>
+        </component>
+
+        <document-api/>
+
+        <search/>
+        <nodes>
+            <node hostalias="node1" />
+        </nodes>
+    </container>
+
+    <content id="content" version="1.0">
+        <min-redundancy>2</min-redundancy>
+        <documents>
+            <document type="train" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+
+</services>
