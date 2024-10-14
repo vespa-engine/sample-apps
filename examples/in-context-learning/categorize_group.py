@@ -15,18 +15,18 @@ def timer_decorator(func):
     return wrapper
 
 
-#model_name = "gpt-4o"
+# model_name = "gpt-4o"
 model_name = "llama3.1"
-#model_name = "llama3.2"
-#model_name = "llama3.2:1b"
-#client = OpenAI()
+# model_name = "llama3.2"
+# model_name = "llama3.2:1b"
+# client = OpenAI()
 client = OpenAI(
     base_url='http://localhost:11434/v1',
     api_key='ollama',  # required, but unused
 )
 
 
-#@timer_decorator
+# @timer_decorator
 def get_label(text, examples):
     """
     Ask the LLM to categorize the input text into a single category
@@ -110,7 +110,7 @@ def inference(text):
     timeout is set unusually high here, for laptop experiments.
 
     Note that the hybrid rank-profiles need
-        userQuery() OR ({targetHits:10}nearestNeighbor ...
+        userQuery() OR ({targetHits:10}nearestNeighbor ...)
     to generate rank scores from both operators.
 
     When experimenting with different embedders, make sure to set the name in _both_ the ranking profile and

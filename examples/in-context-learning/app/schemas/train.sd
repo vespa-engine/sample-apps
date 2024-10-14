@@ -59,28 +59,6 @@ schema train {
         }
     }
 
-    rank-profile hybrid_e5_rrf inherits default {
-        inputs {
-            query(query_embedding) tensor<float>(x[384])
-        }
-        function normalized(val) {
-            expression: 2*atan(val/8)/(3.14159)
-        }
-        first-phase {
-            expression {
-                closeness(field, doc_embedding_e5) + normalized(bm25(text))
-            }
-        }
-        global-phase {
-            rerank-count: 100
-            expression: reciprocal_rank(normalized(bm25(text))) + reciprocal_rank(closeness(field, doc_embedding_e5))
-        }
-        match-features {
-            closeness(field, doc_embedding_e5)
-            bm25(text)
-        }
-    }
-
     rank-profile sim_e5 inherits default {
         inputs {
             query(query_embedding) tensor<float>(x[384])
