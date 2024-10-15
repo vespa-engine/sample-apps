@@ -299,12 +299,15 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         reset_button,
                         cls="flex flex-wrap gap-px w-full  pointer-events-none",
                     ),
-                    Img(
-                        src=full_image_base64,
-                        alt=fields["title"],
-                        cls="result-image max-w-full h-auto",
+                    Div(
+                        Img(
+                            src=full_image_base64,
+                            alt=fields["title"],
+                            cls="result-image max-w-full h-auto",
+                        ),
+                        cls="relative grid bg-border p-2",
                     ),
-                    cls="relative grid gap-px content-start bg-background px-3 py-5",
+                    cls="relative grid content-start bg-background px-3 py-5",
                 ),
                 Div(
                     Div(
