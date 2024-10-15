@@ -32,7 +32,7 @@ preload_from_hub:
 First, install `uv`:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+brew install uv
 ```
 
 Then, in this directory, run:
