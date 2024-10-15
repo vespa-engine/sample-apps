@@ -320,7 +320,7 @@ soupsieve==2.6
     # via beautifulsoup4
 sqlite-minutils==3.37.0.post3
     # via fastlite
-starlette==0.39.2
+starlette==0.40.0
     # via python-fasthtml
 sympy==1.13.3
     # via torch
