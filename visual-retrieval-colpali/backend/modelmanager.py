@@ -5,12 +5,14 @@ class ModelManager:
     _instance = None
     model = None
     processor = None
+    use_dummy_model = True
 
     @staticmethod
     def get_instance():
         if ModelManager._instance is None:
             ModelManager._instance = ModelManager()
-            ModelManager._instance.initialize_model_and_processor()
+            if not ModelManager.use_dummy_model:
+                ModelManager._instance.initialize_model_and_processor()
         return ModelManager._instance
 
     def initialize_model_and_processor(self):
