@@ -130,7 +130,7 @@ soupsieve==2.6
     # via beautifulsoup4
 sqlite-minutils==3.37.0.post1
     # via fastlite
-starlette==0.38.2
+starlette==0.40.0
     # via python-fasthtml
 tenacity==9.0.0
     # via pyvespa
