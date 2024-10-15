@@ -254,8 +254,8 @@ def gen_similarity_maps(
 
         # Choose your heatmap image resolution here:
         # original_size = (32, 32)                                               # plain similarity map - 6 milliseconds
-        # original_size = (int(original_size[0]/8), int(original_size[1]/8))     # slightly reduced quality - 532 milliseconds
-        original_size = original_sizes[idx]                                    # beautifully rescaled - 16.300 seconds
+        original_size = (int(original_size[0]/8), int(original_size[1]/8))     # slightly reduced quality - 532 milliseconds
+        # original_size = original_sizes[idx]                                    # beautifully rescaled - 16.300 seconds
 
         result_per_image = {}
         for token, token_idx in token_idx_map.items():
