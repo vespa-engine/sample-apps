@@ -33,17 +33,27 @@ image_swapping = Script(
     """
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('sim-map-button') || e.target.classList.contains('reset-button')) {
+            const imgContainer = e.target.closest('.relative'); 
+            const overlayContainer = imgContainer.querySelector('.overlay-container');
             const newSrc = e.target.getAttribute('data-image-src');
-            const img = e.target.closest('.relative').querySelector('.result-image');
-            img.src = newSrc;
-
-            // Remove 'active' class from previously active button
+    
+            // If it's a reset button, remove the overlay image
+            if (e.target.classList.contains('reset-button')) {
+                overlayContainer.innerHTML = '';  // Clear the overlay container, showing only the full image
+            } else {
+                // Create a new overlay image
+                const img = document.createElement('img');
+                img.src = newSrc;
+                img.classList.add('overlay-image', 'absolute', 'top-0', 'left-0', 'w-full', 'h-full');
+                overlayContainer.innerHTML = '';  // Clear any previous overlay
+                overlayContainer.appendChild(img);  // Add the new overlay image
+            }
+    
+            // Toggle active class on buttons
             const activeButton = document.querySelector('.sim-map-button.active');
             if (activeButton) {
                 activeButton.classList.remove('active');
             }
-
-            // Add 'active' class to the clicked button (if it's a sim-map button)
             if (e.target.classList.contains('sim-map-button')) {
                 e.target.classList.add('active');
             }
@@ -297,15 +307,21 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         tokens_button,
                         *sim_map_buttons,
                         reset_button,
-                        cls="flex flex-wrap gap-px w-full  pointer-events-none",
+                        cls="flex flex-wrap gap-px w-full pointer-events-none",
                     ),
                     Div(
-                        Img(
-                            src=full_image_base64,
-                            alt=fields["title"],
-                            cls="result-image max-w-full h-auto",
+                        Div(
+                            Img(
+                                src=full_image_base64,
+                                alt=fields["title"],
+                                cls="result-image w-full h-full object-contain",
+                            ),
+                            Div(
+                                cls="overlay-container absolute top-0 left-0 w-full h-full pointer-events-none"
+                            ),
+                            cls="relative w-full h-full",
                         ),
-                        cls="relative grid bg-border p-2",
+                        cls="grid bg-border p-2",
                     ),
                     cls="relative grid content-start bg-background px-3 py-5",
                 ),
