@@ -5,7 +5,7 @@ class ModelManager:
     _instance = None
     model = None
     processor = None
-    use_dummy_model = True
+    use_dummy_model = False
 
     @staticmethod
     def get_instance():
