@@ -352,7 +352,7 @@ async def query_vespa_default(
         start = time.perf_counter()
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,full_image,page_number,snippet,text,summaryfeatures from pdf_page where userQuery();",
+                "yql": "select id,title,url,image,page_number,snippet,text,summaryfeatures from pdf_page where userQuery();",
                 "ranking": "default",
                 "query": query,
                 "timeout": timeout,
@@ -385,7 +385,7 @@ async def query_vespa_bm25(
         start = time.perf_counter()
         response: VespaQueryResponse = await session.query(
             body={
-                "yql": "select id,title,url,full_image,page_number,snippet,text,summaryfeatures from pdf_page where userQuery();",
+                "yql": "select id,title,url,image,page_number,snippet,text,summaryfeatures from pdf_page where userQuery();",
                 "ranking": "bm25",
                 "query": query,
                 "timeout": timeout,
@@ -465,7 +465,7 @@ async def query_vespa_nearest_neighbor(
                 **query_tensors,
                 "presentation.timing": True,
                 # if we use rank({nn_string}, userQuery()), dynamic summary doesn't work, see https://github.com/vespa-engine/vespa/issues/28704
-                "yql": f"select id,title,snippet,text,url,full_image,page_number,summaryfeatures from pdf_page where {nn_string} or userQuery()",
+                "yql": f"select id,title,snippet,text,url,image,page_number,summaryfeatures from pdf_page where {nn_string} or userQuery()",
                 "ranking.profile": "retrieval-and-rerank",
                 "timeout": timeout,
                 "hits": hits,
@@ -531,7 +531,7 @@ def add_sim_maps_to_result(
     imgs: List[str] = []
     vespa_sim_maps: List[str] = []
     for single_result in result["root"]["children"]:
-        img = single_result["fields"]["full_image"]
+        img = single_result["fields"]["image"]
         if img:
             imgs.append(img)
         vespa_sim_map = single_result["fields"].get("summaryfeatures", None)
