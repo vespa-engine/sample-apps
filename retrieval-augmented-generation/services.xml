@@ -9,11 +9,11 @@
     <!-- Setup the client to OpenAI -->
     <component id="openai" class="ai.vespa.llm.clients.OpenAI" />
 
-    <!-- Setup a local inference on a Mistral 7B model -->
+    <!-- Setup a local inference on a Phi 3.5 mini model -->
     <!-- Comment out this component to avoid downloading the model file during startup -->
-    <component id="mistral" class="ai.vespa.llm.clients.LocalLLM">
+    <component id="phi" class="ai.vespa.llm.clients.LocalLLM">
       <config name="ai.vespa.llm.clients.llm-local-client">
-        <model url="https://data.vespa-cloud.com/gguf_models/Phi-3-mini-4k-instruct-q4.gguf" />
+        <model url="https://data.vespa-cloud.com/gguf_models/Phi-3.5-mini-instruct-Q4_K_M.gguf" />
         <contextSize>4096</contextSize>
         <parallelRequests>1</parallelRequests>
       </config>
@@ -32,7 +32,7 @@
       <chain id="local" inherits="vespa">
         <searcher id="ai.vespa.search.llm.RAGSearcher">
           <config name="ai.vespa.search.llm.llm-searcher">
-            <providerId>mistral</providerId>
+            <providerId>phi</providerId>
           </config>
         </searcher>
       </chain>
