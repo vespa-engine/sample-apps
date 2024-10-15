@@ -250,6 +250,12 @@ def gen_similarity_maps(
     results = []
     for idx, img in enumerate(original_images):
         original_size = original_sizes[idx]  # (width, height)
+
+        # Choose your heatmap image resolution here:
+        original_size = (32, 32)                                               # plain similarity map - 6 milliseconds
+        # original_size = (int(original_size[0]/8), int(original_size[1]/8))     # slightly reduced quality - 532 milliseconds
+        # original_size = original_sizes[idx]                                    # beautifully rescaled - 16.300 seconds
+
         result_per_image = {}
         for token, token_idx in token_idx_map.items():
             if is_special_token(token):
@@ -286,16 +292,16 @@ def gen_similarity_maps(
             heatmap_img = Image.fromarray(heatmap_uint8)
 
             # Ensure both images are in RGBA mode
-            original_img_rgba = img.convert("RGBA")
+            #original_img_rgba = img.convert("RGBA")
             heatmap_img_rgba = heatmap_img.convert("RGBA")
 
             # Overlay the heatmap onto the original image
-            blended_img = Image.blend(
-                original_img_rgba, heatmap_img_rgba, alpha=0.4
-            )  # Adjust alpha as needed
+            #blended_img = Image.blend(
+            #    original_img_rgba, heatmap_img_rgba, alpha=0.4
+            #)  # Adjust alpha as needed
             # Save the blended image to a BytesIO buffer
             buffer = io.BytesIO()
-            blended_img.save(buffer, format="PNG")
+            heatmap_img_rgba.save(buffer, format="PNG")
             buffer.seek(0)
 
             # Encode the image to base64
@@ -304,6 +310,8 @@ def gen_similarity_maps(
             # Store the base64-encoded image
             result_per_image[token] = blended_img_base64
             yield idx, token, blended_img_base64
+    end3 = time.perf_counter()
+    print(f"Blending images took: {end3 - start3} s")
 
 
 def get_query_embeddings_and_token_map(
