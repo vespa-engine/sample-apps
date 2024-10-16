@@ -252,8 +252,8 @@ def gen_similarity_maps(
     for idx, img in enumerate(original_images):
 
         # Choose your heatmap image resolution here:
-        # original_size = (32, 32)                                               # original size similarity map - 6 milliseconds
-        original_size = (int(original_sizes[idx][0]/8), int(original_sizes[idx][1]/8))     # beautifully rescaled - takes around .5 seconds
+        # sim_map_resolution = (32, 32)                                               # original size similarity map - 6 milliseconds
+        sim_map_resolution = (int(original_sizes[idx][0]/8), int(original_sizes[idx][1]/8))     # beautifully rescaled - takes around .5 seconds
 
         result_per_image = {}
         for token, token_idx in token_idx_map.items():
@@ -268,7 +268,7 @@ def gen_similarity_maps(
 
             # Resize the similarity map to the original image size
             sim_map_img = Image.fromarray(sim_map_np)
-            sim_map_resized = sim_map_img.resize(original_size, resample=Image.BICUBIC)
+            sim_map_resized = sim_map_img.resize(sim_map_resolution, resample=Image.BICUBIC)
 
             # Convert the resized similarity map to a NumPy array
             sim_map_resized_np = np.array(sim_map_resized, dtype=np.float32)
@@ -289,16 +289,9 @@ def gen_similarity_maps(
             # Convert the heatmap to a PIL Image
             heatmap_uint8 = (heatmap * 255).astype(np.uint8)
             heatmap_img = Image.fromarray(heatmap_uint8)
-
-            # Ensure both images are in RGBA mode
-            #original_img_rgba = img.convert("RGBA")
             heatmap_img_rgba = heatmap_img.convert("RGBA")
 
-            # Overlay the heatmap onto the original image
-            #blended_img = Image.blend(
-            #    original_img_rgba, heatmap_img_rgba, alpha=0.4
-            #)  # Adjust alpha as needed
-            # Save the blended image to a BytesIO buffer
+            # Save the image to a BytesIO buffer
             buffer = io.BytesIO()
             heatmap_img_rgba.save(buffer, format="PNG")
             buffer.seek(0)
