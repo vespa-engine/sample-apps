@@ -174,3 +174,13 @@
     background-color: #B7E2F1;
     color: #2E2F27;
 }
+
+.overlay-image {
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
