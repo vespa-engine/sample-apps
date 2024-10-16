@@ -256,10 +256,11 @@ def gen_similarity_maps(
     # Collect the blended images
     start3 = time.perf_counter()
     for idx, img in enumerate(original_images):
-
-        # Choose your heatmap image resolution here:
-        # sim_map_resolution = (32, 32)                                               # original size similarity map - 6 milliseconds
-        sim_map_resolution = (int(original_sizes[idx][0]/8), int(original_sizes[idx][1]/8))     # beautifully rescaled - takes around .5 seconds
+        SCALING_FACTOR = 8
+        sim_map_resolution = (
+            max(32, int(original_sizes[idx][0] / SCALING_FACTOR)),
+            max(32, int(original_sizes[idx][1] / SCALING_FACTOR)),
+        )
 
         result_per_image = {}
         for token, token_idx in token_idx_map.items():
@@ -274,7 +275,9 @@ def gen_similarity_maps(
 
             # Resize the similarity map to the original image size
             sim_map_img = Image.fromarray(sim_map_np)
-            sim_map_resized = sim_map_img.resize(sim_map_resolution, resample=Image.BICUBIC)
+            sim_map_resized = sim_map_img.resize(
+                sim_map_resolution, resample=Image.BICUBIC
+            )
 
             # Convert the resized similarity map to a NumPy array
             sim_map_resized_np = np.array(sim_map_resized, dtype=np.float32)
@@ -315,8 +318,7 @@ def gen_similarity_maps(
 def get_query_embeddings_and_token_map(
     processor, model, query
 ) -> Tuple[torch.Tensor, dict]:
-
-    if(model is None): # use static test query data (saves time when testing)
+    if model is None:  # use static test query data (saves time when testing)
         return testquery.q_embs, testquery.token_to_idx
 
     start_time = time.perf_counter()
