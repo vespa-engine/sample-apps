@@ -192,7 +192,13 @@ def gen_similarity_maps(
             for cell in vespa_sim_map["similarities"]["cells"]:
                 patch = int(cell["address"]["patch"])
                 # if dummy model then just use 1024 as the image_seq_length
-                if patch >= processor.image_seq_length if hasattr(processor, "image_seq_length") else 1024:
+
+                if hasattr(processor, "image_seq_length"):
+                    image_seq_length = processor.image_seq_length
+                else:
+                    image_seq_length = 1024
+
+                if patch >= image_seq_length:
                     continue
                 query_token = int(cell["address"]["querytoken"])
                 value = cell["value"]
@@ -313,6 +319,7 @@ def get_query_embeddings_and_token_map(
     if(model is None): # use static test query data (saves time when testing)
         return testquery.q_embs, testquery.token_to_idx
 
+    start_time = time.perf_counter()
     inputs = processor.process_queries([query]).to(model.device)
     with torch.no_grad():
         embeddings_query = model(**inputs)
@@ -322,6 +329,8 @@ def get_query_embeddings_and_token_map(
     # reverse key, values in dictionary
     print(query_tokens)
     token_to_idx = {val: idx for idx, val in enumerate(query_tokens)}
+    end_time = time.perf_counter()
+    print(f"Query inference took: {end_time - start_time} s")
     return q_emb, token_to_idx
 
 
