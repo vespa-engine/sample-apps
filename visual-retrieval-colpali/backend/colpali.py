@@ -140,8 +140,6 @@ def gen_similarity_maps(
 
     """
 
-    start = time.perf_counter()
-
     # Prepare the colormap once to avoid recomputation
     colormap = cm.get_cmap("viridis")
 
