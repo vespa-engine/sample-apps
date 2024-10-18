@@ -2406,8 +2406,8 @@ wheels = [
 
 [[package]]
 name = "pyvespa"
-version = "0.dev0"
-source = { git = "https://github.com/vespa-engine/pyvespa#4bb2c3daf7a9c1f212eb1ca13787b8c24d71f72c" }
+version = "0.50.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "cryptography" },
@@ -2421,6 +2421,10 @@ dependencies = [
     { name = "requests-toolbelt" },
     { name = "tenacity" },
     { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7d/11/1790972a89fb4f4482d19bb6fe9e6e544a685de791eca6e7b0c88b206781/pyvespa-0.50.0.tar.gz", hash = "sha256:8e2bd835215eb401ef77199ee4122abe75b306a64f5bf2ef01c392804cd67403", size = 68277 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/f8/769aae7f7890f6bfa41261ac5dc395aca86dab14c7f5cb4b808ba08f6f2e/pyvespa-0.50.0-py3-none-any.whl", hash = "sha256:17b0ad584657a2cf73ae8700bfb14f2b36078ae88c339c61b987575bef0d2336", size = 75794 },
 ]
 
 [[package]]
@@ -3465,6 +3469,7 @@ feed = [
     { name = "ipykernel" },
     { name = "jupytext" },
     { name = "pdf2image" },
+    { name = "pydantic" },
 ]
 
 [package.metadata]
@@ -3478,11 +3483,12 @@ requires-dist = [
     { name = "ipykernel", marker = "extra == 'feed'" },
     { name = "jupytext", marker = "extra == 'feed'" },
     { name = "pdf2image", marker = "extra == 'feed'" },
+    { name = "pydantic", marker = "extra == 'feed'" },
     { name = "pypdf" },
     { name = "python-dotenv" },
     { name = "python-dotenv", marker = "extra == 'dev'" },
     { name = "python-fasthtml" },
-    { name = "pyvespa", git = "https://github.com/vespa-engine/pyvespa" },
+    { name = "pyvespa", specifier = ">=0.50.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "setuptools" },
     { name = "shad4fast", specifier = ">=1.2.1" },
