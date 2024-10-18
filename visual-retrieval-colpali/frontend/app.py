@@ -193,14 +193,17 @@ def Search(request, search_results=[]):
     )
     return Div(
         Div(
-            SearchBox(query_value=query_value, ranking_value=ranking_value),
             Div(
-                LoadingMessage(),
-                id="search-results",  # This will be replaced by the search results
+                SearchBox(query_value=query_value, ranking_value=ranking_value),
+                Div(
+                    LoadingMessage(),
+                    id="search-results",  # This will be replaced by the search results
+                ),
+                cls="grid",
             ),
             cls="grid",
         ),
-        cls="grid",
+        cls="scroll-container",
     )
 
 
@@ -353,9 +356,16 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                 cls="grid grid-cols-1 md:grid-cols-2 col-span-2",
             )
         )
+
     return Div(
         *result_items,
         image_swapping,
         id="search-results",
         cls="grid grid-cols-2 gap-px bg-border",
+    )
+
+
+def ChatResult():
+    return Div(
+        "chat result",
     )

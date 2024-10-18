@@ -184,3 +184,15 @@
     height: 100%;
     z-index: 10;
 }
+
+header {
+    grid-column: 1/-1;
+}
+
+main {
+    overflow: auto;
+}
+
+.scroll-container {
+    padding-right: 10px;
+}
