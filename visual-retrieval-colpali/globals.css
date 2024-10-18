@@ -174,3 +174,34 @@
     background-color: #B7E2F1;
     color: #2E2F27;
 }
+
+.overlay-image {
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+header {
+    grid-column: 1/-1;
+}
+
+main {
+    overflow: auto;
+}
+
+aside {
+    overflow: auto;
+}
+
+.scroll-container {
+    padding-right: 10px;
+}
+
+.question-message {
+    background-color: #61D790;
+    color: #2E2F27;
+}

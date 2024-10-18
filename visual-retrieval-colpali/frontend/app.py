@@ -33,17 +33,27 @@ image_swapping = Script(
     """
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('sim-map-button') || e.target.classList.contains('reset-button')) {
+            const imgContainer = e.target.closest('.relative'); 
+            const overlayContainer = imgContainer.querySelector('.overlay-container');
             const newSrc = e.target.getAttribute('data-image-src');
-            const img = e.target.closest('.relative').querySelector('.result-image');
-            img.src = newSrc;
-
-            // Remove 'active' class from previously active button
+    
+            // If it's a reset button, remove the overlay image
+            if (e.target.classList.contains('reset-button')) {
+                overlayContainer.innerHTML = '';  // Clear the overlay container, showing only the full image
+            } else {
+                // Create a new overlay image
+                const img = document.createElement('img');
+                img.src = newSrc;
+                img.classList.add('overlay-image', 'absolute', 'top-0', 'left-0', 'w-full', 'h-full');
+                overlayContainer.innerHTML = '';  // Clear any previous overlay
+                overlayContainer.appendChild(img);  // Add the new overlay image
+            }
+    
+            // Toggle active class on buttons
             const activeButton = document.querySelector('.sim-map-button.active');
             if (activeButton) {
                 activeButton.classList.remove('active');
             }
-
-            // Add 'active' class to the clicked button (if it's a sim-map button)
             if (e.target.classList.contains('sim-map-button')) {
                 e.target.classList.add('active');
             }
@@ -183,14 +193,16 @@ def Search(request, search_results=[]):
     )
     return Div(
         Div(
-            SearchBox(query_value=query_value, ranking_value=ranking_value),
             Div(
-                LoadingMessage(),
-                id="search-results",  # This will be replaced by the search results
+                SearchBox(query_value=query_value, ranking_value=ranking_value),
+                Div(
+                    LoadingMessage(),
+                    id="search-results",  # This will be replaced by the search results
+                ),
+                cls="grid",
             ),
             cls="grid",
         ),
-        cls="grid",
     )
 
 
@@ -297,15 +309,21 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         tokens_button,
                         *sim_map_buttons,
                         reset_button,
-                        cls="flex flex-wrap gap-px w-full  pointer-events-none",
+                        cls="flex flex-wrap gap-px w-full pointer-events-none",
                     ),
                     Div(
-                        Img(
-                            src=full_image_base64,
-                            alt=fields["title"],
-                            cls="result-image max-w-full h-auto",
+                        Div(
+                            Img(
+                                src=full_image_base64,
+                                alt=fields["title"],
+                                cls="result-image w-full h-full object-contain",
+                            ),
+                            Div(
+                                cls="overlay-container absolute top-0 left-0 w-full h-full pointer-events-none"
+                            ),
+                            cls="relative w-full h-full",
                         ),
-                        cls="relative grid bg-border p-2",
+                        cls="grid bg-border p-2",
                     ),
                     cls="relative grid content-start bg-background px-3 py-5",
                 ),
@@ -334,12 +352,56 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     ),
                     cls="bg-background px-3 py-5 hidden md:block",
                 ),
-                cls="grid grid-cols-1 md:grid-cols-2 col-span-2",
+                cls="grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
             )
         )
+
     return Div(
         *result_items,
         image_swapping,
         id="search-results",
         cls="grid grid-cols-2 gap-px bg-border",
+    )
+
+
+def ChatResult():
+    return Div(
+        Div("Chat", cls="text-xl font-semibold p-3"),
+        Div(
+            Div(
+                Div(
+                    "Hello! How can I assist you today?",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div(
+                    "Can you show me an example of chat layout?",
+                    cls="question-message p-2 rounded-md self-end",
+                ),
+                Div(
+                    "Sure! Here's an example with sample messages.",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div("Awesome! Thanks!", cls="question-message p-2 rounded-md self-end"),
+                Div(
+                    "You're welcome!",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div(
+                    "What else can you do?",
+                    cls="question-message p-2 rounded-md self-end",
+                ),
+                Div(
+                    "I can help with various tasks. Just ask!",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                cls="flex flex-col gap-2 text-sm",
+            ),
+            id="chat-messages",
+            cls="overflow-auto min-h-0 grid items-end px-3",
+        ),
+        Div(
+            Input(placeholder="Type your message here..."),
+            cls="bg-muted/80 dark:bg-muted/40 p-3 border-t",
+        ),
+        cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

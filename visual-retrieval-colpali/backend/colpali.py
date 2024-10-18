@@ -15,6 +15,7 @@ import io
 
 import json
 import time
+import backend.testquery as testquery
 
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
@@ -190,7 +191,14 @@ def gen_similarity_maps(
         for idx, vespa_sim_map in enumerate(vespa_sim_maps):
             for cell in vespa_sim_map["similarities"]["cells"]:
                 patch = int(cell["address"]["patch"])
-                if patch >= processor.image_seq_length:
+                # if dummy model then just use 1024 as the image_seq_length
+
+                if hasattr(processor, "image_seq_length"):
+                    image_seq_length = processor.image_seq_length
+                else:
+                    image_seq_length = 1024
+
+                if patch >= image_seq_length:
                     continue
                 query_token = int(cell["address"]["querytoken"])
                 value = cell["value"]
@@ -247,9 +255,13 @@ def gen_similarity_maps(
 
     # Collect the blended images
     start3 = time.perf_counter()
-    results = []
     for idx, img in enumerate(original_images):
-        original_size = original_sizes[idx]  # (width, height)
+        SCALING_FACTOR = 8
+        sim_map_resolution = (
+            max(32, int(original_sizes[idx][0] / SCALING_FACTOR)),
+            max(32, int(original_sizes[idx][1] / SCALING_FACTOR)),
+        )
+
         result_per_image = {}
         for token, token_idx in token_idx_map.items():
             if is_special_token(token):
@@ -263,7 +275,9 @@ def gen_similarity_maps(
 
             # Resize the similarity map to the original image size
             sim_map_img = Image.fromarray(sim_map_np)
-            sim_map_resized = sim_map_img.resize(original_size, resample=Image.BICUBIC)
+            sim_map_resized = sim_map_img.resize(
+                sim_map_resolution, resample=Image.BICUBIC
+            )
 
             # Convert the resized similarity map to a NumPy array
             sim_map_resized_np = np.array(sim_map_resized, dtype=np.float32)
@@ -284,18 +298,11 @@ def gen_similarity_maps(
             # Convert the heatmap to a PIL Image
             heatmap_uint8 = (heatmap * 255).astype(np.uint8)
             heatmap_img = Image.fromarray(heatmap_uint8)
-
-            # Ensure both images are in RGBA mode
-            original_img_rgba = img.convert("RGBA")
             heatmap_img_rgba = heatmap_img.convert("RGBA")
 
-            # Overlay the heatmap onto the original image
-            blended_img = Image.blend(
-                original_img_rgba, heatmap_img_rgba, alpha=0.4
-            )  # Adjust alpha as needed
-            # Save the blended image to a BytesIO buffer
+            # Save the image to a BytesIO buffer
             buffer = io.BytesIO()
-            blended_img.save(buffer, format="PNG")
+            heatmap_img_rgba.save(buffer, format="PNG")
             buffer.seek(0)
 
             # Encode the image to base64
@@ -304,11 +311,17 @@ def gen_similarity_maps(
             # Store the base64-encoded image
             result_per_image[token] = blended_img_base64
             yield idx, token, blended_img_base64
+    end3 = time.perf_counter()
+    print(f"Blending images took: {end3 - start3} s")
 
 
 def get_query_embeddings_and_token_map(
     processor, model, query
 ) -> Tuple[torch.Tensor, dict]:
+    if model is None:  # use static test query data (saves time when testing)
+        return testquery.q_embs, testquery.token_to_idx
+
+    start_time = time.perf_counter()
     inputs = processor.process_queries([query]).to(model.device)
     with torch.no_grad():
         embeddings_query = model(**inputs)
@@ -318,6 +331,8 @@ def get_query_embeddings_and_token_map(
     # reverse key, values in dictionary
     print(query_tokens)
     token_to_idx = {val: idx for idx, val in enumerate(query_tokens)}
+    end_time = time.perf_counter()
+    print(f"Query inference took: {end_time - start_time} s")
     return q_emb, token_to_idx
 
 
@@ -532,7 +547,7 @@ def add_sim_maps_to_result(
     sim_map_imgs_generator = gen_similarity_maps(
         model=model,
         processor=processor,
-        device=model.device,
+        device=model.device if hasattr(model, "device") else "cpu",
         vit_config=vit_config,
         query=query,
         query_embs=q_embs,
