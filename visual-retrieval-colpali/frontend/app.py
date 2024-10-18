@@ -203,7 +203,6 @@ def Search(request, search_results=[]):
             ),
             cls="grid",
         ),
-        cls="pr-3",
     )
 
 
@@ -353,7 +352,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     ),
                     cls="bg-background px-3 py-5 hidden md:block",
                 ),
-                cls="grid grid-cols-1 md:grid-cols-2 col-span-2",
+                cls="grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
             )
         )
 
@@ -367,7 +366,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult():
     return Div(
-        Div("Chat", cls="text-xl font-semibold"),
+        Div("Chat", cls="text-xl font-semibold p-3"),
         Div(
             Div(
                 Div(
@@ -395,14 +394,14 @@ def ChatResult():
                     "I can help with various tasks. Just ask!",
                     cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
                 ),
-                cls="flex flex-col gap-2 justify-end h-full text-sm",
+                cls="flex flex-col gap-2 text-sm",
             ),
             id="chat-messages",
-            cls="overflow-auto min-h-0 grid items-end pr-3",
+            cls="overflow-auto min-h-0 grid items-end px-3",
         ),
         Div(
             Input(placeholder="Type your message here..."),
-            cls="bg-muted/80 dark:bg-muted/40 p-3",
+            cls="bg-muted/80 dark:bg-muted/40 p-3 border-t",
         ),
         cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

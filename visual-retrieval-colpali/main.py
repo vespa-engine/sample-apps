@@ -121,8 +121,8 @@ def get(request):
     #     return Layout(Search(request, search_results))
     # Show the loading message if a query is provided
     return Layout(
-        Main(Search(request), data_overlayscrollbars_initialize=True),
-        Aside(ChatResult()),
+        Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
+        Aside(ChatResult(), cls="border-t border-l"),
     )  # Show SearchBox and Loading message initially
 
 
