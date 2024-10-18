@@ -203,7 +203,7 @@ def Search(request, search_results=[]):
             ),
             cls="grid",
         ),
-        cls="scroll-container",
+        cls="pr-3",
     )
 
 
@@ -367,5 +367,42 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult():
     return Div(
-        "chat result",
+        Div("Chat", cls="text-xl font-semibold"),
+        Div(
+            Div(
+                Div(
+                    "Hello! How can I assist you today?",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div(
+                    "Can you show me an example of chat layout?",
+                    cls="question-message p-2 rounded-md self-end",
+                ),
+                Div(
+                    "Sure! Here's an example with sample messages.",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div("Awesome! Thanks!", cls="question-message p-2 rounded-md self-end"),
+                Div(
+                    "You're welcome!",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div(
+                    "What else can you do?",
+                    cls="question-message p-2 rounded-md self-end",
+                ),
+                Div(
+                    "I can help with various tasks. Just ask!",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                cls="flex flex-col gap-2 justify-end h-full text-sm",
+            ),
+            id="chat-messages",
+            cls="overflow-auto min-h-0 grid items-end pr-3",
+        ),
+        Div(
+            Input(placeholder="Type your message here..."),
+            cls="bg-muted/80 dark:bg-muted/40 p-3",
+        ),
+        cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

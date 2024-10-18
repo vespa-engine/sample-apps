@@ -33,24 +33,15 @@ overlay_scrollbars = Script(
                 : 'light';
         }
 
-        function updateScrollbarTheme() {
-            const isDarkMode = getPreferredTheme() === 'dark';
-            const scrollbarTheme = isDarkMode ? 'os-theme-light' : 'os-theme-dark';
-            const mainElement = document.querySelector('main');
-
-            if (!mainElement) {
-                console.error('Main element not found!');
-                return;
-            }
-
+        function applyOverlayScrollbars(element, scrollbarTheme) {
             // Destroy existing OverlayScrollbars instance if it exists
-            const instance = OverlayScrollbars(mainElement);
+            const instance = OverlayScrollbars(element);
             if (instance) {
                 instance.destroy();
             }
 
             // Reinitialize OverlayScrollbars with the new theme
-            OverlayScrollbars(mainElement, {
+            OverlayScrollbars(element, {
                 scrollbars: {
                     theme: scrollbarTheme,
                     visibility: 'auto',
@@ -60,12 +51,28 @@ overlay_scrollbars = Script(
             });
         }
 
+        function updateScrollbarTheme() {
+            const isDarkMode = getPreferredTheme() === 'dark';
+            const scrollbarTheme = isDarkMode ? 'os-theme-light' : 'os-theme-dark';  // Light theme in dark mode, dark theme in light mode
+
+            const mainElement = document.querySelector('main');
+            const chatMessagesElement = document.querySelector('#chat-messages'); // Select the chat message container by ID
+
+            if (mainElement) {
+                applyOverlayScrollbars(mainElement, scrollbarTheme);
+            }
+
+            if (chatMessagesElement) {
+                applyOverlayScrollbars(chatMessagesElement, scrollbarTheme);
+            }
+        }
+
         // Apply the correct theme immediately when the page loads
         updateScrollbarTheme();
 
         // Observe changes in the 'dark' class on the <html> element
         const observer = new MutationObserver(updateScrollbarTheme);
-        observer.observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     })();
     """
 )

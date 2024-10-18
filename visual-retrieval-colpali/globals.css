@@ -193,6 +193,15 @@ main {
     overflow: auto;
 }
 
+aside {
+    overflow: auto;
+}
+
 .scroll-container {
     padding-right: 10px;
+}
+
+.question-message {
+    background-color: #61D790;
+    color: #2E2F27;
 }
