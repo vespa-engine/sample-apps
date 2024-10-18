@@ -1,15 +1,96 @@
-from fasthtml.components import Div, Img, Nav, Title, Body, Header, Main
-from fasthtml.xtend import A
+from fasthtml.components import Body, Div, Header, Img, Nav, Title
+from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Separator
+
+script = Script(
+    """
+    document.addEventListener("DOMContentLoaded", function () {
+          const main = document.querySelector('main');
+          const aside = document.querySelector('aside');
+          const body = document.body;
+        
+          if (main && aside && main.nextElementSibling === aside) {
+            // Main + Aside layout
+            body.classList.add('grid-cols-[minmax(0,_4fr)_minmax(0,_1fr)]');
+            aside.classList.remove('hidden');
+          } else if (main) {
+            // Only Main layout (full width)
+            body.classList.add('grid-cols-[1fr]');
+          }
+    });
+    """
+)
+
+overlay_scrollbars = Script(
+    """
+    (function () {
+        const { OverlayScrollbars } = OverlayScrollbarsGlobal;
+
+        function getPreferredTheme() {
+            return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                ? 'dark'
+                : 'light';
+        }
+
+        function applyOverlayScrollbars(element, scrollbarTheme) {
+            // Destroy existing OverlayScrollbars instance if it exists
+            const instance = OverlayScrollbars(element);
+            if (instance) {
+                instance.destroy();
+            }
+
+            // Reinitialize OverlayScrollbars with the new theme
+            OverlayScrollbars(element, {
+                scrollbars: {
+                    theme: scrollbarTheme,
+                    visibility: 'auto',
+                    autoHide: 'leave',
+                    autoHideDelay: 800
+                }
+            });
+        }
+
+        function updateScrollbarTheme() {
+            const isDarkMode = getPreferredTheme() === 'dark';
+            const scrollbarTheme = isDarkMode ? 'os-theme-light' : 'os-theme-dark';  // Light theme in dark mode, dark theme in light mode
+
+            const mainElement = document.querySelector('main');
+            const chatMessagesElement = document.querySelector('#chat-messages'); // Select the chat message container by ID
+
+            if (mainElement) {
+                applyOverlayScrollbars(mainElement, scrollbarTheme);
+            }
+
+            if (chatMessagesElement) {
+                applyOverlayScrollbars(chatMessagesElement, scrollbarTheme);
+            }
+        }
+
+        // Apply the correct theme immediately when the page loads
+        updateScrollbarTheme();
+
+        // Observe changes in the 'dark' class on the <html> element
+        const observer = new MutationObserver(updateScrollbarTheme);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    })();
+    """
+)
 
 
 def Logo():
     return Div(
-        Img(src='https://assets.vespa.ai/logos/vespa-logo-black.svg', alt='Vespa Logo', cls='h-full dark:hidden'),
-        Img(src='https://assets.vespa.ai/logos/vespa-logo-white.svg', alt='Vespa Logo Dark Mode',
-            cls='h-full hidden dark:block'),
-        cls='h-[27px]'
+        Img(
+            src="https://assets.vespa.ai/logos/vespa-logo-black.svg",
+            alt="Vespa Logo",
+            cls="h-full dark:hidden",
+        ),
+        Img(
+            src="https://assets.vespa.ai/logos/vespa-logo-white.svg",
+            alt="Vespa Logo Dark Mode",
+            cls="h-full hidden dark:block",
+        ),
+        cls="h-[27px]",
     )
 
 
@@ -38,23 +119,23 @@ def Links():
         ),
         Separator(orientation="vertical"),
         ThemeToggle(),
-        cls='flex items-center space-x-3'
+        cls="flex items-center space-x-3",
     )
 
 
 def Layout(*c, **kwargs):
     return (
-        Title('Visual Retrieval ColPali'),
+        Title("Visual Retrieval ColPali"),
         Body(
             Header(
                 A(Logo(), href="/"),
                 Links(),
-                cls='min-h-[55px] h-[55px] w-full flex items-center justify-between px-4'
+                cls="min-h-[55px] h-[55px] w-full flex items-center justify-between px-4",
             ),
-            Main(
-                *c, **kwargs,
-                cls='flex-1 h-full'
-            ),
-            cls='h-full flex flex-col'
+            *c,
+            **kwargs,
+            cls="grid grid-rows-[55px_1fr] min-h-0",
         ),
+        script,
+        overlay_scrollbars,
     )

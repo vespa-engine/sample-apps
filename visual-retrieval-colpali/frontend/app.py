@@ -193,14 +193,16 @@ def Search(request, search_results=[]):
     )
     return Div(
         Div(
-            SearchBox(query_value=query_value, ranking_value=ranking_value),
             Div(
-                LoadingMessage(),
-                id="search-results",  # This will be replaced by the search results
+                SearchBox(query_value=query_value, ranking_value=ranking_value),
+                Div(
+                    LoadingMessage(),
+                    id="search-results",  # This will be replaced by the search results
+                ),
+                cls="grid",
             ),
             cls="grid",
         ),
-        cls="grid",
     )
 
 
@@ -350,12 +352,56 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     ),
                     cls="bg-background px-3 py-5 hidden md:block",
                 ),
-                cls="grid grid-cols-1 md:grid-cols-2 col-span-2",
+                cls="grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
             )
         )
+
     return Div(
         *result_items,
         image_swapping,
         id="search-results",
         cls="grid grid-cols-2 gap-px bg-border",
+    )
+
+
+def ChatResult():
+    return Div(
+        Div("Chat", cls="text-xl font-semibold p-3"),
+        Div(
+            Div(
+                Div(
+                    "Hello! How can I assist you today?",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div(
+                    "Can you show me an example of chat layout?",
+                    cls="question-message p-2 rounded-md self-end",
+                ),
+                Div(
+                    "Sure! Here's an example with sample messages.",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div("Awesome! Thanks!", cls="question-message p-2 rounded-md self-end"),
+                Div(
+                    "You're welcome!",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                Div(
+                    "What else can you do?",
+                    cls="question-message p-2 rounded-md self-end",
+                ),
+                Div(
+                    "I can help with various tasks. Just ask!",
+                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                ),
+                cls="flex flex-col gap-2 text-sm",
+            ),
+            id="chat-messages",
+            cls="overflow-auto min-h-0 grid items-end px-3",
+        ),
+        Div(
+            Input(placeholder="Type your message here..."),
+            cls="bg-muted/80 dark:bg-muted/40 p-3 border-t",
+        ),
+        cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

@@ -1,22 +1,24 @@
 import asyncio
+import hashlib
+import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
 from fasthtml.common import *
 from shad4fast import *
 from vespa.application import Vespa
-import time
 
+from backend.cache import LRUCache
 from backend.colpali import (
-    get_result_from_query,
-    get_query_embeddings_and_token_map,
     add_sim_maps_to_result,
+    get_query_embeddings_and_token_map,
+    get_result_from_query,
     is_special_token,
 )
-from backend.vespa_app import get_vespa_app
-from backend.cache import LRUCache
 from backend.modelmanager import ModelManager
+from backend.vespa_app import get_vespa_app
 from frontend.app import (
+    ChatResult,
     Home,
     Search,
     SearchBox,
@@ -25,7 +27,6 @@ from frontend.app import (
     SimMapButtonReady,
 )
 from frontend.layout import Layout
-import hashlib
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -35,15 +36,25 @@ highlight_js = HighlightJS(
     light="github",
 )
 
+overlayscrollbars_link = Link(
+    rel="stylesheet",
+    href="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/2.10.0/styles/overlayscrollbars.min.css",
+    type="text/css",
+)
+overlayscrollbars_js = Script(
+    src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/2.10.0/browser/overlayscrollbars.browser.es5.min.js"
+)
 
 app, rt = fast_app(
-    htmlkw={"cls": "h-full"},
+    htmlkw={"cls": "grid h-full"},
     pico=False,
     hdrs=(
         ShadHead(tw_cdn=False, theme_handle=True),
         highlight_js,
         highlight_js_theme_link,
         highlight_js_theme,
+        overlayscrollbars_link,
+        overlayscrollbars_js,
     ),
 )
 vespa_app: Vespa = get_vespa_app()
@@ -72,7 +83,7 @@ def serve_static(filepath: str):
 
 @rt("/")
 def get():
-    return Layout(Home())
+    return Layout(Main(Home()))
 
 
 @rt("/search")
@@ -86,16 +97,18 @@ def get(request):
     if not query_value:
         # Show SearchBox and a message for missing query
         return Layout(
-            Div(
-                SearchBox(query_value=query_value, ranking_value=ranking_value),
+            Main(
                 Div(
-                    P(
-                        "No query provided. Please enter a query.",
-                        cls="text-center text-muted-foreground",
+                    SearchBox(query_value=query_value, ranking_value=ranking_value),
+                    Div(
+                        P(
+                            "No query provided. Please enter a query.",
+                            cls="text-center text-muted-foreground",
+                        ),
+                        cls="p-10",
                     ),
-                    cls="p-10",
-                ),
-                cls="grid",
+                    cls="grid",
+                )
             )
         )
     # Generate a unique query_id based on the query and ranking value
@@ -107,7 +120,10 @@ def get(request):
     #     search_results = get_results_children(result)
     #     return Layout(Search(request, search_results))
     # Show the loading message if a query is provided
-    return Layout(Search(request))  # Show SearchBox and Loading message initially
+    return Layout(
+        Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
+        Aside(ChatResult(), cls="border-t border-l"),
+    )  # Show SearchBox and Loading message initially
 
 
 @rt("/fetch_results")
@@ -223,7 +239,7 @@ async def get_sim_map(query_id: str, idx: int, token: str):
 
 @rt("/app")
 def get():
-    return Layout(Div(P(f"Connected to Vespa at {vespa_app.url}"), cls="p-4"))
+    return Layout(Main(Div(P(f"Connected to Vespa at {vespa_app.url}"), cls="p-4")))
 
 
 if __name__ == "__main__":
