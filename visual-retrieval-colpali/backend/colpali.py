@@ -3,7 +3,7 @@
 import torch
 from PIL import Image
 import numpy as np
-from typing import cast, Generator
+from typing import Generator
 from pathlib import Path
 import base64
 from io import BytesIO
@@ -17,12 +17,13 @@ import json
 import time
 import backend.testquery as testquery
 
-from colpali_engine.models import ColPali, ColPaliProcessor
+from colpali_engine.models import ColQwen2, ColQwen2Processor
+from colpali_engine.interpretability import (
+    normalize_similarity_map,
+    get_similarity_maps_from_embeddings,
+)
 from colpali_engine.utils.torch_utils import get_torch_device
 from einops import rearrange
-from vidore_benchmark.interpretability.torch_utils import (
-    normalize_similarity_map_per_query_token,
-)
 from vidore_benchmark.interpretability.vit_configs import VIT_CONFIG
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
@@ -31,88 +32,35 @@ matplotlib.use("Agg")
 
 MAX_QUERY_TERMS = 64
 
-COLPALI_GEMMA_MODEL_NAME = "vidore/colpaligemma-3b-pt-448-base"
+MODEL_NAME = "vidore/colqwen2-v0.1"
+N_PATCHES_PER_DIM = 14
 
 
-def load_model() -> Tuple[ColPali, ColPaliProcessor]:
-    model_name = "vidore/colpali-v1.2"
-
+def load_model() -> Tuple[ColQwen2, ColQwen2Processor]:
     device = get_torch_device("auto")
     print(f"Using device: {device}")
 
     # Load the model
-    model = cast(
-        ColPali,
-        ColPali.from_pretrained(
-            model_name,
-            torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-            device_map=device,
-        ),
+    model = ColQwen2.from_pretrained(
+        MODEL_NAME,
+        torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+        device_map=device,
     ).eval()
-
     # Load the processor
-    processor = cast(ColPaliProcessor, ColPaliProcessor.from_pretrained(model_name))
+    processor = ColQwen2Processor.from_pretrained(MODEL_NAME)
     return model, processor
 
 
 def load_vit_config(model):
     # Load the ViT config
     print(f"VIT config: {VIT_CONFIG}")
-    vit_config = VIT_CONFIG[COLPALI_GEMMA_MODEL_NAME]
-    return vit_config
-
-
-def save_figure(fig, filename: str = "similarity_map.png"):
-    try:
-        OUTPUT_DIR = Path(__file__).parent.parent / "output" / "sim_maps"
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        fig.savefig(
-            OUTPUT_DIR / filename,
-            bbox_inches="tight",
-            pad_inches=0,
-        )
-    except Exception as e:
-        print(f"Failed to save figure: {e}")
-
-
-def annotate_plot(ax, query, selected_token):
-    # Add the query text as a title over the image with opacity
-    ax.text(
-        0.5,
-        0.95,  # Adjust the position to be on the image (y=0.1 is 10% from the bottom)
-        query,
-        fontsize=18,
-        color="white",
-        ha="center",
-        va="center",
-        alpha=0.8,  # Set opacity (1 is fully opaque, 0 is fully transparent)
-        bbox=dict(
-            boxstyle="round,pad=0.5", fc="black", ec="none", lw=0, alpha=0.5
-        ),  # Add a semi-transparent background
-        transform=ax.transAxes,  # Ensure the coordinates are relative to the axes
-    )
-
-    # Add annotation with the selected token over the image with opacity
-    ax.text(
-        0.5,
-        0.05,  # Position towards the top of the image
-        f"Selected token: `{selected_token}`",
-        fontsize=18,
-        color="white",
-        ha="center",
-        va="center",
-        alpha=0.8,  # Set opacity for the text
-        bbox=dict(
-            boxstyle="round,pad=0.3", fc="black", ec="none", lw=0, alpha=0.5
-        ),  # Semi-transparent background
-        transform=ax.transAxes,  # Keep the coordinates relative to the axes
-    )
-    return ax
+    vit_config = None  # VIT_CONFIG[ColQwen2_GEMMA_MODEL_NAME]
+    return None
 
 
 def gen_similarity_maps(
-    model: ColPali,
-    processor: ColPaliProcessor,
+    model: ColQwen2,
+    processor: ColQwen2Processor,
     device,
     vit_config,
     query: str,
@@ -125,8 +73,8 @@ def gen_similarity_maps(
     Generate similarity maps for the given images and query, and return base64-encoded blended images.
 
     Args:
-        model (ColPali): The model used for generating embeddings.
-        processor (ColPaliProcessor): Processor for images and text.
+        model (ColQwen2): The model used for generating embeddings.
+        processor (ColQwen2Processor): Processor for images and text.
         device: Device to run the computations on.
         vit_config: Configuration for the Vision Transformer.
         query (str): The query string.
@@ -139,9 +87,6 @@ def gen_similarity_maps(
         Tuple[int, str, str]: A tuple containing the image index, the selected token, and the base64-encoded image.
 
     """
-
-    start = time.perf_counter()
-
     # Prepare the colormap once to avoid recomputation
     colormap = cm.get_cmap("viridis")
 
@@ -165,9 +110,20 @@ def gen_similarity_maps(
         original_images.append(img_pil.copy())
         original_sizes.append(img_pil.size)  # (width, height)
         processed_images.append(img_pil)
-
+    n_patches = processor.get_n_patches(
+        original_sizes[0], model.patch_size, model.spatial_merge_size
+    )
+    n_x, n_y = n_patches
+    max_patch = n_x * n_y
+    batch_images = processor.process_images(original_images).to(device)
+    image_mask = processor.get_image_mask(batch_images)
+    image_mask_npy = image_mask.cpu().numpy().squeeze()
+    # Mask is false for idx 0:4 and -7: - In total 11 patches are masked
+    # 746-11 = 735 (0-indexed) -> 23x32 = 736 patches
+    print(f" N patches : {n_patches}")
+    print(f" Image mask: {image_mask_npy.shape}")
     # If similarity maps are provided, use them instead of computing them
-    if vespa_sim_maps:
+    if True:
         print("Using provided similarity maps")
         # A sim map looks like this:
         # "similarities": [
@@ -184,35 +140,28 @@ def gen_similarity_maps(
             (
                 len(vespa_sim_maps),
                 query_embs.size(dim=1),
-                vit_config.n_patch_per_dim,
-                vit_config.n_patch_per_dim,
+                len(image_mask_npy[0]),
             )
         )
+        # N patches : (23, 32)
+        # Using provided similarity maps
+        # Max qt: 26, max patch: 746
         for idx, vespa_sim_map in enumerate(vespa_sim_maps):
             for cell in vespa_sim_map["similarities"]["cells"]:
                 patch = int(cell["address"]["patch"])
-                # if dummy model then just use 1024 as the image_seq_length
-
-                if hasattr(processor, "image_seq_length"):
-                    image_seq_length = processor.image_seq_length
-                else:
-                    image_seq_length = 1024
-
-                if patch >= image_seq_length:
-                    continue
                 query_token = int(cell["address"]["querytoken"])
                 value = cell["value"]
-                vespa_sim_map_tensor[
-                    idx,
-                    int(query_token),
-                    int(patch) // vit_config.n_patch_per_dim,
-                    int(patch) % vit_config.n_patch_per_dim,
-                ] = value
-
-        # Normalize the similarity map per query token
-        similarity_map_normalized = normalize_similarity_map_per_query_token(
-            vespa_sim_map_tensor
+                vespa_sim_map_tensor[idx, query_token, patch] = value
+        # apply image mask
+        vespa_sim_map_tensor = vespa_sim_map_tensor[:, :, image_mask_npy[0]]
+        vespa_sim_map_tensor = rearrange(
+            vespa_sim_map_tensor, "i qt (x y) -> i qt x y", x=n_x, y=n_y
         )
+        for idx in range(len(vespa_sim_map_tensor)):
+            vespa_sim_map_tensor[idx] = normalize_similarity_map(
+                vespa_sim_map_tensor[idx]
+            )
+        similarity_map_normalized = vespa_sim_map_tensor  # normalize_similarity_map_per_query_token(vespa_sim_map_tensor)
     else:
         # Preprocess inputs
         print("Computing similarity maps")
@@ -222,36 +171,25 @@ def gen_similarity_maps(
         # Forward passes
         with torch.no_grad():
             output_image = model.forward(**input_image_processed)
-
-        # Remove the special tokens from the output
-        output_image = output_image[:, : processor.image_seq_length, :]
-
-        # Rearrange the output image tensor to represent the 2D grid of patches
-        output_image = rearrange(
-            output_image,
-            "b (h w) c -> b h w c",
-            h=vit_config.n_patch_per_dim,
-            w=vit_config.n_patch_per_dim,
+        # query_embs are (n_tokens, hidden_size)
+        # need to repeat for each image (len(images), n_tokens, hidden_size)
+        q_embs = query_embs.unsqueeze(0).repeat(len(images), 1, 1).to(device)
+        # Print shape of
+        print(f"Query embeddings shape: {q_embs.shape}")
+        print(f"Output image shape: {output_image.shape}")
+        print(f"N patches: {n_patches}")
+        batched_similarity_maps = get_similarity_maps_from_embeddings(
+            image_embeddings=output_image,
+            query_embeddings=q_embs,
+            n_patches=n_patches,
+            image_mask=image_mask,
         )
-
-        # Ensure query_embs has batch dimension
-        if query_embs.dim() == 2:
-            query_embs = query_embs.unsqueeze(0).to(device)
-        else:
-            query_embs = query_embs.to(device)
-
-        # Compute the similarity map
-        similarity_map = torch.einsum(
-            "bnk,bhwk->bnhw", query_embs, output_image
-        )  # Shape: (batch_size, query_tokens, h, w)
-
-        end2 = time.perf_counter()
-        print(f"Similarity map computation took: {end2 - start2} s")
-
-        # Normalize the similarity map per query token
-        similarity_map_normalized = normalize_similarity_map_per_query_token(
-            similarity_map
-        )
+        # normalize similarity maps
+        similarity_map_normalized = []
+        for idx in range(len(batched_similarity_maps)):
+            similarity_map_normalized.append(
+                normalize_similarity_map(batched_similarity_maps[idx])
+            )
 
     # Collect the blended images
     start3 = time.perf_counter()
@@ -266,10 +204,17 @@ def gen_similarity_maps(
         for token, token_idx in token_idx_map.items():
             if is_special_token(token):
                 continue
-
+            print(f"Creating similarity map for token: {token}")
+            print(f"Token index: {token_idx}")
             # Get the similarity map for this image and the selected token
-            sim_map = similarity_map_normalized[idx, token_idx, :, :]  # Shape: (h, w)
-
+            if isinstance(similarity_map_normalized, list):
+                sim_map = similarity_map_normalized[idx][
+                    token_idx, :, :
+                ]  # Shape: (h, w)
+            elif isinstance(similarity_map_normalized, torch.Tensor):
+                sim_map = similarity_map_normalized[idx, token_idx, :, :]
+            # Reshape the similarity map to match the PIL shape convention
+            sim_map = rearrange(sim_map, "h w -> w h")
             # Move the similarity map to CPU, convert to float (as BFloat16 not supported by Numpy) and convert to NumPy array
             sim_map_np = sim_map.cpu().float().numpy()
 
@@ -313,6 +258,11 @@ def gen_similarity_maps(
             yield idx, token, blended_img_base64
     end3 = time.perf_counter()
     print(f"Blending images took: {end3 - start3} s")
+
+
+def replace_tokens(tokens: str) -> str:
+    """Replace Ġ with _"""
+    return tokens.replace("Ġ", "_")
 
 
 def get_query_embeddings_and_token_map(
@@ -495,8 +445,8 @@ def is_special_token(token: str) -> bool:
 
 async def get_result_from_query(
     app: Vespa,
-    processor: ColPaliProcessor,
-    model: ColPali,
+    processor: ColQwen2Processor,
+    model: ColQwen2,
     query: str,
     q_embs: torch.Tensor,
     token_to_idx: Dict[str, int],
@@ -526,8 +476,8 @@ async def get_result_from_query(
 
 def add_sim_maps_to_result(
     result: Dict[str, Any],
-    model: ColPali,
-    processor: ColPaliProcessor,
+    model: ColQwen2,
+    processor: ColQwen2Processor,
     query: str,
     q_embs: Any,
     token_to_idx: Dict[str, int],
@@ -595,5 +545,5 @@ if __name__ == "__main__":
     for fig_token in figs_images:
         for token, (fig, ax) in fig_token.items():
             print(f"Token: {token}")
-            save_figure(fig, f"similarity_map_{token}.png")
+            # save_figure(fig, f"similarity_map_{token}.png")
     print("Done")
