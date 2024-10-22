@@ -27,6 +27,10 @@ from frontend.app import (
     SimMapButtonReady,
 )
 from frontend.layout import Layout
+import google.generativeai as genai
+from PIL import Image
+import io
+import base64
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -44,6 +48,7 @@ overlayscrollbars_link = Link(
 overlayscrollbars_js = Script(
     src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/2.10.0/browser/overlayscrollbars.browser.es5.min.js"
 )
+sselink = Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js")
 
 app, rt = fast_app(
     htmlkw={"cls": "grid h-full"},
@@ -55,6 +60,7 @@ app, rt = fast_app(
         highlight_js_theme,
         overlayscrollbars_link,
         overlayscrollbars_js,
+        sselink,
     ),
 )
 vespa_app: Vespa = get_vespa_app()
@@ -64,6 +70,16 @@ task_cache = LRUCache(
     max_size=1000
 )  # Map from query_id to boolean value - False if not all results are ready.
 thread_pool = ThreadPoolExecutor()
+# Gemini config
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
+If the user query is not an obvious question, reply with 'No question detected.'. Your response should be HTML formatted.
+This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
+"""
+gemini_model = genai.GenerativeModel(
+    "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
+)
 
 
 @app.on_event("startup")
@@ -122,7 +138,9 @@ def get(request):
     # Show the loading message if a query is provided
     return Layout(
         Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
-        Aside(ChatResult(), cls="border-t border-l"),
+        Aside(
+            ChatResult(query_id=query_id, query=query_value), cls="border-t border-l"
+        ),
     )  # Show SearchBox and Loading message initially
 
 
@@ -235,6 +253,49 @@ async def get_sim_map(query_id: str, idx: int, token: str):
         return SimMapButtonReady(
             query_id=query_id, idx=idx, token=token, img_src=sim_map_img_src
         )
+
+
+async def message_generator(query_id: str, query: str):
+    result = None
+    while result is None:
+        result = result_cache.get(query_id)
+        await asyncio.sleep(0.5)
+    search_results = get_results_children(result)
+    images = [result["fields"]["full_image"] for result in search_results]
+    # from b64 to PIL image
+    images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
+
+    # If newlines are present in the response, the connection will be closed.
+    def replace_newline_with_br(text):
+        return text.replace("\n", "<br>")
+
+    response_text = ""
+    async for chunk in await gemini_model.generate_content_async(
+        images + ["\n\n Query: ", query], stream=True
+    ):
+        if chunk.text:
+            response_text += chunk.text
+            response_text = replace_newline_with_br(response_text)
+            yield f"event: message\ndata: {response_text}\n\n"
+            await asyncio.sleep(0.5)
+    yield "event: close\ndata: \n\n"
+
+
+@app.get("/get-message")
+async def get_message(query_id: str, query: str):
+    return StreamingResponse(
+        message_generator(query_id=query_id, query=query),
+        media_type="text/event-stream",
+    )
+
+
+@app.post("/gemini-inference")
+async def gemini_inference(query_id: str):
+    result = result_cache.get(query_id)
+    if result is None:
+        return {"error": "Results not ready"}
+    search_results = get_results_children(result)
+    return search_results
 
 
 @rt("/app")
