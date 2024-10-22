@@ -8,7 +8,7 @@ license = { text = "Apache-2.0" }
 dependencies = [
     "python-fasthtml",
     "huggingface-hub",
-    "pyvespa@git+https://github.com/vespa-engine/pyvespa",
+    "pyvespa>=0.50.0",
     "vespacli",
     "torch",
     "vidore-benchmark[interpretability]>=4.0.0,<5.0.0",
@@ -18,6 +18,7 @@ dependencies = [
     "setuptools",
     "python-dotenv",
     "shad4fast>=1.2.1",
+    "google-generativeai>=0.7.2"
 ]
 
 # dev-dependencies
