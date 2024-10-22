@@ -9,11 +9,11 @@
     <!-- Setup the client to OpenAI -->
     <component id="openai" class="ai.vespa.llm.clients.OpenAI" />
 
-    <!-- Setup a local inference on a Phi 3.5 mini model -->
+    <!-- Setup a local inference on a small Llama 3.2 text model -->
     <!-- Comment out this component to avoid downloading the model file during startup -->
     <component id="phi" class="ai.vespa.llm.clients.LocalLLM">
       <config name="ai.vespa.llm.clients.llm-local-client">
-        <model url="https://data.vespa-cloud.com/gguf_models/Phi-3.5-mini-instruct-Q4_K_M.gguf" />
+        <model url="https://data.vespa-cloud.com/gguf_models/llama-3.2-1b-instruct-q8_0.gguf" />
         <contextSize>4096</contextSize>
         <parallelRequests>1</parallelRequests>
       </config>
