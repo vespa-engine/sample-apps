@@ -681,6 +681,21 @@ colpali_schema = Schema(
                 index="enable-bm25",
                 stemming="best",
             ),
+            # Add synthetic fields for the questions and queries
+            Field(
+                name="questions_exact",
+                type="array<string>",
+                indexing=["input questions", "index"],
+                match=["word"],
+                is_document_field=False,
+            ),
+            Field(
+                name="queries_exact",
+                type="array<string>",
+                indexing=["input queries", "index"],
+                match=["word"],
+                is_document_field=False,
+            ),
         ]
     ),
     fieldsets=[
