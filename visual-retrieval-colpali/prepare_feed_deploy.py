@@ -79,7 +79,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Avoid warning from huggingface tokenizers
-os.environ["TOKENIZERS_PARALLELISM"] = False
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # %% [markdown]
 # ### Create a free trial in Vespa Cloud
