@@ -2,7 +2,7 @@
 # # Visual PDF Retrieval - demo application
 #
 # In this notebook, we will prepare the Vespa backend application for our visual retrieval demo.
-# We will use ColQwen2 as the model (based on ColPali architecture) to extract patch vectors from images of pdf pages.
+# We will use ColPali as the model to extract patch vectors from images of pdf pages.
 # At query time, we use MaxSim to retrieve and/or (based on the configuration) rank the page results.
 #
 # To see the application in action, visit TODO:
@@ -63,8 +63,8 @@ from tqdm import tqdm
 from pdf2image import convert_from_path
 from pypdf import PdfReader
 
-# ColQwen2 model and processor
-from colpali_engine.models import ColQwen2, ColQwen2Processor
+# ColPali model and processor
+from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
 from vidore_benchmark.utils.image_utils import scale_image, get_base64_image
 
@@ -79,7 +79,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Avoid warning from huggingface tokenizers
-os.environ["TOKENIZERS_PARALLELISM"] = False
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # %% [markdown]
 # ### Create a free trial in Vespa Cloud
@@ -132,7 +132,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or input(
 )
 
 # %%
-MODEL_NAME = "vidore/colqwen2-v0.1"
+MODEL_NAME = "vidore/colpali-v1.2"
 
 # Configure Google Generative AI
 genai.configure(api_key=GEMINI_API_KEY)
@@ -141,14 +141,14 @@ genai.configure(api_key=GEMINI_API_KEY)
 device = get_torch_device("auto")
 print(f"Using device: {device}")
 
-# Load the ColQwen2 model and processor
-model = ColQwen2.from_pretrained(
+# Load the ColPali model and processor
+model = ColPali.from_pretrained(
     MODEL_NAME,
     torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
     device_map=device,
 ).eval()
 
-processor = ColQwen2Processor.from_pretrained(MODEL_NAME)
+processor = ColPaliProcessor.from_pretrained(MODEL_NAME)
 
 # %% [markdown]
 # ## 1. Download PDFs
@@ -491,12 +491,7 @@ pdf_pages[46]["queries"]
 # %% [markdown]
 # ## 4. Generate embeddings
 #
-# Now that we have the queries, we can use the ColQwen2 model to generate embeddings for each page image.
-# One difference from the ColPali model is that the ColQwen2 model takes dynamic image resolutions in input and does not resize them, changing their aspect ratio.
-#
-# From [https://huggingface.co/vidore/colqwen2-v0.1](https://huggingface.co/vidore/colqwen2-v0.1)
-#
-# > This model takes dynamic image resolutions in input and does not resize them, changing their aspect ratio as in ColPali. Maximal resolution is set so that 768 image patches are created at most. Experiments show clear improvements with larger amounts of image patches, at the cost of memory requirements.
+# Now that we have the queries, we can use the ColPali model to generate embeddings for each page image.
 #
 
 
