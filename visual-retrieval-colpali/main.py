@@ -289,15 +289,6 @@ async def get_message(query_id: str, query: str):
     )
 
 
-@app.post("/gemini-inference")
-async def gemini_inference(query_id: str):
-    result = result_cache.get(query_id)
-    if result is None:
-        return {"error": "Results not ready"}
-    search_results = get_results_children(result)
-    return search_results
-
-
 @rt("/app")
 def get():
     return Layout(Main(Div(P(f"Connected to Vespa at {vespa_app.url}"), cls="p-4")))
