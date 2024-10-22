@@ -27,13 +27,32 @@ preload_from_hub:
 
 # Visual Retrieval ColPali
 
-# Developing
+# Prepare data and Vespa application
 
 First, install `uv`:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
+
+Then, run:
+
+```bash
+uv sync --extra dev --extra feed
+```
+
+Convert the `prepare_feed_deploy.py` to notebook to:
+
+```bash
+jupytext --to notebook prepare_feed_deploy.py
+```
+
+And launch a Jupyter instance, see https://docs.astral.sh/uv/guides/integration/jupyter/ for recommended approach.
+
+Open and follow the `prepare_feed_deploy.ipynb` notebook to prepare the data and deploy the Vespa application.
+
+# Developing on the web app
+
 
 Then, in this directory, run:
 

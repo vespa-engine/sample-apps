@@ -28,3 +28,11 @@ dev = [
     "python-dotenv",
     "huggingface_hub[cli]"
 ]
+feed = [
+    "ipykernel",
+    "jupytext",
+    "pydantic",
+    "beautifulsoup4",
+    "pdf2image",
+    "google-generativeai"
+]
