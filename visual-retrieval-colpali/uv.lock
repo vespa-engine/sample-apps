@@ -350,7 +350,7 @@ wheels = [
 
 [[package]]
 name = "colpali-engine"
-version = "0.3.1"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gputil" },
@@ -361,9 +361,9 @@ dependencies = [
     { name = "torch" },
     { name = "transformers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d4/ba/3250821d21e1b018f4bfe70b5d65e3a1da76d573e43da696aad296066e7b/colpali_engine-0.3.1.tar.gz", hash = "sha256:d8460c1afa4132a9369e0ee51b27b81b3a52caf8fad8980c0225250dadbb0def", size = 117483 }
+sdist = { url = "https://files.pythonhosted.org/packages/c2/dd/9da37b97e1f3517214aff881c20664626d8cd89f70d7c677b63fcf66d51e/colpali_engine-0.3.2.tar.gz", hash = "sha256:639d3293dae8d478ffc1e091b3dbd7365c2284bc0aa59467ddfde7afc58d9c91", size = 123582 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3d/e0/5116dc298ea7776bc5819f6cac0d4f66aa9c1a4588753cc511c956e98731/colpali_engine-0.3.1-py3-none-any.whl", hash = "sha256:c11f8537236dc8b113842785147b0be5f5646a2683a0f08980ffdbfeed690e8b", size = 32167 },
+    { url = "https://files.pythonhosted.org/packages/18/9f/6aeb31aef8aad06b869461b8d7135296fcc25cfce9800bdb51e8998ec5ba/colpali_engine-0.3.2-py3-none-any.whl", hash = "sha256:06a1916200033edb1da607db31585ac3a39d594d8644d96e46de6eb71356ff1b", size = 37692 },
 ]
 
 [[package]]
@@ -3475,7 +3475,7 @@ feed = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", marker = "extra == 'feed'" },
-    { name = "colpali-engine" },
+    { name = "colpali-engine", specifier = ">=0.3.2,<0.4.0" },
     { name = "einops" },
     { name = "google-generativeai", marker = "extra == 'feed'" },
     { name = "huggingface-hub" },

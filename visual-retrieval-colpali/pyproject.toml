@@ -12,7 +12,7 @@ dependencies = [
     "vespacli",
     "torch",
     "vidore-benchmark[interpretability]>=4.0.0,<5.0.0",
-    "colpali-engine",
+    "colpali-engine>=0.3.2,<0.4.0",
     "einops",
     "pypdf",
     "setuptools",
