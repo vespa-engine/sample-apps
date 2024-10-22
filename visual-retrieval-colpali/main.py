@@ -14,6 +14,7 @@ from backend.colpali import (
     get_query_embeddings_and_token_map,
     get_result_from_query,
     is_special_token,
+    get_full_image_from_vespa,
 )
 from backend.modelmanager import ModelManager
 from backend.vespa_app import get_vespa_app
@@ -249,10 +250,28 @@ async def get_sim_map(query_id: str, idx: int, token: str):
         sim_map_b64 = search_results[idx]["fields"].get(sim_map_key, None)
         if sim_map_b64 is None:
             return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
-        sim_map_img_src = f"data:image/jpeg;base64,{sim_map_b64}"
+        sim_map_img_src = f"data:image/png;base64,{sim_map_b64}"
         return SimMapButtonReady(
             query_id=query_id, idx=idx, token=token, img_src=sim_map_img_src
         )
+
+
+@app.get("/full_image")
+async def full_image(id: str):
+    """
+    Endpoint to get the full quality image for a given result id.
+    """
+    image_data = await get_full_image_from_vespa(vespa_app, id)
+
+    # Decode the base64 image data
+    # image_data = base64.b64decode(image_data)
+    image_data = "data:image/png;base64," + image_data
+
+    return Img(
+        src=image_data,
+        alt="something",
+        cls="result-image w-full h-full object-contain",
+    )
 
 
 async def message_generator(query_id: str, query: str):
@@ -261,7 +280,7 @@ async def message_generator(query_id: str, query: str):
         result = result_cache.get(query_id)
         await asyncio.sleep(0.5)
     search_results = get_results_children(result)
-    images = [result["fields"]["full_image"] for result in search_results]
+    images = [result["fields"]["blur_image"] for result in search_results]
     # from b64 to PIL image
     images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
 

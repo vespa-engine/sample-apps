@@ -252,7 +252,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
     result_items = []
     for idx, result in enumerate(results):
         fields = result["fields"]  # Extract the 'fields' part of each result
-        full_image_base64 = f"data:image/jpeg;base64,{fields['full_image']}"
+        blur_image_base64 = f"data:image/jpeg;base64,{fields['blur_image']}"
 
         # Filter sim_map fields that are words with 4 or more characters
         sim_map_fields = {
@@ -288,7 +288,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             "Reset",
             variant="outline",
             size="sm",
-            data_image_src=full_image_base64,
+            data_image_src=blur_image_base64,
             cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
 
@@ -314,7 +314,10 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     Div(
                         Div(
                             Img(
-                                src=full_image_base64,
+                                src=blur_image_base64,
+                                hx_get=f"/full_image?id={fields['id']}",
+                                hx_trigger="load",
+                                hx_swap="outerHTML",
                                 alt=fields["title"],
                                 cls="result-image w-full h-full object-contain",
                             ),
