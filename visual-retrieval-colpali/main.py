@@ -265,7 +265,7 @@ async def full_image(id: str):
 
     # Decode the base64 image data
     # image_data = base64.b64decode(image_data)
-    image_data = "data:image/png;base64," + image_data
+    image_data = "data:image/jpeg;base64," + image_data
 
     return Img(
         src=image_data,
