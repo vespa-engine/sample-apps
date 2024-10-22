@@ -20,7 +20,6 @@ import backend.testquery as testquery
 from colpali_engine.models import ColQwen2, ColQwen2Processor
 from colpali_engine.interpretability import (
     normalize_similarity_map,
-    get_similarity_maps_from_embeddings,
 )
 from colpali_engine.utils.torch_utils import get_torch_device
 from einops import rearrange
@@ -123,45 +122,70 @@ def gen_similarity_maps(
     print(f" N patches : {n_patches}")
     print(f" Image mask: {image_mask_npy.shape}")
     # If similarity maps are provided, use them instead of computing them
-    if True:
+    if False:
         print("Using provided similarity maps")
-        # A sim map looks like this:
-        # "similarities": [
-        #      {
-        #        "address": {
-        #          "patch": "0",
-        #          "querytoken": "0"
-        #        },
-        #        "value": 1.2599412202835083
-        #      },
-        # ... and so on.
-        # Now turn these into a tensor of same shape as previous similarity map
-        vespa_sim_map_tensor = torch.zeros(
-            (
-                len(vespa_sim_maps),
-                query_embs.size(dim=1),
-                len(image_mask_npy[0]),
-            )
-        )
-        # N patches : (23, 32)
-        # Using provided similarity maps
-        # Max qt: 26, max patch: 746
+        similarity_map_normalized = []
         for idx, vespa_sim_map in enumerate(vespa_sim_maps):
+            print(f"Processing Vespa similarity map for image {idx}")
+
+            # Compute n_patches per image
+            n_patches = processor.get_n_patches(
+                original_sizes[idx], model.patch_size, model.spatial_merge_size
+            )
+            n_x, n_y = n_patches
+            num_patches = n_x * n_y
+            print(f"Number of patches: n_x={n_x}, n_y={n_y}, total={num_patches}")
+
+            # Initialize tensor for this image
+            vespa_sim_map_tensor = torch.zeros(
+                (
+                    query_embs.size(dim=1),
+                    image_mask_npy[idx].shape[0],
+                )
+            )
+
+            # Fill in the tensor with Vespa similarity map data
             for cell in vespa_sim_map["similarities"]["cells"]:
                 patch = int(cell["address"]["patch"])
                 query_token = int(cell["address"]["querytoken"])
                 value = cell["value"]
-                vespa_sim_map_tensor[idx, query_token, patch] = value
-        # apply image mask
-        vespa_sim_map_tensor = vespa_sim_map_tensor[:, :, image_mask_npy[0]]
-        vespa_sim_map_tensor = rearrange(
-            vespa_sim_map_tensor, "i qt (x y) -> i qt x y", x=n_x, y=n_y
-        )
-        for idx in range(len(vespa_sim_map_tensor)):
-            vespa_sim_map_tensor[idx] = normalize_similarity_map(
-                vespa_sim_map_tensor[idx]
+                vespa_sim_map_tensor[query_token, patch] = value
+
+            print(
+                f"Vespa similarity map tensor shape before masking: {vespa_sim_map_tensor.shape}"
             )
-        similarity_map_normalized = vespa_sim_map_tensor  # normalize_similarity_map_per_query_token(vespa_sim_map_tensor)
+
+            # Get image mask for this image
+            image_mask_npy_image = image_mask_npy[idx]
+            print(f"Image mask shape: {image_mask_npy_image.shape}")
+            print(f"Sum of image mask: {image_mask_npy_image.sum()}")
+
+            # Apply image mask
+            vespa_sim_map_tensor = vespa_sim_map_tensor[:, image_mask_npy_image]
+            print(
+                f"Vespa similarity map tensor shape after masking: {vespa_sim_map_tensor.shape}"
+            )
+
+            # Verify dimensions
+            assert (
+                vespa_sim_map_tensor.shape[1] == image_mask_npy_image.sum()
+            ), f"Mismatch in masked patches for image {idx}"
+
+            # Rearrange tensor to match (query_tokens, n_x, n_y)
+            vespa_sim_map_tensor = rearrange(
+                vespa_sim_map_tensor, "qt (x y) -> qt x y", x=n_x, y=n_y
+            )
+            print(
+                f"Vespa similarity map tensor shape after rearrange: {vespa_sim_map_tensor.shape}"
+            )
+
+            # Normalize the similarity map
+            vespa_sim_map_tensor = normalize_similarity_map(vespa_sim_map_tensor)
+            print(
+                f"Vespa similarity map tensor shape after normalization: {vespa_sim_map_tensor.shape}"
+            )
+
+            similarity_map_normalized.append(vespa_sim_map_tensor)
     else:
         # Preprocess inputs
         print("Computing similarity maps")
@@ -178,19 +202,32 @@ def gen_similarity_maps(
         print(f"Query embeddings shape: {q_embs.shape}")
         print(f"Output image shape: {output_image.shape}")
         print(f"N patches: {n_patches}")
-        batched_similarity_maps = get_similarity_maps_from_embeddings(
-            image_embeddings=output_image,
-            query_embeddings=q_embs,
-            n_patches=n_patches,
-            image_mask=image_mask,
-        )
-        # normalize similarity maps
-        similarity_map_normalized = []
-        for idx in range(len(batched_similarity_maps)):
-            similarity_map_normalized.append(
-                normalize_similarity_map(batched_similarity_maps[idx])
-            )
 
+        n_patches = [n_patches] * output_image.size(0)
+
+        similarity_map_normalized: List[torch.Tensor] = []
+
+        for idx in range(output_image.size(0)):
+            # Sanity check
+            if image_mask[idx].sum() != n_patches[idx][0] * n_patches[idx][1]:
+                raise ValueError(
+                    f"The number of patches ({n_patches[idx][0]} x {n_patches[idx][1]} = "
+                    f"{n_patches[idx][0] * n_patches[idx][1]}) "
+                    f"does not match the number of non-padded image tokens ({image_mask[idx].sum()})."
+                )
+
+            # Rearrange the output image tensor to explicitly represent the 2D grid of patches
+            image_embedding_grid = rearrange(
+                output_image[idx][image_mask[idx]],  # (n_patches_x * n_patches_y, dim)
+                "(h w) c -> w h c",
+                w=n_patches[idx][0],
+                h=n_patches[idx][1],
+            )  # (n_patches_x, n_patches_y, dim)
+
+            similarity_map = torch.einsum(
+                "nk,ijk->nij", q_embs[idx], image_embedding_grid
+            )  # (batch_size, query_tokens, n_patches_x, n_patches_y)
+            similarity_map_normalized.append(normalize_similarity_map(similarity_map))
     # Collect the blended images
     start3 = time.perf_counter()
     for idx, img in enumerate(original_images):
@@ -207,12 +244,8 @@ def gen_similarity_maps(
             print(f"Creating similarity map for token: {token}")
             print(f"Token index: {token_idx}")
             # Get the similarity map for this image and the selected token
-            if isinstance(similarity_map_normalized, list):
-                sim_map = similarity_map_normalized[idx][
-                    token_idx, :, :
-                ]  # Shape: (h, w)
-            elif isinstance(similarity_map_normalized, torch.Tensor):
-                sim_map = similarity_map_normalized[idx, token_idx, :, :]
+            sim_map = similarity_map_normalized[idx][token_idx, :, :]  # Shape: (h, w)
+
             # Reshape the similarity map to match the PIL shape convention
             sim_map = rearrange(sim_map, "h w -> w h")
             # Move the similarity map to CPU, convert to float (as BFloat16 not supported by Numpy) and convert to NumPy array
