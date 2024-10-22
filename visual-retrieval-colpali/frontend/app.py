@@ -206,10 +206,10 @@ def Search(request, search_results=[]):
     )
 
 
-def LoadingMessage():
+def LoadingMessage(display_text="Retrieving search results"):
     return Div(
         Lucide(icon="loader-circle", cls="size-5 mr-1.5 animate-spin"),
-        Span("Retrieving search results", cls="text-base text-center"),
+        Span(display_text, cls="text-base text-center"),
         cls="p-10 text-muted-foreground flex items-center justify-center",
         id="loading-indicator",
     )
@@ -364,44 +364,23 @@ def SearchResult(results: list, query_id: Optional[str] = None):
     )
 
 
-def ChatResult():
+def ChatResult(query_id: str, query: str):
     return Div(
         Div("Chat", cls="text-xl font-semibold p-3"),
         Div(
             Div(
                 Div(
-                    "Hello! How can I assist you today?",
+                    LoadingMessage(display_text="Waiting for response..."),
                     cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                    hx_ext="sse",
+                    sse_connect=f"/get-message?query_id={query_id}&query={quote_plus(query)}",
+                    sse_swap="message",
+                    sse_close="close",
+                    hx_swap="innerHTML",
                 ),
-                Div(
-                    "Can you show me an example of chat layout?",
-                    cls="question-message p-2 rounded-md self-end",
-                ),
-                Div(
-                    "Sure! Here's an example with sample messages.",
-                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
-                ),
-                Div("Awesome! Thanks!", cls="question-message p-2 rounded-md self-end"),
-                Div(
-                    "You're welcome!",
-                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
-                ),
-                Div(
-                    "What else can you do?",
-                    cls="question-message p-2 rounded-md self-end",
-                ),
-                Div(
-                    "I can help with various tasks. Just ask!",
-                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
-                ),
-                cls="flex flex-col gap-2 text-sm",
             ),
             id="chat-messages",
             cls="overflow-auto min-h-0 grid items-end px-3",
-        ),
-        Div(
-            Input(placeholder="Type your message here..."),
-            cls="bg-muted/80 dark:bg-muted/40 p-3 border-t",
         ),
         cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )
