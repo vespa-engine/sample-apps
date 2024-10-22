@@ -479,9 +479,9 @@ pdf_pages[46]["queries"]
 
 # %%
 # write title, url, page_no, text, queries, not image to JSON
-# with open("output/pdf_pages.json", "w") as f:
-#     to_write = [{k: v for k, v in pdf.items() if k != "image"} for pdf in pdf_pages]
-#     json.dump(to_write, f, indent=2)
+with open("output/pdf_pages.json", "w") as f:
+    to_write = [{k: v for k, v in pdf.items() if k != "image"} for pdf in pdf_pages]
+    json.dump(to_write, f, indent=2)
 
 # with open("pdfs/pdf_pages.json", "r") as f:
 #     saved_pdf_pages = json.load(f)
@@ -570,8 +570,8 @@ for pdf, embedding in zip(pdf_pages, embeddings):
     text = pdf.get("text", "")
     page_no = pdf["page_no"]
     query_dict = pdf["queries"]
-    questions = [v for k, v in query_dict.items() if "question" in k]
-    queries = [v for k, v in query_dict.items() if "query" in k]
+    questions = [v for k, v in query_dict.items() if "question" in k and v]
+    queries = [v for k, v in query_dict.items() if "query" in k and v]
     base_64_image = get_base64_image(
         scale_image(image, 32), add_url_prefix=False
     )  # Scaled down image to return fast on search (~1kb)
@@ -682,20 +682,20 @@ colpali_schema = Schema(
                 stemming="best",
             ),
             # Add synthetic fields for the questions and queries
-            Field(
-                name="questions_exact",
-                type="array<string>",
-                indexing=["input questions", "index"],
-                match=["word"],
-                is_document_field=False,
-            ),
-            Field(
-                name="queries_exact",
-                type="array<string>",
-                indexing=["input queries", "index"],
-                match=["word"],
-                is_document_field=False,
-            ),
+            # Field(
+            #     name="questions_exact",
+            #     type="array<string>",
+            #     indexing=["input questions", "index", "attribute"],
+            #     match=["word"],
+            #     is_document_field=False,
+            # ),
+            # Field(
+            #     name="queries_exact",
+            #     type="array<string>",
+            #     indexing=["input queries", "index"],
+            #     match=["word"],
+            #     is_document_field=False,
+            # ),
         ]
     ),
     fieldsets=[
