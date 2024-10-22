@@ -726,22 +726,39 @@ colpali_schema = Schema(
     ],
 )
 
-# Define the 'bm25' rank profile
-colpali_bm25_profile = RankProfile(
-    name="bm25",
-    inputs=[("query(qt)", "tensor<float>(querytoken{}, v[128])")],
-    first_phase="bm25(title) + bm25(text)",
-    functions=[
+# Define similarity functions used in all rank profiles
+mapfunctions = (
+    [
         Function(
-            name="similarities",
+            name="similarities",  # computes similarity scores between each query token and image patch
             expression="""
                 sum(
                     query(qt) * unpack_bits(attribute(embedding)), v
                 )
             """,
         ),
+        Function(
+            name="normalized",  # normalizes the similarity scores to [-1, 1]
+            expression="""
+                (sim - reduce(sim, min)) / (reduce((sim - reduce(sim, min)), max)) * 2 - 1
+            """,
+        ),
+        Function(
+            name="quantized",  # quantizes the normalized similarity scores to signed 8-bit integers [-128, 127]
+            expression="""
+                cell_cast(normalized * 127.999, int8)
+            """,
+        ),
     ],
-    summary_features=["similarities"],
+)
+
+# Define the 'bm25' rank profile
+colpali_bm25_profile = RankProfile(
+    name="bm25",
+    inputs=[("query(qt)", "tensor<float>(querytoken{}, v[128])")],
+    first_phase="bm25(title) + bm25(text)",
+    functions=mapfunctions,
+    summary_features=["quantized"],
 )
 colpali_schema.add_rank_profile(colpali_bm25_profile)
 
@@ -766,17 +783,9 @@ colpali_profile = RankProfile(
                 )
             """,
         ),
-        Function(name="bm25_score", expression="bm25(title) + bm25(text)"),
-        Function(
-            name="similarities",
-            expression="""
-                sum(
-                    query(qt) * unpack_bits(attribute(embedding)), v
-                )
-            """,
-        ),
-    ],
-    summary_features=["similarities"],
+        Function(name="bm25_score", expression="bm25(title) + bm25(text)")
+    ].append(mapfunctions),
+    summary_features=["quantized"],
 )
 colpali_schema.add_rank_profile(colpali_profile)
 
@@ -827,16 +836,8 @@ colpali_retrieval_profile = RankProfile(
                 )
             """,
         ),
-        Function(
-            name="similarities",
-            expression="""
-                sum(
-                    query(qt) * unpack_bits(attribute(embedding)), v
-                )
-            """,
-        ),
-    ],
-    summary_features=["similarities"],
+    ].append(mapfunctions),
+    summary_features=["quantized"],
 )
 colpali_schema.add_rank_profile(colpali_retrieval_profile)
 

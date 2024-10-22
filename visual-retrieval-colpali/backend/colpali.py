@@ -170,13 +170,13 @@ def gen_similarity_maps(
     if vespa_sim_maps:
         print("Using provided similarity maps")
         # A sim map looks like this:
-        # "similarities": [
+        # "quantized": [
         #      {
         #        "address": {
         #          "patch": "0",
         #          "querytoken": "0"
         #        },
-        #        "value": 1.2599412202835083
+        #        "value": 12, # score in range [-128, 127]
         #      },
         # ... and so on.
         # Now turn these into a tensor of same shape as previous similarity map
@@ -189,7 +189,7 @@ def gen_similarity_maps(
             )
         )
         for idx, vespa_sim_map in enumerate(vespa_sim_maps):
-            for cell in vespa_sim_map["similarities"]["cells"]:
+            for cell in vespa_sim_map["quantized"]["cells"]:
                 patch = int(cell["address"]["patch"])
                 # if dummy model then just use 1024 as the image_seq_length
 
