@@ -316,6 +316,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             Img(
                                 src=blur_image_base64,
                                 hx_get=f"/full_image?id={fields['id']}",
+                                style="filter: blur(5px);",
                                 hx_trigger="load",
                                 hx_swap="outerHTML",
                                 alt=fields["title"],
