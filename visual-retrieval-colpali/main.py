@@ -15,9 +15,8 @@ from backend.colpali import (
     get_query_embeddings_and_token_map,
     is_special_token,
 )
-from backend.vespa_app import get_result_from_query, get_full_image_from_vespa
 from backend.modelmanager import ModelManager
-from backend.vespa_app import get_vespa_app
+from backend.vespa_app import VespaQueryClient
 from frontend.app import (
     ChatResult,
     Home,
@@ -64,8 +63,7 @@ app, rt = fast_app(
         sselink,
     ),
 )
-vespa_app: Vespa = get_vespa_app()
-
+vespa_app: Vespa = VespaQueryClient()
 result_cache = LRUCache(max_size=20)  # Each result can be ~10MB
 task_cache = LRUCache(
     max_size=1000
@@ -172,8 +170,7 @@ async def get(request, query: str, nn: bool = True):
 
     start = time.perf_counter()
     # Fetch real search results from Vespa
-    result = await get_result_from_query(
-        app=vespa_app,
+    result = await vespa_app.get_result_from_query(
         query=query,
         q_embs=q_embs,
         ranking=ranking_value,
@@ -275,7 +272,7 @@ async def full_image(docid: str, query_id: str, idx: int):
     """
     Endpoint to get the full quality image for a given result id.
     """
-    image_data = await get_full_image_from_vespa(vespa_app, docid)
+    image_data = await vespa_app.get_full_image_from_vespa(docid)
     # Update the cache with the full image data asynchronously to not block the request
     asyncio.create_task(update_full_image_cache(docid, query_id, idx, image_data))
     # Decode the base64 image data
