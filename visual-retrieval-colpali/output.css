@@ -770,6 +770,10 @@ body {
   grid-column: span 2 / span 2;
 }
 
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
+
 .row-span-2 {
   grid-row: span 2 / span 2;
 }
@@ -1148,10 +1152,6 @@ body {
   align-items: center;
 }
 
-.justify-end {
-  justify-content: flex-end;
-}
-
 .justify-center {
   justify-content: center;
 }
@@ -1208,10 +1208,6 @@ body {
 
 .gap-y-3 {
   row-gap: 0.75rem;
-}
-
-.gap-y-4 {
-  row-gap: 1rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
@@ -2072,6 +2068,22 @@ aside {
   color: #2E2F27;
 }
 
+.grid-image-column {
+  grid-row: span 2 / span 2;
+  display: grid;
+  grid-template-rows: subgrid;
+  align-content: flex-start;
+}
+
+@media (min-width: 768px) {
+  .md-grid-text-column {
+    grid-row: span 2 / span 2;
+    display: grid;
+    grid-template-rows: subgrid;
+    align-content: flex-start;
+  }
+}
+
 :root:has(.data-\[state\=open\]\:no-bg-scroll[data-state="open"]) {
   overflow: hidden;
 }
@@ -2559,10 +2571,6 @@ aside {
     grid-row: span 2 / span 2;
   }
 
-  .md\:block {
-    display: block;
-  }
-
   .md\:grid {
     display: grid;
   }
@@ -2573,6 +2581,10 @@ aside {
 
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 
   .md\:grid-rows-subgrid {

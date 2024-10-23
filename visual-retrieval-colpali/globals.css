@@ -205,3 +205,11 @@ aside {
     background-color: #61D790;
     color: #2E2F27;
 }
+
+.grid-image-column {
+    @apply grid grid-rows-subgrid row-span-2 content-start;
+}
+
+.md-grid-text-column {
+    @apply md:grid md:grid-rows-subgrid md:row-span-2 md:content-start;
+}

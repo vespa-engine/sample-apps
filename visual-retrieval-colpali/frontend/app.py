@@ -313,10 +313,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         cls="flex items-center gap-2",
                     ),
                     Div(
-                        Badge(
-                            f"Relevance score: {result['relevance']:.4f}",
-                            cls="flex gap-1.5 items-center justify-center",
-                        ),
+                        Button("button", size="sm"),
                     ),
                     cls="flex flex-wrap items-center justify-between bg-background px-3 py-4",
                 ),
@@ -349,7 +346,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             ),
                             cls="block",
                         ),
-                        cls="image-column relative grid grid-rows-subgrid row-span-2 content-start bg-background px-3 py-5 ",
+                        cls="image-column relative bg-background px-3 py-5 grid-image-column",
                     ),
                     Div(
                         Div(
@@ -380,7 +377,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             ),
                             cls="grid bg-border p-2",
                         ),
-                        cls="text-column relative hidden md:grid md:grid-rows-subgrid md:row-span-2 md:content-start bg-background px-3 py-5",
+                        cls="text-column relative bg-background px-3 py-5 hidden md-grid-text-column",
                     ),
                     cls="relative grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
                 ),
