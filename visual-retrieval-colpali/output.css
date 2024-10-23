@@ -766,14 +766,6 @@ body {
   z-index: 100;
 }
 
-.col-span-1 {
-  grid-column: span 1 / span 1;
-}
-
-.col-span-2 {
-  grid-column: span 2 / span 2;
-}
-
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -1060,16 +1052,6 @@ body {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
 @keyframes pulse {
   50% {
     opacity: .5;
@@ -1078,6 +1060,16 @@ body {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 .cursor-default {
@@ -1108,18 +1100,6 @@ body {
 
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.grid-cols-\[1fr\] {
-  grid-template-columns: 1fr;
-}
-
-.grid-cols-\[minmax\(0\2c _4fr\)_minmax\(0\2c _1fr\)\] {
-  grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
-}
-
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .grid-rows-\[55px_1fr\] {
@@ -1246,24 +1226,6 @@ body {
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
-.space-y-3 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
-}
-
-.space-y-6 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
-}
-
-.space-y-1 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
-}
-
 .self-stretch {
   align-self: stretch;
 }
@@ -1306,10 +1268,6 @@ body {
 
 .rounded-sm {
   border-radius: calc(var(--radius) - 4px);
-}
-
-.rounded {
-  border-radius: 0.25rem;
 }
 
 .border {
@@ -1425,19 +1383,6 @@ body {
 
 .bg-secondary {
   background-color: hsl(var(--secondary));
-}
-
-.bg-slate-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(226 232 240 / var(--tw-bg-opacity));
-}
-
-.bg-muted\/70 {
-  background-color: hsl(var(--muted) / 0.7);
-}
-
-.bg-muted\/90 {
-  background-color: hsl(var(--muted) / 0.9);
 }
 
 .bg-gradient-to-r {
@@ -1665,11 +1610,6 @@ body {
 
 .tracking-wide {
   letter-spacing: 0.025em;
-}
-
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-card-foreground {
@@ -2628,18 +2568,6 @@ aside {
     max-width: 420px;
   }
 
-  .md\:grid-cols-\[minmax\(0\2c _4fr\)_minmax\(0\2c _1fr\)\] {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
-  }
-
-  .md\:grid-cols-\[minmax\(0\2c _5fr\)_minmax\(0\2c _2fr\)\] {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 2fr);
-  }
-
-  .md\:grid-cols-\[minmax\(0\2c _4_5fr\)_minmax\(0\2c _1_5fr\)\] {
-    grid-template-columns: minmax(0, 4 5fr) minmax(0, 1 5fr);
-  }
-
   .md\:grid-cols-\[minmax\(0\2c _45fr\)_minmax\(0\2c _15fr\)\] {
     grid-template-columns: minmax(0, 45fr) minmax(0, 15fr);
   }
@@ -2683,18 +2611,6 @@ aside {
   background-color: hsl(var(--muted) / 0.4);
 }
 
-.dark\:bg-muted\/50:where(.dark, .dark *) {
-  background-color: hsl(var(--muted) / 0.5);
-}
-
-.dark\:bg-muted\/30:where(.dark, .dark *) {
-  background-color: hsl(var(--muted) / 0.3);
-}
-
-.dark\:bg-muted:where(.dark, .dark *) {
-  background-color: hsl(var(--muted));
-}
-
 .dark\:from-white:where(.dark, .dark *) {
   --tw-gradient-from: #fff var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
@@ -2703,11 +2619,6 @@ aside {
 
 .dark\:to-gray-300:where(.dark, .dark *) {
   --tw-gradient-to: #d1d5db var(--tw-gradient-to-position);
-}
-
-.dark\:text-white:where(.dark, .dark *) {
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .dark\:hover\:border-white:hover:where(.dark, .dark *) {
