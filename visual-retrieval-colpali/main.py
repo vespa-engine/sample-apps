@@ -256,13 +256,29 @@ async def get_sim_map(query_id: str, idx: int, token: str):
         )
 
 
+async def update_full_image_cache(docid: str, query_id: str, idx: int, image_data: str):
+    result = result_cache.get(query_id)
+    if result is None:
+        await asyncio.sleep(0.5)
+        return
+    search_results = get_results_children(result)
+    # Check if idx exists in list of children
+    if idx >= len(search_results):
+        await asyncio.sleep(0.5)
+        return
+    search_results[idx]["fields"]["full_image"] = image_data
+    result_cache.set(query_id, result)
+    return
+
+
 @app.get("/full_image")
-async def full_image(id: str):
+async def full_image(docid: str, query_id: str, idx: int):
     """
     Endpoint to get the full quality image for a given result id.
     """
-    image_data = await get_full_image_from_vespa(vespa_app, id)
-
+    image_data = await get_full_image_from_vespa(vespa_app, docid)
+    # Update the cache with the full image data asynchronously to not block the request
+    asyncio.create_task(update_full_image_cache(docid, query_id, idx, image_data))
     # Decode the base64 image data
     # image_data = base64.b64decode(image_data)
     image_data = "data:image/jpeg;base64," + image_data
@@ -276,11 +292,19 @@ async def full_image(id: str):
 
 async def message_generator(query_id: str, query: str):
     result = None
-    while result is None:
+    images = []
+    while len(images) == 0:
         result = result_cache.get(query_id)
+        if result is None:
+            await asyncio.sleep(0.5)
+            continue
+        search_results = get_results_children(result)
+        for single_result in search_results:
+            img = single_result["fields"].get("full_image", None)
+            if img is not None:
+                images.append(img)
         await asyncio.sleep(0.5)
-    search_results = get_results_children(result)
-    images = [result["fields"]["blur_image"] for result in search_results]
+
     # from b64 to PIL image
     images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
 
