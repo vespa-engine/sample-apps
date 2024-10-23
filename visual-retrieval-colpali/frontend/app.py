@@ -426,12 +426,11 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult(query_id: str, query: str):
     return Div(
-        Div("Chat", cls="text-xl font-semibold p-3"),
+        Div("LLM Response", cls="text-xl font-semibold p-3"),
         Div(
             Div(
                 Div(
                     LoadingMessage(display_text="Waiting for response..."),
-                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
                     hx_ext="sse",
                     sse_connect=f"/get-message?query_id={query_id}&query={quote_plus(query)}",
                     sse_swap="message",

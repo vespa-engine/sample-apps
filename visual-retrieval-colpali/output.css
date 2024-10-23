@@ -2563,8 +2563,28 @@ aside {
 }
 
 @media (min-width: 768px) {
+  .md\:block {
+    display: block;
+  }
+
   .md\:max-w-\[420px\] {
     max-width: 420px;
+  }
+
+  .md\:grid-cols-\[minmax\(0\2c _4fr\)_minmax\(0\2c _1fr\)\] {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
+  }
+
+  .md\:grid-cols-\[minmax\(0\2c _5fr\)_minmax\(0\2c _2fr\)\] {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 2fr);
+  }
+
+  .md\:grid-cols-\[minmax\(0\2c _4_5fr\)_minmax\(0\2c _1_5fr\)\] {
+    grid-template-columns: minmax(0, 4 5fr) minmax(0, 1 5fr);
+  }
+
+  .md\:grid-cols-\[minmax\(0\2c _45fr\)_minmax\(0\2c _15fr\)\] {
+    grid-template-columns: minmax(0, 45fr) minmax(0, 15fr);
   }
 
   .md\:text-2xl {
