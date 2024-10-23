@@ -167,13 +167,13 @@ def Hero():
     return Div(
         H1(
             "Vespa.ai + ColPali",
-            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
+            cls="text-4xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
         ),
         P(
             "Efficient Document Retrieval with Vision Language Models",
             cls="text-lg md:text-2xl text-muted-foreground md:tracking-wide",
         ),
-        cls="grid gap-5 text-center",
+        cls="grid gap-5 text-center pt-5",
     )
 
 
@@ -183,7 +183,7 @@ def Home():
             Hero(),
             SearchBox(with_border=True),
             SampleQueries(),
-            cls="grid gap-8 -mt-[34vh]",
+            cls="grid gap-8 md:-mt-[34vh]",  # Negative margin only on medium and larger screens
         ),
         cls="grid w-full h-full max-w-screen-md items-center gap-4 mx-auto",
     )
@@ -319,7 +319,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         Div(
                             Img(
                                 src=blur_image_base64,
-                                hx_get=f"/full_image?id={fields['id']}",
+                                hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
                                 style="filter: blur(5px);",
                                 hx_trigger="load",
                                 hx_swap="outerHTML",
