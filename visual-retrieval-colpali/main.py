@@ -3,6 +3,7 @@ import hashlib
 import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
+import os
 
 from fasthtml.common import *
 from shad4fast import *
@@ -77,6 +78,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
 If the user query is not an obvious question, reply with 'No question detected.'. Your response should be HTML formatted.
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
+But, you should NOT include backticks (`) or HTML tags in your response.
 """
 gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
@@ -291,19 +293,24 @@ async def full_image(docid: str, query_id: str, idx: int):
 
 
 async def message_generator(query_id: str, query: str):
-    result = None
     images = []
-    while len(images) == 0:
+    result = None
+    all_images_ready = False
+    while not all_images_ready:
         result = result_cache.get(query_id)
         if result is None:
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.1)
             continue
         search_results = get_results_children(result)
         for single_result in search_results:
             img = single_result["fields"].get("full_image", None)
             if img is not None:
                 images.append(img)
-        await asyncio.sleep(0.5)
+                if len(images) == len(search_results):
+                    all_images_ready = True
+                    break
+            else:
+                await asyncio.sleep(0.1)
 
     # from b64 to PIL image
     images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
