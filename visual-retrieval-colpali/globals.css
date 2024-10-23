@@ -206,6 +206,10 @@ aside {
     color: #2E2F27;
 }
 
+.grid-image-text-columns {
+    @apply md:grid-cols-2 md:col-span-2
+}
+
 .grid-image-column {
     @apply grid grid-rows-subgrid row-span-2 content-start;
 }

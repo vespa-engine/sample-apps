@@ -62,6 +62,28 @@ image_swapping = Script(
     """
 )
 
+toggle_text_content = Script(
+    """
+    function toggleTextContent(idx) {
+        const textColumn = document.getElementById(`text-column-${idx}`);
+        const imageTextColumns = document.getElementById(`image-text-columns-${idx}`);
+        const toggleButton = document.getElementById(`toggle-button-${idx}`);
+    
+        if (textColumn.classList.contains('md-grid-text-column')) {
+          // Hide the text column
+          textColumn.classList.remove('md-grid-text-column');
+          imageTextColumns.classList.remove('grid-image-text-columns');
+          toggleButton.innerText = `Show Text`;
+        } else {
+          // Show the text column
+          textColumn.classList.add('md-grid-text-column');
+          imageTextColumns.classList.add('grid-image-text-columns');
+          toggleButton.innerText = `Hide Text`;
+        }
+    }
+    """
+)
+
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
@@ -313,7 +335,12 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         cls="flex items-center gap-2",
                     ),
                     Div(
-                        Button("button", size="sm"),
+                        Button(
+                            "Show Text",
+                            size="sm",
+                            id=f"toggle-button-{idx}",
+                            onclick=f"toggleTextContent({idx})",
+                        ),
                     ),
                     cls="flex flex-wrap items-center justify-between bg-background px-3 py-4",
                 ),
@@ -331,7 +358,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                     Img(
                                         src=blur_image_base64,
                                         hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
-                                        style="filter: blur(5px);",
+                                        style="backdrop-filter: blur(5px);",
                                         hx_trigger="load",
                                         hx_swap="outerHTML",
                                         alt=fields["title"],
@@ -346,6 +373,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             ),
                             cls="block",
                         ),
+                        id=f"image-column-{idx}",
                         cls="image-column relative bg-background px-3 py-5 grid-image-column",
                     ),
                     Div(
@@ -377,9 +405,11 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             ),
                             cls="grid bg-border p-2",
                         ),
-                        cls="text-column relative bg-background px-3 py-5 hidden md-grid-text-column",
+                        id=f"text-column-{idx}",
+                        cls="text-column relative bg-background px-3 py-5 hidden",
                     ),
-                    cls="relative grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
+                    id=f"image-text-columns-{idx}",
+                    cls="relative grid grid-cols-1 border-t",
                 ),
                 cls="grid grid-cols-1 grid-rows-[auto_1fr]",
             ),
@@ -388,6 +418,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
     return Div(
         *result_items,
         image_swapping,
+        toggle_text_content,
         id="search-results",
         cls="grid grid-cols-1 gap-px bg-border",
     )
