@@ -766,6 +766,14 @@ body {
   z-index: 100;
 }
 
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
+
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -1062,6 +1070,16 @@ body {
   animation: spin 1s linear infinite;
 }
 
+@keyframes pulse {
+  50% {
+    opacity: .5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 .cursor-default {
   cursor: default;
 }
@@ -1098,6 +1116,10 @@ body {
 
 .grid-cols-\[minmax\(0\2c _4fr\)_minmax\(0\2c _1fr\)\] {
   grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .grid-rows-\[55px_1fr\] {
@@ -1224,6 +1246,24 @@ body {
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+}
+
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+}
+
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+}
+
 .self-stretch {
   align-self: stretch;
 }
@@ -1266,6 +1306,10 @@ body {
 
 .rounded-sm {
   border-radius: calc(var(--radius) - 4px);
+}
+
+.rounded {
+  border-radius: 0.25rem;
 }
 
 .border {
@@ -1381,6 +1425,19 @@ body {
 
 .bg-secondary {
   background-color: hsl(var(--secondary));
+}
+
+.bg-slate-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity));
+}
+
+.bg-muted\/70 {
+  background-color: hsl(var(--muted) / 0.7);
+}
+
+.bg-muted\/90 {
+  background-color: hsl(var(--muted) / 0.9);
 }
 
 .bg-gradient-to-r {
@@ -2624,6 +2681,18 @@ aside {
 
 .dark\:bg-muted\/40:where(.dark, .dark *) {
   background-color: hsl(var(--muted) / 0.4);
+}
+
+.dark\:bg-muted\/50:where(.dark, .dark *) {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+.dark\:bg-muted\/30:where(.dark, .dark *) {
+  background-color: hsl(var(--muted) / 0.3);
+}
+
+.dark\:bg-muted:where(.dark, .dark *) {
+  background-color: hsl(var(--muted));
 }
 
 .dark\:from-white:where(.dark, .dark *) {

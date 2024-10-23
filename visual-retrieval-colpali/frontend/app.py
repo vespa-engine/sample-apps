@@ -239,6 +239,15 @@ def LoadingMessage(display_text="Retrieving search results"):
     )
 
 
+def LoadingSkeleton():
+    return Div(
+        Div(cls="h-5 bg-muted"),
+        Div(cls="h-5 bg-muted"),
+        Div(cls="h-5 bg-muted"),
+        cls="grid gap-2 animate-pulse",
+    )
+
+
 def SimMapButtonReady(query_id, idx, token, img_src):
     return Button(
         token,
@@ -430,7 +439,7 @@ def ChatResult(query_id: str, query: str):
         Div(
             Div(
                 Div(
-                    LoadingMessage(display_text="Waiting for response..."),
+                    LoadingSkeleton(),
                     hx_ext="sse",
                     sse_connect=f"/get-message?query_id={query_id}&query={quote_plus(query)}",
                     sse_swap="message",
