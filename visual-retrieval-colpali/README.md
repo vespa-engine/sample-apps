@@ -120,14 +120,6 @@ To feed the data, run:
 python feed_vespa.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_cloud_secret_token mysecrettoken
 ```
 
-### Connecting to the Vespa app and querying
-
-As a first step, you can run the `query_vespa.py` script to run some sample queries against the Vespa app:
-
-```bash
-python query_vespa.py
-```
-
 ### Starting the front-end
 
 ```bash
