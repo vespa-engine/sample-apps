@@ -132,7 +132,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
 def SampleQueries():
     sample_queries = [
         "Proportion of female new hires 2021-2023?",
-        "Total amount of performance-based pay awarded in 2023?",
+        "Total amount of fixed salaries paid in 2023?",
         "What is the percentage distribution of employees with performance-based pay relative to the limit in 2023?",
         "What is the breakdown of management costs by investment strategy in 2023?",
         "2023 profit loss portfolio",
