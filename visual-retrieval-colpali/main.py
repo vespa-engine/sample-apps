@@ -13,10 +13,9 @@ from backend.cache import LRUCache
 from backend.colpali import (
     add_sim_maps_to_result,
     get_query_embeddings_and_token_map,
-    get_result_from_query,
     is_special_token,
-    get_full_image_from_vespa,
 )
+from backend.vespa_app import get_result_from_query, get_full_image_from_vespa
 from backend.modelmanager import ModelManager
 from backend.vespa_app import get_vespa_app
 from frontend.app import (
@@ -175,12 +174,10 @@ async def get(request, query: str, nn: bool = True):
     # Fetch real search results from Vespa
     result = await get_result_from_query(
         app=vespa_app,
-        processor=processor,
-        model=model,
         query=query,
         q_embs=q_embs,
-        token_to_idx=token_to_idx,
         ranking=ranking_value,
+        token_to_idx=token_to_idx,
     )
     end = time.perf_counter()
     print(
