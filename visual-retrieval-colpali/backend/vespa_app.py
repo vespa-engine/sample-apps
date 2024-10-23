@@ -8,10 +8,12 @@ from dotenv import load_dotenv
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
 
-MAX_QUERY_TERMS = 64
-
 
 class VespaQueryClient:
+    MAX_QUERY_TERMS = 64
+    VESPA_SCHEMA_NAME = "pdf_page"
+    SELECT_FIELDS = "id,title,url,blur_image,page_number,snippet,text,summaryfeatures"
+
     def __init__(self):
         """
         Initialize the VespaQueryClient by loading environment variables and establishing a connection to the Vespa application.
@@ -81,8 +83,7 @@ class VespaQueryClient:
             response: VespaQueryResponse = await session.query(
                 body={
                     "yql": (
-                        "select id,title,url,blur_image,page_number,snippet,text,"
-                        "summaryfeatures from pdf_page where userQuery();"
+                        f"select {self.SELECT_FIELDS} from {self.VESPA_SCHEMA_NAME} where userQuery();"
                     ),
                     "ranking": "default",
                     "query": query,
@@ -128,8 +129,7 @@ class VespaQueryClient:
             response: VespaQueryResponse = await session.query(
                 body={
                     "yql": (
-                        "select id,title,url,blur_image,page_number,snippet,text,"
-                        "summaryfeatures from pdf_page where userQuery();"
+                        f"select {self.SELECT_FIELDS} from {self.VESPA_SCHEMA_NAME} where userQuery();"
                     ),
                     "ranking": "bm25",
                     "query": query,
@@ -166,9 +166,9 @@ class VespaQueryClient:
                 .tolist()
             )
             binary_query_embeddings[key] = binary_vector
-            if len(binary_query_embeddings) >= MAX_QUERY_TERMS:
+            if len(binary_query_embeddings) >= self.MAX_QUERY_TERMS:
                 print(
-                    f"Warning: Query has more than {MAX_QUERY_TERMS} terms. Truncating."
+                    f"Warning: Query has more than {self.MAX_QUERY_TERMS} terms. Truncating."
                 )
                 break
         return binary_query_embeddings
@@ -263,7 +263,7 @@ class VespaQueryClient:
             start = time.perf_counter()
             response: VespaQueryResponse = await session.query(
                 body={
-                    "yql": f'select full_image from pdf_page where id contains "{doc_id}"',
+                    "yql": f'select full_image from {self.VESPA_SCHEMA_NAME} where id contains "{doc_id}"',
                     "ranking": "unranked",
                     "presentation.timing": True,
                 },
@@ -319,8 +319,7 @@ class VespaQueryClient:
                     **query_tensors,
                     "presentation.timing": True,
                     "yql": (
-                        "select id,title,snippet,text,url,blur_image,page_number,"
-                        f"summaryfeatures from pdf_page where {nn_string} or userQuery()"
+                        f"select {self.SELECT_FIELDS} from {self.VESPA_SCHEMA_NAME} where {nn_string} or userQuery()"
                     ),
                     "ranking.profile": "retrieval-and-rerank",
                     "timeout": timeout,
