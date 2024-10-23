@@ -3,6 +3,7 @@ import hashlib
 import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
+import os
 
 from fasthtml.common import *
 from shad4fast import *
@@ -14,6 +15,7 @@ from backend.colpali import (
     get_query_embeddings_and_token_map,
     get_result_from_query,
     is_special_token,
+    get_full_image_from_vespa,
 )
 from backend.modelmanager import ModelManager
 from backend.vespa_app import get_vespa_app
@@ -76,6 +78,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
 If the user query is not an obvious question, reply with 'No question detected.'. Your response should be HTML formatted.
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
+But, you should NOT include backticks (`) or HTML tags in your response.
 """
 gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
@@ -249,19 +252,66 @@ async def get_sim_map(query_id: str, idx: int, token: str):
         sim_map_b64 = search_results[idx]["fields"].get(sim_map_key, None)
         if sim_map_b64 is None:
             return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
-        sim_map_img_src = f"data:image/jpeg;base64,{sim_map_b64}"
+        sim_map_img_src = f"data:image/png;base64,{sim_map_b64}"
         return SimMapButtonReady(
             query_id=query_id, idx=idx, token=token, img_src=sim_map_img_src
         )
 
 
-async def message_generator(query_id: str, query: str):
-    result = None
-    while result is None:
-        result = result_cache.get(query_id)
+async def update_full_image_cache(docid: str, query_id: str, idx: int, image_data: str):
+    result = result_cache.get(query_id)
+    if result is None:
         await asyncio.sleep(0.5)
+        return
     search_results = get_results_children(result)
-    images = [result["fields"]["full_image"] for result in search_results]
+    # Check if idx exists in list of children
+    if idx >= len(search_results):
+        await asyncio.sleep(0.5)
+        return
+    search_results[idx]["fields"]["full_image"] = image_data
+    result_cache.set(query_id, result)
+    return
+
+
+@app.get("/full_image")
+async def full_image(docid: str, query_id: str, idx: int):
+    """
+    Endpoint to get the full quality image for a given result id.
+    """
+    image_data = await get_full_image_from_vespa(vespa_app, docid)
+    # Update the cache with the full image data asynchronously to not block the request
+    asyncio.create_task(update_full_image_cache(docid, query_id, idx, image_data))
+    # Decode the base64 image data
+    # image_data = base64.b64decode(image_data)
+    image_data = "data:image/jpeg;base64," + image_data
+
+    return Img(
+        src=image_data,
+        alt="something",
+        cls="result-image w-full h-full object-contain",
+    )
+
+
+async def message_generator(query_id: str, query: str):
+    images = []
+    result = None
+    all_images_ready = False
+    while not all_images_ready:
+        result = result_cache.get(query_id)
+        if result is None:
+            await asyncio.sleep(0.1)
+            continue
+        search_results = get_results_children(result)
+        for single_result in search_results:
+            img = single_result["fields"].get("full_image", None)
+            if img is not None:
+                images.append(img)
+                if len(images) == len(search_results):
+                    all_images_ready = True
+                    break
+            else:
+                await asyncio.sleep(0.1)
+
     # from b64 to PIL image
     images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
 

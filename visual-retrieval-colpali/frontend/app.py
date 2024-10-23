@@ -131,9 +131,13 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
 
 def SampleQueries():
     sample_queries = [
-        "Percentage of non-fresh water as source?",
-        "Policies related to nature risk?",
-        "How much of produced water is recycled?",
+        "Proportion of female new hires 2021-2023?",
+        "Total amount of fixed salaries paid in 2023?",
+        "What is the percentage distribution of employees with performance-based pay relative to the limit in 2023?",
+        "What is the breakdown of management costs by investment strategy in 2023?",
+        "2023 profit loss portfolio",
+        "net cash flow operating activities",
+        "fund currency basket returns",
     ]
 
     query_badges = []
@@ -163,13 +167,13 @@ def Hero():
     return Div(
         H1(
             "Vespa.ai + ColPali",
-            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
+            cls="text-4xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
         ),
         P(
             "Efficient Document Retrieval with Vision Language Models",
             cls="text-lg md:text-2xl text-muted-foreground md:tracking-wide",
         ),
-        cls="grid gap-5 text-center",
+        cls="grid gap-5 text-center pt-5",
     )
 
 
@@ -179,7 +183,7 @@ def Home():
             Hero(),
             SearchBox(with_border=True),
             SampleQueries(),
-            cls="grid gap-8 -mt-[34vh]",
+            cls="grid gap-8 md:-mt-[34vh]",  # Negative margin only on medium and larger screens
         ),
         cls="grid w-full h-full max-w-screen-md items-center gap-4 mx-auto",
     )
@@ -252,7 +256,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
     result_items = []
     for idx, result in enumerate(results):
         fields = result["fields"]  # Extract the 'fields' part of each result
-        full_image_base64 = f"data:image/jpeg;base64,{fields['full_image']}"
+        blur_image_base64 = f"data:image/jpeg;base64,{fields['blur_image']}"
 
         # Filter sim_map fields that are words with 4 or more characters
         sim_map_fields = {
@@ -288,7 +292,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             "Reset",
             variant="outline",
             size="sm",
-            data_image_src=full_image_base64,
+            data_image_src=blur_image_base64,
             cls="reset-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
         )
 
@@ -314,7 +318,11 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     Div(
                         Div(
                             Img(
-                                src=full_image_base64,
+                                src=blur_image_base64,
+                                hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
+                                style="filter: blur(5px);",
+                                hx_trigger="load",
+                                hx_swap="outerHTML",
                                 alt=fields["title"],
                                 cls="result-image w-full h-full object-contain",
                             ),
