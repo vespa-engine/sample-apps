@@ -74,7 +74,7 @@ class VespaQueryClient:
         Returns:
             dict: The formatted query results.
         """
-        async with self.app.asyncio(connections=1, total_timeout=120) as session:
+        async with self.app.asyncio(connections=1) as session:
             query_embedding = self.format_q_embs(q_emb)
 
             start = time.perf_counter()
@@ -121,7 +121,7 @@ class VespaQueryClient:
         Returns:
             dict: The formatted query results.
         """
-        async with self.app.asyncio(connections=1, total_timeout=120) as session:
+        async with self.app.asyncio(connections=1) as session:
             query_embedding = self.format_q_embs(q_emb)
 
             start = time.perf_counter()
@@ -259,7 +259,7 @@ class VespaQueryClient:
         Returns:
             str: The full image data.
         """
-        async with self.app.asyncio(connections=1, total_timeout=120) as session:
+        async with self.app.asyncio(connections=1) as session:
             start = time.perf_counter()
             response: VespaQueryResponse = await session.query(
                 body={
