@@ -131,13 +131,11 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
 
 def SampleQueries():
     sample_queries = [
-        "Proportion of female new hires 2021-2023?",
         "Total amount of fixed salaries paid in 2023?",
-        "What is the percentage distribution of employees with performance-based pay relative to the limit in 2023?",
-        "What is the breakdown of management costs by investment strategy in 2023?",
-        "2023 profit loss portfolio",
-        "net cash flow operating activities",
-        "fund currency basket returns",
+        "Proportion of female new hires 2021-2023?",
+        "Value of unlisted real estate 2023?",
+        "Fund currency basket returns 2023",
+        "Employees per office site?",
     ]
 
     query_badges = []
@@ -167,13 +165,13 @@ def Hero():
     return Div(
         H1(
             "Vespa.ai + ColPali",
-            cls="text-4xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
+            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
         ),
         P(
             "Efficient Document Retrieval with Vision Language Models",
             cls="text-lg md:text-2xl text-muted-foreground md:tracking-wide",
         ),
-        cls="grid gap-5 text-center pt-5",
+        cls="grid gap-5 text-center",
     )
 
 
@@ -183,7 +181,7 @@ def Home():
             Hero(),
             SearchBox(with_border=True),
             SampleQueries(),
-            cls="grid gap-8 md:-mt-[34vh]",  # Negative margin only on medium and larger screens
+            cls="grid gap-8 -mt-[21vh]",
         ),
         cls="grid w-full h-full max-w-screen-md items-center gap-4 mx-auto",
     )
@@ -310,65 +308,91 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             Div(
                 Div(
                     Div(
-                        tokens_button,
-                        *sim_map_buttons,
-                        reset_button,
-                        cls="flex flex-wrap gap-px w-full pointer-events-none",
+                        Lucide(icon="file-text"),
+                        H2(fields["title"], cls="text-xl md:text-2xl font-semibold"),
+                        cls="flex items-center gap-2",
                     ),
                     Div(
-                        Div(
-                            Img(
-                                src=blur_image_base64,
-                                hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
-                                style="filter: blur(5px);",
-                                hx_trigger="load",
-                                hx_swap="outerHTML",
-                                alt=fields["title"],
-                                cls="result-image w-full h-full object-contain",
-                            ),
-                            Div(
-                                cls="overlay-container absolute top-0 left-0 w-full h-full pointer-events-none"
-                            ),
-                            cls="relative w-full h-full",
+                        Badge(
+                            f"Relevance score: {result['relevance']:.4f}",
+                            cls="flex gap-1.5 items-center justify-center",
                         ),
-                        cls="grid bg-border p-2",
                     ),
-                    cls="relative grid content-start bg-background px-3 py-5",
+                    cls="flex flex-wrap items-center justify-between bg-background px-3 py-4",
                 ),
                 Div(
                     Div(
-                        H2(fields["title"], cls="text-xl font-semibold"),
-                        P(
-                            "Page " + str(fields["page_number"]),
-                            cls="text-foreground font-mono bold",
+                        Div(
+                            tokens_button,
+                            *sim_map_buttons,
+                            reset_button,
+                            cls="flex flex-wrap gap-px w-full pointer-events-none",
                         ),
                         Div(
+                            Div(
+                                Div(
+                                    Img(
+                                        src=blur_image_base64,
+                                        hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
+                                        style="filter: blur(5px);",
+                                        hx_trigger="load",
+                                        hx_swap="outerHTML",
+                                        alt=fields["title"],
+                                        cls="result-image w-full h-full object-contain",
+                                    ),
+                                    Div(
+                                        cls="overlay-container absolute top-0 left-0 w-full h-full pointer-events-none"
+                                    ),
+                                    cls="relative w-full h-full",
+                                ),
+                                cls="grid bg-border p-2",
+                            ),
+                            cls="block",
+                        ),
+                        cls="image-column relative grid grid-rows-subgrid row-span-2 content-start bg-background px-3 py-5 ",
+                    ),
+                    Div(
+                        Div(
+                            P(
+                                "Page " + str(fields["page_number"]),
+                                cls="text-foreground font-mono bold text-sm",
+                            ),
                             Badge(
                                 f"Relevance score: {result['relevance']:.4f}",
                                 cls="flex gap-1.5 items-center justify-center",
                             ),
+                            cls="flex items-center justify-between",
                         ),
-                        P(
-                            NotStr(fields.get("snippet", "")),
-                            cls="text-highlight text-muted-foreground",
+                        Div(
+                            Div(
+                                Div(
+                                    P(
+                                        NotStr(fields.get("snippet", "")),
+                                        cls="text-highlight text-muted-foreground",
+                                    ),
+                                    P(
+                                        NotStr(fields.get("text", "")),
+                                        cls="text-highlight text-muted-foreground",
+                                    ),
+                                    cls="grid gap-y-3 p-5 text-sm",
+                                ),
+                                cls="grid bg-background content-start ",
+                            ),
+                            cls="grid bg-border p-2",
                         ),
-                        P(
-                            NotStr(fields.get("text", "")),
-                            cls="text-highlight text-muted-foreground",
-                        ),
-                        cls="text-sm grid gap-y-4",
+                        cls="text-column relative hidden md:grid md:grid-rows-subgrid md:row-span-2 md:content-start bg-background px-3 py-5",
                     ),
-                    cls="bg-background px-3 py-5 hidden md:block",
+                    cls="relative grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
                 ),
-                cls="grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
-            )
+                cls="grid grid-cols-1 grid-rows-[auto_1fr]",
+            ),
         )
 
     return Div(
         *result_items,
         image_swapping,
         id="search-results",
-        cls="grid grid-cols-2 gap-px bg-border",
+        cls="grid grid-cols-1 gap-px bg-border",
     )
 
 
