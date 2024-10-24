@@ -48,19 +48,29 @@ overlayscrollbars_link = Link(
 overlayscrollbars_js = Script(
     src="https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/2.10.0/browser/overlayscrollbars.browser.es5.min.js"
 )
+awesomplete_link = Link(
+    rel="stylesheet",
+    href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.7/awesomplete.min.css",
+    type="text/css",
+)
+awesomplete_js = Script(
+    src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.7/awesomplete.min.js"
+)
 sselink = Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js")
 
 app, rt = fast_app(
     htmlkw={"cls": "grid h-full"},
     pico=False,
     hdrs=(
-        ShadHead(tw_cdn=False, theme_handle=True),
         highlight_js,
         highlight_js_theme_link,
         highlight_js_theme,
         overlayscrollbars_link,
         overlayscrollbars_js,
+        awesomplete_link,
+        awesomplete_js,
         sselink,
+        ShadHead(tw_cdn=False, theme_handle=True),
     ),
 )
 vespa_app: Vespa = VespaQueryClient()
