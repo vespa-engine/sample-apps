@@ -20,6 +20,7 @@ from backend.colpali import (
     is_special_token,
 )
 from backend.modelmanager import ModelManager
+from pathlib import Path
 from backend.vespa_app import VespaQueryClient
 from frontend.app import (
     ChatResult,
@@ -92,6 +93,9 @@ But, you should NOT include backticks (`) or HTML tags in your response.
 gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
 )
+STATIC_DIR = Path(__file__).parent / "static"
+IMG_DIR = STATIC_DIR / "saved"
+os.makedirs(STATIC_DIR, exist_ok=True)
 
 
 @app.on_event("startup")
@@ -112,7 +116,7 @@ def generate_query_id(query):
 
 @rt("/static/{filepath:path}")
 def serve_static(filepath: str):
-    return FileResponse(f"./static/{filepath}")
+    return FileResponse(STATIC_DIR / filepath)
 
 
 @rt("/")
@@ -199,6 +203,8 @@ async def get(request, query: str, nn: bool = True):
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
+    # Add result to cache
+    result_cache.set(query_id, result)
     # Start generating the similarity map in the background
     asyncio.create_task(
         generate_similarity_map(
@@ -279,17 +285,19 @@ async def get_sim_map(query_id: str, idx: int, token: str):
 
 
 async def update_full_image_cache(docid: str, query_id: str, idx: int, image_data: str):
-    result = result_cache.get(query_id)
-    if result is None:
-        await asyncio.sleep(0.5)
-        return
-    search_results = get_results_children(result)
-    # Check if idx exists in list of children
-    if idx >= len(search_results):
-        await asyncio.sleep(0.5)
-        return
-    search_results[idx]["fields"]["full_image"] = image_data
+    result = None
+    max_wait = 20  # seconds. If horribly slow network latency.
+    start_time = time.time()
+    while result is None and time.time() - start_time < max_wait:
+        result = result_cache.get(query_id)
+        if result is None:
+            await asyncio.sleep(0.1)
+    try:
+        result["root"]["children"][idx]["fields"]["full_image"] = image_data
+    except KeyError as err:
+        print(f"Error updating full image cache: {err}")
     result_cache.set(query_id, result)
+    print(f"Full image cache updated for query_id {query_id}")
     return
 
 
@@ -301,12 +309,12 @@ async def full_image(docid: str, query_id: str, idx: int):
     image_data = await vespa_app.get_full_image_from_vespa(docid)
     # Update the cache with the full image data asynchronously to not block the request
     asyncio.create_task(update_full_image_cache(docid, query_id, idx, image_data))
-    # Decode the base64 image data
-    # image_data = base64.b64decode(image_data)
-    image_data = "data:image/jpeg;base64," + image_data
-
+    # Save the image to a file
+    img_path = IMG_DIR / f"{docid}.jpg"
+    with open(img_path, "wb") as f:
+        f.write(base64.b64decode(image_data))
     return Img(
-        src=image_data,
+        src=f"/static/saved/{docid}.jpg",
         alt="something",
         cls="result-image w-full h-full object-contain",
     )
