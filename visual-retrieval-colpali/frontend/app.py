@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
-from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem
+from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
 
 # JavaScript to check the input value and enable/disable the search button and radio buttons
 check_input_script = Script(
@@ -367,14 +367,20 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     Div(
                         Lucide(icon="file-text"),
                         H2(fields["title"], cls="text-xl md:text-2xl font-semibold"),
+                        Separator(orientation="vertical"),
+                        Badge(
+                            f"Relevance score: {result['relevance']:.4f}",
+                            cls="flex gap-1.5 items-center justify-center",
+                        ),
                         cls="flex items-center gap-2",
                     ),
                     Div(
                         Button(
-                            "Show Text",
+                            "Hide Text",
                             size="sm",
                             id=f"toggle-button-{idx}",
                             onclick=f"toggleTextContent({idx})",
+                            cls="hidden md:block",
                         ),
                     ),
                     cls="flex flex-wrap items-center justify-between bg-background px-3 py-4",
@@ -417,11 +423,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                 "Page " + str(fields["page_number"]),
                                 cls="text-foreground font-mono bold text-sm",
                             ),
-                            Badge(
-                                f"Relevance score: {result['relevance']:.4f}",
-                                cls="flex gap-1.5 items-center justify-center",
-                            ),
-                            cls="flex items-center justify-between",
+                            cls="flex items-center justify-end",
                         ),
                         Div(
                             Div(
@@ -441,10 +443,10 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             cls="grid bg-border p-2",
                         ),
                         id=f"text-column-{idx}",
-                        cls="text-column relative bg-background px-3 py-5 hidden",
+                        cls="text-column relative bg-background px-3 py-5 hidden md-grid-text-column",
                     ),
                     id=f"image-text-columns-{idx}",
-                    cls="relative grid grid-cols-1 border-t",
+                    cls="relative grid grid-cols-1 border-t grid-image-text-columns",
                 ),
                 cls="grid grid-cols-1 grid-rows-[auto_1fr]",
             ),
@@ -461,7 +463,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult(query_id: str, query: str):
     return Div(
-        Div("LLM Response", cls="text-xl font-semibold p-3"),
+        Div("AI-generated response", cls="text-xl font-semibold p-3"),
         Div(
             Div(
                 Div(
