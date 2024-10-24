@@ -270,7 +270,10 @@ async def get_sim_map(query_id: str, idx: int, token: str):
 
 async def update_full_image_cache(docid: str, query_id: str, idx: int, image_data: str):
     result = result_cache.get(query_id)
-    result["root"]["children"][idx]["fields"]["full_image"] = image_data
+    try:
+        result["root"]["children"][idx]["fields"]["full_image"] = image_data
+    except KeyError as err:
+        print(f"Error updating full image cache: {err}")
     result_cache.set(query_id, result)
     return
 
