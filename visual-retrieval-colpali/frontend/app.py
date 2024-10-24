@@ -136,17 +136,17 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
                 RadioGroup(
                     Div(
                         RadioGroupItem(value="nn+colpali", id="nn+colpali"),
-                        Label("nn+colpali", htmlFor="nn+colpali"),
-                        cls="flex items-center space-x-2",
-                    ),
-                    Div(
-                        RadioGroupItem(value="bm25+colpali", id="bm25+colpali"),
-                        Label("bm25+colpali", htmlFor="bm25+colpali"),
+                        Label("ColPali", htmlFor="ColPali"),
                         cls="flex items-center space-x-2",
                     ),
                     Div(
                         RadioGroupItem(value="bm25", id="bm25"),
-                        Label("bm25", htmlFor="bm25"),
+                        Label("BM25", htmlFor="BM25"),
+                        cls="flex items-center space-x-2",
+                    ),
+                    Div(
+                        RadioGroupItem(value="bm25+colpali", id="bm25+colpali"),
+                        Label("Hybrid ColPali + BM25", htmlFor="Hybrid ColPali + BM25"),
                         cls="flex items-center space-x-2",
                     ),
                     name="ranking",
