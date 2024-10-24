@@ -16,7 +16,6 @@ from vespa.application import Vespa
 from backend.cache import LRUCache
 from backend.colpali import (
     add_sim_maps_to_result,
-    get_full_image_from_vespa,
     get_query_embeddings_and_token_map,
     is_special_token,
 )
@@ -74,7 +73,9 @@ thread_pool = ThreadPoolExecutor()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
-If the user query is not an obvious question, reply with 'No question detected.'. Your response should be HTML formatted.
+If the user query can not be interpreted as a question, or if the answer to the query can not be inferred from the images,
+answer with the exact phrase "I am sorry, I do not have enough information in the image to answer your question.".
+Your response should be HTML formatted, but only simple tags, such as <b>. <p>, <i>, <br> <ul> and <li> are allowed. No HTML tables.
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
 But, you should NOT include backticks (`) or HTML tags in your response.
 """
@@ -86,6 +87,12 @@ gemini_model = genai.GenerativeModel(
 @app.on_event("startup")
 def load_model_on_startup():
     app.manager = ModelManager.get_instance()
+    return
+
+
+@app.on_event("startup")
+async def keepalive():
+    asyncio.create_task(poll_vespa_keepalive())
     return
 
 
@@ -209,6 +216,13 @@ def get_results_children(result):
     return search_results
 
 
+async def poll_vespa_keepalive():
+    while True:
+        await asyncio.sleep(5)
+        await vespa_app.keepalive()
+        print(f"Vespa keepalive: {time.time()}")
+
+
 async def generate_similarity_map(
     model, processor, query, q_embs, token_to_idx, result, query_id
 ):
@@ -292,7 +306,9 @@ async def message_generator(query_id: str, query: str):
     images = []
     result = None
     all_images_ready = False
-    while not all_images_ready:
+    max_wait = 10  # seconds
+    start_time = time.time()
+    while not all_images_ready and time.time() - start_time < max_wait:
         result = result_cache.get(query_id)
         if result is None:
             await asyncio.sleep(0.1)
@@ -310,6 +326,10 @@ async def message_generator(query_id: str, query: str):
 
     # from b64 to PIL image
     images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
+    if not images:
+        yield "event: message\ndata: I am sorry, I do not have enough information in the image to answer your question.\n\n"
+        yield "event: close\ndata: \n\n"
+        return
 
     # If newlines are present in the response, the connection will be closed.
     def replace_newline_with_br(text):
@@ -323,7 +343,7 @@ async def message_generator(query_id: str, query: str):
             response_text += chunk.text
             response_text = replace_newline_with_br(response_text)
             yield f"event: message\ndata: {response_text}\n\n"
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.1)
     yield "event: close\ndata: \n\n"
 
 
