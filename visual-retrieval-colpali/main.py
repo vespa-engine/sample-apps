@@ -189,6 +189,8 @@ async def get(request, query: str, nn: bool = True):
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
+    # Add result to cache
+    result_cache.set(query_id, result)
     # Start generating the similarity map in the background
     asyncio.create_task(
         generate_similarity_map(
