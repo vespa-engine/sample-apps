@@ -217,3 +217,59 @@ aside {
 .md-grid-text-column {
     @apply md:grid md:grid-rows-subgrid md:row-span-2 md:content-start;
 }
+
+#search-input[aria-expanded="true"] {
+    border-top: 1px solid hsl(var(--input));
+    border-left: 1px solid hsl(var(--input));
+    border-right: 1px solid hsl(var(--input));
+    border-bottom: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.awesomplete {
+    width: 100%;
+}
+
+.awesomplete > ul {
+    @apply text-sm space-y-0.5;
+    margin: 0;
+    border-top: none;
+    border-left: 1px solid hsl(var(--input));
+    border-right: 1px solid hsl(var(--input));
+    border-bottom: 1px solid hsl(var(--input));
+    border-radius: 0 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px);
+    background: hsl(var(--background));
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.awesomplete > ul:before {
+    display: none;
+}
+
+.awesomplete > ul > li:hover {
+    background-color: #B7E2F1;
+    color: #2E2F27;
+}
+
+.awesomplete > ul > li[aria-selected="true"] {
+    background-color: #B7E2F1;
+    color: #2E2F27;
+}
+
+.awesomplete mark {
+    background-color: #61D790;
+    color: #2E2F27;
+}
+
+.awesomplete li:hover mark {
+    background-color: #61D790;
+    color: #2E2F27;
+}
+
+.awesomplete li[aria-selected="true"] mark {
+    background-color: #61D790;
+    color: #2E2F27;
+}
+

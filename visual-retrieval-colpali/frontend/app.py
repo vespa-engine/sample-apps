@@ -84,6 +84,28 @@ toggle_text_content = Script(
     """
 )
 
+autocomplete_script = Script(
+    """
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.querySelector('#search-input');
+        const awesomplete = new Awesomplete(input, { minChars: 1, maxItems: 5 });
+
+        input.addEventListener('input', function() {
+            if (this.value.length >= 1) {
+                // Use template literals to insert the input value dynamically in the query parameter
+                fetch(`/suggestions?query=${encodeURIComponent(this.value)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the Awesomplete list dynamically with fetched suggestions
+                        awesomplete.list = data.suggestions;
+                    })
+                    .catch(err => console.error('Error fetching suggestions:', err));
+            }
+        });
+    });
+    """
+)
+
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
@@ -93,13 +115,16 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
 
     return Form(
         Div(
-            Lucide(icon="search", cls="absolute left-2 top-2 text-muted-foreground"),
+            Lucide(
+                icon="search", cls="absolute left-2 top-2 text-muted-foreground z-10"
+            ),
             Input(
                 placeholder="Enter your search query...",
                 name="query",
                 value=query_value,
                 id="search-input",
-                cls="text-base pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent",
+                cls="text-base pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent awesomplete",
+                data_list="#suggestions",
                 style="font-size: 1rem",
                 autofocus=True,
             ),
@@ -140,6 +165,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
             cls="flex justify-between",
         ),
         check_input_script,
+        autocomplete_script,
         action=f"/search?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
         method="GET",
         hx_get=f"/fetch_results?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
