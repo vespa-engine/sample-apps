@@ -276,7 +276,9 @@ async def get_sim_map(query_id: str, idx: int, token: str):
 
 async def update_full_image_cache(docid: str, query_id: str, idx: int, image_data: str):
     result = None
-    while result is None:
+    max_wait = 20  # seconds. If horribly slow network latency.
+    start_time = time.time()
+    while result is None and time.time() - start_time < max_wait:
         result = result_cache.get(query_id)
         if result is None:
             await asyncio.sleep(0.1)
@@ -301,7 +303,6 @@ async def full_image(docid: str, query_id: str, idx: int):
     img_path = IMG_DIR / f"{docid}.jpg"
     with open(img_path, "wb") as f:
         f.write(base64.b64decode(image_data))
-
     return Img(
         src=f"/static/saved/{docid}.jpg",
         alt="something",
