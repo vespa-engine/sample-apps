@@ -95,7 +95,7 @@ gemini_model = genai.GenerativeModel(
 )
 STATIC_DIR = Path(__file__).parent / "static"
 IMG_DIR = STATIC_DIR / "saved"
-os.makedirs(STATIC_DIR, exist_ok=True)
+os.makedirs(IMG_DIR, exist_ok=True)
 
 
 @app.on_event("startup")
