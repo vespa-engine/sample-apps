@@ -276,7 +276,7 @@ def LoadingSkeleton():
 
 def SimMapButtonReady(query_id, idx, token, img_src):
     return Button(
-        token,
+        token.replace("\u2581", ""),
         size="sm",
         data_image_src=img_src,
         id=f"sim-map-button-{query_id}-{idx}-{token}",
