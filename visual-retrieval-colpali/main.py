@@ -307,14 +307,10 @@ async def full_image(docid: str, query_id: str, idx: int):
     Endpoint to get the full quality image for a given result id.
     """
     image_data = await vespa_app.get_full_image_from_vespa(docid)
-    # Update the cache with the full image data asynchronously to not block the request
+    # Update the cache with the full image data
     asyncio.create_task(update_full_image_cache(docid, query_id, idx, image_data))
-    # Save the image to a file
-    img_path = IMG_DIR / f"{docid}.jpg"
-    with open(img_path, "wb") as f:
-        f.write(base64.b64decode(image_data))
     return Img(
-        src=f"/static/saved/{docid}.jpg",
+        src=f"data:image/png;base64,{image_data}",
         alt="something",
         cls="result-image w-full h-full object-contain",
     )
