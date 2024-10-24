@@ -4,6 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import os
+from typing import List, AsyncGenerator
 
 from fasthtml.common import *
 from shad4fast import *
@@ -72,8 +73,9 @@ thread_pool = ThreadPoolExecutor()
 # Gemini config
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
-If the user query is not an obvious question, reply with 'No question detected.'. Your response should be HTML formatted.
+GEMINI_SYSTEM_PROMPT = """If the user query is a question, your task is to answer it based on the provided images only.
+If you are not able to answer the question nased on the image, respond with the exact phrase "Answer not found in image." without any additional information.
+Your response should be HTML formatted, but only use basic HTML tags such as <b>, <i>, <br>, <ul>, <li>, <a>. Do not use ANY other HTML tags.
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
 But, you should NOT include backticks (`) or HTML tags in your response.
 """
@@ -286,42 +288,120 @@ async def full_image(docid: str, query_id: str, idx: int):
     )
 
 
-async def message_generator(query_id: str, query: str):
-    images = []
-    result = None
-    all_images_ready = False
-    while not all_images_ready:
+async def message_generator(query_id: str, query: str) -> AsyncGenerator[str, None]:
+    """
+    Generates messages by sending images to the Gemini model as they become ready.
+    If "Answer not found in image." is in the response, continues with the next image.
+    Handles cases where images may not be ready within 15 seconds with a fallback message.
+    """
+    images: List[Image.Image] = []
+    cumulative_text = ""
+    image_index = 0
+    max_wait_time = 15  # Maximum wait time in seconds for images to be ready
+    start_time = time.time()
+
+    while True:
+        # Check if maximum wait time has been exceeded
+        elapsed_time = time.time() - start_time
+        if elapsed_time > max_wait_time:
+            if not images:
+                # No images were ready within the wait time
+                message = "Unable to retrieve images in time."
+                cumulative_text += message
+                yield f"event: message\ndata: {cumulative_text}\n\n"
+                yield "event: close\ndata: \n\n"
+                return
+            else:
+                # Proceed with available images
+                break
+
+        # Retrieve results from cache
         result = result_cache.get(query_id)
         if result is None:
             await asyncio.sleep(0.1)
             continue
+
         search_results = get_results_children(result)
-        for single_result in search_results:
-            img = single_result["fields"].get("full_image", None)
-            if img is not None:
-                images.append(img)
-                if len(images) == len(search_results):
-                    all_images_ready = True
-                    break
+        if image_index >= len(search_results):
+            # No more images to process
+            if images:
+                # Images are available but no answer found
+                message = f"Could not find an answer in any of the images within {elapsed_time:.2f} seconds."
+                cumulative_text += message
+                yield f"event: message\ndata: {cumulative_text}\n\n"
+                yield "event: close\ndata: \n\n"
+                return
             else:
+                # Wait a bit more for images to become ready
                 await asyncio.sleep(0.1)
+                continue
 
-    # from b64 to PIL image
-    images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
+        # Get the next image
+        single_result = search_results[image_index]
+        img_data = single_result["fields"].get("full_image", None)
+        if img_data is None:
+            # Image not ready yet
+            await asyncio.sleep(0.1)
+            continue
 
-    # If newlines are present in the response, the connection will be closed.
-    def replace_newline_with_br(text):
-        return text.replace("\n", "<br>")
+        # Decode the base64 image data
+        image = Image.open(io.BytesIO(base64.b64decode(img_data)))
+        images.append(image)
+        image_index += 1
 
-    response_text = ""
-    async for chunk in await gemini_model.generate_content_async(
-        images + ["\n\n Query: ", query], stream=True
-    ):
-        if chunk.text:
-            response_text += chunk.text
-            response_text = replace_newline_with_br(response_text)
-            yield f"event: message\ndata: {response_text}\n\n"
-            await asyncio.sleep(0.5)
+        # Send update message to client
+        # Line break before the message if not the first image
+        if image_index > 1:
+            message = "<br>"
+        else:
+            message = ""
+        # message += f"Analyzing image {image_index} <br> "
+        cumulative_text += message
+        # yield f"event: message\ndata: {cumulative_text}\n\n"
+
+        # Prepare input for the Gemini model
+        gemini_input = images + ["\n\n Query: ", query]
+
+        # Initialize response flag
+        found_answer = False
+
+        # Get response from Gemini model in streaming mode
+        async for chunk in await gemini_model.generate_content_async(
+            gemini_input, stream=True
+        ):
+            if chunk.text:
+                # Replace newlines with <br> for HTML formatting
+                text_chunk = chunk.text.replace("\n", "<br>")
+                cumulative_text += text_chunk
+                # only yield if cumulative_text does is not first part of "Answer not found in image."
+                if not chunk.text.lstrip("\n").startswith("Ans"):
+                    yield f"event: message\ndata: {cumulative_text}\n\n"
+
+                # Check if the response indicates no answer found
+                if "Answer not found in image." in cumulative_text:
+                    found_answer = False
+                    message = f"<br>No answer found in image {image_index}.<br>Trying next image."
+                    cumulative_text += message
+                    yield f"event: message\ndata: {cumulative_text}\n\n"
+                    break  # Stop processing this image
+                else:
+                    found_answer = True
+            await asyncio.sleep(0.1)
+
+        if found_answer:
+            # Answer found, stop processing further images
+            yield "event: close\ndata: \n\n"
+            return
+
+    # After processing all images or timeout
+    if not images:
+        message = "<br>Unable to retrieve images."
+        cumulative_text += message
+        yield f"event: message\ndata: {cumulative_text}\n\n"
+    else:
+        message = "<br>Could not find an answer in any of the images."
+        cumulative_text += message
+        yield f"event: message\ndata: {cumulative_text}\n\n"
     yield "event: close\ndata: \n\n"
 
 
