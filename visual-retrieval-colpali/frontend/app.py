@@ -62,6 +62,28 @@ image_swapping = Script(
     """
 )
 
+toggle_text_content = Script(
+    """
+    function toggleTextContent(idx) {
+        const textColumn = document.getElementById(`text-column-${idx}`);
+        const imageTextColumns = document.getElementById(`image-text-columns-${idx}`);
+        const toggleButton = document.getElementById(`toggle-button-${idx}`);
+    
+        if (textColumn.classList.contains('md-grid-text-column')) {
+          // Hide the text column
+          textColumn.classList.remove('md-grid-text-column');
+          imageTextColumns.classList.remove('grid-image-text-columns');
+          toggleButton.innerText = `Show Text`;
+        } else {
+          // Show the text column
+          textColumn.classList.add('md-grid-text-column');
+          imageTextColumns.classList.add('grid-image-text-columns');
+          toggleButton.innerText = `Hide Text`;
+        }
+    }
+    """
+)
+
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
@@ -131,13 +153,11 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
 
 def SampleQueries():
     sample_queries = [
-        "Proportion of female new hires 2021-2023?",
         "Total amount of fixed salaries paid in 2023?",
-        "What is the percentage distribution of employees with performance-based pay relative to the limit in 2023?",
-        "What is the breakdown of management costs by investment strategy in 2023?",
-        "2023 profit loss portfolio",
-        "net cash flow operating activities",
-        "fund currency basket returns",
+        "Proportion of female new hires 2021-2023?",
+        "Value of unlisted real estate 2023?",
+        "Fund currency basket returns 2023",
+        "Employees per office site?",
     ]
 
     query_badges = []
@@ -167,13 +187,13 @@ def Hero():
     return Div(
         H1(
             "Vespa.ai + ColPali",
-            cls="text-4xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
+            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
         ),
         P(
             "Efficient Document Retrieval with Vision Language Models",
             cls="text-lg md:text-2xl text-muted-foreground md:tracking-wide",
         ),
-        cls="grid gap-5 text-center pt-5",
+        cls="grid gap-5 text-center",
     )
 
 
@@ -183,7 +203,7 @@ def Home():
             Hero(),
             SearchBox(with_border=True),
             SampleQueries(),
-            cls="grid gap-8 md:-mt-[34vh]",  # Negative margin only on medium and larger screens
+            cls="grid gap-8 -mt-[21vh]",
         ),
         cls="grid w-full h-full max-w-screen-md items-center gap-4 mx-auto",
     )
@@ -216,6 +236,15 @@ def LoadingMessage(display_text="Retrieving search results"):
         Span(display_text, cls="text-base text-center"),
         cls="p-10 text-muted-foreground flex items-center justify-center",
         id="loading-indicator",
+    )
+
+
+def LoadingSkeleton():
+    return Div(
+        Div(cls="h-5 bg-muted"),
+        Div(cls="h-5 bg-muted"),
+        Div(cls="h-5 bg-muted"),
+        cls="grid gap-2 animate-pulse",
     )
 
 
@@ -310,76 +339,107 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             Div(
                 Div(
                     Div(
-                        tokens_button,
-                        *sim_map_buttons,
-                        reset_button,
-                        cls="flex flex-wrap gap-px w-full pointer-events-none",
+                        Lucide(icon="file-text"),
+                        H2(fields["title"], cls="text-xl md:text-2xl font-semibold"),
+                        cls="flex items-center gap-2",
                     ),
                     Div(
-                        Div(
-                            Img(
-                                src=blur_image_base64,
-                                hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
-                                style="filter: blur(5px);",
-                                hx_trigger="load",
-                                hx_swap="outerHTML",
-                                alt=fields["title"],
-                                cls="result-image w-full h-full object-contain",
-                            ),
-                            Div(
-                                cls="overlay-container absolute top-0 left-0 w-full h-full pointer-events-none"
-                            ),
-                            cls="relative w-full h-full",
+                        Button(
+                            "Show Text",
+                            size="sm",
+                            id=f"toggle-button-{idx}",
+                            onclick=f"toggleTextContent({idx})",
                         ),
-                        cls="grid bg-border p-2",
                     ),
-                    cls="relative grid content-start bg-background px-3 py-5",
+                    cls="flex flex-wrap items-center justify-between bg-background px-3 py-4",
                 ),
                 Div(
                     Div(
-                        H2(fields["title"], cls="text-xl font-semibold"),
-                        P(
-                            "Page " + str(fields["page_number"]),
-                            cls="text-foreground font-mono bold",
+                        Div(
+                            tokens_button,
+                            *sim_map_buttons,
+                            reset_button,
+                            cls="flex flex-wrap gap-px w-full pointer-events-none",
                         ),
                         Div(
+                            Div(
+                                Div(
+                                    Img(
+                                        src=blur_image_base64,
+                                        hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
+                                        style="backdrop-filter: blur(5px);",
+                                        hx_trigger="load",
+                                        hx_swap="outerHTML",
+                                        alt=fields["title"],
+                                        cls="result-image w-full h-full object-contain",
+                                    ),
+                                    Div(
+                                        cls="overlay-container absolute top-0 left-0 w-full h-full pointer-events-none"
+                                    ),
+                                    cls="relative w-full h-full",
+                                ),
+                                cls="grid bg-border p-2",
+                            ),
+                            cls="block",
+                        ),
+                        id=f"image-column-{idx}",
+                        cls="image-column relative bg-background px-3 py-5 grid-image-column",
+                    ),
+                    Div(
+                        Div(
+                            P(
+                                "Page " + str(fields["page_number"]),
+                                cls="text-foreground font-mono bold text-sm",
+                            ),
                             Badge(
                                 f"Relevance score: {result['relevance']:.4f}",
                                 cls="flex gap-1.5 items-center justify-center",
                             ),
+                            cls="flex items-center justify-between",
                         ),
-                        P(
-                            NotStr(fields.get("snippet", "")),
-                            cls="text-highlight text-muted-foreground",
+                        Div(
+                            Div(
+                                Div(
+                                    P(
+                                        NotStr(fields.get("snippet", "")),
+                                        cls="text-highlight text-muted-foreground",
+                                    ),
+                                    P(
+                                        NotStr(fields.get("text", "")),
+                                        cls="text-highlight text-muted-foreground",
+                                    ),
+                                    cls="grid gap-y-3 p-5 text-sm",
+                                ),
+                                cls="grid bg-background content-start ",
+                            ),
+                            cls="grid bg-border p-2",
                         ),
-                        P(
-                            NotStr(fields.get("text", "")),
-                            cls="text-highlight text-muted-foreground",
-                        ),
-                        cls="text-sm grid gap-y-4",
+                        id=f"text-column-{idx}",
+                        cls="text-column relative bg-background px-3 py-5 hidden",
                     ),
-                    cls="bg-background px-3 py-5 hidden md:block",
+                    id=f"image-text-columns-{idx}",
+                    cls="relative grid grid-cols-1 border-t",
                 ),
-                cls="grid grid-cols-1 md:grid-cols-2 col-span-2 border-t",
-            )
+                cls="grid grid-cols-1 grid-rows-[auto_1fr]",
+            ),
         )
 
     return Div(
         *result_items,
         image_swapping,
+        toggle_text_content,
         id="search-results",
-        cls="grid grid-cols-2 gap-px bg-border",
+        cls="grid grid-cols-1 gap-px bg-border",
     )
 
 
 def ChatResult(query_id: str, query: str):
     return Div(
-        Div("Chat", cls="text-xl font-semibold p-3"),
+        Div("LLM Response", cls="text-xl font-semibold p-3"),
         Div(
             Div(
                 Div(
-                    LoadingMessage(display_text="Waiting for response..."),
-                    cls="bg-muted/80 dark:bg-muted/40 text-black dark:text-white p-2 rounded-md",
+                    LoadingSkeleton(),
                     hx_ext="sse",
                     sse_connect=f"/get-message?query_id={query_id}&query={quote_plus(query)}",
                     sse_swap="message",

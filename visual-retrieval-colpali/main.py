@@ -1,17 +1,22 @@
 import asyncio
+import base64
 import hashlib
+import io
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-import os
 
+import google.generativeai as genai
 from fasthtml.common import *
+from PIL import Image
 from shad4fast import *
 from vespa.application import Vespa
 
 from backend.cache import LRUCache
 from backend.colpali import (
     add_sim_maps_to_result,
+    get_full_image_from_vespa,
     get_query_embeddings_and_token_map,
     is_special_token,
 )
@@ -27,10 +32,6 @@ from frontend.app import (
     SimMapButtonReady,
 )
 from frontend.layout import Layout
-import google.generativeai as genai
-from PIL import Image
-import io
-import base64
 
 highlight_js_theme_link = Link(id="highlight-theme", rel="stylesheet", href="")
 highlight_js_theme = Script(src="/static/js/highlightjs-theme.js")
@@ -139,7 +140,8 @@ def get(request):
     return Layout(
         Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
         Aside(
-            ChatResult(query_id=query_id, query=query_value), cls="border-t border-l"
+            ChatResult(query_id=query_id, query=query_value),
+            cls="border-t border-l hidden md:block",
         ),
     )  # Show SearchBox and Loading message initially
 

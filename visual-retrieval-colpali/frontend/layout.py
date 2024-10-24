@@ -3,7 +3,7 @@ from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Button, Separator
 
-script = Script(
+layout_script = Script(
     """
     document.addEventListener("DOMContentLoaded", function () {
           const main = document.querySelector('main');
@@ -11,12 +11,12 @@ script = Script(
           const body = document.body;
         
           if (main && aside && main.nextElementSibling === aside) {
-            // Main + Aside layout
-            body.classList.add('grid-cols-[minmax(0,_4fr)_minmax(0,_1fr)]');
-            aside.classList.remove('hidden');
+            // If we have both main and aside, adjust the layout for larger screens
+            body.classList.remove('grid-cols-1'); // Remove single-column layout
+            body.classList.add('md:grid-cols-[minmax(0,_45fr)_minmax(0,_15fr)]'); // Two-column layout on larger screens
           } else if (main) {
-            // Only Main layout (full width)
-            body.classList.add('grid-cols-[1fr]');
+            // If only main, keep it full width
+            body.classList.add('grid-cols-1');
           }
     });
     """
@@ -136,6 +136,6 @@ def Layout(*c, **kwargs):
             **kwargs,
             cls="grid grid-rows-[55px_1fr] min-h-0",
         ),
-        script,
+        layout_script,
         overlay_scrollbars,
     )
