@@ -330,3 +330,23 @@ class VespaQueryClient:
             )
             assert response.is_successful(), response.json
         return self.format_query_results(query, response)
+
+    async def keepalive(self) -> bool:
+        """
+        Query Vespa to keep the connection alive.
+
+        Returns:
+            bool: True if the connection is alive.
+        """
+        async with self.app.asyncio(connections=1) as session:
+            response: VespaQueryResponse = await session.query(
+                body={
+                    "yql": f"select title from {self.VESPA_SCHEMA_NAME} where true limit 1;",
+                    "ranking": "unranked",
+                    "query": "keepalive",
+                    "timeout": "3s",
+                    "hits": 1,
+                },
+            )
+            assert response.is_successful(), response.json
+        return True
