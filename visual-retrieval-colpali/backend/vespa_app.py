@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Dict, Any, Tuple
+from typing import Any, Dict, Tuple
 
 import numpy as np
 import torch
@@ -275,6 +275,39 @@ class VespaQueryClient:
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
         return response.json["root"]["children"][0]["fields"]["full_image"]
+
+    async def get_suggestions(self, query: str) -> list:
+        async with self.app.asyncio(connections=1) as session:
+            start = time.perf_counter()
+            yql = f'select questions from {self.VESPA_SCHEMA_NAME} where questions matches "{query}" limit 3'
+            print(yql)
+            response: VespaQueryResponse = await session.query(
+                body={
+                    "yql": yql,
+                    "ranking": "unranked",
+                    "presentation.timing": True,
+                },
+            )
+            assert response.is_successful(), response.json
+            stop = time.perf_counter()
+            print(
+                f"Getting suggestions from Vespa took: {stop - start} s, Vespa reported searchtime was "
+                f"{response.json.get('timing', {}).get('searchtime', -1)} s"
+            )
+            search_results = (
+                response.json["root"]["children"]
+                if "root" in response.json and "children" in response.json["root"]
+                else []
+            )
+            print(response.json)
+
+            questions = [
+                result["fields"]["questions"]
+                for result in search_results
+                if "questions" in result["fields"]
+            ]
+            flat_questions = [item for sublist in questions for item in sublist]
+            return flat_questions
 
     async def query_vespa_nearest_neighbor(
         self,
