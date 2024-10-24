@@ -229,9 +229,9 @@ def Home():
             Hero(),
             SearchBox(with_border=True),
             SampleQueries(),
-            cls="grid gap-8 -mt-[21vh]",
+            cls="grid gap-8 content-start mt-[13vh]",
         ),
-        cls="grid w-full h-full max-w-screen-md items-center gap-4 mx-auto",
+        cls="grid w-full h-full max-w-screen-md gap-4 mx-auto",
     )
 
 
@@ -457,7 +457,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
         image_swapping,
         toggle_text_content,
         id="search-results",
-        cls="grid grid-cols-1 gap-px bg-border",
+        cls="grid grid-cols-1 gap-px bg-border min-h-0",
     )
 
 
