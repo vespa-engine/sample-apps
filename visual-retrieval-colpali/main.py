@@ -302,6 +302,18 @@ async def full_image(docid: str, query_id: str, idx: int):
     )
 
 
+@rt("/suggestions")
+async def get_suggestions(request):
+    query = request.query_params.get("query", "").lower().strip()
+
+    if query:
+        suggestions = await vespa_app.get_suggestions(query)
+        if len(suggestions) > 0:
+            return JSONResponse({"suggestions": suggestions})
+
+    return JSONResponse({"suggestions": []})
+
+
 async def message_generator(query_id: str, query: str):
     images = []
     result = None
