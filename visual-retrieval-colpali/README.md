@@ -78,8 +78,6 @@ python hello.py
 
 First, set up your `.env` file by renaming `.env.example` to `.env` and filling in the required values.
 (Token can be shared with 1password, `HF_TOKEN` is personal and must be created at huggingface)
-If you are just connecting to a deployed Vespa app, you can skip
-to [Connecting to the Vespa app](#connecting-to-the-vespa-app-and-querying).
 
 ### Deploying the Vespa app
 
