@@ -21,6 +21,7 @@ class VespaQueryClient:
         load_dotenv()
 
         if os.environ.get("USE_MTLS") == "true":
+            print("Connected using mTLS")
             mtls_key = os.environ.get("VESPA_CLOUD_MTLS_KEY")
             mtls_cert = os.environ.get("VESPA_CLOUD_MTLS_CERT")
 
@@ -46,11 +47,10 @@ class VespaQueryClient:
 
             # Instantiate Vespa connection
             self.app = Vespa(
-                url=self.vespa_app_url,
-                key=mtls_key_path,
-                cert=mtls_cert_path
+                url=self.vespa_app_url, key=mtls_key_path, cert=mtls_cert_path
             )
         else:
+            print("Connected using token")
             self.vespa_app_url = os.environ.get("VESPA_APP_TOKEN_URL")
             if not self.vespa_app_url:
                 raise ValueError(
@@ -67,7 +67,7 @@ class VespaQueryClient:
             # Instantiate Vespa connection
             self.app = Vespa(
                 url=self.vespa_app_url,
-                vespa_cloud_secret_token=self.vespa_cloud_secret_token
+                vespa_cloud_secret_token=self.vespa_cloud_secret_token,
             )
 
         self.app.wait_for_application_up()
