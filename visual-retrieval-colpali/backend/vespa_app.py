@@ -19,19 +19,57 @@ class VespaQueryClient:
         Initialize the VespaQueryClient by loading environment variables and establishing a connection to the Vespa application.
         """
         load_dotenv()
-        self.vespa_app_url = os.environ.get("VESPA_APP_URL")
-        self.vespa_cloud_secret_token = os.environ.get("VESPA_CLOUD_SECRET_TOKEN")
 
-        if not self.vespa_app_url or not self.vespa_cloud_secret_token:
-            raise ValueError(
-                "Please set the VESPA_APP_URL and VESPA_CLOUD_SECRET_TOKEN environment variables"
+        if os.environ.get("USE_MTLS") == "true":
+            mtls_key = os.environ.get("VESPA_CLOUD_MTLS_KEY")
+            mtls_cert = os.environ.get("VESPA_CLOUD_MTLS_CERT")
+
+            self.vespa_app_url = os.environ.get("VESPA_APP_MTLS_URL")
+            if not self.vespa_app_url:
+                raise ValueError(
+                    "Please set the VESPA_APP_MTLS_URL environment variable"
+                )
+
+            if not mtls_cert or not mtls_key:
+                raise ValueError(
+                    "USE_MTLS was true, but VESPA_CLOUD_MTLS_KEY and VESPA_CLOUD_MTLS_CERT were not set"
+                )
+
+            # write the key and cert to a file
+            mtls_key_path = "/tmp/vespa-data-plane-private-key.pem"
+            with open(mtls_key_path, "w") as f:
+                f.write(mtls_key)
+
+            mtls_cert_path = "/tmp/vespa-data-plane-public-cert.pem"
+            with open(mtls_cert_path, "w") as f:
+                f.write(mtls_cert)
+
+            # Instantiate Vespa connection
+            self.app = Vespa(
+                url=self.vespa_app_url,
+                key=mtls_key_path,
+                cert=mtls_cert_path
+            )
+        else:
+            self.vespa_app_url = os.environ.get("VESPA_APP_TOKEN_URL")
+            if not self.vespa_app_url:
+                raise ValueError(
+                    "Please set the VESPA_APP_TOKEN_URL environment variable"
+                )
+
+            self.vespa_cloud_secret_token = os.environ.get("VESPA_CLOUD_SECRET_TOKEN")
+
+            if not self.vespa_cloud_secret_token:
+                raise ValueError(
+                    "Please set the VESPA_CLOUD_SECRET_TOKEN environment variable"
+                )
+
+            # Instantiate Vespa connection
+            self.app = Vespa(
+                url=self.vespa_app_url,
+                vespa_cloud_secret_token=self.vespa_cloud_secret_token
             )
 
-        # Instantiate Vespa connection
-        self.app = Vespa(
-            url=self.vespa_app_url,
-            vespa_cloud_secret_token=self.vespa_cloud_secret_token,
-        )
         self.app.wait_for_application_up()
         print(f"Connected to Vespa at {self.vespa_app_url}")
 
