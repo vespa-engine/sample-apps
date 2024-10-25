@@ -1,12 +1,12 @@
 import asyncio
 import base64
-import hashlib
 import io
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
+import uuid
 
 import google.generativeai as genai
 from fasthtml.common import *
@@ -112,7 +112,7 @@ async def keepalive():
 
 
 def generate_query_id(query):
-    return hashlib.md5(query.encode("utf-8")).hexdigest()
+    return uuid.uuid4().hex
 
 
 @rt("/static/{filepath:path}")
