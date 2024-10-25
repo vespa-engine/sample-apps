@@ -80,7 +80,7 @@ result_cache = LRUCache(max_size=20)  # Each result can be ~10MB
 task_cache = LRUCache(
     max_size=1000
 )  # Map from query_id to boolean value - False if not all results are ready.
-thread_pool = ThreadPoolExecutor(max_workers=8)
+thread_pool = ThreadPoolExecutor()
 # Gemini config
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
