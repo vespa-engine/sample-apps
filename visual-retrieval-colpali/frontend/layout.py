@@ -108,6 +108,11 @@ def ThemeToggle(variant="ghost", cls=None, **kwargs):
 def Links():
     return Nav(
         A(
+            Button("what is this?", variant="link"),
+            href="/what-is-this",
+        ),
+        Separator(orientation="vertical"),
+        A(
             Button(Lucide(icon="github"), size="icon", variant="ghost"),
             href="https://github.com/vespa-engine/vespa",
             target="_blank",
@@ -119,7 +124,7 @@ def Links():
         ),
         Separator(orientation="vertical"),
         ThemeToggle(),
-        cls="flex items-center space-x-3",
+        cls="flex items-center space-x-2",
     )
 
 

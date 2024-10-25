@@ -809,6 +809,14 @@ body {
   margin-top: 13vh;
 }
 
+.mt-\[8vh\] {
+  margin-top: 8vh;
+}
+
+.mt-\[5vh\] {
+  margin-top: 5vh;
+}
+
 .block {
   display: block;
 }
@@ -839,6 +847,10 @@ body {
 
 .aspect-square {
   aspect-ratio: 1 / 1;
+}
+
+.aspect-auto {
+  aspect-ratio: auto;
 }
 
 .size-4 {
@@ -919,6 +931,14 @@ body {
   height: 1px;
 }
 
+.h-\[377px\] {
+  height: 377px;
+}
+
+.h-\[610px\] {
+  height: 610px;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -981,6 +1001,14 @@ body {
 
 .w-full {
   width: 100%;
+}
+
+.w-\[377px\] {
+  width: 377px;
+}
+
+.w-\[233px\] {
+  width: 233px;
 }
 
 .min-w-0 {
@@ -1590,6 +1618,11 @@ body {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
 }
 
 .font-bold {
@@ -2650,6 +2683,11 @@ aside {
   .md\:text-7xl {
     font-size: 4.5rem;
     line-height: 1;
+  }
+
+  .md\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
 
   .md\:tracking-wide {

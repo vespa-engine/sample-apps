@@ -6,6 +6,7 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
+from pathlib import Path
 
 import google.generativeai as genai
 from fasthtml.common import *
@@ -20,7 +21,6 @@ from backend.colpali import (
     is_special_token,
 )
 from backend.modelmanager import ModelManager
-from pathlib import Path
 from backend.vespa_app import VespaQueryClient
 from frontend.app import (
     ChatResult,
@@ -30,6 +30,7 @@ from frontend.app import (
     SearchResult,
     SimMapButtonPoll,
     SimMapButtonReady,
+    WhatIsThis,
 )
 from frontend.layout import Layout
 
@@ -122,6 +123,11 @@ def serve_static(filepath: str):
 @rt("/")
 def get():
     return Layout(Main(Home()))
+
+
+@rt("/what-is-this")
+def get():
+    return Layout(Main(WhatIsThis()))
 
 
 @rt("/search")
