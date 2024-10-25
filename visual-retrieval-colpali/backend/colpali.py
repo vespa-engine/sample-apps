@@ -309,6 +309,8 @@ def add_sim_maps_to_result(
         vespa_sim_map = single_result["fields"].get("summaryfeatures", None)
         if vespa_sim_map:
             vespa_sim_maps.append(vespa_sim_map)
+    if not imgs:
+        return result
     sim_map_imgs_generator = gen_similarity_maps(
         model=model,
         processor=processor,
@@ -322,7 +324,14 @@ def add_sim_maps_to_result(
     )
     for img_idx, token, sim_mapb64 in sim_map_imgs_generator:
         print(f"Created sim map for image {img_idx} and token {token}")
-        result["root"]["children"][img_idx]["fields"][f"sim_map_{token}"] = sim_mapb64
+        if (
+            len(result["root"]["children"]) > img_idx
+            and "fields" in result["root"]["children"][img_idx]
+            and "sim_map" in result["root"]["children"][img_idx]["fields"]
+        ):
+            result["root"]["children"][img_idx]["fields"][f"sim_map_{token}"] = (
+                sim_mapb64
+            )
         # Update result_cache with the new sim_map
         result_cache.set(query_id, result)
     # for single_result, sim_map_dict in zip(result["root"]["children"], sim_map_imgs):

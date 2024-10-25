@@ -279,6 +279,9 @@ class VespaQueryClient:
             raise ValueError(f"Unsupported ranking: {ranking}")
 
         # Print score, title id, and text of the results
+        if "root" not in result or "children" not in result["root"]:
+            result["root"] = {"children": []}
+            return result
         for idx, child in enumerate(result["root"]["children"]):
             print(
                 f"Result {idx+1}: {child['relevance']}, {child['fields']['title']}, {child['fields']['id']}"
