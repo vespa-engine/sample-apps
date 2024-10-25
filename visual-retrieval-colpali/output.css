@@ -793,10 +793,6 @@ body {
   margin-top: -1rem;
 }
 
-.-mt-\[21vh\] {
-  margin-top: -21vh;
-}
-
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -807,6 +803,10 @@ body {
 
 .mt-2 {
   margin-top: 0.5rem;
+}
+
+.mt-\[13vh\] {
+  margin-top: 13vh;
 }
 
 .block {
@@ -1106,16 +1106,16 @@ body {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-.grid-rows-\[55px_1fr\] {
-  grid-template-rows: 55px 1fr;
-}
-
 .grid-rows-\[auto_1fr\] {
   grid-template-rows: auto 1fr;
 }
 
 .grid-rows-\[auto_1fr_auto\] {
   grid-template-rows: auto 1fr auto;
+}
+
+.grid-rows-\[minmax\(0\2c 55px\)_minmax\(0\2c 1fr\)\] {
+  grid-template-rows: minmax(0,55px) minmax(0,1fr);
 }
 
 .flex-col {

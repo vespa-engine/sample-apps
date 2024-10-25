@@ -134,7 +134,7 @@ def Layout(*c, **kwargs):
             ),
             *c,
             **kwargs,
-            cls="grid grid-rows-[55px_1fr] min-h-0",
+            cls="grid grid-rows-[minmax(0,55px)_minmax(0,1fr)] min-h-0",
         ),
         layout_script,
         overlay_scrollbars,
