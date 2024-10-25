@@ -723,6 +723,15 @@ colpali_schema = Schema(
             ],
             from_disk=True,
         ),
+        DocumentSummary(
+            name="suggestions",
+            summary_fields=[
+                Summary(
+                    name="questions"
+                ),
+            ],
+            from_disk=True,
+        ),
     ],
 )
 

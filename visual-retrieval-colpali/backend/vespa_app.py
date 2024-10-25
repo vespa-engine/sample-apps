@@ -318,12 +318,12 @@ class VespaQueryClient:
         async with self.app.asyncio(connections=1) as session:
             start = time.perf_counter()
             yql = f'select questions from {self.VESPA_SCHEMA_NAME} where questions matches "{query}" limit 3'
-            print(yql)
             response: VespaQueryResponse = await session.query(
                 body={
                     "yql": yql,
                     "ranking": "unranked",
                     "presentation.timing": True,
+                    "presentation.summary": "suggestions",
                 },
             )
             assert response.is_successful(), response.json
@@ -337,8 +337,6 @@ class VespaQueryClient:
                 if "root" in response.json and "children" in response.json["root"]
                 else []
             )
-            print(response.json)
-
             questions = [
                 result["fields"]["questions"]
                 for result in search_results
