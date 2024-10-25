@@ -394,4 +394,6 @@ def get():
 
 if __name__ == "__main__":
     # ModelManager.get_instance()  # Initialize once at startup
-    serve(port=7860)
+    HOT_RELOAD = os.getenv("HOT_RELOAD", "False").lower() == "true"
+    print(f"Starting app with hot reload: {HOT_RELOAD}")
+    serve(port=7860, reload=HOT_RELOAD)
