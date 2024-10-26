@@ -131,7 +131,7 @@ def get():
 
 
 @rt("/search")
-def get(request):
+def get(session, request):
     # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
     ranking_value = request.query_params.get("ranking", "nn+colpali")
@@ -156,13 +156,9 @@ def get(request):
             )
         )
     # Generate a unique query_id based on the query and ranking value
-    query_id = generate_query_id(query_value + ranking_value)
-    # See if results are already in cache
-    # if result_cache.get(query_id) is not None:
-    #     print(f"Results for query_id {query_id} already in cache")
-    #     result = result_cache.get(query_id)
-    #     search_results = get_results_children(result)
-    #     return Layout(Search(request, search_results))
+    session["query_id"] = generate_query_id(query_value + ranking_value)
+    query_id = session.get("query_id")
+    print(f"Query id in /search: {query_id}")
     # Show the loading message if a query is provided
     return Layout(
         Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
@@ -174,7 +170,7 @@ def get(request):
 
 
 @rt("/fetch_results")
-async def get(request, query: str, nn: bool = True):
+async def get(session, request, query: str, nn: bool = True):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
@@ -184,15 +180,9 @@ async def get(request, query: str, nn: bool = True):
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
     # Generate a unique query_id based on the query and ranking value
-    query_id = generate_query_id(query + ranking_value)
-    # See if results are already in cache
-    # if result_cache.get(query_id) is not None:
-    #     print(f"Results for query_id {query_id} already in cache")
-    #     result = result_cache.get(query_id)
-    #     search_results = get_results_children(result)
-    #     return SearchResult(search_results, query_id)
+    query_id = session.get("query_id")
+    print(f"Query id in /fetch_results: {query_id}")
     # Run the embedding and query against Vespa app
-    task_cache.set(query_id, False)
     model = app.manager.model
     processor = app.manager.processor
     q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
@@ -209,7 +199,15 @@ async def get(request, query: str, nn: bool = True):
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
-    # Add result to cache
+    # Initialize sim_map_ fields in the result
+    fields_to_add = [
+        f"sim_map_{token}"
+        for token in token_to_idx.keys()
+        if not is_special_token(token)
+    ]
+    for child in result["root"]["children"]:
+        for sim_map_key in fields_to_add:
+            child["fields"][sim_map_key] = None
     result_cache.set(query_id, result)
     # Start generating the similarity map in the background
     asyncio.create_task(
@@ -217,15 +215,7 @@ async def get(request, query: str, nn: bool = True):
             model, processor, query, q_embs, token_to_idx, result, query_id
         )
     )
-    fields_to_add = [
-        f"sim_map_{token}"
-        for token in token_to_idx.keys()
-        if not is_special_token(token)
-    ]
     search_results = get_results_children(result)
-    for result in search_results:
-        for sim_map_key in fields_to_add:
-            result["fields"][sim_map_key] = None
     return SearchResult(search_results, query_id)
 
 
