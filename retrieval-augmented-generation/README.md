@@ -162,8 +162,8 @@ To test generation using the OpenAI client, post a query which runs
 the `openai` search chain:
 <pre>
 $ vespa query \
-    --timeout 60
-    --header="X-LLM-API-KEY:insert-api-key-here"
+    --timeout 60 \
+    --header="X-LLM-API-KEY:insert-api-key-here" \
     query="what was the manhattan project?" \
     hits=5 \
     searchChain=openai \
