@@ -299,6 +299,7 @@ def add_sim_maps_to_result(
     query_id: str,
     result_cache,
 ) -> Dict[str, Any]:
+    print("Adding similarity maps to result - query_id:", query_id)
     vit_config = load_vit_config(model)
     imgs: List[str] = []
     vespa_sim_maps: List[str] = []
@@ -310,6 +311,11 @@ def add_sim_maps_to_result(
         if vespa_sim_map:
             vespa_sim_maps.append(vespa_sim_map)
     if not imgs:
+        return result
+    if len(imgs) != len(vespa_sim_maps):
+        print(
+            "Number of images and similarity maps do not match. Skipping similarity map generation."
+        )
         return result
     sim_map_imgs_generator = gen_similarity_maps(
         model=model,
@@ -327,14 +333,14 @@ def add_sim_maps_to_result(
         if (
             len(result["root"]["children"]) > img_idx
             and "fields" in result["root"]["children"][img_idx]
-            and "sim_map" in result["root"]["children"][img_idx]["fields"]
         ):
             result["root"]["children"][img_idx]["fields"][f"sim_map_{token}"] = (
                 sim_mapb64
             )
-        # Update result_cache with the new sim_map
-        result_cache.set(query_id, result)
-    # for single_result, sim_map_dict in zip(result["root"]["children"], sim_map_imgs):
-    #     for token, sim_mapb64 in sim_map_dict.items():
-    #         single_result["fields"][f"sim_map_{token}"] = sim_mapb64
+            # Update result_cache with the new sim_map
+            result_cache.set(query_id, result)
+        else:
+            print(
+                f"Could not add sim map to result for image {img_idx} and token {token}"
+            )
     return result
