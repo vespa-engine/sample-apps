@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
 import uuid
+import hashlib
 
 import google.generativeai as genai
 from fasthtml.common import *
@@ -111,8 +112,9 @@ async def keepalive():
     return
 
 
-def generate_query_id(query):
-    return uuid.uuid4().hex
+def generate_query_id(session_id, query, ranking_value):
+    hash_input = (session_id + query + ranking_value).encode("utf-8")
+    return hashlib.sha256(hash_input).hexdigest()
 
 
 @rt("/static/{filepath:path}")
@@ -121,7 +123,9 @@ def serve_static(filepath: str):
 
 
 @rt("/")
-def get():
+def get(session):
+    if "session_id" not in session:
+        session["session_id"] = str(uuid.uuid4())
     return Layout(Main(Home()))
 
 
@@ -156,7 +160,10 @@ def get(session, request):
             )
         )
     # Generate a unique query_id based on the query and ranking value
-    session["query_id"] = generate_query_id(query_value + ranking_value)
+    if "query_id" not in session:
+        session["query_id"] = generate_query_id(
+            session["session_id"], query_value, ranking_value
+        )
     query_id = session.get("query_id")
     print(f"Query id in /search: {query_id}")
     # Show the loading message if a query is provided
@@ -180,6 +187,11 @@ async def get(session, request, query: str, nn: bool = True):
         f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
     )
     # Generate a unique query_id based on the query and ranking value
+    print(f"Sesssion in /fetch_results: {session}")
+    if "query_id" not in session:
+        session["query_id"] = generate_query_id(
+            session["session_id"], query_value, ranking_value
+        )
     query_id = session.get("query_id")
     print(f"Query id in /fetch_results: {query_id}")
     # Run the embedding and query against Vespa app
