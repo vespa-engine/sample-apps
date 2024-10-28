@@ -1,25 +1,34 @@
 import asyncio
-import base64
-import io
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
-from functools import partial
 from pathlib import Path
 import uuid
-import hashlib
-
 import google.generativeai as genai
-from fasthtml.common import *
-from PIL import Image
-from shad4fast import *
+from fasthtml.common import (
+    Div,
+    Img,
+    Main,
+    P,
+    Script,
+    Link,
+    fast_app,
+    HighlightJS,
+    FileResponse,
+    RedirectResponse,
+    Aside,
+    StreamingResponse,
+    JSONResponse,
+    serve,
+)
+from shad4fast import ShadHead
 from vespa.application import Vespa
+import base64
+from fastcore.parallel import threaded
+from PIL import Image
 
-from backend.cache import LRUCache
 from backend.colpali import (
-    add_sim_maps_to_result,
     get_query_embeddings_and_token_map,
-    is_special_token,
 )
 from backend.modelmanager import ModelManager
 from backend.vespa_app import VespaQueryClient
@@ -77,10 +86,6 @@ app, rt = fast_app(
     ),
 )
 vespa_app: Vespa = VespaQueryClient()
-result_cache = LRUCache(max_size=20)  # Each result can be ~10MB
-task_cache = LRUCache(
-    max_size=1000
-)  # Map from query_id to boolean value - False if not all results are ready.
 thread_pool = ThreadPoolExecutor()
 # Gemini config
 
@@ -96,8 +101,8 @@ gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
 )
 STATIC_DIR = Path(__file__).parent / "static"
-IMG_DIR = STATIC_DIR / "saved"
-os.makedirs(STATIC_DIR, exist_ok=True)
+IMG_DIR = STATIC_DIR / "full_images"
+os.makedirs(IMG_DIR, exist_ok=True)
 
 
 @app.on_event("startup")
@@ -112,9 +117,9 @@ async def keepalive():
     return
 
 
-def generate_query_id(session_id, query, ranking_value):
-    hash_input = (session_id + query + ranking_value).encode("utf-8")
-    return hashlib.sha256(hash_input).hexdigest()
+def generate_query_id(query, ranking_value):
+    hash_input = (query + ranking_value).encode("utf-8")
+    return hash(hash_input)
 
 
 @rt("/static/{filepath:path}")
@@ -135,7 +140,7 @@ def get():
 
 
 @rt("/search")
-def get(session, request):
+def get(request, query: str, ranking: str):
     # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
     ranking_value = request.query_params.get("ranking", "nn+colpali")
@@ -160,12 +165,7 @@ def get(session, request):
             )
         )
     # Generate a unique query_id based on the query and ranking value
-    if "query_id" not in session:
-        session["query_id"] = generate_query_id(
-            session["session_id"], query_value, ranking_value
-        )
-    query_id = session.get("query_id")
-    print(f"Query id in /search: {query_id}")
+    query_id = generate_query_id(query_value, ranking_value)
     # Show the loading message if a query is provided
     return Layout(
         Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
@@ -176,23 +176,31 @@ def get(session, request):
     )  # Show SearchBox and Loading message initially
 
 
+@rt("/fetch_results2")
+def get(query: str, ranking: str):
+    # 1. Get the results from Vespa (without sim_maps and full_images)
+    # Call search-endpoint in Vespa sync.
+
+    # 2. Kick off tasks to fetch sim_maps and full_images
+    # Sim maps - call search endpoint async.
+    # (A) New rank_profile that does not calculate sim_maps.
+    # (A) Make vespa endpoints take select_fields as a parameter.
+    # One sim map per image per token.
+    # the filename query_id_result_idx_token_idx.png
+    # Full image. based on the doc_id.
+    # Each of these tasks saves to disk.
+    # Need a cleanup task to delete old files.
+    # Polling endpoints for sim_maps and full_images checks if file exists and returns it.
+    pass
+
+
 @rt("/fetch_results")
-async def get(session, request, query: str, nn: bool = True):
+async def get(session, request, query: str, ranking: str):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
 
-    # Extract ranking option from the request
-    ranking_value = request.query_params.get("ranking")
-    print(
-        f"/fetch_results: Fetching results for query: {query}, ranking: {ranking_value}"
-    )
-    # Generate a unique query_id based on the query and ranking value
-    print(f"Sesssion in /fetch_results: {session}")
-    if "query_id" not in session:
-        session["query_id"] = generate_query_id(
-            session["session_id"], query_value, ranking_value
-        )
-    query_id = session.get("query_id")
+    # Get the hash of the query and ranking value
+    query_id = generate_query_id(query, ranking)
     print(f"Query id in /fetch_results: {query_id}")
     # Run the embedding and query against Vespa app
     model = app.manager.model
@@ -204,30 +212,15 @@ async def get(session, request, query: str, nn: bool = True):
     result = await vespa_app.get_result_from_query(
         query=query,
         q_embs=q_embs,
-        ranking=ranking_value,
+        ranking=ranking,
         token_to_idx=token_to_idx,
     )
     end = time.perf_counter()
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
-    # Initialize sim_map_ fields in the result
-    fields_to_add = [
-        f"sim_map_{token}"
-        for token in token_to_idx.keys()
-        if not is_special_token(token)
-    ]
-    for child in result["root"]["children"]:
-        for sim_map_key in fields_to_add:
-            child["fields"][sim_map_key] = None
-    result_cache.set(query_id, result)
-    # Start generating the similarity map in the background
-    asyncio.create_task(
-        generate_similarity_map(
-            model, processor, query, q_embs, token_to_idx, result, query_id
-        )
-    )
-    search_results = get_results_children(result)
+    search_results = vespa_app.results_to_search_results(result, token_to_idx)
+
     return SearchResult(search_results, query_id)
 
 
@@ -247,24 +240,37 @@ async def poll_vespa_keepalive():
         print(f"Vespa keepalive: {time.time()}")
 
 
-async def generate_similarity_map(
-    model, processor, query, q_embs, token_to_idx, result, query_id
-):
-    loop = asyncio.get_event_loop()
-    sim_map_task = partial(
-        add_sim_maps_to_result,
-        result=result,
-        model=model,
-        processor=processor,
-        query=query,
-        q_embs=q_embs,
-        token_to_idx=token_to_idx,
-        query_id=query_id,
-        result_cache=result_cache,
-    )
-    sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
-    result_cache.set(query_id, sim_map_result)
-    task_cache.set(query_id, True)
+@threaded
+def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, token_to_idx):
+    # sim_maps = await vespa_app.get_result_from_query(
+    #     query=query,
+    #     q_embs=q_embs,
+    #     ranking=ranking,
+    #     token_to_idx=token_to_idx,
+    #     sim_maps=True,
+    # )
+    print(f"Simulated get_and_store_sim_maps for query_id: {query_id}")
+    return None
+
+
+# async def generate_similarity_map(
+#     model, processor, query, q_embs, token_to_idx, result, query_id
+# ):
+#     loop = asyncio.get_event_loop()
+#     sim_map_task = partial(
+#         add_sim_maps_to_result,
+#         result=result,
+#         model=model,
+#         processor=processor,
+#         query=query,
+#         q_embs=q_embs,
+#         token_to_idx=token_to_idx,
+#         query_id=query_id,
+#         result_cache=result_cache,
+#     )
+#     sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
+#     result_cache.set(query_id, sim_map_result)
+#     task_cache.set(query_id, True)
 
 
 @app.get("/get_sim_map")
@@ -274,39 +280,15 @@ async def get_sim_map(query_id: str, idx: int, token: str):
     when it is ready. If it is not ready, returns a SimMapButtonPoll, that
     continues to poll every 1 second.
     """
-    result = result_cache.get(query_id)
-    if result is None:
-        return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
-    search_results = get_results_children(result)
-    # Check if idx exists in list of children
-    if idx >= len(search_results):
+    if not os.path.exists(IMG_DIR / f"{query_id}_{idx}_{token}.png"):
+        print(f"Sim map not ready for query_id: {query_id}, idx: {idx}, token: {token}")
         return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
     else:
-        sim_map_key = f"sim_map_{token}"
-        sim_map_b64 = search_results[idx]["fields"].get(sim_map_key, None)
-        if sim_map_b64 is None:
-            return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
-        sim_map_img_src = f"data:image/png;base64,{sim_map_b64}"
+        # Sim map is ready, return the path to the image.
+        sim_map_img_src = f"/serve_full_images/{query_id}_{idx}_{token}.png"
         return SimMapButtonReady(
             query_id=query_id, idx=idx, token=token, img_src=sim_map_img_src
         )
-
-
-async def update_full_image_cache(docid: str, query_id: str, idx: int, image_data: str):
-    result = None
-    max_wait = 20  # seconds. If horribly slow network latency.
-    start_time = time.time()
-    while result is None and time.time() - start_time < max_wait:
-        result = result_cache.get(query_id)
-        if result is None:
-            await asyncio.sleep(0.1)
-    try:
-        result["root"]["children"][idx]["fields"]["full_image"] = image_data
-    except KeyError as err:
-        print(f"Error updating full image cache: {err}")
-    result_cache.set(query_id, result)
-    print(f"Full image cache updated for query_id {query_id}")
-    return
 
 
 @app.get("/full_image")
@@ -314,11 +296,18 @@ async def full_image(docid: str, query_id: str, idx: int):
     """
     Endpoint to get the full quality image for a given result id.
     """
-    image_data = await vespa_app.get_full_image_from_vespa(docid)
-    # Update the cache with the full image data
-    asyncio.create_task(update_full_image_cache(docid, query_id, idx, image_data))
+    img_path = IMG_DIR / f"{query_id}_{idx}.jpg"
+    if not os.path.exists(img_path):
+        image_data = await vespa_app.get_full_image_from_vespa(docid)
+        # image data is base 64 encoded string. Save it to disk as jpg.
+        with open(img_path, "wb") as f:
+            f.write(base64.b64decode(image_data))
+        print(f"Full image saved to disk for query_id: {query_id}, idx: {idx}")
+    else:
+        with open(img_path, "rb") as f:
+            image_data = base64.b64encode(f.read()).decode("utf-8")
     return Img(
-        src=f"data:image/png;base64,{image_data}",
+        src=f"data:image/jpeg;base64,{image_data}",
         alt="something",
         cls="result-image w-full h-full object-contain",
     )
@@ -338,28 +327,25 @@ async def get_suggestions(request):
 
 async def message_generator(query_id: str, query: str):
     images = []
-    result = None
-    all_images_ready = False
+    num_images = 3  # Number of images before firing chat request
     max_wait = 10  # seconds
     start_time = time.time()
-    while not all_images_ready and time.time() - start_time < max_wait:
-        result = result_cache.get(query_id)
-        if result is None:
-            await asyncio.sleep(0.1)
-            continue
-        search_results = get_results_children(result)
-        for single_result in search_results:
-            img = single_result["fields"].get("full_image", None)
-            if img is not None:
-                images.append(img)
-                if len(images) == len(search_results):
-                    all_images_ready = True
-                    break
+    # Check if full images are ready on disk
+    while len(images) < num_images and time.time() - start_time < max_wait:
+        for idx in range(num_images):
+            if not os.path.exists(IMG_DIR / f"{query_id}_{idx}.jpg"):
+                print(
+                    f"Message generator: Full image not ready for query_id: {query_id}, idx: {idx}"
+                )
+                continue
             else:
-                await asyncio.sleep(0.1)
-
-    # from b64 to PIL image
-    images = [Image.open(io.BytesIO(base64.b64decode(img))) for img in images]
+                print(
+                    f"Message generator: image ready for query_id: {query_id}, idx: {idx}"
+                )
+                images.append(Image.open(IMG_DIR / f"{query_id}_{idx}.jpg"))
+        await asyncio.sleep(0.2)
+    # yield message with number of images ready
+    yield f"event: message\ndata: Generating response based on {len(images)} images.\n\n"
     if not images:
         yield "event: message\ndata: I am sorry, I do not have enough information in the image to answer your question.\n\n"
         yield "event: close\ndata: \n\n"
