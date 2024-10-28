@@ -8,5 +8,5 @@ template/
 *.json
 output/
 pdfs/
-static/saved/
+static/full_images/
 embeddings/
