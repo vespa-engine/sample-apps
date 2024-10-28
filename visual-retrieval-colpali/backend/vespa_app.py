@@ -12,7 +12,7 @@ from vespa.io import VespaQueryResponse
 class VespaQueryClient:
     MAX_QUERY_TERMS = 64
     VESPA_SCHEMA_NAME = "pdf_page"
-    SELECT_FIELDS = "id,title,url,blur_image,page_number,snippet,text,summaryfeatures"
+    SELECT_FIELDS = "id,title,url,blur_image,page_number,snippet,text"
 
     def __init__(self):
         """
@@ -316,6 +316,19 @@ class VespaQueryClient:
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
         return response.json["root"]["children"][0]["fields"]["full_image"]
+
+    def get_results_children(self, result: VespaQueryResponse) -> list:
+        return result["root"]["children"]
+
+    def results_to_search_results(
+        self, result: VespaQueryResponse, token_to_idx: dict
+    ) -> list:
+        # Initialize sim_map_ fields in the result
+        fields_to_add = [f"sim_map_{token}" for token in token_to_idx.keys()]
+        for child in result["root"]["children"]:
+            for sim_map_key in fields_to_add:
+                child["fields"][sim_map_key] = None
+        return self.get_results_children(result)
 
     async def get_suggestions(self, query: str) -> list:
         async with self.app.asyncio(connections=1) as session:
