@@ -1,18 +1,19 @@
 import os
 import time
 from typing import Any, Dict, Tuple
-
+import asyncio
 import numpy as np
 import torch
 from dotenv import load_dotenv
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
+from .colpali import is_special_token
 
 
 class VespaQueryClient:
     MAX_QUERY_TERMS = 64
     VESPA_SCHEMA_NAME = "pdf_page"
-    SELECT_FIELDS = "id,title,url,blur_image,page_number,snippet,text,summaryfeatures"
+    SELECT_FIELDS = "id,title,url,blur_image,page_number,snippet,text"
 
     def __init__(self):
         """
@@ -73,6 +74,12 @@ class VespaQueryClient:
         self.app.wait_for_application_up()
         print(f"Connected to Vespa at {self.vespa_app_url}")
 
+    def get_fields(self, sim_map: bool = False):
+        if not sim_map:
+            return self.SELECT_FIELDS
+        else:
+            return "summaryfeatures"
+
     def format_query_results(
         self, query: str, response: VespaQueryResponse, hits: int = 5
     ) -> dict:
@@ -100,6 +107,7 @@ class VespaQueryClient:
         q_emb: torch.Tensor,
         hits: int = 3,
         timeout: str = "10s",
+        sim_map: bool = False,
         **kwargs,
     ) -> dict:
         """
@@ -121,9 +129,9 @@ class VespaQueryClient:
             response: VespaQueryResponse = await session.query(
                 body={
                     "yql": (
-                        f"select {self.SELECT_FIELDS} from {self.VESPA_SCHEMA_NAME} where userQuery();"
+                        f"select {self.get_fields(sim_map=sim_map)} from {self.VESPA_SCHEMA_NAME} where userQuery();"
                     ),
-                    "ranking": "default",
+                    "ranking": self.get_rank_profile("default", sim_map),
                     "query": query,
                     "timeout": timeout,
                     "hits": hits,
@@ -146,6 +154,7 @@ class VespaQueryClient:
         q_emb: torch.Tensor,
         hits: int = 3,
         timeout: str = "10s",
+        sim_map: bool = False,
         **kwargs,
     ) -> dict:
         """
@@ -167,9 +176,9 @@ class VespaQueryClient:
             response: VespaQueryResponse = await session.query(
                 body={
                     "yql": (
-                        f"select {self.SELECT_FIELDS} from {self.VESPA_SCHEMA_NAME} where userQuery();"
+                        f"select {self.get_fields(sim_map=sim_map)} from {self.VESPA_SCHEMA_NAME} where userQuery();"
                     ),
-                    "ranking": "bm25",
+                    "ranking": self.get_rank_profile("bm25", sim_map),
                     "query": query,
                     "timeout": timeout,
                     "hits": hits,
@@ -266,29 +275,53 @@ class VespaQueryClient:
         Returns:
             Dict[str, Any]: The query results.
         """
-        print(query)
-        print(token_to_idx)
-
-        if ranking == "nn+colpali":
-            result = await self.query_vespa_nearest_neighbor(query, q_embs)
-        elif ranking == "bm25+colpali":
-            result = await self.query_vespa_default(query, q_embs)
-        elif ranking == "bm25":
-            result = await self.query_vespa_bm25(query, q_embs)
+        rank_method = ranking.split("_")[0]
+        sim_map: bool = len(ranking.split("_")) > 1 and ranking.split("_")[1] == "sim"
+        if rank_method == "nn+colpali":
+            result = await self.query_vespa_nearest_neighbor(
+                query, q_embs, sim_map=sim_map
+            )
+        elif rank_method == "bm25+colpali":
+            result = await self.query_vespa_default(query, q_embs, sim_map=sim_map)
+        elif rank_method == "bm25":
+            result = await self.query_vespa_bm25(query, q_embs, sim_map=sim_map)
         else:
-            raise ValueError(f"Unsupported ranking: {ranking}")
-
+            raise ValueError(f"Unsupported ranking: {rank_method}")
         # Print score, title id, and text of the results
         if "root" not in result or "children" not in result["root"]:
             result["root"] = {"children": []}
             return result
-        for idx, child in enumerate(result["root"]["children"]):
-            print(
-                f"Result {idx+1}: {child['relevance']}, {child['fields']['title']}, {child['fields']['id']}"
-            )
         for single_result in result["root"]["children"]:
             print(single_result["fields"].keys())
         return result
+
+    def get_sim_maps_from_query(
+        self, query: str, q_embs: torch.Tensor, ranking: str, token_to_idx: dict
+    ):
+        """
+        Get similarity maps from Vespa based on the ranking method.
+
+        Args:
+            query (str): The query text.
+            q_embs (torch.Tensor): Query embeddings.
+            ranking (str): The ranking method to use.
+            token_to_idx (dict): Token to index mapping.
+
+        Returns:
+            Dict[str, Any]: The query results.
+        """
+        # Get the result by calling asyncio.run
+        result = asyncio.run(
+            self.get_result_from_query(query, q_embs, ranking, token_to_idx)
+        )
+        vespa_sim_maps = []
+        for single_result in result["root"]["children"]:
+            vespa_sim_map = single_result["fields"].get("summaryfeatures", None)
+            if vespa_sim_map is not None:
+                vespa_sim_maps.append(vespa_sim_map)
+            else:
+                raise ValueError("No sim_map found in Vespa response")
+        return vespa_sim_maps
 
     async def get_full_image_from_vespa(self, doc_id: str) -> str:
         """
@@ -316,6 +349,23 @@ class VespaQueryClient:
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
         return response.json["root"]["children"][0]["fields"]["full_image"]
+
+    def get_results_children(self, result: VespaQueryResponse) -> list:
+        return result["root"]["children"]
+
+    def results_to_search_results(
+        self, result: VespaQueryResponse, token_to_idx: dict
+    ) -> list:
+        # Initialize sim_map_ fields in the result
+        fields_to_add = [
+            f"sim_map_{token}_{idx}"
+            for idx, token in enumerate(token_to_idx.keys())
+            if not is_special_token(token)
+        ]
+        for child in result["root"]["children"]:
+            for sim_map_key in fields_to_add:
+                child["fields"][sim_map_key] = None
+        return self.get_results_children(result)
 
     async def get_suggestions(self, query: str) -> list:
         async with self.app.asyncio(connections=1) as session:
@@ -348,6 +398,12 @@ class VespaQueryClient:
             flat_questions = [item for sublist in questions for item in sublist]
             return flat_questions
 
+    def get_rank_profile(self, ranking: str, sim_map: bool) -> str:
+        if sim_map:
+            return f"{ranking}_sim"
+        else:
+            return ranking
+
     async def query_vespa_nearest_neighbor(
         self,
         query: str,
@@ -355,6 +411,7 @@ class VespaQueryClient:
         target_hits_per_query_tensor: int = 20,
         hits: int = 3,
         timeout: str = "10s",
+        sim_map: bool = False,
         **kwargs,
     ) -> dict:
         """
@@ -385,15 +442,16 @@ class VespaQueryClient:
                 binary_query_embeddings, target_hits_per_query_tensor
             )
             query_tensors.update(nn_query_dict)
-
             response: VespaQueryResponse = await session.query(
                 body={
                     **query_tensors,
                     "presentation.timing": True,
                     "yql": (
-                        f"select {self.SELECT_FIELDS} from {self.VESPA_SCHEMA_NAME} where {nn_string} or userQuery()"
+                        f"select {self.get_fields(sim_map=sim_map)} from {self.VESPA_SCHEMA_NAME} where {nn_string} or userQuery()"
                     ),
-                    "ranking.profile": "retrieval-and-rerank",
+                    "ranking.profile": self.get_rank_profile(
+                        "retrieval-and-rerank", sim_map
+                    ),
                     "timeout": timeout,
                     "hits": hits,
                     "query": query,

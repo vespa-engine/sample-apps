@@ -7,7 +7,7 @@ from typing import cast, Generator
 from pathlib import Path
 import base64
 from io import BytesIO
-from typing import Union, Tuple, List, Dict, Any
+from typing import Union, Tuple, List
 import matplotlib
 import matplotlib.cm as cm
 import re
@@ -49,7 +49,7 @@ def load_model() -> Tuple[ColPali, ColPaliProcessor]:
 
     # Load the processor
     processor = cast(ColPaliProcessor, ColPaliProcessor.from_pretrained(model_name))
-    return model, processor
+    return model, processor, device
 
 
 def load_vit_config(model):
@@ -63,7 +63,6 @@ def gen_similarity_maps(
     model: ColPali,
     processor: ColPaliProcessor,
     device,
-    vit_config,
     query: str,
     query_embs: torch.Tensor,
     token_idx_map: dict,
@@ -88,7 +87,7 @@ def gen_similarity_maps(
         Tuple[int, str, str]: A tuple containing the image index, the selected token, and the base64-encoded image.
 
     """
-
+    vit_config = load_vit_config(model)
     # Process images and store original images and sizes
     processed_images = []
     original_images = []
@@ -254,7 +253,7 @@ def gen_similarity_maps(
 
             # Store the base64-encoded image
             result_per_image[token] = blended_img_base64
-            yield idx, token, blended_img_base64
+            yield idx, token, token_idx, blended_img_base64
     end3 = time.perf_counter()
     print(f"Blending images took: {end3 - start3} s")
 
@@ -287,54 +286,3 @@ def is_special_token(token: str) -> bool:
     if (len(token) < 3) or pattern.match(token):
         return True
     return False
-
-
-def add_sim_maps_to_result(
-    result: Dict[str, Any],
-    model: ColPali,
-    processor: ColPaliProcessor,
-    query: str,
-    q_embs: Any,
-    token_to_idx: Dict[str, int],
-    query_id: str,
-    result_cache,
-) -> Dict[str, Any]:
-    vit_config = load_vit_config(model)
-    imgs: List[str] = []
-    vespa_sim_maps: List[str] = []
-    for single_result in result["root"]["children"]:
-        img = single_result["fields"]["blur_image"]
-        if img:
-            imgs.append(img)
-        vespa_sim_map = single_result["fields"].get("summaryfeatures", None)
-        if vespa_sim_map:
-            vespa_sim_maps.append(vespa_sim_map)
-    if not imgs:
-        return result
-    sim_map_imgs_generator = gen_similarity_maps(
-        model=model,
-        processor=processor,
-        device=model.device if hasattr(model, "device") else "cpu",
-        vit_config=vit_config,
-        query=query,
-        query_embs=q_embs,
-        token_idx_map=token_to_idx,
-        images=imgs,
-        vespa_sim_maps=vespa_sim_maps,
-    )
-    for img_idx, token, sim_mapb64 in sim_map_imgs_generator:
-        print(f"Created sim map for image {img_idx} and token {token}")
-        if (
-            len(result["root"]["children"]) > img_idx
-            and "fields" in result["root"]["children"][img_idx]
-            and "sim_map" in result["root"]["children"][img_idx]["fields"]
-        ):
-            result["root"]["children"][img_idx]["fields"][f"sim_map_{token}"] = (
-                sim_mapb64
-            )
-        # Update result_cache with the new sim_map
-        result_cache.set(query_id, result)
-    # for single_result, sim_map_dict in zip(result["root"]["children"], sim_map_imgs):
-    #     for token, sim_mapb64 in sim_map_dict.items():
-    #         single_result["fields"][f"sim_map_{token}"] = sim_mapb64
-    return result

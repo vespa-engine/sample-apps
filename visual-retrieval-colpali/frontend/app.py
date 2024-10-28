@@ -323,14 +323,13 @@ def SimMapButtonReady(query_id, idx, token, img_src):
     )
 
 
-def SimMapButtonPoll(query_id, idx, token):
+def SimMapButtonPoll(query_id, idx, token, token_idx):
     return Button(
         Lucide(icon="loader-circle", size="15", cls="animate-spin"),
         size="sm",
         disabled=True,
-        hx_get=f"/get_sim_map?query_id={query_id}&idx={idx}&token={token}",
-        # Poll every x seconds, where x is 0.3 x idx, formatted to 2 decimals
-        hx_trigger=f"every {(idx+1)*0.3:.2f}s",
+        hx_get=f"/get_sim_map?query_id={query_id}&idx={idx}&token={token}&token_idx={token_idx}",
+        hx_trigger="every 0.5s",
         hx_swap="outerHTML",
         cls="pointer-events-auto text-xs h-5 rounded-none px-2",
     )
@@ -352,7 +351,6 @@ def SearchResult(results: list, query_id: Optional[str] = None):
         fields = result["fields"]  # Extract the 'fields' part of each result
         blur_image_base64 = f"data:image/jpeg;base64,{fields['blur_image']}"
 
-        # Filter sim_map fields that are words with 4 or more characters
         sim_map_fields = {
             key: value
             for key, value in fields.items()
@@ -370,14 +368,17 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     SimMapButtonReady(
                         query_id=query_id,
                         idx=idx,
-                        token=key.split("_")[-1],
+                        token=key.split("_")[-2],
                         img_src=sim_map_base64,
                     )
                 )
             else:
                 sim_map_buttons.append(
                     SimMapButtonPoll(
-                        query_id=query_id, idx=idx, token=key.split("_")[-1]
+                        query_id=query_id,
+                        idx=idx,
+                        token=key.split("_")[-2],
+                        token_idx=int(key.split("_")[-1]),
                     )
                 )
 

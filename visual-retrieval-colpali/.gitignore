@@ -8,4 +8,6 @@ template/
 *.json
 output/
 pdfs/
-static/saved/
+static/full_images/
+static/sim_maps/
+embeddings/
