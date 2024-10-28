@@ -1,8 +1,8 @@
 import asyncio
 import os
 import time
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 import uuid
 import google.generativeai as genai
 from fasthtml.common import (
@@ -27,9 +27,7 @@ import base64
 from fastcore.parallel import threaded
 from PIL import Image
 
-from backend.colpali import (
-    get_query_embeddings_and_token_map,
-)
+from backend.colpali import get_query_embeddings_and_token_map, gen_similarity_maps
 from backend.modelmanager import ModelManager
 from backend.vespa_app import VespaQueryClient
 from frontend.app import (
@@ -100,9 +98,11 @@ But, you should NOT include backticks (`) or HTML tags in your response.
 gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
 )
-STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR = Path("static")
 IMG_DIR = STATIC_DIR / "full_images"
+SIM_MAP_DIR = STATIC_DIR / "sim_maps"
 os.makedirs(IMG_DIR, exist_ok=True)
+os.makedirs(SIM_MAP_DIR, exist_ok=True)
 
 
 @app.on_event("startup")
@@ -140,7 +140,7 @@ def get():
 
 
 @rt("/search")
-def get(request, query: str, ranking: str):
+def get(request):
     # Extract the 'query' and 'ranking' parameters from the URL
     query_value = request.query_params.get("query", "").strip()
     ranking_value = request.query_params.get("ranking", "nn+colpali")
@@ -220,7 +220,13 @@ async def get(session, request, query: str, ranking: str):
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
     search_results = vespa_app.results_to_search_results(result, token_to_idx)
-
+    get_and_store_sim_maps(
+        query_id=query_id,
+        query=query,
+        q_embs=q_embs,
+        ranking=ranking,
+        token_to_idx=token_to_idx,
+    )
     return SearchResult(search_results, query_id)
 
 
@@ -242,52 +248,62 @@ async def poll_vespa_keepalive():
 
 @threaded
 def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, token_to_idx):
-    # sim_maps = await vespa_app.get_result_from_query(
-    #     query=query,
-    #     q_embs=q_embs,
-    #     ranking=ranking,
-    #     token_to_idx=token_to_idx,
-    #     sim_maps=True,
-    # )
-    print(f"Simulated get_and_store_sim_maps for query_id: {query_id}")
-    return None
-
-
-# async def generate_similarity_map(
-#     model, processor, query, q_embs, token_to_idx, result, query_id
-# ):
-#     loop = asyncio.get_event_loop()
-#     sim_map_task = partial(
-#         add_sim_maps_to_result,
-#         result=result,
-#         model=model,
-#         processor=processor,
-#         query=query,
-#         q_embs=q_embs,
-#         token_to_idx=token_to_idx,
-#         query_id=query_id,
-#         result_cache=result_cache,
-#     )
-#     sim_map_result = await loop.run_in_executor(thread_pool, sim_map_task)
-#     result_cache.set(query_id, sim_map_result)
-#     task_cache.set(query_id, True)
+    ranking_sim = ranking + "_sim"
+    vespa_sim_maps = vespa_app.get_sim_maps_from_query(
+        query=query,
+        q_embs=q_embs,
+        ranking=ranking_sim,
+        token_to_idx=token_to_idx,
+    )
+    img_paths = [
+        IMG_DIR / f"{query_id}_{idx}.jpg" for idx in range(len(vespa_sim_maps))
+    ]
+    # All images should be downloaded, but best to wait 5 secs
+    max_wait = 5
+    start_time = time.time()
+    while (
+        not all([os.path.exists(img_path) for img_path in img_paths])
+        and time.time() - start_time < max_wait
+    ):
+        time.sleep(0.2)
+    if not all([os.path.exists(img_path) for img_path in img_paths]):
+        print(f"Images not ready in 5 seconds for query_id: {query_id}")
+        return False
+    sim_map_generator = gen_similarity_maps(
+        model=app.manager.model,
+        processor=app.manager.processor,
+        device=app.manager.device,
+        query=query,
+        query_embs=q_embs,
+        token_idx_map=token_to_idx,
+        images=img_paths,
+        vespa_sim_maps=vespa_sim_maps,
+    )
+    for idx, token, token_idx, blended_img_base64 in sim_map_generator:
+        with open(SIM_MAP_DIR / f"{query_id}_{idx}_{token_idx}.png", "wb") as f:
+            f.write(base64.b64decode(blended_img_base64))
+        print(
+            f"Sim map saved to disk for query_id: {query_id}, idx: {idx}, token: {token}"
+        )
+    return True
 
 
 @app.get("/get_sim_map")
-async def get_sim_map(query_id: str, idx: int, token: str):
+async def get_sim_map(query_id: str, idx: int, token: str, token_idx: int):
     """
     Endpoint that each of the sim map button polls to get the sim map image
     when it is ready. If it is not ready, returns a SimMapButtonPoll, that
     continues to poll every 1 second.
     """
-    if not os.path.exists(IMG_DIR / f"{query_id}_{idx}_{token}.png"):
+    sim_map_path = SIM_MAP_DIR / f"{query_id}_{idx}_{token_idx}.png"
+    if not os.path.exists(sim_map_path):
         print(f"Sim map not ready for query_id: {query_id}, idx: {idx}, token: {token}")
-        return SimMapButtonPoll(query_id=query_id, idx=idx, token=token)
+        return SimMapButtonPoll(
+            query_id=query_id, idx=idx, token=token, token_idx=token_idx
+        )
     else:
-        # Sim map is ready, return the path to the image.
-        sim_map_img_src = f"/serve_full_images/{query_id}_{idx}_{token}.png"
         return SimMapButtonReady(
-            query_id=query_id, idx=idx, token=token, img_src=sim_map_img_src
+            query_id=query_id, idx=idx, token=token, img_src=sim_map_path
         )
 
 
