@@ -9,4 +9,5 @@ template/
 output/
 pdfs/
 static/full_images/
+static/sim_maps/
 embeddings/
