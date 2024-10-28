@@ -17,7 +17,7 @@ class ModelManager:
 
     def initialize_model_and_processor(self):
         if self.model is None or self.processor is None:  # Ensure no reinitialization
-            self.model, self.processor = load_model()
+            self.model, self.processor, self.device = load_model()
             if self.model is None or self.processor is None:
                 print("Failed to initialize model or processor at startup")
             else:
