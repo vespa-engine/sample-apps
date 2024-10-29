@@ -106,6 +106,30 @@ autocomplete_script = Script(
     """
 )
 
+full_text_script = Script(
+    """
+    (function () {
+        const { OverlayScrollbars } = OverlayScrollbarsGlobal;
+
+        function applyOverlayScrollbarsToResults() {
+            const resultTextFullElements = document.querySelectorAll('[id^="result-text-full"]');
+            resultTextFullElements.forEach(element => {
+                OverlayScrollbars(element, {
+                    scrollbars: {
+                        theme: 'os-theme-light',  // Adjust the theme based on your preference
+                        visibility: 'auto',
+                        autoHide: 'leave',
+                        autoHideDelay: 800
+                    }
+                });
+            });
+        }
+
+        applyOverlayScrollbarsToResults();
+    })();
+    """
+)
+
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted w-full"
@@ -477,19 +501,23 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                             NotStr(fields.get("snippet", "")),
                                             cls="text-highlight text-muted-foreground",
                                         ),
-                                        cls="grid gap-y-3 p-5 border border-dashed",
+                                        cls="grid gap-y-3 p-8 border border-dashed",
                                     ),
                                     Div(
-                                        H3("Full text", cls="text-base font-semibold"),
-                                        P(
-                                            NotStr(fields.get("text", "")),
-                                            cls="text-highlight text-muted-foreground",
+                                        Div(
+                                            H3("Full text", cls="text-base font-semibold"),
+                                            P(
+                                                NotStr(fields.get("text", "")),
+                                                cls="text-highlight text-muted-foreground",
+                                            ),
+                                            cls="grid grid-rows-[auto_0px] content-start gap-y-3",
                                         ),
-                                        cls="grid gap-y-3 p-5 border border-dashed",
+                                        id=f"result-text-full-{idx}",
+                                        cls="grid gap-y-3 p-8 border border-dashed",
                                     ),
-                                    cls="grid gap-y-3 p-3 text-sm",
+                                    cls="grid grid-rows-[auto_1fr] gap-y-5 p-5 text-sm",
                                 ),
-                                cls="grid bg-background content-start ",
+                                cls="grid bg-background",
                             ),
                             cls="grid bg-muted p-2",
                         ),
@@ -507,6 +535,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
         *result_items,
         image_swapping,
         toggle_text_content,
+        full_text_script,
         id="search-results",
         cls="grid grid-cols-1 gap-px bg-border min-h-0",
     )
@@ -514,7 +543,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult(query_id: str, query: str):
     return Div(
-        Div("AI-response (Gemini-8B)", cls="text-xl font-semibold p-3"),
+        Div("AI-response (Gemini-8B)", cls="text-xl font-semibold p-5"),
         Div(
             Div(
                 Div(
@@ -527,7 +556,7 @@ def ChatResult(query_id: str, query: str):
                 ),
             ),
             id="chat-messages",
-            cls="overflow-auto min-h-0 grid items-end px-3",
+            cls="overflow-auto min-h-0 grid items-end px-5",
         ),
         cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

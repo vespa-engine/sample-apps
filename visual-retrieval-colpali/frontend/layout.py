@@ -42,6 +42,10 @@ overlay_scrollbars = Script(
 
             // Reinitialize OverlayScrollbars with the new theme
             OverlayScrollbars(element, {
+                overflow: {
+                    x: 'hidden',
+                    y: 'scroll'
+                },
                 scrollbars: {
                     theme: scrollbarTheme,
                     visibility: 'auto',

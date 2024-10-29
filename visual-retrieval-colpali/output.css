@@ -935,6 +935,10 @@ body {
   max-height: 100vh;
 }
 
+.max-h-64 {
+  max-height: 16rem;
+}
+
 .min-h-0 {
   min-height: 0px;
 }
@@ -1017,6 +1021,10 @@ body {
 
 .shrink-0 {
   flex-shrink: 0;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 
 .grow {
@@ -1126,6 +1134,26 @@ body {
   grid-template-rows: minmax(0,55px) minmax(0,1fr);
 }
 
+.grid-rows-\[1fr\] {
+  grid-template-rows: 1fr;
+}
+
+.grid-rows-\[auto_500px\] {
+  grid-template-rows: auto 500px;
+}
+
+.grid-rows-\[auto_400px\] {
+  grid-template-rows: auto 400px;
+}
+
+.grid-rows-\[auto_300px\] {
+  grid-template-rows: auto 300px;
+}
+
+.grid-rows-\[auto_0px\] {
+  grid-template-rows: auto 0px;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -1210,6 +1238,10 @@ body {
 
 .gap-y-3 {
   row-gap: 0.75rem;
+}
+
+.gap-y-5 {
+  row-gap: 1.25rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1395,6 +1427,10 @@ body {
   background-color: hsl(var(--secondary));
 }
 
+.bg-muted\/80 {
+  background-color: hsl(var(--muted) / 0.8);
+}
+
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -1455,6 +1491,10 @@ body {
   padding: 1px;
 }
 
+.p-8 {
+  padding: 2rem;
+}
+
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -1508,6 +1548,16 @@ body {
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .pl-10 {
@@ -1678,6 +1728,11 @@ body {
 
 .text-transparent {
   color: transparent;
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .no-underline {
@@ -2681,6 +2736,10 @@ aside {
   border-color: hsl(var(--destructive));
 }
 
+.dark\:bg-muted\/40:where(.dark, .dark *) {
+  background-color: hsl(var(--muted) / 0.4);
+}
+
 .dark\:from-white:where(.dark, .dark *) {
   --tw-gradient-from: #fff var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
@@ -2689,6 +2748,11 @@ aside {
 
 .dark\:to-slate-300:where(.dark, .dark *) {
   --tw-gradient-to: #cbd5e1 var(--tw-gradient-to-position);
+}
+
+.dark\:text-white:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
 .dark\:hover\:border-white:hover:where(.dark, .dark *) {
