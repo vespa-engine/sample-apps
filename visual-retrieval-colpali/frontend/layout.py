@@ -108,8 +108,8 @@ def ThemeToggle(variant="ghost", cls=None, **kwargs):
 def Links():
     return Nav(
         A(
-            Button("What's this?", variant="link"),
-            href="/what-is-this",
+            Button("About this demo?", variant="link"),
+            href="/about-this-demo",
         ),
         Separator(orientation="vertical"),
         A(

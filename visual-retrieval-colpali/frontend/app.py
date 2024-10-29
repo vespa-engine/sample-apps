@@ -235,7 +235,7 @@ def Home():
     )
 
 
-def WhatIsThis():
+def AboutThisDemo():
     return Div(
         Div(
             Div(
