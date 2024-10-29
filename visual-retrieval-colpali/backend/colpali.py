@@ -302,8 +302,7 @@ def should_filter_token(token: str) -> bool:
     # )
     # %
     # /)
-
-    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)\S+$|^Question$")
+    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)\S+$|^Question$|^▁$")
     if pattern.match(token):
         return True
     return False
