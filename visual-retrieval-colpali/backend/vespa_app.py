@@ -261,7 +261,7 @@ class VespaQueryClient:
         query: str,
         q_embs: torch.Tensor,
         ranking: str,
-        token_to_idx: dict,
+        idx_to_token: dict,
     ) -> Dict[str, Any]:
         """
         Get query results from Vespa based on the ranking method.
@@ -270,7 +270,7 @@ class VespaQueryClient:
             query (str): The query text.
             q_embs (torch.Tensor): Query embeddings.
             ranking (str): The ranking method to use.
-            token_to_idx (dict): Token to index mapping.
+            idx_to_token (dict): Index to token mapping.
 
         Returns:
             Dict[str, Any]: The query results.
@@ -296,7 +296,7 @@ class VespaQueryClient:
         return result
 
     def get_sim_maps_from_query(
-        self, query: str, q_embs: torch.Tensor, ranking: str, token_to_idx: dict
+        self, query: str, q_embs: torch.Tensor, ranking: str, idx_to_token: dict
     ):
         """
         Get similarity maps from Vespa based on the ranking method.
@@ -305,14 +305,14 @@ class VespaQueryClient:
             query (str): The query text.
             q_embs (torch.Tensor): Query embeddings.
             ranking (str): The ranking method to use.
-            token_to_idx (dict): Token to index mapping.
+            idx_to_token (dict): Index to token mapping.
 
         Returns:
             Dict[str, Any]: The query results.
         """
         # Get the result by calling asyncio.run
         result = asyncio.run(
-            self.get_result_from_query(query, q_embs, ranking, token_to_idx)
+            self.get_result_from_query(query, q_embs, ranking, idx_to_token)
         )
         vespa_sim_maps = []
         for single_result in result["root"]["children"]:
@@ -354,12 +354,12 @@ class VespaQueryClient:
         return result["root"]["children"]
 
     def results_to_search_results(
-        self, result: VespaQueryResponse, token_to_idx: dict
+        self, result: VespaQueryResponse, idx_to_token: dict
     ) -> list:
         # Initialize sim_map_ fields in the result
         fields_to_add = [
             f"sim_map_{token}_{idx}"
-            for idx, token in enumerate(token_to_idx.keys())
+            for idx, token in idx_to_token.items()
             if not is_special_token(token)
         ]
         for child in result["root"]["children"]:

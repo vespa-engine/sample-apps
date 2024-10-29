@@ -205,7 +205,7 @@ async def get(session, request, query: str, ranking: str):
     # Run the embedding and query against Vespa app
     model = app.manager.model
     processor = app.manager.processor
-    q_embs, token_to_idx = get_query_embeddings_and_token_map(processor, model, query)
+    q_embs, idx_to_token = get_query_embeddings_and_token_map(processor, model, query)
 
     start = time.perf_counter()
     # Fetch real search results from Vespa
@@ -213,19 +213,19 @@ async def get(session, request, query: str, ranking: str):
         query=query,
         q_embs=q_embs,
         ranking=ranking,
-        token_to_idx=token_to_idx,
+        idx_to_token=idx_to_token,
     )
     end = time.perf_counter()
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
-    search_results = vespa_app.results_to_search_results(result, token_to_idx)
+    search_results = vespa_app.results_to_search_results(result, idx_to_token)
     get_and_store_sim_maps(
         query_id=query_id,
         query=query,
         q_embs=q_embs,
         ranking=ranking,
-        token_to_idx=token_to_idx,
+        idx_to_token=idx_to_token,
     )
     return SearchResult(search_results, query_id)
 
@@ -247,13 +247,13 @@ async def poll_vespa_keepalive():
 
 
 @threaded
-def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, token_to_idx):
+def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, idx_to_token):
     ranking_sim = ranking + "_sim"
     vespa_sim_maps = vespa_app.get_sim_maps_from_query(
         query=query,
         q_embs=q_embs,
         ranking=ranking_sim,
-        token_to_idx=token_to_idx,
+        idx_to_token=idx_to_token,
     )
     img_paths = [
         IMG_DIR / f"{query_id}_{idx}.jpg" for idx in range(len(vespa_sim_maps))
@@ -275,7 +275,7 @@ def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, token_to_idx):
         device=app.manager.device,
         query=query,
         query_embs=q_embs,
-        token_idx_map=token_to_idx,
+        token_idx_map=idx_to_token,
         images=img_paths,
         vespa_sim_maps=vespa_sim_maps,
     )
@@ -303,7 +303,11 @@ async def get_sim_map(query_id: str, idx: int, token: str, token_idx: int):
         )
     else:
         return SimMapButtonReady(
-            query_id=query_id, idx=idx, token=token, img_src=sim_map_path
+            query_id=query_id,
+            idx=idx,
+            token=token,
+            token_idx=token_idx,
+            img_src=sim_map_path,
         )
 
 
