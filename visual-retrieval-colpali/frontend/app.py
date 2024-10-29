@@ -506,7 +506,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult(query_id: str, query: str):
     return Div(
-        Div("AI-generated response", cls="text-xl font-semibold p-3"),
+        Div("AI-response (Gemini-8B)", cls="text-xl font-semibold p-3"),
         Div(
             Div(
                 Div(
