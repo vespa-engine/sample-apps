@@ -356,7 +356,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             for key, value in fields.items()
             if key.startswith(
                 "sim_map_"
-            )  # filtering is done before creating with 'is_special_token'-function
+            )  # filtering is done before creating with 'should_filter_token'-function
         }
 
         # Generate buttons for the sim_map fields

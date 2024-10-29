@@ -207,7 +207,7 @@ def gen_similarity_maps(
 
         result_per_image = {}
         for token_idx, token in token_idx_map.items():
-            if is_special_token(token):
+            if should_filter_token(token):
                 continue
 
             # Get the similarity map for this image and the selected token
@@ -279,10 +279,31 @@ def get_query_embeddings_and_token_map(
     return q_emb, idx_to_token
 
 
-def is_special_token(token: str) -> bool:
-    # Pattern for tokens that start with '<', numbers, whitespace, or single characters, or the string 'Question'
+def should_filter_token(token: str) -> bool:
+    # Pattern to match tokens that start with '<', numbers, whitespace, special characters (except ▁), or the string 'Question'
     # Will exclude these tokens from the similarity map generation
-    pattern = re.compile(r"^<.*$|^\d+$|^\s+$|^\w$|^Question$")
-    if (len(token) < 3) or pattern.match(token):
+    # Does NOT match:
+    # 2
+    # 0
+    # 2
+    # 3
+    # ▁2
+    # ▁hi
+    #
+    # Do match:
+    # <bos>
+    # Question
+    # :
+    # _Percentage
+    # <pad>
+    # \n
+    # ▁
+    # ?
+    # )
+    # %
+    # /)
+
+    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)\S+$|^Question$")
+    if pattern.match(token):
         return True
     return False
