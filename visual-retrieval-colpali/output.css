@@ -1304,6 +1304,10 @@ body {
   border-top-width: 1px;
 }
 
+.border-dashed {
+  border-style: dashed;
+}
+
 .border-destructive {
   border-color: hsl(var(--destructive));
 }

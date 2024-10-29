@@ -1,7 +1,7 @@
 from typing import Optional
 from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span
+from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span, H3
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
@@ -471,15 +471,23 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         Div(
                             Div(
                                 Div(
-                                    P(
-                                        NotStr(fields.get("snippet", "")),
-                                        cls="text-highlight text-muted-foreground",
+                                    Div(
+                                        H3("Dynamic summary", cls="text-base font-semibold"),
+                                        P(
+                                            NotStr(fields.get("snippet", "")),
+                                            cls="text-highlight text-muted-foreground",
+                                        ),
+                                        cls="grid gap-y-3 p-5 border border-dashed",
                                     ),
-                                    P(
-                                        NotStr(fields.get("text", "")),
-                                        cls="text-highlight text-muted-foreground",
+                                    Div(
+                                        H3("Full text", cls="text-base font-semibold"),
+                                        P(
+                                            NotStr(fields.get("text", "")),
+                                            cls="text-highlight text-muted-foreground",
+                                        ),
+                                        cls="grid gap-y-3 p-5 border border-dashed",
                                     ),
-                                    cls="grid gap-y-3 p-5 text-sm",
+                                    cls="grid gap-y-3 p-3 text-sm",
                                 ),
                                 cls="grid bg-background content-start ",
                             ),
