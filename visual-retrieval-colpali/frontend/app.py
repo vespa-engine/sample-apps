@@ -108,10 +108,10 @@ autocomplete_script = Script(
 
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
-    grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
+    grid_cls = "grid gap-2 items-center p-3 bg-muted w-full"
 
     if with_border:
-        grid_cls = "grid gap-2 p-3 rounded-md border border-input bg-muted/80 dark:bg-muted/40 w-full ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:border-input"
+        grid_cls = "grid gap-2 p-3 rounded-md border border-input bg-muted w-full ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:border-input"
 
     return Form(
         Div(
@@ -213,7 +213,7 @@ def Hero():
     return Div(
         H1(
             "Vespa.ai + ColPali",
-            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
+            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-slate-700 dark:from-white dark:to-slate-300 animate-fade-in",
         ),
         P(
             "Efficient Document Retrieval with Vision Language Models",
@@ -453,7 +453,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                     ),
                                     cls="relative w-full h-full",
                                 ),
-                                cls="grid bg-border p-2",
+                                cls="grid bg-muted p-2",
                             ),
                             cls="block",
                         ),
@@ -483,7 +483,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                 ),
                                 cls="grid bg-background content-start ",
                             ),
-                            cls="grid bg-border p-2",
+                            cls="grid bg-muted p-2",
                         ),
                         id=f"text-column-{idx}",
                         cls="text-column relative bg-background px-3 py-5 hidden md-grid-text-column",
