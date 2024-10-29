@@ -166,8 +166,11 @@
 }
 
 .text-highlight strong {
-    background-color: #61D790;
-    color: #2E2F27;
+    color: black;
+
+    .dark & {
+        color: white;
+    }
 }
 
 .tokens-button {
