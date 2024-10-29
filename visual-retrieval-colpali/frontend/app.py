@@ -313,12 +313,12 @@ def LoadingSkeleton():
     )
 
 
-def SimMapButtonReady(query_id, idx, token, img_src):
+def SimMapButtonReady(query_id, idx, token, token_idx, img_src):
     return Button(
         token.replace("\u2581", ""),
         size="sm",
         data_image_src=img_src,
-        id=f"sim-map-button-{query_id}-{idx}-{token}",
+        id=f"sim-map-button-{query_id}-{idx}-{token_idx}-{token}",
         cls="sim-map-button pointer-events-auto font-mono text-xs h-5 rounded-none px-2",
     )
 
@@ -356,19 +356,22 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             for key, value in fields.items()
             if key.startswith(
                 "sim_map_"
-            )  # filtering is done before creating with 'is_special_token'-function
+            )  # filtering is done before creating with 'should_filter_token'-function
         }
 
         # Generate buttons for the sim_map fields
         sim_map_buttons = []
         for key, value in sim_map_fields.items():
+            token = key.split("_")[-2]
+            token_idx = int(key.split("_")[-1])
             if value is not None:
                 sim_map_base64 = f"data:image/jpeg;base64,{value}"
                 sim_map_buttons.append(
                     SimMapButtonReady(
                         query_id=query_id,
                         idx=idx,
-                        token=key.split("_")[-2],
+                        token=token,
+                        token_idx=token_idx,
                         img_src=sim_map_base64,
                     )
                 )
@@ -377,8 +380,8 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                     SimMapButtonPoll(
                         query_id=query_id,
                         idx=idx,
-                        token=key.split("_")[-2],
-                        token_idx=int(key.split("_")[-1]),
+                        token=token,
+                        token_idx=token_idx,
                     )
                 )
 

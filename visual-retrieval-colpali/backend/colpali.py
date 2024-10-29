@@ -79,7 +79,7 @@ def gen_similarity_maps(
         vit_config: Configuration for the Vision Transformer.
         query (str): The query string.
         query_embs (torch.Tensor): Query embeddings.
-        token_idx_map (dict): Mapping from tokens to their indices.
+        token_idx_map (dict): Mapping from indices to tokens.
         images (List[Union[Path, str]]): List of image paths or base64-encoded strings.
         vespa_sim_maps (List[str]): List of Vespa similarity maps.
 
@@ -206,8 +206,8 @@ def gen_similarity_maps(
         )
 
         result_per_image = {}
-        for token, token_idx in token_idx_map.items():
-            if is_special_token(token):
+        for token_idx, token in token_idx_map.items():
+            if should_filter_token(token):
                 continue
 
             # Get the similarity map for this image and the selected token
@@ -262,7 +262,7 @@ def get_query_embeddings_and_token_map(
     processor, model, query
 ) -> Tuple[torch.Tensor, dict]:
     if model is None:  # use static test query data (saves time when testing)
-        return testquery.q_embs, testquery.token_to_idx
+        return testquery.q_embs, testquery.idx_to_token
 
     start_time = time.perf_counter()
     inputs = processor.process_queries([query]).to(model.device)
@@ -273,16 +273,36 @@ def get_query_embeddings_and_token_map(
     query_tokens = processor.tokenizer.tokenize(processor.decode(inputs.input_ids[0]))
     # reverse key, values in dictionary
     print(query_tokens)
-    token_to_idx = {val: idx for idx, val in enumerate(query_tokens)}
+    idx_to_token = {idx: val for idx, val in enumerate(query_tokens)}
     end_time = time.perf_counter()
     print(f"Query inference took: {end_time - start_time} s")
-    return q_emb, token_to_idx
+    return q_emb, idx_to_token
 
 
-def is_special_token(token: str) -> bool:
-    # Pattern for tokens that start with '<', numbers, whitespace, or single characters, or the string 'Question'
+def should_filter_token(token: str) -> bool:
+    # Pattern to match tokens that start with '<', numbers, whitespace, special characters (except ▁), or the string 'Question'
     # Will exclude these tokens from the similarity map generation
-    pattern = re.compile(r"^<.*$|^\d+$|^\s+$|^\w$|^Question$")
-    if (len(token) < 3) or pattern.match(token):
+    # Does NOT match:
+    # 2
+    # 0
+    # 2
+    # 3
+    # ▁2
+    # ▁hi
+    #
+    # Do match:
+    # <bos>
+    # Question
+    # :
+    # _Percentage
+    # <pad>
+    # \n
+    # ▁
+    # ?
+    # )
+    # %
+    # /)
+    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)\S+$|^Question$|^▁$")
+    if pattern.match(token):
         return True
     return False
