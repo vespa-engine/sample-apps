@@ -1,16 +1,16 @@
 # %% [markdown]
 # # Visual PDF Retrieval - demo application
-# 
+#
 # In this notebook, we will prepare the Vespa backend application for our visual retrieval demo.
 # We will use ColPali as the model to extract patch vectors from images of pdf pages.
 # At query time, we use MaxSim to retrieve and/or (based on the configuration) rank the page results.
-# 
+#
 # To see the application in action, visit TODO:
-# 
+#
 # The web application is written in FastHTML, meaning the complete application is written in python.
-# 
+#
 # The steps we will take in this notebook are:
-# 
+#
 # 0. Setup and configuration
 # 1. Download the data
 # 2. Prepare the data
@@ -18,14 +18,14 @@
 # 4. Deploy the Vespa application
 # 5. Create the Vespa application
 # 6. Feed the data to the Vespa application
-# 
+#
 # All the steps that are needed to provision the Vespa application, including feeding the data, can be done from this notebook.
 # We have tried to make it easy for others to run this notebook, to create your own PDF Enterprise Search application using Vespa.
-# 
+#
 
 # %% [markdown]
 # ## 0. Setup and Configuration
-# 
+#
 
 # %%
 import os
@@ -83,11 +83,11 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # %% [markdown]
 # ### Create a free trial in Vespa Cloud
-# 
+#
 # Create a tenant from [here](https://vespa.ai/free-trial/).
 # The trial includes $300 credit.
 # Take note of your tenant name.
-# 
+#
 
 # %%
 VESPA_TENANT_NAME = "vespa-team"
@@ -95,17 +95,17 @@ VESPA_TENANT_NAME = "vespa-team"
 # %% [markdown]
 # Here, set your desired application name. (Will be created in later steps)
 # Note that you can not have hyphen `-` or underscore `_` in the application name.
-# 
+#
 
 # %%
-VESPA_APPLICATION_NAME = "colpalidemo2"
+VESPA_APPLICATION_NAME = "colpalidemo"
 VESPA_SCHEMA_NAME = "pdf_page"
 
 # %% [markdown]
 # Next, you need to create some tokens for feeding data, and querying the application.
 # We recommend separate tokens for feeding and querying, (the former with write permission, and the latter with read permission).
 # The tokens can be created from the [Vespa Cloud console](https://console.vespa-cloud.com/) in the 'Account' -> 'Tokens' section.
-# 
+#
 
 # %%
 VESPA_TOKEN_ID_WRITE = "colpalidemo_write"
@@ -113,7 +113,7 @@ VESPA_TOKEN_ID_READ = "colpalidemo_read"
 
 # %% [markdown]
 # We also need to set the value of the write token to be able to feed data to the Vespa application.
-# 
+#
 
 # %%
 VESPA_CLOUD_SECRET_TOKEN = os.getenv("VESPA_CLOUD_SECRET_TOKEN") or input(
@@ -124,7 +124,7 @@ VESPA_CLOUD_SECRET_TOKEN = os.getenv("VESPA_CLOUD_SECRET_TOKEN") or input(
 # We will also use the Gemini API to create sample queries for our images.
 # You can also use other VLM's to create these queries.
 # Create a Gemini API key from [here](https://aistudio.google.com/app/apikey).
-# 
+#
 
 # %%
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or input(
@@ -152,21 +152,21 @@ processor = ColPaliProcessor.from_pretrained(MODEL_NAME)
 
 # %% [markdown]
 # ## 1. Download PDFs
-# 
+#
 # We are going to use public reports from the Norwegian Government Pension Fund Global (also known as the Oil Fund).
 # The fund puts transparency at the forefront and publishes reports on its investments, holdings, and returns, as well as its strategy and governance.
-# 
+#
 # These reports are the ones we are going to use for this showcase.
 # Here are some sample images:
-# 
+#
 # ![Sample1](./static/img/gfpg-sample-1.png)
 # ![Sample2](./static/img/gfpg-sample-2.png)
-# 
+#
 
 # %% [markdown]
 # As we can see, a lot of the information is in the form of tables, charts and numbers.
 # These are not easily extractable using pdf-readers or OCR tools.
-# 
+#
 
 # %%
 import requests
@@ -180,16 +180,20 @@ html_content = response.text
 soup = BeautifulSoup(html_content, "html.parser")
 
 links = []
+url_to_year = {}
 
-# Find all <a> elements with the specific classes
-for a_tag in soup.find_all("a", href=True):
-    classes = a_tag.get("class", [])
-    if "button" in classes and "button--download-secondary" in classes:
+# Find all 'div's with id starting with 'year-'
+for year_div in soup.find_all("div", id=lambda x: x and x.startswith("year-")):
+    year_id = year_div.get("id", "")
+    year = year_id.replace("year-", "")
+
+    # Within this div, find all 'a' elements with the specific classes
+    for a_tag in year_div.select("a.button.button--download-secondary[href]"):
         href = a_tag["href"]
         full_url = urljoin(url, href)
         links.append(full_url)
-
-links
+        url_to_year[full_url] = year
+links, url_to_year
 
 # %%
 # Limit the number of PDFs to download
@@ -274,7 +278,8 @@ pdfs
 
 # %% [markdown]
 # ## 2. Convert PDFs to Images
-# 
+#
+
 
 # %%
 def get_pdf_images(pdf_path):
@@ -300,6 +305,7 @@ for pdf in tqdm(pdfs):
         pdf_pages.append(
             {
                 "title": title,
+                "year": int(url_to_year[pdf["url"]]),
                 "url": pdf["url"],
                 "path": pdf_file,
                 "image": image,
@@ -324,17 +330,17 @@ print(f"Number of text with length == 0: {Counter(text_lengths)[0]}")
 
 # %% [markdown]
 # ## 3. Generate Queries
-# 
+#
 # In this step, we want to generate queries for each page image.
 # These will be useful for 2 reasons:
-# 
+#
 # 1. We can use these queries as typeahead suggestions in the search bar.
 # 2. We can use the queries to generate an evaluation dataset. See [Improving Retrieval with LLM-as-a-judge](https://blog.vespa.ai/improving-retrieval-with-llm-as-a-judge/) for a deeper dive into this topic.
-# 
+#
 # The prompt for generating queries is taken from [this](https://danielvanstrien.xyz/posts/post-with-code/colpali/2024-09-23-generate_colpali_dataset.html#an-update-retrieval-focused-prompt) wonderful blog post by Daniel van Strien.
-# 
+#
 # We will use the Gemini API to generate these queries, with `gemini-1.5-flash-8b` as the model.
-# 
+#
 
 # %%
 from pydantic import BaseModel
@@ -413,6 +419,7 @@ def generate_queries(image, prompt_text, pydantic_model):
         }
     return queries
 
+
 # %%
 for pdf in tqdm(pdf_pages):
     image = pdf.get("image")
@@ -488,9 +495,10 @@ with open("output/pdf_pages.json", "w") as f:
 
 # %% [markdown]
 # ## 4. Generate embeddings
-# 
+#
 # Now that we have the queries, we can use the ColPali model to generate embeddings for each page image.
-# 
+#
+
 
 # %%
 def generate_embeddings(images, model, processor, batch_size=2) -> np.ndarray:
@@ -530,6 +538,7 @@ def generate_embeddings(images, model, processor, batch_size=2) -> np.ndarray:
     all_embeddings = np.concatenate(embeddings_list, axis=0)
     return all_embeddings
 
+
 # %%
 # Generate embeddings for all images
 images = [pdf["image"] for pdf in pdf_pages]
@@ -540,9 +549,10 @@ embeddings.shape
 
 # %% [markdown]
 # ## 5. Prepare Data on Vespa Format
-# 
+#
 # Now, that we have all the data we need, all that remains is to make sure it is in the right format for Vespa.
-# 
+#
+
 
 # %%
 def float_to_binary_embedding(float_query_embedding: dict) -> dict:
@@ -555,10 +565,12 @@ def float_to_binary_embedding(float_query_embedding: dict) -> dict:
         binary_query_embeddings[k] = binary_vector
     return binary_query_embeddings
 
+
 # %%
 vespa_feed = []
 for pdf, embedding in zip(pdf_pages, embeddings):
     url = pdf["url"]
+    year = pdf["year"]
     title = pdf["title"]
     image = pdf["image"]
     text = pdf.get("text", "")
@@ -580,6 +592,7 @@ for pdf, embedding in zip(pdf_pages, embeddings):
             "id": id_hash,
             "url": url,
             "title": title,
+            "year": year,
             "page_number": page_no,
             "blur_image": base_64_image,
             "full_image": base_64_full_image,
@@ -616,7 +629,7 @@ len(vespa_feed)
 
 # %% [markdown]
 # ## 5. Prepare Vespa Application
-# 
+#
 
 # %%
 # Define the Vespa schema
@@ -631,6 +644,7 @@ colpali_schema = Schema(
                 match=["word"],
             ),
             Field(name="url", type="string", indexing=["summary", "index"]),
+            Field(name="year", type="int", indexing=["summary", "attribute"]),
             Field(
                 name="title",
                 type="string",
@@ -720,9 +734,7 @@ colpali_schema = Schema(
         DocumentSummary(
             name="suggestions",
             summary_fields=[
-                Summary(
-                    name="questions"
-                ),
+                Summary(name="questions"),
             ],
             from_disk=True,
         ),
@@ -756,10 +768,11 @@ mapfunctions = [
 # Define the 'bm25' rank profile
 colpali_bm25_profile = RankProfile(
     name="bm25",
-    inputs=[("query(qt)", "tensor<float>(querytoken{}, v[128])")],    
+    inputs=[("query(qt)", "tensor<float>(querytoken{}, v[128])")],
     first_phase="bm25(title) + bm25(text)",
     functions=mapfunctions,
 )
+
 
 # A function to create an inherited rank profile which also returns quantized similarity scores
 def with_quantized_similarity(rank_profile: RankProfile) -> RankProfile:
@@ -769,6 +782,7 @@ def with_quantized_similarity(rank_profile: RankProfile) -> RankProfile:
         inherits=rank_profile.name,
         summary_features=["quantized"],
     )
+
 
 colpali_schema.add_rank_profile(colpali_bm25_profile)
 colpali_schema.add_rank_profile(with_quantized_similarity(colpali_bm25_profile))
@@ -941,7 +955,7 @@ vespa_application_package = ApplicationPackage(
 
 # %% [markdown]
 # ## 6. Deploy Vespa Application
-# 
+#
 
 # %%
 VESPA_TEAM_API_KEY = os.getenv("VESPA_TEAM_API_KEY") or input(
@@ -966,16 +980,17 @@ print(f"Application deployed. Token endpoint URL: {endpoint_url}")
 # %% [markdown]
 # Make sure to take note of the token endpoint_url.
 # You need to put this in your `.env` file - `VESPA_APP_URL=https://abcd.vespa-app.cloud` - to access the Vespa application from your web application.
-# 
+#
 
 # %% [markdown]
 # ## 8. Feed Data to Vespa
-# 
+#
 
 # %%
 # Instantiate Vespa connection using token
 app = Vespa(url=endpoint_url, vespa_cloud_secret_token=VESPA_CLOUD_SECRET_TOKEN)
 app.get_application_status()
+
 
 # %%
 def callback(response: VespaResponse, id: str):
@@ -987,5 +1002,3 @@ def callback(response: VespaResponse, id: str):
 
 # Feed data into Vespa asynchronously
 app.feed_async_iterable(vespa_feed, schema=VESPA_SCHEMA_NAME, callback=callback)
-
-
