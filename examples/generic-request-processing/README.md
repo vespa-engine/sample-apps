@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -24,6 +23,8 @@ Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-c
 for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 **Check-out, compile and run:**

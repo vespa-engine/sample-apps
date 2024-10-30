@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 <picture>
@@ -19,7 +18,7 @@ The subject and content of a mail are combined and embedded into a 384-dimension
 using a [Bert embedder](https://docs.vespa.ai/en/reference/embedding-reference.html#bert-embedder).
 
 ## Quick start
-The following is a quick recipe for getting started with this application. 
+The following is a quick recipe for getting started with this application.
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
@@ -27,13 +26,15 @@ The following is a quick recipe for getting started with this application.
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
-* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
 Validate Docker resource settings, should be minimum 4 GB:
 
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -69,7 +70,7 @@ Download this sample application:
 $ vespa clone vector-streaming-search my-app && cd my-app
 </pre>
 
-Deploy the application : 
+Deploy the application :
 
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa deploy --wait 300
@@ -85,7 +86,7 @@ It is possible to deploy this app to
 During feeding the `subject` and `content` of a mail document are embedded using the Bert embedding model.
 This is computationally expensive for CPU.
 For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu)
-instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled. 
+instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled.
 
 <pre data-test="exec">
 $ vespa feed ext/docs.json
@@ -93,7 +94,7 @@ $ vespa feed ext/docs.json
 
 ## Query and ranking examples
 The following uses [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html) to execute queries.
-Use `-v` to see the curl equivalent using HTTP API.  
+Use `-v` to see the curl equivalent using HTTP API.
 
 ### Exact nearest neighbor search
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
@@ -128,4 +129,3 @@ Tear down the running container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
-

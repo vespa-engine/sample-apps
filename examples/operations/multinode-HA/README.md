@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -55,6 +54,8 @@ This guide is tested with Docker using 12G Memory:
 
 <pre data-test="exec">
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Note that this guide is configured for minimum memory use for easier testing, adding:
@@ -262,13 +263,13 @@ slobrok
 storagenode
 
 $ docker exec -it node0 /opt/vespa/bin/vespa-model-inspect service container
-container @ node4.vespanet : 
+container @ node4.vespanet :
 default/container.0
     tcp/node4.vespanet:8080 (STATE EXTERNAL QUERY HTTP)
     tcp/node4.vespanet:19100 (EXTERNAL HTTP)
     tcp/node4.vespanet:19101 (MESSAGING RPC)
     tcp/node4.vespanet:19102 (ADMIN RPC)
-container @ node5.vespanet : 
+container @ node5.vespanet :
 default/container.1
     tcp/node5.vespanet:8080 (STATE EXTERNAL QUERY HTTP)
     tcp/node5.vespanet:19100 (EXTERNAL HTTP)
@@ -454,7 +455,7 @@ Notes:
 * See [slobrok](https://docs.vespa.ai/en/slobrok.html) for the Vespa naming service
 * The [cluster controller](https://docs.vespa.ai/en/content/content-nodes.html#cluster-controller) cluster
   manages the system state, and is useful in debugging cluster failures.
-* The [metrics proxy](https://docs.vespa.ai/en/reference/metrics.html) is used to aggregate metrics 
+* The [metrics proxy](https://docs.vespa.ai/en/reference/metrics.html) is used to aggregate metrics
   from all processes on a node, serving on _http://node:19092/metrics/v1/values_
 
 
@@ -744,7 +745,7 @@ export VESPA_CLI_DATA_PLANE_KEY_FILE=pki/client/client.key
 ```
 Feed documents:
 ```
-vespa feed -t https://localhost:8443 ../../../album-recommendation/ext/documents.jsonl 
+vespa feed -t https://localhost:8443 ../../../album-recommendation/ext/documents.jsonl
 ```
 Visit documents:
 ```
@@ -873,32 +874,32 @@ Normal deploy output in this guide, as the service nodes are not started yet:
 Ports mapped in this guide:
 ```sh
 $ netstat -an | egrep '1907[1,2,3]|1905[0,1,2]|19098|2009[2,3,4,5,6,7,8,9]|2010[0,1]|1910[0,1,2]|808[0,1,2,3]|1910[7,8]' | sort
-tcp46      0      0  *.19050                *.*                    LISTEN     
-tcp46      0      0  *.19051                *.*                    LISTEN     
-tcp46      0      0  *.19052                *.*                    LISTEN     
-tcp46      0      0  *.19071                *.*                    LISTEN     
-tcp46      0      0  *.19072                *.*                    LISTEN     
-tcp46      0      0  *.19073                *.*                    LISTEN     
-tcp46      0      0  *.19098                *.*                    LISTEN 
-tcp46      0      0  *.19100                *.*                    LISTEN     
-tcp46      0      0  *.19101                *.*                    LISTEN     
-tcp46      0      0  *.19102                *.*                    LISTEN     
-tcp46      0      0  *.19107                *.*                    LISTEN     
+tcp46      0      0  *.19050                *.*                    LISTEN
+tcp46      0      0  *.19051                *.*                    LISTEN
+tcp46      0      0  *.19052                *.*                    LISTEN
+tcp46      0      0  *.19071                *.*                    LISTEN
+tcp46      0      0  *.19072                *.*                    LISTEN
+tcp46      0      0  *.19073                *.*                    LISTEN
+tcp46      0      0  *.19098                *.*                    LISTEN
+tcp46      0      0  *.19100                *.*                    LISTEN
+tcp46      0      0  *.19101                *.*                    LISTEN
+tcp46      0      0  *.19102                *.*                    LISTEN
+tcp46      0      0  *.19107                *.*                    LISTEN
 tcp46      0      0  *.19108                *.*                    LISTEN
-tcp46      0      0  *.20092                *.*                    LISTEN     
-tcp46      0      0  *.20093                *.*                    LISTEN     
-tcp46      0      0  *.20094                *.*                    LISTEN     
-tcp46      0      0  *.20095                *.*                    LISTEN     
-tcp46      0      0  *.20096                *.*                    LISTEN     
-tcp46      0      0  *.20097                *.*                    LISTEN     
-tcp46      0      0  *.20098                *.*                    LISTEN     
-tcp46      0      0  *.20099                *.*                    LISTEN     
-tcp46      0      0  *.20100                *.*                    LISTEN     
-tcp46      0      0  *.20101                *.*                    LISTEN     
-tcp46      0      0  *.8080                 *.*                    LISTEN     
-tcp46      0      0  *.8081                 *.*                    LISTEN     
-tcp46      0      0  *.8082                 *.*                    LISTEN     
-tcp46      0      0  *.8083                 *.*                    LISTEN     
+tcp46      0      0  *.20092                *.*                    LISTEN
+tcp46      0      0  *.20093                *.*                    LISTEN
+tcp46      0      0  *.20094                *.*                    LISTEN
+tcp46      0      0  *.20095                *.*                    LISTEN
+tcp46      0      0  *.20096                *.*                    LISTEN
+tcp46      0      0  *.20097                *.*                    LISTEN
+tcp46      0      0  *.20098                *.*                    LISTEN
+tcp46      0      0  *.20099                *.*                    LISTEN
+tcp46      0      0  *.20100                *.*                    LISTEN
+tcp46      0      0  *.20101                *.*                    LISTEN
+tcp46      0      0  *.8080                 *.*                    LISTEN
+tcp46      0      0  *.8081                 *.*                    LISTEN
+tcp46      0      0  *.8082                 *.*                    LISTEN
+tcp46      0      0  *.8083                 *.*                    LISTEN
 ```
 
 ## Clean up after testing

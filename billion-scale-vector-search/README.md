@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 <picture>
@@ -7,21 +6,21 @@
   <img alt="#Vespa" width="200" src="https://assets.vespa.ai/logos/Vespa-logo-dark-RGB.svg" style="margin-bottom: 25px;">
 </picture>
 
-# SPANN Billion Scale Vector Search 
+# SPANN Billion Scale Vector Search
 
-This sample application demonstrates how to represent *SPANN* (Space Partitioned ANN) using Vespa.ai. 
+This sample application demonstrates how to represent *SPANN* (Space Partitioned ANN) using Vespa.ai.
 
 The *SPANN* approach for approximate nearest neighbor search is described in
-[SPANN: Highly-efficient Billion-scale Approximate Nearest Neighbor Search](https://arxiv.org/abs/2111.08566). 
+[SPANN: Highly-efficient Billion-scale Approximate Nearest Neighbor Search](https://arxiv.org/abs/2111.08566).
 
-SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search. 
+SPANN uses a hybrid combination of graph and inverted index methods for approximate nearest neighbor search.
 
-This sample app demonstrates how the `SPANN` algorithm can be represented using Vespa. 
-See the [Billion-scale vector search using hybrid HNSW-IF](https://blog.vespa.ai/vespa-hybrid-billion-scale-vector-search/) for details on how `SPANN` 
-is represented with Vespa. 
+This sample app demonstrates how the `SPANN` algorithm can be represented using Vespa.
+See the [Billion-scale vector search using hybrid HNSW-IF](https://blog.vespa.ai/vespa-hybrid-billion-scale-vector-search/) for details on how `SPANN`
+is represented with Vespa.
 
 These reproducing steps, demonstrates the functionality using a smaller subset of the 1B vector dataset, suitable
-for reproducing on a laptop. 
+for reproducing on a laptop.
 
 **Requirements:**
 
@@ -30,17 +29,19 @@ for reproducing on a laptop.
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
-* Python3 and numpy to process the vector dataset 
+* Python3 and numpy to process the vector dataset
 * [Apache Maven](https://maven.apache.org/install.html) - this sample app uses custom Java components and Maven is used
-  to build the application. 
+  to build the application.
 
 Verify Docker Memory Limits:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -78,8 +79,8 @@ $ vespa clone billion-scale-vector-search myapp && cd myapp
 
 
 ## Download Vector Data
-This sample app uses the Microsoft SPACEV vector dataset from 
-https://big-ann-benchmarks.com/. 
+This sample app uses the Microsoft SPACEV vector dataset from
+https://big-ann-benchmarks.com/.
 
 It uses the first 10M vectors of the 100M slice sample.
 This sample file is about 1GB (10M vectors):
@@ -88,7 +89,7 @@ $ curl -L -o spacev10m_base.i8bin \
   https://data.vespa-cloud.com/sample-apps-data/spacev10m_base.i8bin
 </pre>
 
-Generate the feed file for the first 10M vectors from the 100M sample. 
+Generate the feed file for the first 10M vectors from the 100M sample.
 This step creates two feed files:
 
 * `graph-vectors.jsonl`
@@ -103,7 +104,7 @@ $ python3 src/main/python/create-vespa-feed.py spacev10m_base.i8bin
 </pre>
 
 
-## Build and deploy Vespa app 
+## Build and deploy Vespa app
 Build the sample app:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
 $ mvn clean package -U
@@ -145,7 +146,7 @@ $ curl -L -o spacev10m_gt100.i8bin \
 </pre>
 
 Note, initially, the routine above used the query file from https://comp21storage.blob.core.windows.net/publiccontainer/comp21/spacev1b/query.i8bin
-but the link no longer works. 
+but the link no longer works.
 
 Run first 1K queries and evaluate recall@10. A higher number of clusters gives higher recall:
 <pre data-test="exec">

@@ -9,13 +9,13 @@
 # Multilingual Search with multilingual embeddings
 
 This sample application demonstrates multilingual search
-using multilingual embeddings. 
- 
-Read the [blog post](https://blog.vespa.ai/simplify-search-with-multilingual-embeddings/). 
+using multilingual embeddings.
+
+Read the [blog post](https://blog.vespa.ai/simplify-search-with-multilingual-embeddings/).
 
 ## Quick start
 
-The following is a quick start recipe for getting started with this application. 
+The following is a quick start recipe for getting started with this application.
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
@@ -23,12 +23,14 @@ The following is a quick start recipe for getting started with this application.
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
-* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
 Validate Docker resource settings, should be minimum 4 GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -59,10 +61,10 @@ Download this sample application:
 $ vespa clone multilingual-search my-app && cd my-app
 </pre>
 
-This sample app embedder configuration in [services.xml](services.xml) points to a quantized model. 
+This sample app embedder configuration in [services.xml](services.xml) points to a quantized model.
 
 Alternatively, [export your own model](https://docs.vespa.ai/en/onnx.html#onnx-export), see also the
-export script in [simple-semantic-search](../simple-semantic-search/README.md). 
+export script in [simple-semantic-search](../simple-semantic-search/README.md).
 
 Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">
@@ -74,7 +76,7 @@ It is possible to deploy this app to
 [Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
 
 ## Evaluation
-The following reproduces the results reported on the MIRACL Swahili(sw) dataset. 
+The following reproduces the results reported on the MIRACL Swahili(sw) dataset.
 
 Install `trec_eval`:
 <pre data-test="exec">
@@ -93,7 +95,7 @@ The evaluation script queries Vespa (requires pandas and requests libraries):
 <pre data-test="exec">
 $ pip3 install pandas requests
 </pre>
- 
+
 ## E5 multilingual embedding model
 Using the multilingual embedding model
 
@@ -110,7 +112,7 @@ $ trec_eval -mndcg_cut.10 ext/qrels.miracl-v1.0-sw-dev.tsv semantic.run
 </pre>
 Which should produce the following:
 <pre>
-ndcg_cut_10           	all 	0.6848	
+ndcg_cut_10           	all 	0.6848
 </pre>
 
 ## BM25

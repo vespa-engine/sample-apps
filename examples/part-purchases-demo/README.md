@@ -25,6 +25,8 @@ A sample Vespa application to assist with learning how to group according to the
 **Validate environment, should be minimum 4G:**
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)

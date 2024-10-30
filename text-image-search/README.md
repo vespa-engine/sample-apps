@@ -47,14 +47,14 @@ and the Python app, is that the transformation from text to a vector
 representation has been moved from Python and into Vespa. This includes both
 tokenization and transformer model evaluation.
 
-## Quick start 
+## Quick start
 Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
@@ -63,11 +63,13 @@ Requirements:
 * python3.8+ (tested with 3.8)
 
 The following instructions sets up the stand-alone Vespa application using the
-[Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html). 
+[Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html).
 
 Validate environment, should be minimum 6G:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -82,7 +84,7 @@ $ vespa config set target local
 
 Checkout this sample app :
 <pre data-test="exec">
-$ vespa clone text-image-search myapp && cd myapp 
+$ vespa clone text-image-search myapp && cd myapp
 </pre>
 
 Set up transformer model:
@@ -121,7 +123,7 @@ It is possible to deploy this app to
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
 which runs a set of basic tests to verify that the application is working as expected.
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa test src/test/application/tests/system-test/image-search-system-test.json 
+$ vespa test src/test/application/tests/system-test/image-search-system-test.json
 </pre>
 
 Download and extract image data:
@@ -144,7 +146,7 @@ $ python3 src/python/clip_feed.py
 Alternatively, instead of computing the embeddings, use the pre-computed embeddings:
 <pre data-test="exec">
 $ curl -L -o flickr-8k-clip-embeddings.jsonl.zst \
-    https://data.vespa-cloud.com/sample-apps-data/flickr-8k-clip-embeddings.jsonl.zst 
+    https://data.vespa-cloud.com/sample-apps-data/flickr-8k-clip-embeddings.jsonl.zst
 </pre>
 
 <pre data-test="exec">

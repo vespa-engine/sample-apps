@@ -27,7 +27,7 @@ various ways stateless model evaluation can be used in Vespa:
 - In a post-processing searcher to run a model in batch with the result from the content node.
 
 
-### Quick Start 
+### Quick Start
 
 Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
@@ -35,7 +35,7 @@ Requirements:
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * Minimum 4GB memory dedicated to Docker.
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
@@ -46,6 +46,8 @@ Requirements:
 Validate environment, should be minimum 4G:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -107,7 +109,7 @@ In the following examples we use vespa CLI's curl option, it manages the endpoin
 
 List the available models:
 <pre data-test="exec" data-test-assert-contains="transformer">
-$ vespa curl /model-evaluation/v1/ 
+$ vespa curl /model-evaluation/v1/
 </pre>
 
 Details of model the `transformer` model:
