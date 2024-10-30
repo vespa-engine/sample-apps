@@ -1,7 +1,7 @@
 from typing import Optional
 from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span, H3
+from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span, H3, Br
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
@@ -514,17 +514,24 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                     ),
                                     Div(
                                         Div(
-                                            H3("Full text", cls="text-base font-semibold"),
-                                            P(
-                                                NotStr(fields.get("text", "")),
-                                                cls="text-highlight text-muted-foreground",
+                                            Div(
+                                                H3("Full text", cls="text-base font-semibold"),
+                                                Div(
+                                                    P(
+                                                        NotStr(fields.get("text", "")),
+                                                        cls="text-highlight text-muted-foreground",
+                                                    ),
+                                                    Br()
+                                                ),
+                                                cls="grid grid-rows-[auto_0px] content-start gap-y-3",
                                             ),
-                                            cls="grid grid-rows-[auto_0px] content-start gap-y-3",
+                                            id=f"result-text-full-{idx}",
+                                            cls="grid gap-y-3 p-8 border border-dashed",
                                         ),
-                                        id=f"result-text-full-{idx}",
-                                        cls="grid gap-y-3 p-8 border border-dashed",
+                                        Div(cls="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white dark:from-slate-900 pt-[7%]"),
+                                        cls="relative grid"
                                     ),
-                                    cls="grid grid-rows-[1fr_1fr] gap-y-5 p-5 text-sm",
+                                    cls="grid grid-rows-[1fr_1fr] gap-y-8 p-8 text-sm",
                                 ),
                                 cls="grid bg-background",
                             ),
