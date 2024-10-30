@@ -1154,6 +1154,14 @@ body {
   grid-template-rows: auto 0px;
 }
 
+.grid-rows-\[1fr_1fr\] {
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-rows-\[1fr_2fr\] {
+  grid-template-rows: 1fr 2fr;
+}
+
 .flex-col {
   flex-direction: column;
 }

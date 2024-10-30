@@ -111,9 +111,9 @@ full_text_script = Script(
     (function () {
         const { OverlayScrollbars } = OverlayScrollbarsGlobal;
 
-        function applyOverlayScrollbarsToResults() {
-            const resultTextFullElements = document.querySelectorAll('[id^="result-text-full"]');
-            resultTextFullElements.forEach(element => {
+        function applyOverlayScrollbarsToElements(selector) {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
                 OverlayScrollbars(element, {
                     scrollbars: {
                         theme: 'os-theme-light',  // Adjust the theme based on your preference
@@ -123,6 +123,11 @@ full_text_script = Script(
                     }
                 });
             });
+        }
+
+        function applyOverlayScrollbarsToResults() {
+            applyOverlayScrollbarsToElements('[id^="result-text-full"]');
+            applyOverlayScrollbarsToElements('[id^="result-text-snippet"]');
         }
 
         applyOverlayScrollbarsToResults();
@@ -496,11 +501,15 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                             Div(
                                 Div(
                                     Div(
-                                        H3("Dynamic summary", cls="text-base font-semibold"),
-                                        P(
-                                            NotStr(fields.get("snippet", "")),
-                                            cls="text-highlight text-muted-foreground",
+                                        Div(
+                                            H3("Dynamic summary", cls="text-base font-semibold"),
+                                            P(
+                                                NotStr(fields.get("snippet", "")),
+                                                cls="text-highlight text-muted-foreground",
+                                            ),
+                                            cls="grid grid-rows-[auto_0px] content-start gap-y-3",
                                         ),
+                                        id=f"result-text-snippet-{idx}",
                                         cls="grid gap-y-3 p-8 border border-dashed",
                                     ),
                                     Div(
@@ -515,7 +524,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                         id=f"result-text-full-{idx}",
                                         cls="grid gap-y-3 p-8 border border-dashed",
                                     ),
-                                    cls="grid grid-rows-[auto_1fr] gap-y-5 p-5 text-sm",
+                                    cls="grid grid-rows-[1fr_1fr] gap-y-5 p-5 text-sm",
                                 ),
                                 cls="grid bg-background",
                             ),
