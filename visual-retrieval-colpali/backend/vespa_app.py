@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
 from .colpali import should_filter_token
-
+import backend.stopwords
 
 class VespaQueryClient:
     MAX_QUERY_TERMS = 64
@@ -275,6 +275,10 @@ class VespaQueryClient:
         Returns:
             Dict[str, Any]: The query results.
         """
+
+        # Remove stopwords from the query to avoid visual emphasis on irrelevant words (e.g., "the", "and", "of")
+        query = backend.stopwords.filter(query)
+
         rank_method = ranking.split("_")[0]
         sim_map: bool = len(ranking.split("_")) > 1 and ranking.split("_")[1] == "sim"
         if rank_method == "nn+colpali":
