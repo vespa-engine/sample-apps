@@ -126,6 +126,16 @@ python main.py
 
 ## Deploy to huggingface 🤗
 
+### Compiling dependencies
+
+Before a deploy, make sure to run this to compile the `uv` lock file to `requirements.txt` if you have made changes to the dependencies:
+
+```bash
+uv pip compile pyproject.toml -o requirements.txt
+```
+
+### Deploying to huggingface
+
 To deploy, run
 
 ```bash
