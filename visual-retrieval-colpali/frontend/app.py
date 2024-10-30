@@ -1,7 +1,7 @@
 from typing import Optional
 from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span
+from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span, H3, Br
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
@@ -106,12 +106,43 @@ autocomplete_script = Script(
     """
 )
 
+dynamic_elements_scrollbars = Script(
+    """
+    (function () {
+        const { applyOverlayScrollbars, getScrollbarTheme } = OverlayScrollbarsManager;
+
+        function applyScrollbarsToDynamicElements() {
+            const scrollbarTheme = getScrollbarTheme();
+
+            // Apply scrollbars to dynamically loaded result-text-full and result-text-snippet elements
+            const resultTextFullElements = document.querySelectorAll('[id^="result-text-full"]');
+            const resultTextSnippetElements = document.querySelectorAll('[id^="result-text-snippet"]');
+
+            resultTextFullElements.forEach(element => {
+                applyOverlayScrollbars(element, scrollbarTheme);
+            });
+
+            resultTextSnippetElements.forEach(element => {
+                applyOverlayScrollbars(element, scrollbarTheme);
+            });
+        }
+
+        // Apply scrollbars after dynamic content is loaded (e.g., after search results)
+        applyScrollbarsToDynamicElements();
+
+        // Observe changes in the 'dark' class to adjust the theme dynamically if needed
+        const observer = new MutationObserver(applyScrollbarsToDynamicElements);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    })();
+    """
+)
+
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
-    grid_cls = "grid gap-2 items-center p-3 bg-muted/80 dark:bg-muted/40 w-full"
+    grid_cls = "grid gap-2 items-center p-3 bg-muted w-full"
 
     if with_border:
-        grid_cls = "grid gap-2 p-3 rounded-md border border-input bg-muted/80 dark:bg-muted/40 w-full ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:border-input"
+        grid_cls = "grid gap-2 p-3 rounded-md border border-input bg-muted w-full ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:border-input"
 
     return Form(
         Div(
@@ -213,7 +244,7 @@ def Hero():
     return Div(
         H1(
             "Vespa.ai + ColPali",
-            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 animate-fade-in",
+            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-slate-700 dark:from-white dark:to-slate-300 animate-fade-in",
         ),
         P(
             "Efficient Document Retrieval with Vision Language Models",
@@ -235,7 +266,7 @@ def Home():
     )
 
 
-def WhatIsThis():
+def AboutThisDemo():
     return Div(
         Div(
             Div(
@@ -453,7 +484,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                     ),
                                     cls="relative w-full h-full",
                                 ),
-                                cls="grid bg-border p-2",
+                                cls="grid bg-muted p-2",
                             ),
                             cls="block",
                         ),
@@ -471,19 +502,42 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                         Div(
                             Div(
                                 Div(
-                                    P(
-                                        NotStr(fields.get("snippet", "")),
-                                        cls="text-highlight text-muted-foreground",
+                                    Div(
+                                        Div(
+                                            H3("Dynamic summary", cls="text-base font-semibold"),
+                                            P(
+                                                NotStr(fields.get("snippet", "")),
+                                                cls="text-highlight text-muted-foreground",
+                                            ),
+                                            cls="grid grid-rows-[auto_0px] content-start gap-y-3",
+                                        ),
+                                        id=f"result-text-snippet-{idx}",
+                                        cls="grid gap-y-3 p-8 border border-dashed",
                                     ),
-                                    P(
-                                        NotStr(fields.get("text", "")),
-                                        cls="text-highlight text-muted-foreground",
+                                    Div(
+                                        Div(
+                                            Div(
+                                                H3("Full text", cls="text-base font-semibold"),
+                                                Div(
+                                                    P(
+                                                        NotStr(fields.get("text", "")),
+                                                        cls="text-highlight text-muted-foreground",
+                                                    ),
+                                                    Br()
+                                                ),
+                                                cls="grid grid-rows-[auto_0px] content-start gap-y-3",
+                                            ),
+                                            id=f"result-text-full-{idx}",
+                                            cls="grid gap-y-3 p-8 border border-dashed",
+                                        ),
+                                        Div(cls="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white dark:from-slate-900 pt-[7%]"),
+                                        cls="relative grid"
                                     ),
-                                    cls="grid gap-y-3 p-5 text-sm",
+                                    cls="grid grid-rows-[1fr_1fr] gap-y-8 p-8 text-sm",
                                 ),
-                                cls="grid bg-background content-start ",
+                                cls="grid bg-background",
                             ),
-                            cls="grid bg-border p-2",
+                            cls="grid bg-muted p-2",
                         ),
                         id=f"text-column-{idx}",
                         cls="text-column relative bg-background px-3 py-5 hidden md-grid-text-column",
@@ -499,6 +553,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
         *result_items,
         image_swapping,
         toggle_text_content,
+        dynamic_elements_scrollbars,
         id="search-results",
         cls="grid grid-cols-1 gap-px bg-border min-h-0",
     )
@@ -506,7 +561,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
 
 def ChatResult(query_id: str, query: str):
     return Div(
-        Div("AI-generated response", cls="text-xl font-semibold p-3"),
+        Div("AI-response (Gemini-8B)", cls="text-xl font-semibold p-5"),
         Div(
             Div(
                 Div(
@@ -519,7 +574,7 @@ def ChatResult(query_id: str, query: str):
                 ),
             ),
             id="chat-messages",
-            cls="overflow-auto min-h-0 grid items-end px-3",
+            cls="overflow-auto min-h-0 grid items-end px-5",
         ),
         cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

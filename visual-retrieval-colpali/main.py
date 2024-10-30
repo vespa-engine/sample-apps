@@ -38,7 +38,7 @@ from frontend.app import (
     SearchResult,
     SimMapButtonPoll,
     SimMapButtonReady,
-    WhatIsThis,
+    AboutThisDemo,
 )
 from frontend.layout import Layout
 
@@ -134,9 +134,9 @@ def get(session):
     return Layout(Main(Home()))
 
 
-@rt("/what-is-this")
+@rt("/about-this-demo")
 def get():
-    return Layout(Main(WhatIsThis()))
+    return Layout(Main(AboutThisDemo()))
 
 
 @rt("/search")
