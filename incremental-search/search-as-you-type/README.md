@@ -11,14 +11,14 @@
 Uses N-grams to simulate substring search.
 
 
-## Quick Start 
+## Quick Start
 Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 4GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
@@ -28,6 +28,8 @@ Requirements:
 Validate environment, must be minimum 4GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -61,7 +63,7 @@ $ mvn clean package -U
 Download feed file:
 <pre data-test="exec">
 $ curl -L -o search-as-you-type-index.jsonl \
-  https://data.vespa-cloud.com/sample-apps-data/search-as-you-type-index.jsonl 
+  https://data.vespa-cloud.com/sample-apps-data/search-as-you-type-index.jsonl
 </pre>
 
 Verify that configuration service (deploy api) is ready:

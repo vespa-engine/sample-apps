@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -10,13 +9,13 @@
 
 # Vespa sample application - Predicate Search
 
-This sample application demonstrates how to use Vespa [predicate fields](https://docs.vespa.ai/en/predicate-fields.html) 
+This sample application demonstrates how to use Vespa [predicate fields](https://docs.vespa.ai/en/predicate-fields.html)
 for indexing boolean *document* constraints. A predicate is a specification of a
-boolean constraint in the form of a boolean expression. Vespa's predicate fields 
+boolean constraint in the form of a boolean expression. Vespa's predicate fields
 are used to implement [targeted advertising](https://en.wikipedia.org/wiki/Targeted_advertising)
 systems at scale.
 
-For example, this predicate using three target 
+For example, this predicate using three target
 properties or attributes (not to be confused with Vespa [attributes](https://docs.vespa.ai/en/attributes.html)):
 
 > gender in ['male'] and age in [30..40] and income in [200..50000]
@@ -36,7 +35,7 @@ a high income (measured in thousands).
 Both `Bob` and `Alice` are indexed in the marketplace's index system (powered by Vespa of course) as Vespa documents.
 The predicate expression in the *document* determines which queries (other users) they would be retrieved for.
 The marketplace owner is responsible for managing available targeting properties (e.g `gender`, `age` and `income`) and
-at query or recommendation time, set all known properties of the query side user. 
+at query or recommendation time, set all known properties of the query side user.
 
 We also demonstrate how the marketplace can implement query side filter over regular Vespa fields, so a user `Karen`
 can also specify regular query side constraints (for example, searching for users in a certain age group).
@@ -68,6 +67,8 @@ Requirements:
 Validate Docker resource settings, should be minimum 4 GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -142,20 +143,20 @@ $ vespa document -v user.json
 
 A user, _Ronald_, enters the marketplace home page and the marketplace knows the following properties about _Ronald_:
 
-- gender: male 
+- gender: male
 - age: 32
 - income 3000
 
-The marketplace uses these properties when matching against the index of users using the 
+The marketplace uses these properties when matching against the index of users using the
 [predicate](https://docs.vespa.ai/en/reference/query-language-reference.html#predicate) query operator:
 
 <pre data-test="exec" data-test-assert-contains="alice">
 $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"]}, {"age":32, "income": 3000})'
 </pre>
 
-The above request will retrieve both _Karen_ and _Alice_ as their `target` predicate matches the user properties. 
+The above request will retrieve both _Karen_ and _Alice_ as their `target` predicate matches the user properties.
 
-If `Ronald`'s income estimate drops to 100K, _Alice_ will no longer match since _Alice_ 
+If `Ronald`'s income estimate drops to 100K, _Alice_ will no longer match since _Alice_
 has specified a picky income limitation.
 
 <pre data-test="exec" data-test-assert-contains="karen">
@@ -163,13 +164,13 @@ $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["m
 </pre>
 
 
-## Matching combining predicate with regular filters 
+## Matching combining predicate with regular filters
 Another user, _Jon_, enters the marketplace's search page. The marketplace knows the following properties about _Jon_:
 
 - gender: male
 - age: 32
 - income 100
-- hobby: sports 
+- hobby: sports
 
 The marketplace search page will fill in the known properties and perform a search against the index of users:
 
@@ -177,8 +178,8 @@ The marketplace search page will fill in the known properties and perform a sear
 $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["male"], "hobby":["sports"]}, {"age":32, "income": 100})'
 </pre>
 
-The query returns both _Bob_ and _Karen_. Jon is mostly interested in men, so the marketplace can 
-specify a regular filter on the `gender` field using regular YQL filter syntax, adding `and gender contains "male"` 
+The query returns both _Bob_ and _Karen_. Jon is mostly interested in men, so the marketplace can
+specify a regular filter on the `gender` field using regular YQL filter syntax, adding `and gender contains "male"`
 as a query constraint:
 
 <pre data-test="exec" data-test-assert-contains="bob">
@@ -193,9 +194,9 @@ This is an example of two-sided filtering, both the search user and the indexed 
 Predicate fields control matching and as we have seen from the above examples,
 can also be used with regular query filters.
 
-The combination of document side predicate and query filters determines what documents are returned, 
+The combination of document side predicate and query filters determines what documents are returned,
 but also which documents (users) are exposed to
-[Vespa's ranking framework](https://docs.vespa.ai/en/ranking.html). 
+[Vespa's ranking framework](https://docs.vespa.ai/en/ranking.html).
 
 Feed data with user profile embedding vectors, and the marketplace business user `cpc`:
 
@@ -208,7 +209,7 @@ _Ronald_, enters the marketplace home page again
 - gender: male
 - age: 32
 - income 3000
-- Interest embedding representation based on past user to user interactions, or explicit preferences. 
+- Interest embedding representation based on past user to user interactions, or explicit preferences.
 
 And the marketplace runs a recommendation query to display users for _Ronald_:
 
@@ -218,15 +219,15 @@ $ vespa query 'yql=select * from sources * where predicate(target, {"gender":["m
 
 Notice that we match both _Alice_ and _Karen_, but _Karen_ is ranked higher because karen has paid more,
 her `cpc` score is higher. Notice that the `relevance` is now non-zero, in all the previous examples, the ordering
-of the users was non-deterministic. The ranking formula is expressed in the [user](src/main/application/schemas/user.sd) 
+of the users was non-deterministic. The ranking formula is expressed in the [user](src/main/application/schemas/user.sd)
 schema `default` rank-profile
 
 If we now add personalization to the ranking mix, _Alice_ is ranked higher than _Karen_,
-as _Alice_ is closer to _Ronald_ in the interest embedding vector space. 
+as _Alice_ is closer to _Ronald_ in the interest embedding vector space.
 
 This query combines the `predicate` with the [nearestNeighbor](https://docs.vespa.ai/en/nearest-neighbor-search.html)
 query operator. The marketplace sends the interest embedding vector representation of _Ronald_ with the query
-as a query tensor. 
+as a query tensor.
 
 <pre data-test="exec" data-test-assert-contains="alice">
 $ vespa query 'yql=select documentid from sources * where (predicate(target, {"gender":["male"]}, {"age":32, "income": 3000})) and ({targetHits:10}nearestNeighbor(profile,profile))' \

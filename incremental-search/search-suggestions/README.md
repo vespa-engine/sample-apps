@@ -52,8 +52,8 @@ A simplistic ranking based on term frequencies is used -
 a real application could implement a more sophisticated ranking for better suggestions.
 
 ### Performance considerations
-For short inputs, a trick is to use range queries with 
-[hitLimit](https://docs.vespa.ai/en/reference/query-language-reference.html#hitlimit) on a fast-search attribute. 
+For short inputs, a trick is to use range queries with
+[hitLimit](https://docs.vespa.ai/en/reference/query-language-reference.html#hitlimit) on a fast-search attribute.
 This changes the semantics of the prefix query to only match against documents in the top 1K,
 which is usually what one wants for short prefix lengths.
 * [Advanced range search with hitLimit](https://docs.vespa.ai/en/performance/practical-search-performance-guide.html#advanced-range-search-with-hitlimit)
@@ -65,7 +65,7 @@ Requirements:
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
@@ -75,6 +75,8 @@ Requirements:
 Validate environment, must be minimum 4GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -168,7 +170,7 @@ $ docker rm -f vespa
 </pre>
 
 
-## Appendix 
+## Appendix
 
 ### Indexed prefix search
 
@@ -176,7 +178,7 @@ Indexed prefix search matches documents where the prefix of the term matches the
 
 To do an indexed prefix search the query needs \[{"prefix":true}],
 see [example](https://docs.vespa.ai/en/reference/schema-reference#match).
-It is important to note that this type of prefix search is not supported for fields set to _index_ in the schema. 
+It is important to note that this type of prefix search is not supported for fields set to _index_ in the schema.
 Therefore, all fields for prefix search has to be _attributes_.
 
 Indexed prefix search is faster than using streaming search,

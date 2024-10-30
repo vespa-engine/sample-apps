@@ -9,17 +9,17 @@
 # Vespa sample application - Transformers
 
 This sample application is a small example of using Transformer-based cross-encoders for ranking
-using a small sample from the MS MARCO data set. 
+using a small sample from the MS MARCO data set.
 
 See also the more comprehensive [MS Marco Ranking sample app](../msmarco-ranking/)
-which uses multiple Transformer based models for retrieval and ranking. 
+which uses multiple Transformer based models for retrieval and ranking.
 
 This application uses [phased ranking](https://docs.vespa.ai/en/phased-ranking.html), first a set of candidate
-documents are retrieved using [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html). 
+documents are retrieved using [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html).
 
-The hits retrieved by the WAND operator are ranked using [BM25](https://docs.vespa.ai/en/reference/bm25.html). 
+The hits retrieved by the WAND operator are ranked using [BM25](https://docs.vespa.ai/en/reference/bm25.html).
 The top-k ranking documents from the first phase
-are re-ranked using a cross-encoder Transformer model. 
+are re-ranked using a cross-encoder Transformer model.
 The cross-encoder re-ranking uses [global phase](https://docs.vespa.ai/en/phased-ranking.html#global-phase), evaluated in the
 Vespa stateless container.
 
@@ -30,14 +30,16 @@ Vespa stateless container.
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
-* python3.8+ to export models from Huggingface. 
+* python3.8+ to export models from Huggingface.
 
 Validate environment, should be minimum 6G:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -69,7 +71,7 @@ $ python3 -m pip install --upgrade pip
 $ python3 -m pip install torch transformers onnx onnxruntime
 </pre>
 
-For this sample application, we use a [fine-tuned MiniLM](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2) 
+For this sample application, we use a [fine-tuned MiniLM](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2)
 model with 6 layers and 22 million parameters.
 This step downloads the cross-encoder transformer model, converts it to an ONNX model,
 and saves it in the `files` directory:
@@ -96,7 +98,7 @@ Wait for the application endpoint to become available:
 $ vespa status --wait 300
 </pre>
 
-Convert from MS MARCO format to Vespa JSON feed format. 
+Convert from MS MARCO format to Vespa JSON feed format.
 To use the entire MS MARCO data set, use the download script.
 This step creates a `vespa.json` file in the `msmarco` directory:
 <pre data-test="exec">
@@ -130,7 +132,7 @@ $ docker rm -f vespa
 </pre>
 
 
-## Bonus 
+## Bonus
 To export other cross-encoder models, change the code in "src/python/setup-model.py".
 However, this sample application uses a Vespa
 [WordPiece embedder](https://docs.vespa.ai/en/reference/embedding-reference.html#wordpiece-embedder),

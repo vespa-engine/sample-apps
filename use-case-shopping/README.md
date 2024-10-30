@@ -24,7 +24,7 @@ Requirements:
   for details and troubleshooting
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
@@ -38,6 +38,8 @@ See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.ht
 Validate environment, should be minimum 4 GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -90,7 +92,7 @@ $ vespa test src/test/application/tests/system-test/product-search-test.json
 
 First, create data feed for products:
 <pre data-test="exec">
-$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst 
+$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst
 $ zstdcat meta_sports_20k_sample.json.zst | ./convert_meta.py > feed_items.json
 </pre>
 
@@ -103,7 +105,7 @@ $ zstdcat reviews_sports_24k_sample.json.zst | ./convert_reviews.py > feed_revie
 Next, data feed for query suggestions:
 <pre data-test="exec">
 $ pip3 install spacy mmh3
-$ python3 -m spacy download en_core_web_sm 
+$ python3 -m spacy download en_core_web_sm
 $ ./create_suggestions.py feed_items.json > feed_suggestions.json
 </pre>
 

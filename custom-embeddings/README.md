@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
 
 <picture>
@@ -9,9 +8,9 @@
 
 # Customizing Frozen Data Embeddings in Vespa
 
-This sample application is used to demonstrate how to adapt frozen embeddings from foundational 
-embedding models. 
-Frozen data embeddings from Foundational models are an emerging industry practice for reducing the complexity of maintaining and versioning embeddings. The frozen data embeddings are re-used for various tasks, such as classification, search, or recommendations. 
+This sample application is used to demonstrate how to adapt frozen embeddings from foundational
+embedding models.
+Frozen data embeddings from Foundational models are an emerging industry practice for reducing the complexity of maintaining and versioning embeddings. The frozen data embeddings are re-used for various tasks, such as classification, search, or recommendations.
 
 Read the [blog post](https://blog.vespa.ai/).
 
@@ -25,12 +24,14 @@ The following is a quick start recipe on how to get started with this applicatio
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
-* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
 Validate Docker resource settings, should be minimum 4 GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -61,7 +62,7 @@ Download this sample application:
 $ vespa clone custom-embeddings my-app && cd my-app
 </pre>
 
-Download a frozen embedding model file, see 
+Download a frozen embedding model file, see
 [text embeddings made easy](https://blog.vespa.ai/text-embedding-made-simple/) for details:
 <pre data-test="exec">
 $ mkdir -p models
@@ -71,7 +72,7 @@ $ curl -L -o models/tokenizer.json \
 $ curl -L -o models/frozen.onnx \
   https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx
 
-$ cp models/frozen.onnx models/tuned.onnx 
+$ cp models/frozen.onnx models/tuned.onnx
 </pre>
 
 In this case, we re-use the frozen model as the tuned model to demonstrate functionality.
@@ -95,36 +96,36 @@ vespa document ext/3.json
 
 ## Query and ranking examples
 
-We demonstrate using `vespa cli`, use `-v` to see the curl equivalent using HTTP api.  
+We demonstrate using `vespa cli`, use `-v` to see the curl equivalent using HTTP api.
 
 ### Simple retrieve all documents with undefined ranking:
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
 vespa query 'yql=select * from doc where true' \
 'ranking=unranked'
 </pre>
-Notice the `relevance`, which is assigned by the rank-profile. 
+Notice the `relevance`, which is assigned by the rank-profile.
 
-### Using the frozen query tower 
+### Using the frozen query tower
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
 vespa query 'yql=select * from doc where {targetHits:10}nearestNeighbor(embedding, q)' \
 'input.query(q)=embed(frozen, "space contains many suns")'
 </pre>
 
-### Using the tuned query tower 
+### Using the tuned query tower
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
 vespa query 'yql=select * from doc where {targetHits:10}nearestNeighbor(embedding, q)' \
 'input.query(q)=embed(tuned, "space contains many suns")'
 </pre>
 In this case, the tuned model is equivelent to the frozen query tower that was used for document embeddings.
 
-### Using the simple weight transformation query tower 
+### Using the simple weight transformation query tower
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
 vespa query 'yql=select * from doc where {targetHits:10}nearestNeighbor(embedding, q)' \
 'input.query(q)=embed(tuned, "space contains many suns")' \
 'ranking=simple-similarity'
 </pre>
 This invokes the `simple-similarity` ranking model, which performs the query transformation
-to the tuned embedding. 
+to the tuned embedding.
 
 ### Using the Deep Neural Network similarity
 <pre data-test="exec" data-test-assert-contains='"totalCount": 3'>
@@ -134,12 +135,12 @@ vespa query 'yql=select * from doc where {targetHits:10}nearestNeighbor(embeddin
 </pre>
 
 Note that this just demonstrates the functionality, the custom similarity model is
-initialized from random weights. 
+initialized from random weights.
 
 ### Dump all embeddings
 This is useful for training routines, getting the frozen document embeddings out of Vespa:
 <pre>
-vespa visit --field-set "[all]" > ../vector-data.jsonl 
+vespa visit --field-set "[all]" > ../vector-data.jsonl
 </pre>
 
 ### Get a specific document and it's embedding(s):
