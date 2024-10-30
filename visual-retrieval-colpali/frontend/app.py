@@ -106,31 +106,33 @@ autocomplete_script = Script(
     """
 )
 
-full_text_script = Script(
+dynamic_elements_scrollbars = Script(
     """
     (function () {
-        const { OverlayScrollbars } = OverlayScrollbarsGlobal;
+        const { applyOverlayScrollbars, getScrollbarTheme } = OverlayScrollbarsManager;
 
-        function applyOverlayScrollbarsToElements(selector) {
-            const elements = document.querySelectorAll(selector);
-            elements.forEach(element => {
-                OverlayScrollbars(element, {
-                    scrollbars: {
-                        theme: 'os-theme-light',  // Adjust the theme based on your preference
-                        visibility: 'auto',
-                        autoHide: 'leave',
-                        autoHideDelay: 800
-                    }
-                });
+        function applyScrollbarsToDynamicElements() {
+            const scrollbarTheme = getScrollbarTheme();
+
+            // Apply scrollbars to dynamically loaded result-text-full and result-text-snippet elements
+            const resultTextFullElements = document.querySelectorAll('[id^="result-text-full"]');
+            const resultTextSnippetElements = document.querySelectorAll('[id^="result-text-snippet"]');
+
+            resultTextFullElements.forEach(element => {
+                applyOverlayScrollbars(element, scrollbarTheme);
+            });
+
+            resultTextSnippetElements.forEach(element => {
+                applyOverlayScrollbars(element, scrollbarTheme);
             });
         }
 
-        function applyOverlayScrollbarsToResults() {
-            applyOverlayScrollbarsToElements('[id^="result-text-full"]');
-            applyOverlayScrollbarsToElements('[id^="result-text-snippet"]');
-        }
+        // Apply scrollbars after dynamic content is loaded (e.g., after search results)
+        applyScrollbarsToDynamicElements();
 
-        applyOverlayScrollbarsToResults();
+        // Observe changes in the 'dark' class to adjust the theme dynamically if needed
+        const observer = new MutationObserver(applyScrollbarsToDynamicElements);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     })();
     """
 )
@@ -551,7 +553,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
         *result_items,
         image_swapping,
         toggle_text_content,
-        full_text_script,
+        dynamic_elements_scrollbars,
         id="search-results",
         cls="grid grid-cols-1 gap-px bg-border min-h-0",
     )

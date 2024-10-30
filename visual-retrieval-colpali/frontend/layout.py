@@ -22,7 +22,7 @@ layout_script = Script(
     """
 )
 
-overlay_scrollbars = Script(
+overlay_scrollbars_manager = Script(
     """
     (function () {
         const { OverlayScrollbars } = OverlayScrollbarsGlobal;
@@ -40,7 +40,7 @@ overlay_scrollbars = Script(
                 instance.destroy();
             }
 
-            // Reinitialize OverlayScrollbars with the new theme
+            // Reinitialize OverlayScrollbars with the correct theme and settings
             OverlayScrollbars(element, {
                 overflow: {
                     x: 'hidden',
@@ -55,12 +55,31 @@ overlay_scrollbars = Script(
             });
         }
 
-        function updateScrollbarTheme() {
+        // Function to get the current scrollbar theme (light or dark)
+        function getScrollbarTheme() {
             const isDarkMode = getPreferredTheme() === 'dark';
-            const scrollbarTheme = isDarkMode ? 'os-theme-light' : 'os-theme-dark';  // Light theme in dark mode, dark theme in light mode
+            return isDarkMode ? 'os-theme-light' : 'os-theme-dark';  // Light theme in dark mode, dark theme in light mode
+        }
 
+        // Expose the common functions globally for reuse
+        window.OverlayScrollbarsManager = {
+            applyOverlayScrollbars: applyOverlayScrollbars,
+            getScrollbarTheme: getScrollbarTheme
+        };
+    })();
+    """
+)
+
+static_elements_scrollbars = Script(
+    """
+    (function () {
+        const { applyOverlayScrollbars, getScrollbarTheme } = OverlayScrollbarsManager;
+
+        function applyScrollbarsToStaticElements() {
             const mainElement = document.querySelector('main');
-            const chatMessagesElement = document.querySelector('#chat-messages'); // Select the chat message container by ID
+            const chatMessagesElement = document.querySelector('#chat-messages');
+
+            const scrollbarTheme = getScrollbarTheme();
 
             if (mainElement) {
                 applyOverlayScrollbars(mainElement, scrollbarTheme);
@@ -71,11 +90,11 @@ overlay_scrollbars = Script(
             }
         }
 
-        // Apply the correct theme immediately when the page loads
-        updateScrollbarTheme();
+        // Apply the scrollbars on page load
+        applyScrollbarsToStaticElements();
 
-        // Observe changes in the 'dark' class on the <html> element
-        const observer = new MutationObserver(updateScrollbarTheme);
+        // Observe changes in the 'dark' class on the <html> element to adjust the theme dynamically
+        const observer = new MutationObserver(applyScrollbarsToStaticElements);
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     })();
     """
@@ -146,5 +165,6 @@ def Layout(*c, **kwargs):
             cls="grid grid-rows-[minmax(0,55px)_minmax(0,1fr)] min-h-0",
         ),
         layout_script,
-        overlay_scrollbars,
+        overlay_scrollbars_manager,
+        static_elements_scrollbars,
     )
