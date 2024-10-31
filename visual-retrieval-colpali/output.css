@@ -1181,6 +1181,10 @@ body {
   grid-template-rows: minmax(0,55px) minmax(0,1fr);
 }
 
+.grid-rows-\[auto_auto_1fr\] {
+  grid-template-rows: auto auto 1fr;
+}
+
 .flex-col {
   flex-direction: column;
 }

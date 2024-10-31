@@ -366,7 +366,23 @@ def SimMapButtonPoll(query_id, idx, token, token_idx):
     )
 
 
-def SearchResult(results: list, query: str, query_id: Optional[str] = None):
+def SearchInfo(search_time, total_count):
+    return (
+        Div(
+            NotStr(
+                f"<span>Found <strong>{total_count}</strong> results in <strong>{search_time}</strong> seconds.</span>"
+            ),
+            cls="grid bg-background border-t text-sm text-center p-3",
+        ),
+    )
+
+
+def SearchResult(
+    results: list,
+   query: str, query_id: Optional[str] = None,
+    search_time: float = 0,
+    total_count: int = 0,
+):
     if not results:
         return Div(
             P(
@@ -556,19 +572,23 @@ def SearchResult(results: list, query: str, query_id: Optional[str] = None):
                     id=f"image-text-columns-{idx}",
                     cls="relative grid grid-cols-1 border-t grid-image-text-columns",
                 ),
-                cls="grid grid-cols-1 grid-rows-[auto_1fr]",
+                cls="grid grid-cols-1 grid-rows-[auto_auto_1fr]",
             ),
         )
 
     return [
         Div(
-            *result_items,
-            image_swapping,
-            toggle_text_content,
-            dynamic_elements_scrollbars,
-            id="search-results",
-            cls="grid grid-cols-1 gap-px bg-border min-h-0",
-        ),
+            SearchInfo(search_time, total_count),
+        *result_items,
+        image_swapping,
+        toggle_text_content,
+        dynamic_elements_scrollbars,
+        id="search-results",
+        cls="grid grid-cols-1 gap-px bg-border min-h-0",
+    )
+
+
+,
         Div(
             ChatResult(query_id=query_id, query=query, doc_ids=doc_ids),
             hx_swap_oob="true",
