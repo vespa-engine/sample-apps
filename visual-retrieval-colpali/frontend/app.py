@@ -366,7 +366,7 @@ def SimMapButtonPoll(query_id, idx, token, token_idx):
     )
 
 
-def SearchResult(results: list, query_id: Optional[str] = None):
+def SearchResult(results: list, query: str, query_id: Optional[str] = None):
     if not results:
         return Div(
             P(
@@ -376,10 +376,13 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             cls="grid p-10",
         )
 
+    doc_ids = []
     # Otherwise, display the search results
     result_items = []
     for idx, result in enumerate(results):
         fields = result["fields"]  # Extract the 'fields' part of each result
+        doc_id = fields["id"]
+        doc_ids.append(doc_id)
         blur_image_base64 = f"data:image/jpeg;base64,{fields['blur_image']}"
 
         sim_map_fields = {
@@ -472,7 +475,7 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                 Div(
                                     Img(
                                         src=blur_image_base64,
-                                        hx_get=f"/full_image?docid={fields['id']}&query_id={query_id}&idx={idx}",
+                                        hx_get=f"/full_image?doc_id={doc_id}",
                                         style="backdrop-filter: blur(5px);",
                                         hx_trigger="load",
                                         hx_swap="outerHTML",
@@ -504,7 +507,10 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                 Div(
                                     Div(
                                         Div(
-                                            H3("Dynamic summary", cls="text-base font-semibold"),
+                                            H3(
+                                                "Dynamic summary",
+                                                cls="text-base font-semibold",
+                                            ),
                                             P(
                                                 NotStr(fields.get("snippet", "")),
                                                 cls="text-highlight text-muted-foreground",
@@ -517,21 +523,26 @@ def SearchResult(results: list, query_id: Optional[str] = None):
                                     Div(
                                         Div(
                                             Div(
-                                                H3("Full text", cls="text-base font-semibold"),
+                                                H3(
+                                                    "Full text",
+                                                    cls="text-base font-semibold",
+                                                ),
                                                 Div(
                                                     P(
                                                         NotStr(fields.get("text", "")),
                                                         cls="text-highlight text-muted-foreground",
                                                     ),
-                                                    Br()
+                                                    Br(),
                                                 ),
                                                 cls="grid grid-rows-[auto_0px] content-start gap-y-3",
                                             ),
                                             id=f"result-text-full-{idx}",
                                             cls="grid gap-y-3 p-8 border border-dashed",
                                         ),
-                                        Div(cls="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white dark:from-slate-900 pt-[7%]"),
-                                        cls="relative grid"
+                                        Div(
+                                            cls="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white dark:from-slate-900 pt-[7%]"
+                                        ),
+                                        cls="relative grid",
                                     ),
                                     cls="grid grid-rows-[1fr_1fr] gap-y-8 p-8 text-sm",
                                 ),
@@ -549,32 +560,45 @@ def SearchResult(results: list, query_id: Optional[str] = None):
             ),
         )
 
-    return Div(
-        *result_items,
-        image_swapping,
-        toggle_text_content,
-        dynamic_elements_scrollbars,
-        id="search-results",
-        cls="grid grid-cols-1 gap-px bg-border min-h-0",
-    )
+    return [
+        Div(
+            *result_items,
+            image_swapping,
+            toggle_text_content,
+            dynamic_elements_scrollbars,
+            id="search-results",
+            cls="grid grid-cols-1 gap-px bg-border min-h-0",
+        ),
+        Div(
+            ChatResult(query_id=query_id, query=query, doc_ids=doc_ids),
+            hx_swap_oob="true",
+            id="chat_messages",
+        ),
+    ]
 
 
-def ChatResult(query_id: str, query: str):
+def ChatResult(query_id: str, query: str, doc_ids: Optional[list] = None):
+    messages = Div(LoadingSkeleton())
+
+    if doc_ids:
+        messages = Div(
+            LoadingSkeleton(),
+            hx_ext="sse",
+            sse_connect=f"/get-message?query_id={query_id}&doc_ids={','.join(doc_ids)}&query={quote_plus(query)}",
+            sse_swap="message",
+            sse_close="close",
+            hx_swap="innerHTML",
+        )
+
     return Div(
         Div("AI-response (Gemini-8B)", cls="text-xl font-semibold p-5"),
         Div(
             Div(
-                Div(
-                    LoadingSkeleton(),
-                    hx_ext="sse",
-                    sse_connect=f"/get-message?query_id={query_id}&query={quote_plus(query)}",
-                    sse_swap="message",
-                    sse_close="close",
-                    hx_swap="innerHTML",
-                ),
+                messages,
             ),
             id="chat-messages",
             cls="overflow-auto min-h-0 grid items-end px-5",
         ),
+        id="chat_messages",
         cls="h-full grid grid-rows-[auto_1fr_auto] min-h-0 gap-3",
     )

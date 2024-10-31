@@ -219,15 +219,18 @@ async def get(session, request, query: str, ranking: str):
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
+
     search_results = vespa_app.results_to_search_results(result, idx_to_token)
+
     get_and_store_sim_maps(
         query_id=query_id,
         query=query,
         q_embs=q_embs,
         ranking=ranking,
         idx_to_token=idx_to_token,
+        doc_ids=[result["fields"]["id"] for result in search_results],
     )
-    return SearchResult(search_results, query_id)
+    return SearchResult(search_results, query, query_id)
 
 
 def get_results_children(result):
@@ -247,7 +250,9 @@ async def poll_vespa_keepalive():
 
 
 @threaded
-def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, idx_to_token):
+def get_and_store_sim_maps(
+    query_id, query: str, q_embs, ranking, idx_to_token, doc_ids
+):
     ranking_sim = ranking + "_sim"
     vespa_sim_maps = vespa_app.get_sim_maps_from_query(
         query=query,
@@ -255,9 +260,7 @@ def get_and_store_sim_maps(query_id, query: str, q_embs, ranking, idx_to_token):
         ranking=ranking_sim,
         idx_to_token=idx_to_token,
     )
-    img_paths = [
-        IMG_DIR / f"{query_id}_{idx}.jpg" for idx in range(len(vespa_sim_maps))
-    ]
+    img_paths = [IMG_DIR / f"{doc_id}.jpg" for doc_id in doc_ids]
     # All images should be downloaded, but best to wait 5 secs
     max_wait = 5
     start_time = time.time()
@@ -312,17 +315,17 @@ async def get_sim_map(query_id: str, idx: int, token: str, token_idx: int):
 
 
 @app.get("/full_image")
-async def full_image(docid: str, query_id: str, idx: int):
+async def full_image(doc_id: str):
     """
     Endpoint to get the full quality image for a given result id.
     """
-    img_path = IMG_DIR / f"{query_id}_{idx}.jpg"
+    img_path = IMG_DIR / f"{doc_id}.jpg"
     if not os.path.exists(img_path):
-        image_data = await vespa_app.get_full_image_from_vespa(docid)
+        image_data = await vespa_app.get_full_image_from_vespa(doc_id)
         # image data is base 64 encoded string. Save it to disk as jpg.
         with open(img_path, "wb") as f:
             f.write(base64.b64decode(image_data))
-        print(f"Full image saved to disk for query_id: {query_id}, idx: {idx}")
+        print(f"Full image saved to disk for doc_id: {doc_id}")
     else:
         with open(img_path, "rb") as f:
             image_data = base64.b64encode(f.read()).decode("utf-8")
@@ -345,15 +348,16 @@ async def get_suggestions(request):
     return JSONResponse({"suggestions": []})
 
 
-async def message_generator(query_id: str, query: str):
-    images = []
+async def message_generator(query_id: str, query: str, doc_ids: list):
+    images = {}
     num_images = 3  # Number of images before firing chat request
     max_wait = 10  # seconds
     start_time = time.time()
     # Check if full images are ready on disk
     while len(images) < num_images and time.time() - start_time < max_wait:
         for idx in range(num_images):
-            if not os.path.exists(IMG_DIR / f"{query_id}_{idx}.jpg"):
+            image_filename = IMG_DIR / f"{doc_ids[idx]}.jpg"
+            if not os.path.exists(image_filename):
                 print(
                     f"Message generator: Full image not ready for query_id: {query_id}, idx: {idx}"
                 )
@@ -362,10 +366,12 @@ async def message_generator(query_id: str, query: str):
                 print(
                     f"Message generator: image ready for query_id: {query_id}, idx: {idx}"
                 )
-                images.append(Image.open(IMG_DIR / f"{query_id}_{idx}.jpg"))
+                images[image_filename] = Image.open(image_filename)
         await asyncio.sleep(0.2)
+
+    images = list(images.values())
     # yield message with number of images ready
-    yield f"event: message\ndata: Generating response based on {len(images)} images.\n\n"
+    yield f"event: message\ndata: Generating response based on {len(images)} images...\n\n"
     if not images:
         yield "event: message\ndata: I am sorry, I do not have enough information in the image to answer your question.\n\n"
         yield "event: close\ndata: \n\n"
@@ -388,9 +394,9 @@ async def message_generator(query_id: str, query: str):
 
 
 @app.get("/get-message")
-async def get_message(query_id: str, query: str):
+async def get_message(query_id: str, query: str, doc_ids: str):
     return StreamingResponse(
-        message_generator(query_id=query_id, query=query),
+        message_generator(query_id=query_id, query=query, doc_ids=doc_ids.split(",")),
         media_type="text/event-stream",
     )
 
