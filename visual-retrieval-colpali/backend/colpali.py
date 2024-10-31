@@ -280,29 +280,46 @@ def get_query_embeddings_and_token_map(
 
 
 def should_filter_token(token: str) -> bool:
-    # Pattern to match tokens that start with '<', numbers, whitespace, special characters (except ▁), or the string 'Question'
-    # Will exclude these tokens from the similarity map generation
-    # Does NOT match:
-    # 2
-    # 0
-    # 2
-    # 3
-    # ▁2
-    # ▁hi
-    #
-    # Do match:
-    # <bos>
-    # Question
-    # :
-    # _Percentage
-    # <pad>
-    # \n
-    # ▁
-    # ?
-    # )
-    # %
-    # /)
-    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)\S+$|^Question$|^▁$")
-    if pattern.match(token):
-        return True
-    return False
+    """
+    Determines whether a token should be filtered out based on predefined patterns.
+
+    The function filters out tokens that:
+    - Start with '<' (e.g., '<bos>')
+    - Consist entirely of whitespace
+    - Are purely punctuation (excluding tokens that contain digits or start with '▁')
+    - Start with an underscore '_'
+    - Exactly match the word 'Question'
+    - Are exactly the single character '▁'
+
+    Output of test:
+
+    Token: '2'         | False
+    Token: '0'         | False
+    Token: '2'         | False
+    Token: '3'         | False
+    Token: '▁2'        | False
+    Token: '▁hi'       | False
+    Token: 'norwegian' | False
+    Token: 'unlisted'  | False
+    Token: '<bos>'     | True
+    Token: 'Question'  | True
+    Token: ':'         | True
+    Token: '<pad>'     | True
+    Token: '\n'        | True
+    Token: '▁'         | True
+    Token: '?'         | True
+    Token: ')'         | True
+    Token: '%'         | True
+    Token: '/)'        | True
+
+    Tokens that do not match these patterns (e.g., 'norwegian', 'unlisted') are not filtered out.
+
+    Args:
+        token (str): The token to evaluate.
+
+    Returns:
+        bool: True if the token should be filtered out, False otherwise.
+    """
+    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)[^\w\s]+$|^_.*$|^Question$|^▁$")
+
+    return bool(pattern.match(token))
