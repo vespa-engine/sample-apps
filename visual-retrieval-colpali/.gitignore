@@ -8,6 +8,7 @@ template/
 *.json
 output/
 pdfs/
+colpalidemo/
 static/full_images/
 static/sim_maps/
 embeddings/
