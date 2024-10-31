@@ -52,7 +52,7 @@ Also see [troubleshooting](/examples/operations/README.md#troubleshooting).
 ## Memory usage
 This guide is tested with Docker using 12G Memory:
 
-<pre data-test="exec">
+<pre>
 $ docker info | grep "Total Memory"
 or
 $ podman info | grep "memTotal"
