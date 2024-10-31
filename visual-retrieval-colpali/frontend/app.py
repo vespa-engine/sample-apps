@@ -584,7 +584,7 @@ def ChatResult(query_id: str, query: str, doc_ids: Optional[list] = None):
         messages = Div(
             LoadingSkeleton(),
             hx_ext="sse",
-            sse_connect=f"/get-message?query_id={query_id}&doc_ids={",".join(doc_ids)}&query={quote_plus(query)}",
+            sse_connect=f"/get-message?query_id={query_id}&doc_ids={','.join(doc_ids)}&query={quote_plus(query)}",
             sse_swap="message",
             sse_close="close",
             hx_swap="innerHTML",
