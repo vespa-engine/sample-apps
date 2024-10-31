@@ -512,9 +512,12 @@ def SearchResult(
                     ),
                     Div(
                         Div(
-                            P(
-                                "Page " + str(fields["page_number"]),
-                                cls="text-foreground font-mono bold text-sm",
+                            A(
+                                Lucide(icon="external-link", size="18"),
+                                f"PDF Source (Page {fields['page_number']})",
+                                href=f"{fields['url']}#page={fields['page_number'] + 1}",
+                                target="_blank",
+                                cls="flex items-center gap-1.5 font-mono bold text-sm",
                             ),
                             cls="flex items-center justify-end",
                         ),
