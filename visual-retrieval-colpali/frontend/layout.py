@@ -151,7 +151,7 @@ def Links():
     )
 
 
-def Layout(*c, **kwargs):
+def Layout(*c, is_home=False, **kwargs):
     return (
         Title("Visual Retrieval ColPali"),
         Body(
@@ -162,6 +162,7 @@ def Layout(*c, **kwargs):
             ),
             *c,
             **kwargs,
+            data_is_home=str(is_home).lower(),
             cls="grid grid-rows-[minmax(0,55px)_minmax(0,1fr)] min-h-0",
         ),
         layout_script,

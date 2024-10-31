@@ -154,7 +154,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
                 name="query",
                 value=query_value,
                 id="search-input",
-                cls="text-base pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent awesomplete",
+                cls="text-base pl-10 border-transparent ring-offset-transparent ring-0 focus-visible:ring-transparent bg-white dark:bg-background awesomplete",
                 data_list="#suggestions",
                 style="font-size: 1rem",
                 autofocus=True,

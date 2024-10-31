@@ -192,6 +192,16 @@ header {
     grid-column: 1/-1;
 }
 
+body {
+    &[data-is-home="true"] {
+        background: radial-gradient(circle at 50% 100%, #fcfcfd, #fcfcfd, #fdfdfe, #fdfdfe, #fefefe, #fefefe, #ffffff, #ffffff);
+
+        .dark & {
+            background: radial-gradient(circle at 50% 50%, #272a2d, #242629, #212326, #1e1f22, #1b1c1e, #18181b, #151517, #111113);
+        }
+    }
+}
+
 main {
     overflow: auto;
 }
@@ -235,14 +245,19 @@ aside {
 }
 
 .awesomplete > ul {
-    @apply text-sm space-y-0.5;
+    @apply text-sm space-y-1;
     margin: 0;
     border-top: none;
     border-left: 1px solid hsl(var(--input));
     border-right: 1px solid hsl(var(--input));
     border-bottom: 1px solid hsl(var(--input));
     border-radius: 0 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px);
-    background: hsl(var(--background));
+    background: white;
+
+    .dark & {
+        background: hsl(var(--background));
+    }
+
     box-shadow: none;
     text-shadow: none;
 }
