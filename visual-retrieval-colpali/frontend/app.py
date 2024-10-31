@@ -1,7 +1,7 @@
 from typing import Optional
 from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, Div, Form, Img, NotStr, P, Span, H3, Br
+from fasthtml.components import H1, H2, H3, Br, Div, Form, Img, NotStr, P, Span
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
@@ -540,7 +540,7 @@ def SearchResult(results: list, query: str, query_id: Optional[str] = None):
                                             cls="grid gap-y-3 p-8 border border-dashed",
                                         ),
                                         Div(
-                                            cls="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white dark:from-slate-900 pt-[7%]"
+                                            cls="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#fcfcfd] dark:from-[#1c2024] pt-[7%]"
                                         ),
                                         cls="relative grid",
                                     ),
