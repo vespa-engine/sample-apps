@@ -544,7 +544,7 @@ def SearchResult(results: list, query: str, query_id: Optional[str] = None):
                                         ),
                                         cls="relative grid",
                                     ),
-                                    cls="grid grid-rows-[1fr_1fr] gap-y-8 p-8 text-sm",
+                                    cls="grid grid-rows-[1fr_1fr] xl:grid-rows-[1fr_2fr] gap-y-8 p-8 text-sm",
                                 ),
                                 cls="grid bg-background",
                             ),

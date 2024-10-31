@@ -2764,6 +2764,12 @@ aside {
   }
 }
 
+@media (min-width: 1280px) {
+  .xl\:grid-rows-\[1fr_2fr\] {
+    grid-template-rows: 1fr 2fr;
+  }
+}
+
 .dark\:block:where(.dark, .dark *) {
   display: block;
 }
