@@ -7,14 +7,15 @@
 #
 # # Visual PDF RAG with Vespa - ColPali demo application
 #
-# We created an end-to-end demo application for visual retrieval of PDF pages using Vespa, including a frontend web application. To see the live demo, visit https://vespa-engine-colpali-vespa-visual-retrieval.hf.space/. 
+# We created an end-to-end demo application for visual retrieval of PDF pages using Vespa, including a frontend web application. To see the live demo, visit https://vespa-engine-colpali-vespa-visual-retrieval.hf.space/.
 #
-# The main goal of the demo is to make it easy for _you_ to create your own PDF Enterprise Search application using Vespa. 
+# TODO: Add screenshot of the frontend
+# The main goal of the demo is to make it easy for _you_ to create your own PDF Enterprise Search application using Vespa.
 # To deploy a full demo, you need two main components:
 # 1. A Vespa application that lets you index and search PDF pages using ColPali embeddings.
 # 2. A web application that lets you interact with the Vespa application.
 #
-# After running this notebook, you will have set up a Vespa application, and indexed some PDF pages. 
+# After running this notebook, you will have set up a Vespa application, and indexed some PDF pages.
 # You can then test that you are able to query the Vespa application, and you will be ready to deploy the web application including the frontend.
 #
 # Some of the features we want to highlight in this demo are:
@@ -56,7 +57,7 @@
 # ## 1. Setup and Configuration
 #
 
-# Install dependencies: 
+# Install dependencies:
 #
 # Note that the python pdf2image package requires poppler-utils, see other installation options [here](https://pdf2image.readthedocs.io/en/latest/installation.html#installing-poppler).
 
@@ -177,7 +178,7 @@ print(f"Using device: {device}")
 # Load the ColPali model and processor
 model = ColPali.from_pretrained(
     MODEL_NAME,
-    torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+    torch_dtype=torch.float32,  # torch.bfloat16 if torch.cuda.is_available() else torch.float32,
     device_map=device,
 ).eval()
 
@@ -199,6 +200,7 @@ processor = ColPaliProcessor.from_pretrained(MODEL_NAME)
 # As we can see, a lot of the information is in the form of tables, charts and numbers.
 # These are not easily extractable using pdf-readers or OCR tools.
 #
+# TODO: Hardcode links to pdfs.
 
 # +
 import requests
@@ -316,7 +318,7 @@ pdfs = asyncio.run(download_pdfs(links))
 pdfs
 
 # ## 3. Convert PDFs to Images
-#
+# TODO: Add explanation. Vespa doc -> page. Metadata. Image of each page. Text of each page.
 
 
 # +
@@ -528,13 +530,13 @@ embeddings.shape
 #
 # Now, that we have all the data we need, all that remains is to make sure it is in the right format for Vespa.
 #
-# We now convert the embeddings to Vespa JSON format so we can store (and index) them in Vespa. 
+# We now convert the embeddings to Vespa JSON format so we can store (and index) them in Vespa.
 # Details in [Vespa JSON feed format doc](https://docs.vespa.ai/en/reference/document-json-format.html).
 #
-#  
+#
 # We use binary quantization (BQ) of the page level ColPali vector embeddings to reduce their size by 32x.
 #
-# Read more about binarization of multi-vector representations in the [colbert blog post](https://blog.vespa.ai/announcing-colbert-embedder-in-vespa/). 
+# Read more about binarization of multi-vector representations in the [colbert blog post](https://blog.vespa.ai/announcing-colbert-embedder-in-vespa/).
 #
 # The binarization step maps 128 dimensional floats to 128 bits, or 16 bytes per vector. Reducing the size by 32x. On the [DocVQA benchmark](https://huggingface.co/datasets/vidore/docvqa_test_subsampled), binarization results in only a small drop in ranking accuracy.
 
@@ -620,7 +622,7 @@ for pdf, embedding in zip(pdf_pages, embeddings):
 # 4. We define 3 different ranking profiles:
 #     - `default` Uses BM25 for first phase ranking and MaxSim for second phase ranking.
 #     - `bm25` Uses `bm25(title) + bm25(text)` (first phase only) for ranking.
-#     - `retrieval-and-rerank` Uses `nearestneighbor` of the query embedding over the document embeddings for retrieval, `binary_max_sim` for first phase ranking, and `max_sim` of the query-embeddings as float for second phase ranking. 
+#     - `retrieval-and-rerank` Uses `nearestneighbor` of the query embedding over the document embeddings for retrieval, `binary_max_sim` for first phase ranking, and `max_sim` of the query-embeddings as float for second phase ranking.
 #     Vespa's [phased ranking](https://docs.vespa.ai/en/phased-ranking.html) allows us to use different ranking strategies for retrieval and reranking, to choose attractive trade-offs between latency, cost, and accuracy.
 #
 # First, we define a [Vespa schema](https://docs.vespa.ai/en/schemas.html) with the fields we want to store and their type.
@@ -850,11 +852,11 @@ colpali_schema.add_rank_profile(colpali_retrieval_profile)
 colpali_schema.add_rank_profile(with_quantized_similarity(colpali_retrieval_profile))
 # -
 
-# ### Configuring the `services.xml` 
+# ### Configuring the `services.xml`
 #
 # [services.xml](https://docs.vespa.ai/en/reference/services.html) is the primary configuration file for a Vespa application, with a plethora of options to configure the application.
 #
-# Since `pyvespa` version `0.50.0`, these configuration options are also available in `pyvespa`. See [here](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for more details. (Note that configurating this is optional). 
+# Since `pyvespa` version `0.50.0`, these configuration options are also available in `pyvespa`. See [here](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for more details. (Note that configurating this is optional).
 #
 # We will use the advanced configuration to configure up [dynamic snippets](https://docs.vespa.ai/en/document-summaries.html#dynamic-snippets). This allows us to highlight matched terms in the search results and generate a `snippet` to display, rather than the full text of the document.
 
