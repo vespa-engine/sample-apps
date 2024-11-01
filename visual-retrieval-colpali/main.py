@@ -90,7 +90,7 @@ thread_pool = ThreadPoolExecutor()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
 If the user query can not be interpreted as a question, or if the answer to the query can not be inferred from the images,
-answer with the exact phrase "I am sorry, I can't find enough information in the images to answer your question.".
+answer with the exact phrase "I am sorry, I can't find enough relevant information on these pages to answer your question.".
 Your response should be HTML formatted, but only simple tags, such as <b>. <p>, <i>, <br> <ul> and <li> are allowed. No HTML tables.
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
 But, you should NOT include backticks (`) or HTML tags in your response.
@@ -354,7 +354,7 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
     max_wait = 10  # seconds
     start_time = time.time()
     # Check if full images are ready on disk
-    while len(images) < num_images and time.time() - start_time < max_wait:
+    while len(images) < min(num_images, len(doc_ids)) and time.time() - start_time < max_wait:
         for idx in range(num_images):
             image_filename = IMG_DIR / f"{doc_ids[idx]}.jpg"
             if not os.path.exists(image_filename):
