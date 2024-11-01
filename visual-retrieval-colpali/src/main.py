@@ -141,19 +141,16 @@ def get():
 
 
 @rt("/search")
-def get(request):
-    # Extract the 'query' and 'ranking' parameters from the URL
-    query_value = request.query_params.get("query", "").strip()
-    ranking_value = request.query_params.get("ranking", "nn+colpali")
-    print("/search: Fetching results for ranking_value:", ranking_value)
+def get(request, query: str = "", ranking: str = "nn+colpali"):
+    print("/search: Fetching results for ranking_value:", ranking)
 
     # Always render the SearchBox first
-    if not query_value:
+    if not query:
         # Show SearchBox and a message for missing query
         return Layout(
             Main(
                 Div(
-                    SearchBox(query_value=query_value, ranking_value=ranking_value),
+                    SearchBox(query_value=query, ranking_value=ranking),
                     Div(
                         P(
                             "No query provided. Please enter a query.",
@@ -166,33 +163,15 @@ def get(request):
             )
         )
     # Generate a unique query_id based on the query and ranking value
-    query_id = generate_query_id(query_value, ranking_value)
+    query_id = generate_query_id(query, ranking)
     # Show the loading message if a query is provided
     return Layout(
         Main(Search(request), data_overlayscrollbars_initialize=True, cls="border-t"),
         Aside(
-            ChatResult(query_id=query_id, query=query_value),
+            ChatResult(query_id=query_id, query=query),
             cls="border-t border-l hidden md:block",
         ),
     )  # Show SearchBox and Loading message initially
-
-
-@rt("/fetch_results2")
-def get(query: str, ranking: str):
-    # 1. Get the results from Vespa (without sim_maps and full_images)
-    # Call search-endpoint in Vespa sync.
-
-    # 2. Kick off tasks to fetch sim_maps and full_images
-    # Sim maps - call search endpoint async.
-    # (A) New rank_profile that does not calculate sim_maps.
-    # (A) Make vespa endpoints take select_fields as a parameter.
-    # One sim map per image per token.
-    # the filename query_id_result_idx_token_idx.png
-    # Full image. based on the doc_id.
-    # Each of these tasks saves to disk.
-    # Need a cleanup task to delete old files.
-    # Polling endpoints for sim_maps and full_images checks if file exists and returns it.
-    pass
 
 
 @rt("/fetch_results")
@@ -340,8 +319,9 @@ async def full_image(doc_id: str):
 
 
 @rt("/suggestions")
-async def get_suggestions(request):
-    query = request.query_params.get("query", "").lower().strip()
+async def get_suggestions(query: str = ""):
+    """Endpoint to get suggestions as user types in the search box"""
+    query = query.lower().strip()
 
     if query:
         suggestions = await vespa_app.get_suggestions(query)
@@ -352,12 +332,16 @@ async def get_suggestions(request):
 
 
 async def message_generator(query_id: str, query: str, doc_ids: list):
+    """Generator function to yield SSE messages for chat response"""
     images = {}
     num_images = 3  # Number of images before firing chat request
     max_wait = 10  # seconds
     start_time = time.time()
     # Check if full images are ready on disk
-    while len(images) < min(num_images, len(doc_ids)) and time.time() - start_time < max_wait:
+    while (
+        len(images) < min(num_images, len(doc_ids))
+        and time.time() - start_time < max_wait
+    ):
         for idx in range(num_images):
             image_filename = IMG_DIR / f"{doc_ids[idx]}.jpg"
             if not os.path.exists(image_filename):
