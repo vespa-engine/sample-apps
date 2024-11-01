@@ -1,22 +1,3 @@
----
-title: ColPali 🤝 Vespa - Visual Retrieval
-short_description: Visual Retrieval with ColPali and Vespa
-emoji: 👀
-colorFrom: purple
-colorTo: blue
-sdk: gradio
-sdk_version: 4.44.0
-app_file: main.py
-pinned: false
-license: apache-2.0
-models:
-  - vidore/colpaligemma-3b-pt-448-base
-  - vidore/colpali-v1.2
-preload_from_hub:
-  - vidore/colpaligemma-3b-pt-448-base config.json,model-00001-of-00002.safetensors,model-00002-of-00002.safetensors,model.safetensors.index.json,preprocessor_config.json,special_tokens_map.json,tokenizer.json,tokenizer_config.json 12c59eb7e23bc4c26876f7be7c17760d5d3a1ffa
-  - vidore/colpali-v1.2 adapter_config.json,adapter_model.safetensors,preprocessor_config.json,special_tokens_map.json,tokenizer.json,tokenizer_config.json 9912ce6f8a462d8cf2269f5606eabbd2784e764f
----
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -75,7 +56,7 @@ Skip to [Installing dependencies using `uv`](#installing-dependencies-using-uv) 
 You can install the dependencies with `pip`:
 
 ```bash
-pip install -r requirements.txt
+pip install -r src/requirements.txt
 ```
 
 ### Installing dependencies using `uv`
@@ -107,7 +88,7 @@ uv sync --extra dev
 
 ## Running the application locally
 
-To run the application locally, you can run:
+To run the application locally, you can change into the `src` directory and run:
 
 ```bash
 python main.py
@@ -122,20 +103,12 @@ This will start a local server, and you can access the application at `http://lo
 Before a deploy, make sure to run this to compile the `uv` lock file to `requirements.txt` if you have made changes to the dependencies:
 
 ```bash
-uv pip compile pyproject.toml -o requirements.txt
+uv pip compile pyproject.toml -o src/requirements.txt
 ```
 
 This will make sure that the dependencies in your `pyproject.toml` are compiled to the `requirements.txt` file, which is used by the huggingface space.
 
 ### Deploying to huggingface
-
-To deploy, run
-
-(Replace `vespa-engine/colpali-vespa-visual-retrieval` with your own huggingface user/repo name, does not need to exist beforehand)
-
-```bash
-huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval . . --repo-type=space
-```
 
 Note that you need to set `HF_TOKEN` environment variable first.
 This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens).
@@ -143,6 +116,26 @@ Make sure the token has `write` access.
 Be aware that this will not delete existing files, only modify or add,
 see [huggingface-cli](https://huggingface.co/docs/huggingface_hub/en/guides/upload#upload-from-the-cli) for more
 information.
+
+#### Update your space configuration
+
+The `src/README.md` file contains the configuration for the space.
+Feel free to update this file to match your own configuration - name, description, etc.
+
+Note that we can actually use the `gradio` SDK of spaces, to serve FastHTML apps as well, as long as we serve the app on port `7860`.
+See [Custom python spaces](https://huggingface.co/docs/hub/en/spaces-sdks-python) for more information.
+
+#### Upload the files
+
+To deploy, run
+
+(Replace `vespa-engine/colpali-vespa-visual-retrieval` with your own huggingface user/repo name, does not need to exist beforehand)
+
+```bash
+huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval src . --repo-type=space
+```
+
+Note that we upload only the `src` directory.
 
 ## Development
 
