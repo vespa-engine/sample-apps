@@ -28,8 +28,7 @@ from PIL import Image
 from shad4fast import ShadHead
 from vespa.application import Vespa
 
-from backend.colpali import gen_similarity_maps, get_query_embeddings_and_token_map
-from backend.modelmanager import ModelManager
+from backend.colpali import SimMapGenerator
 from backend.vespa_app import VespaQueryClient
 from frontend.app import (
     AboutThisDemo,
@@ -108,7 +107,7 @@ os.makedirs(SIM_MAP_DIR, exist_ok=True)
 
 @app.on_event("startup")
 def load_model_on_startup():
-    app.manager = ModelManager.get_instance()
+    app.sim_map_generator = SimMapGenerator()
     return
 
 
@@ -183,9 +182,10 @@ async def get(session, request, query: str, ranking: str):
     query_id = generate_query_id(query, ranking)
     print(f"Query id in /fetch_results: {query_id}")
     # Run the embedding and query against Vespa app
-    model = app.manager.model
-    processor = app.manager.processor
-    q_embs, idx_to_token = get_query_embeddings_and_token_map(processor, model, query)
+
+    q_embs, idx_to_token = app.sim_map_generator.get_query_embeddings_and_token_map(
+        query
+    )
 
     start = time.perf_counter()
     # Fetch real search results from Vespa
@@ -254,10 +254,7 @@ def get_and_store_sim_maps(
     if not all([os.path.exists(img_path) for img_path in img_paths]):
         print(f"Images not ready in 5 seconds for query_id: {query_id}")
         return False
-    sim_map_generator = gen_similarity_maps(
-        model=app.manager.model,
-        processor=app.manager.processor,
-        device=app.manager.device,
+    sim_map_generator = app.sim_map_generator.gen_similarity_maps(
         query=query,
         query_embs=q_embs,
         token_idx_map=idx_to_token,
