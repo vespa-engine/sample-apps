@@ -1,36 +1,38 @@
 import asyncio
+import base64
 import os
 import time
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor
 import uuid
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
 import google.generativeai as genai
+from fastcore.parallel import threaded
 from fasthtml.common import (
+    Aside,
     Div,
+    FileResponse,
+    HighlightJS,
     Img,
+    JSONResponse,
+    Link,
     Main,
     P,
-    Script,
-    Link,
-    fast_app,
-    HighlightJS,
-    FileResponse,
     RedirectResponse,
-    Aside,
+    Script,
     StreamingResponse,
-    JSONResponse,
+    fast_app,
     serve,
 )
+from PIL import Image
 from shad4fast import ShadHead
 from vespa.application import Vespa
-import base64
-from fastcore.parallel import threaded
-from PIL import Image
 
-from backend.colpali import get_query_embeddings_and_token_map, gen_similarity_maps
+from backend.colpali import gen_similarity_maps, get_query_embeddings_and_token_map
 from backend.modelmanager import ModelManager
 from backend.vespa_app import VespaQueryClient
 from frontend.app import (
+    AboutThisDemo,
     ChatResult,
     Home,
     Search,
@@ -38,7 +40,6 @@ from frontend.app import (
     SearchResult,
     SimMapButtonPoll,
     SimMapButtonReady,
-    AboutThisDemo,
 )
 from frontend.layout import Layout
 
@@ -131,7 +132,7 @@ def serve_static(filepath: str):
 def get(session):
     if "session_id" not in session:
         session["session_id"] = str(uuid.uuid4())
-    return Layout(Main(Home()))
+    return Layout(Main(Home()), is_home=True)
 
 
 @rt("/about-this-demo")
@@ -219,6 +220,8 @@ async def get(session, request, query: str, ranking: str):
     print(
         f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
     )
+    search_time = result["timing"]["searchtime"]
+    total_count = result["root"]["fields"]["totalCount"]
 
     search_results = vespa_app.results_to_search_results(result, idx_to_token)
 
@@ -230,7 +233,7 @@ async def get(session, request, query: str, ranking: str):
         idx_to_token=idx_to_token,
         doc_ids=[result["fields"]["id"] for result in search_results],
     )
-    return SearchResult(search_results, query, query_id)
+    return SearchResult(search_results, query, query_id, search_time, total_count)
 
 
 def get_results_children(result):
