@@ -93,7 +93,7 @@ If the user query can not be interpreted as a question, or if the answer to the 
 answer with the exact phrase "I am sorry, I can't find enough relevant information on these pages to answer your question.".
 Your response should be HTML formatted, but only simple tags, such as <b>. <p>, <i>, <br> <ul> and <li> are allowed. No HTML tables.
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
-But, you should NOT include backticks (`) or HTML tags in your response.
+Do NOT include backticks (`) in your response. Only simple HTML tags and text.
 """
 gemini_model = genai.GenerativeModel(
     "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
