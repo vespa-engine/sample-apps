@@ -7,8 +7,9 @@ import torch
 from dotenv import load_dotenv
 from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
-from .colpali import should_filter_token
+from .colpali import SimMapGenerator
 import backend.stopwords
+
 
 class VespaQueryClient:
     MAX_QUERY_TERMS = 64
@@ -364,7 +365,7 @@ class VespaQueryClient:
         fields_to_add = [
             f"sim_map_{token}_{idx}"
             for idx, token in idx_to_token.items()
-            if not should_filter_token(token)
+            if not SimMapGenerator.should_filter_token(token)
         ]
         for child in result["root"]["children"]:
             for sim_map_key in fields_to_add:
