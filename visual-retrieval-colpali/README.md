@@ -41,7 +41,7 @@ Also, 👇
 
 <a href="https://imgflip.com/i/98mhch"><img src="https://i.imgflip.com/98mhch.jpg" title="made at imgflip.com"/></a>
 
-As a prerequisite, you should run [this notebook](prepare_feed_deploy.ipynb) to prepare the data and deploy the Vespa application.
+As a prerequisite, you should run [this notebook](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.ipynb) to prepare the data and deploy the Vespa application.
 
 ## Setting up your .env variables
 
