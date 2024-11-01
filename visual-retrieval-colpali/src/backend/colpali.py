@@ -1,325 +1,274 @@
-#!/usr/bin/env python3
-
 import torch
 from PIL import Image
 import numpy as np
-from typing import cast, Generator
+from typing import Generator, Tuple, List, Union, Dict
 from pathlib import Path
 import base64
 from io import BytesIO
-from typing import Union, Tuple, List
-import matplotlib
-import matplotlib.cm as cm
 import re
 import io
-
-import time
-import backend.testquery as testquery
+import matplotlib.cm as cm
 
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
-from einops import rearrange
 from vidore_benchmark.interpretability.torch_utils import (
     normalize_similarity_map_per_query_token,
 )
-from vidore_benchmark.interpretability.vit_configs import VIT_CONFIG
-
-matplotlib.use("Agg")
-# Prepare the colormap once to avoid recomputation
-colormap = cm.get_cmap("viridis")
-
-COLPALI_GEMMA_MODEL_NAME = "vidore/colpaligemma-3b-pt-448-base"
 
 
-def load_model() -> Tuple[ColPali, ColPaliProcessor]:
-    model_name = "vidore/colpali-v1.2"
+class SimMapGenerator:
+    """
+    Generates similarity maps based on query embeddings and image patches using the ColPali model.
+    """
 
-    device = get_torch_device("auto")
-    print(f"Using device: {device}")
+    COLPALI_GEMMA_MODEL_NAME = "vidore/colpaligemma-3b-pt-448-base"
+    colormap = cm.get_cmap("viridis")  # Preload colormap for efficiency
 
-    # Load the model
-    model = cast(
-        ColPali,
-        ColPali.from_pretrained(
-            model_name,
+    def __init__(self, model_name: str = "vidore/colpali-v1.2", n_patch: int = 32):
+        """
+        Initializes the SimMapGenerator class with a specified model and patch dimension.
+
+        Args:
+            model_name (str): The model name for loading the ColPali model.
+            n_patch (int): The number of patches per dimension.
+        """
+        self.model_name = model_name
+        self.n_patch = n_patch
+        self.device = get_torch_device("auto")
+        print(f"Using device: {self.device}")
+        self.model, self.processor = self.load_model()
+
+    def load_model(self) -> Tuple[ColPali, ColPaliProcessor]:
+        """
+        Loads the ColPali model and processor.
+
+        Returns:
+            Tuple[ColPali, ColPaliProcessor]: Loaded model and processor.
+        """
+        model = ColPali.from_pretrained(
+            self.model_name,
             torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-            device_map=device,
-        ),
-    ).eval()
+            device_map=self.device,
+        ).eval()
 
-    # Load the processor
-    processor = cast(ColPaliProcessor, ColPaliProcessor.from_pretrained(model_name))
-    return model, processor, device
+        processor = ColPaliProcessor.from_pretrained(self.model_name)
+        return model, processor
 
+    def gen_similarity_maps(
+        self,
+        query: str,
+        query_embs: torch.Tensor,
+        token_idx_map: Dict[int, str],
+        images: List[Union[Path, str]],
+        vespa_sim_maps: List[Dict],
+    ) -> Generator[Tuple[int, str, str], None, None]:
+        """
+        Generates similarity maps for the provided images and query, and returns base64-encoded blended images.
 
-def load_vit_config(model):
-    # Load the ViT config
-    print(f"VIT config: {VIT_CONFIG}")
-    vit_config = VIT_CONFIG[COLPALI_GEMMA_MODEL_NAME]
-    return vit_config
+        Args:
+            query (str): The query string.
+            query_embs (torch.Tensor): Query embeddings tensor.
+            token_idx_map (dict): Mapping from indices to tokens.
+            images (List[Union[Path, str]]): List of image paths or base64-encoded strings.
+            vespa_sim_maps (List[Dict]): List of Vespa similarity maps.
 
+        Yields:
+            Tuple[int, str, str]: A tuple containing the image index, selected token, and base64-encoded image.
+        """
+        processed_images, original_images, original_sizes = [], [], []
+        for img in images:
+            img_pil = self._load_image(img)
+            original_images.append(img_pil.copy())
+            original_sizes.append(img_pil.size)
+            processed_images.append(img_pil)
 
-def gen_similarity_maps(
-    model: ColPali,
-    processor: ColPaliProcessor,
-    device,
-    query: str,
-    query_embs: torch.Tensor,
-    token_idx_map: dict,
-    images: List[Union[Path, str]],
-    vespa_sim_maps: List[str],
-) -> Generator[Tuple[int, str, str], None, None]:
-    """
-    Generate similarity maps for the given images and query, and return base64-encoded blended images.
+        vespa_sim_map_tensor = self._prepare_similarity_map_tensor(
+            query_embs, vespa_sim_maps
+        )
+        similarity_map_normalized = normalize_similarity_map_per_query_token(
+            vespa_sim_map_tensor
+        )
 
-    Args:
-        model (ColPali): The model used for generating embeddings.
-        processor (ColPaliProcessor): Processor for images and text.
-        device: Device to run the computations on.
-        vit_config: Configuration for the Vision Transformer.
-        query (str): The query string.
-        query_embs (torch.Tensor): Query embeddings.
-        token_idx_map (dict): Mapping from indices to tokens.
-        images (List[Union[Path, str]]): List of image paths or base64-encoded strings.
-        vespa_sim_maps (List[str]): List of Vespa similarity maps.
+        for idx, img in enumerate(original_images):
+            for token_idx, token in token_idx_map.items():
+                if self.should_filter_token(token):
+                    continue
 
-    Yields:
-        Tuple[int, str, str]: A tuple containing the image index, the selected token, and the base64-encoded image.
+                sim_map = similarity_map_normalized[idx, token_idx, :, :]
+                blended_img_base64 = self._blend_image(
+                    img, sim_map, original_sizes[idx]
+                )
+                yield idx, token, token_idx, blended_img_base64
 
-    """
-    vit_config = load_vit_config(model)
-    # Process images and store original images and sizes
-    processed_images = []
-    original_images = []
-    original_sizes = []
-    for img in images:
-        if isinstance(img, Path):
-            try:
-                img_pil = Image.open(img).convert("RGB")
-            except Exception as e:
-                raise ValueError(f"Failed to open image from path: {e}")
-        elif isinstance(img, str):
-            try:
-                img_pil = Image.open(BytesIO(base64.b64decode(img))).convert("RGB")
-            except Exception as e:
-                raise ValueError(f"Failed to open image from base64 string: {e}")
-        else:
-            raise ValueError(f"Unsupported image type: {type(img)}")
-        original_images.append(img_pil.copy())
-        original_sizes.append(img_pil.size)  # (width, height)
-        processed_images.append(img_pil)
+    def _load_image(self, img: Union[Path, str]) -> Image:
+        """
+        Loads an image from a file path or a base64-encoded string.
 
-    # If similarity maps are provided, use them instead of computing them
-    if vespa_sim_maps:
-        print("Using provided similarity maps")
-        # A sim map looks like this:
-        # "quantized": [
-        #      {
-        #        "address": {
-        #          "patch": "0",
-        #          "querytoken": "0"
-        #        },
-        #        "value": 12, # score in range [-128, 127]
-        #      },
-        # ... and so on.
-        # Now turn these into a tensor of same shape as previous similarity map
+        Args:
+            img (Union[Path, str]): The image to load.
+
+        Returns:
+            Image: The loaded PIL image.
+        """
+        try:
+            if isinstance(img, Path):
+                return Image.open(img).convert("RGB")
+            elif isinstance(img, str):
+                return Image.open(BytesIO(base64.b64decode(img))).convert("RGB")
+        except Exception as e:
+            raise ValueError(f"Failed to load image: {e}")
+
+    def _prepare_similarity_map_tensor(
+        self, query_embs: torch.Tensor, vespa_sim_maps: List[Dict]
+    ) -> torch.Tensor:
+        """
+        Prepares a similarity map tensor from Vespa similarity maps.
+
+        Args:
+            query_embs (torch.Tensor): Query embeddings tensor.
+            vespa_sim_maps (List[Dict]): List of Vespa similarity maps.
+
+        Returns:
+            torch.Tensor: The prepared similarity map tensor.
+        """
         vespa_sim_map_tensor = torch.zeros(
-            (
-                len(vespa_sim_maps),
-                query_embs.size(dim=1),
-                vit_config.n_patch_per_dim,
-                vit_config.n_patch_per_dim,
-            )
+            (len(vespa_sim_maps), query_embs.size(1), self.n_patch, self.n_patch)
         )
         for idx, vespa_sim_map in enumerate(vespa_sim_maps):
             for cell in vespa_sim_map["quantized"]["cells"]:
                 patch = int(cell["address"]["patch"])
-                # if dummy model then just use 1024 as the image_seq_length
-
-                if hasattr(processor, "image_seq_length"):
-                    image_seq_length = processor.image_seq_length
+                query_token = int(cell["address"]["querytoken"])
+                value = cell["value"]
+                if hasattr(self.processor, "image_seq_length"):
+                    image_seq_length = self.processor.image_seq_length
                 else:
                     image_seq_length = 1024
 
                 if patch >= image_seq_length:
                     continue
-                query_token = int(cell["address"]["querytoken"])
-                value = cell["value"]
                 vespa_sim_map_tensor[
                     idx,
-                    int(query_token),
-                    int(patch) // vit_config.n_patch_per_dim,
-                    int(patch) % vit_config.n_patch_per_dim,
+                    query_token,
+                    patch // self.n_patch,
+                    patch % self.n_patch,
                 ] = value
+        return vespa_sim_map_tensor
 
-        # Normalize the similarity map per query token
-        similarity_map_normalized = normalize_similarity_map_per_query_token(
-            vespa_sim_map_tensor
-        )
-    else:
-        # Preprocess inputs
-        print("Computing similarity maps")
-        start2 = time.perf_counter()
-        input_image_processed = processor.process_images(processed_images).to(device)
+    def _blend_image(
+        self, img: Image, sim_map: torch.Tensor, original_size: Tuple[int, int]
+    ) -> str:
+        """
+        Blends an image with a similarity map and encodes it to base64.
 
-        # Forward passes
-        with torch.no_grad():
-            output_image = model.forward(**input_image_processed)
+        Args:
+            img (Image): The original image.
+            sim_map (torch.Tensor): The similarity map tensor.
+            original_size (Tuple[int, int]): The original size of the image.
 
-        # Remove the special tokens from the output
-        output_image = output_image[:, : processor.image_seq_length, :]
-
-        # Rearrange the output image tensor to represent the 2D grid of patches
-        output_image = rearrange(
-            output_image,
-            "b (h w) c -> b h w c",
-            h=vit_config.n_patch_per_dim,
-            w=vit_config.n_patch_per_dim,
-        )
-
-        # Ensure query_embs has batch dimension
-        if query_embs.dim() == 2:
-            query_embs = query_embs.unsqueeze(0).to(device)
-        else:
-            query_embs = query_embs.to(device)
-
-        # Compute the similarity map
-        similarity_map = torch.einsum(
-            "bnk,bhwk->bnhw", query_embs, output_image
-        )  # Shape: (batch_size, query_tokens, h, w)
-
-        end2 = time.perf_counter()
-        print(f"Similarity map computation took: {end2 - start2} s")
-
-        # Normalize the similarity map per query token
-        similarity_map_normalized = normalize_similarity_map_per_query_token(
-            similarity_map
-        )
-
-    # Collect the blended images
-    start3 = time.perf_counter()
-    for idx, img in enumerate(original_images):
+        Returns:
+            str: The base64-encoded blended image.
+        """
         SCALING_FACTOR = 8
         sim_map_resolution = (
-            max(32, int(original_sizes[idx][0] / SCALING_FACTOR)),
-            max(32, int(original_sizes[idx][1] / SCALING_FACTOR)),
+            max(32, int(original_size[0] / SCALING_FACTOR)),
+            max(32, int(original_size[1] / SCALING_FACTOR)),
         )
 
-        result_per_image = {}
-        for token_idx, token in token_idx_map.items():
-            if should_filter_token(token):
-                continue
+        sim_map_np = sim_map.cpu().float().numpy()
+        sim_map_img = Image.fromarray(sim_map_np).resize(
+            sim_map_resolution, resample=Image.BICUBIC
+        )
+        sim_map_resized_np = np.array(sim_map_img, dtype=np.float32)
+        sim_map_normalized = self._normalize_sim_map(sim_map_resized_np)
 
-            # Get the similarity map for this image and the selected token
-            sim_map = similarity_map_normalized[idx, token_idx, :, :]  # Shape: (h, w)
+        heatmap = self.colormap(sim_map_normalized)
+        heatmap_img = Image.fromarray((heatmap * 255).astype(np.uint8)).convert("RGBA")
 
-            # Move the similarity map to CPU, convert to float (as BFloat16 not supported by Numpy) and convert to NumPy array
-            sim_map_np = sim_map.cpu().float().numpy()
+        buffer = io.BytesIO()
+        heatmap_img.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-            # Resize the similarity map to the original image size
-            sim_map_img = Image.fromarray(sim_map_np)
-            sim_map_resized = sim_map_img.resize(
-                sim_map_resolution, resample=Image.BICUBIC
-            )
+    @staticmethod
+    def _normalize_sim_map(sim_map: np.ndarray) -> np.ndarray:
+        """
+        Normalizes a similarity map to range [0, 1].
 
-            # Convert the resized similarity map to a NumPy array
-            sim_map_resized_np = np.array(sim_map_resized, dtype=np.float32)
+        Args:
+            sim_map (np.ndarray): The similarity map.
 
-            # Normalize the similarity map to range [0, 1]
-            sim_map_min = sim_map_resized_np.min()
-            sim_map_max = sim_map_resized_np.max()
-            if sim_map_max - sim_map_min > 1e-6:
-                sim_map_normalized = (sim_map_resized_np - sim_map_min) / (
-                    sim_map_max - sim_map_min
-                )
-            else:
-                sim_map_normalized = np.zeros_like(sim_map_resized_np)
+        Returns:
+            np.ndarray: The normalized similarity map.
+        """
+        sim_map_min, sim_map_max = sim_map.min(), sim_map.max()
+        if sim_map_max - sim_map_min > 1e-6:
+            return (sim_map - sim_map_min) / (sim_map_max - sim_map_min)
+        return np.zeros_like(sim_map)
 
-            # Apply a colormap to the normalized similarity map
-            heatmap = colormap(sim_map_normalized)  # Returns an RGBA array
+    @staticmethod
+    def should_filter_token(token: str) -> bool:
+        """
+        Determines if a token should be filtered out based on predefined patterns.
 
-            # Convert the heatmap to a PIL Image
-            heatmap_uint8 = (heatmap * 255).astype(np.uint8)
-            heatmap_img = Image.fromarray(heatmap_uint8)
-            heatmap_img_rgba = heatmap_img.convert("RGBA")
+        The function filters out tokens that:
 
-            # Save the image to a BytesIO buffer
-            buffer = io.BytesIO()
-            heatmap_img_rgba.save(buffer, format="PNG")
-            buffer.seek(0)
+            - Start with '<' (e.g., '<bos>')
+            - Consist entirely of whitespace
+            - Are purely punctuation (excluding tokens that contain digits or start with '▁')
+            - Start with an underscore '_'
+            - Exactly match the word 'Question'
+            - Are exactly the single character '▁'
 
-            # Encode the image to base64
-            blended_img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-
-            # Store the base64-encoded image
-            result_per_image[token] = blended_img_base64
-            yield idx, token, token_idx, blended_img_base64
-    end3 = time.perf_counter()
-    print(f"Blending images took: {end3 - start3} s")
-
-
-def get_query_embeddings_and_token_map(
-    processor, model, query
-) -> Tuple[torch.Tensor, dict]:
-    if model is None:  # use static test query data (saves time when testing)
-        return testquery.q_embs, testquery.idx_to_token
-
-    start_time = time.perf_counter()
-    inputs = processor.process_queries([query]).to(model.device)
-    with torch.no_grad():
-        embeddings_query = model(**inputs)
-        q_emb = embeddings_query.to("cpu")[0]  # Extract the single embedding
-    # Use this cell output to choose a token using its index
-    query_tokens = processor.tokenizer.tokenize(processor.decode(inputs.input_ids[0]))
-    # reverse key, values in dictionary
-    print(query_tokens)
-    idx_to_token = {idx: val for idx, val in enumerate(query_tokens)}
-    end_time = time.perf_counter()
-    print(f"Query inference took: {end_time - start_time} s")
-    return q_emb, idx_to_token
+        Output of test:
+            Token: '2'         | False
+            Token: '0'         | False
+            Token: '2'         | False
+            Token: '3'         | False
+            Token: '▁2'        | False
+            Token: '▁hi'       | False
+            Token: 'norwegian' | False
+            Token: 'unlisted'  | False
+            Token: '<bos>'     | True
+            Token: 'Question'  | True
+            Token: ':'         | True
+            Token: '<pad>'     | True
+            Token: '\n'        | True
+            Token: '▁'         | True
+            Token: '?'         | True
+            Token: ')'         | True
+            Token: '%'         | True
+            Token: '/)'        | True
 
 
-def should_filter_token(token: str) -> bool:
-    """
-    Determines whether a token should be filtered out based on predefined patterns.
+        Args:
+            token (str): The token to check.
 
-    The function filters out tokens that:
-    - Start with '<' (e.g., '<bos>')
-    - Consist entirely of whitespace
-    - Are purely punctuation (excluding tokens that contain digits or start with '▁')
-    - Start with an underscore '_'
-    - Exactly match the word 'Question'
-    - Are exactly the single character '▁'
+        Returns:
+            bool: True if the token should be filtered out, False otherwise.
+        """
+        pattern = re.compile(
+            r"^<.*$|^\s+$|^(?!.*\d)(?!▁)[^\w\s]+$|^_.*$|^Question$|^▁$"
+        )
+        return bool(pattern.match(token))
 
-    Output of test:
+    # TODO: Would be nice to @lru_cache this method.
+    def get_query_embeddings_and_token_map(
+        self, query: str
+    ) -> Tuple[torch.Tensor, dict]:
+        """
+        Retrieves query embeddings and a token index map.
 
-    Token: '2'         | False
-    Token: '0'         | False
-    Token: '2'         | False
-    Token: '3'         | False
-    Token: '▁2'        | False
-    Token: '▁hi'       | False
-    Token: 'norwegian' | False
-    Token: 'unlisted'  | False
-    Token: '<bos>'     | True
-    Token: 'Question'  | True
-    Token: ':'         | True
-    Token: '<pad>'     | True
-    Token: '\n'        | True
-    Token: '▁'         | True
-    Token: '?'         | True
-    Token: ')'         | True
-    Token: '%'         | True
-    Token: '/)'        | True
+        Args:
+            query (str): The query string.
 
-    Tokens that do not match these patterns (e.g., 'norwegian', 'unlisted') are not filtered out.
+        Returns:
+            Tuple[torch.Tensor, dict]: Query embeddings and token index map.
+        """
+        inputs = self.processor.process_queries([query]).to(self.model.device)
+        with torch.no_grad():
+            q_emb = self.model(**inputs).to("cpu")[0]
 
-    Args:
-        token (str): The token to evaluate.
-
-    Returns:
-        bool: True if the token should be filtered out, False otherwise.
-    """
-    pattern = re.compile(r"^<.*$|^\s+$|^(?!.*\d)(?!▁)[^\w\s]+$|^_.*$|^Question$|^▁$")
-
-    return bool(pattern.match(token))
+        query_tokens = self.processor.tokenizer.tokenize(
+            self.processor.decode(inputs.input_ids[0])
+        )
+        idx_to_token = {idx: token for idx, token in enumerate(query_tokens)}
+        return q_emb, idx_to_token
