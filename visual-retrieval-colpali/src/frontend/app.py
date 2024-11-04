@@ -212,9 +212,11 @@ def SampleQueries():
     sample_queries = [
         "Total amount of fixed salaries paid in 2023?",
         "Proportion of female new hires 2021-2023?",
-        "Value of unlisted real estate 2023?",
-        "Fund currency basket returns 2023",
-        "Employees per office site?",
+        "Number of internship applications trend 2021-2023",
+        "Gender balance at level 4 or above in NY office 2023?",
+        "What percentage of the funds unlisted real estate investments were in Switzerland 2023?",
+        "child jumping over puddle",
+        "hula hoop kid",
     ]
 
     query_badges = []
