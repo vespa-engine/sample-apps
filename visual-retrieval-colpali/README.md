@@ -20,7 +20,7 @@ No worries! This project uses [FastHTML](https://fastht.ml/) to create a beautif
 
 Also, 👇
 
-<a href="https://imgflip.com/i/98mhch"><img src="https://i.imgflip.com/98mhch.jpg" title="made at imgflip.com"/></a>
+<a href="https://imgflip.com/i/98mhch"><img src="https://i.imgflip.com/98mhch.jpg" title="made at imgflip.com" alt="Funny meme about json output in demo"/></a>
 
 As a prerequisite, you should run [this notebook](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.ipynb) to prepare the data and deploy the Vespa application.
 
