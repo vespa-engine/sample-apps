@@ -6,6 +6,8 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from openai import OpenAI
+
 import google.generativeai as genai
 from fastcore.parallel import threaded
 from fasthtml.common import (
@@ -365,16 +367,59 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
     def replace_newline_with_br(text):
         return text.replace("\n", "<br>")
 
-    response_text = ""
-    async for chunk in await gemini_model.generate_content_async(
-        images + ["\n\n Query: ", query], stream=True
-    ):
-        if chunk.text:
-            response_text += chunk.text
-            response_text = replace_newline_with_br(response_text)
-            yield f"event: message\ndata: {response_text}\n\n"
-            await asyncio.sleep(0.1)
+    client = OpenAI()
+
+    def encode_image(image_path):
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+
+    base64_image_1 = encode_image(IMG_DIR / f"{doc_ids[0]}.jpg")
+    base64_image_2 = encode_image(IMG_DIR / f"{doc_ids[1]}.jpg")
+    base64_image_3 = encode_image(IMG_DIR / f"{doc_ids[2]}.jpg")
+
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": GEMINI_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": query,
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image_1}"},
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image_2}"},
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image_3}"},
+                    },
+                ],
+            },
+        ],
+    )
+
+    response_text = completion.choices[0].message.content
+    response_text = replace_newline_with_br(response_text)
+    yield f"event: message\ndata: {response_text}\n\n"
     yield "event: close\ndata: \n\n"
+
+    # response_text = ""
+    # async for chunk in await gemini_model.generate_content_async(
+    #     images + ["\n\n Query: ", query], stream=True
+    # ):
+    #     if chunk.text:
+    #         response_text += chunk.text
+    #         response_text = replace_newline_with_br(response_text)
+    #         yield f"event: message\ndata: {response_text}\n\n"
+    #         await asyncio.sleep(0.1)
+    # yield "event: close\ndata: \n\n"
 
 
 @app.get("/get-message")
