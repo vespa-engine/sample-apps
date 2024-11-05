@@ -3,6 +3,8 @@ import base64
 import os
 import time
 import uuid
+import logging
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -67,6 +69,20 @@ awesomplete_js = Script(
     src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.7/awesomplete.min.js"
 )
 sselink = Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js")
+
+# Get log level from environment variable, default to INFO
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+# Configure logger
+logger = logging.getLogger("vespa_app")
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(
+    logging.Formatter(
+        "%(levelname)s: \t %(asctime)s \t %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+)
+logger.addHandler(handler)
+logger.setLevel(getattr(logging, LOG_LEVEL))
 
 app, rt = fast_app(
     htmlkw={"cls": "grid h-full"},
@@ -141,7 +157,7 @@ def get():
 
 @rt("/search")
 def get(request, query: str = "", ranking: str = "nn+colpali"):
-    print("/search: Fetching results for ranking_value:", ranking)
+    logger.info(f"/search: Fetching results for query: {query}, ranking: {ranking}")
 
     # Always render the SearchBox first
     if not query:
@@ -180,7 +196,7 @@ async def get(session, request, query: str, ranking: str):
 
     # Get the hash of the query and ranking value
     query_id = generate_query_id(query, ranking)
-    print(f"Query id in /fetch_results: {query_id}")
+    logger.info(f"Query id in /fetch_results: {query_id}")
     # Run the embedding and query against Vespa app
 
     q_embs, idx_to_token = app.sim_map_generator.get_query_embeddings_and_token_map(
@@ -196,8 +212,8 @@ async def get(session, request, query: str, ranking: str):
         idx_to_token=idx_to_token,
     )
     end = time.perf_counter()
-    print(
-        f"Search results fetched in {end - start:.2f} seconds, Vespa says searchtime was {result['timing']['searchtime']} seconds"
+    logger.info(
+        f"Search results fetched in {end - start:.2f} seconds. Vespa search time: {result['timing']['searchtime']}"
     )
     search_time = result["timing"]["searchtime"]
     total_count = result["root"]["fields"]["totalCount"]
@@ -228,7 +244,7 @@ async def poll_vespa_keepalive():
     while True:
         await asyncio.sleep(5)
         await vespa_app.keepalive()
-        print(f"Vespa keepalive: {time.time()}")
+        logger.debug("Vespa keepalive: %s", time.time())
 
 
 @threaded
@@ -252,7 +268,7 @@ def get_and_store_sim_maps(
     ):
         time.sleep(0.2)
     if not all([os.path.exists(img_path) for img_path in img_paths]):
-        print(f"Images not ready in 5 seconds for query_id: {query_id}")
+        logger.warning("Images not ready in 5 seconds for query_id: %s", query_id)
         return False
     sim_map_generator = app.sim_map_generator.gen_similarity_maps(
         query=query,
@@ -264,8 +280,11 @@ def get_and_store_sim_maps(
     for idx, token, token_idx, blended_img_base64 in sim_map_generator:
         with open(SIM_MAP_DIR / f"{query_id}_{idx}_{token_idx}.png", "wb") as f:
             f.write(base64.b64decode(blended_img_base64))
-        print(
-            f"Sim map saved to disk for query_id: {query_id}, idx: {idx}, token: {token}"
+        logger.debug(
+            "Sim map saved to disk for query_id: %s, idx: %s, token: %s",
+            query_id,
+            idx,
+            token,
         )
     return True
 
@@ -279,7 +298,12 @@ async def get_sim_map(query_id: str, idx: int, token: str, token_idx: int):
     """
     sim_map_path = SIM_MAP_DIR / f"{query_id}_{idx}_{token_idx}.png"
     if not os.path.exists(sim_map_path):
-        print(f"Sim map not ready for query_id: {query_id}, idx: {idx}, token: {token}")
+        logger.debug(
+            "Sim map not ready for query_id: %s, idx: %s, token: %s",
+            query_id,
+            idx,
+            token,
+        )
         return SimMapButtonPoll(
             query_id=query_id, idx=idx, token=token, token_idx=token_idx
         )
@@ -304,7 +328,7 @@ async def full_image(doc_id: str):
         # image data is base 64 encoded string. Save it to disk as jpg.
         with open(img_path, "wb") as f:
             f.write(base64.b64decode(image_data))
-        print(f"Full image saved to disk for doc_id: {doc_id}")
+        logger.debug("Full image saved to disk for doc_id: %s", doc_id)
     else:
         with open(img_path, "rb") as f:
             image_data = base64.b64encode(f.read()).decode("utf-8")
@@ -342,13 +366,17 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
         for idx in range(num_images):
             image_filename = IMG_DIR / f"{doc_ids[idx]}.jpg"
             if not os.path.exists(image_filename):
-                print(
-                    f"Message generator: Full image not ready for query_id: {query_id}, idx: {idx}"
+                logger.debug(
+                    "Message generator: Full image not ready for query_id: %s, idx: %s",
+                    query_id,
+                    idx,
                 )
                 continue
             else:
-                print(
-                    f"Message generator: image ready for query_id: {query_id}, idx: {idx}"
+                logger.debug(
+                    "Message generator: image ready for query_id: %s, idx: %s",
+                    query_id,
+                    idx,
                 )
                 images[image_filename] = Image.open(image_filename)
         await asyncio.sleep(0.2)
@@ -393,5 +421,5 @@ def get():
 if __name__ == "__main__":
     # ModelManager.get_instance()  # Initialize once at startup
     HOT_RELOAD = os.getenv("HOT_RELOAD", "False").lower() == "true"
-    print(f"Starting app with hot reload: {HOT_RELOAD}")
+    logger.info("Starting app with hot reload: %s", HOT_RELOAD)
     serve(port=7860, reload=HOT_RELOAD)
