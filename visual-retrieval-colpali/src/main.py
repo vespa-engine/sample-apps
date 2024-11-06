@@ -198,9 +198,13 @@ async def get(session, request, query: str, ranking: str):
     query_id = generate_query_id(query, ranking)
     logger.info(f"Query id in /fetch_results: {query_id}")
     # Run the embedding and query against Vespa app
-
+    start_inference = time.perf_counter()
     q_embs, idx_to_token = app.sim_map_generator.get_query_embeddings_and_token_map(
         query
+    )
+    end_inference = time.perf_counter()
+    logger.info(
+        f"Inference time for query_id: {query_id} \t {end_inference - start_inference:.2f} seconds"
     )
 
     start = time.perf_counter()
@@ -380,7 +384,7 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
                     idx,
                 )
                 images.append(Image.open(image_filename))
-        if(len(images) < num_images):
+        if len(images) < num_images:
             await asyncio.sleep(0.2)
 
     # yield message with number of images ready
