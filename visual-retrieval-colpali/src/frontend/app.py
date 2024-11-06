@@ -310,9 +310,6 @@ def AboutThisDemo():
 def Search(request, search_results=[]):
     query_value = request.query_params.get("query", "").strip()
     ranking_value = request.query_params.get("ranking", "nn+colpali")
-    print(
-        f"Search: Fetching results for query: {query_value}, ranking: {ranking_value}"
-    )
     return Div(
         Div(
             Div(
