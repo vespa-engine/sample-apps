@@ -248,7 +248,7 @@ async def poll_vespa_keepalive():
     while True:
         await asyncio.sleep(5)
         await vespa_app.keepalive()
-        logger.debug("Vespa keepalive: %s", time.time())
+        logger.debug(f"Vespa keepalive: {time.time()}")
 
 
 @threaded
@@ -272,7 +272,7 @@ def get_and_store_sim_maps(
     ):
         time.sleep(0.2)
     if not all([os.path.exists(img_path) for img_path in img_paths]):
-        logger.warning("Images not ready in 5 seconds for query_id: %s", query_id)
+        logger.warning(f"Images not ready in 5 seconds for query_id: {query_id}")
         return False
     sim_map_generator = app.sim_map_generator.gen_similarity_maps(
         query=query,
@@ -285,10 +285,7 @@ def get_and_store_sim_maps(
         with open(SIM_MAP_DIR / f"{query_id}_{idx}_{token_idx}.png", "wb") as f:
             f.write(base64.b64decode(blended_img_base64))
         logger.debug(
-            "Sim map saved to disk for query_id: %s, idx: %s, token: %s",
-            query_id,
-            idx,
-            token,
+            f"Sim map saved to disk for query_id: {query_id}, idx: {idx}, token: {token}"
         )
     return True
 
@@ -303,10 +300,7 @@ async def get_sim_map(query_id: str, idx: int, token: str, token_idx: int):
     sim_map_path = SIM_MAP_DIR / f"{query_id}_{idx}_{token_idx}.png"
     if not os.path.exists(sim_map_path):
         logger.debug(
-            "Sim map not ready for query_id: %s, idx: %s, token: %s",
-            query_id,
-            idx,
-            token,
+            f"Sim map not ready for query_id: {query_id}, idx: {idx}, token: {token}"
         )
         return SimMapButtonPoll(
             query_id=query_id, idx=idx, token=token, token_idx=token_idx
@@ -332,7 +326,7 @@ async def full_image(doc_id: str):
         # image data is base 64 encoded string. Save it to disk as jpg.
         with open(img_path, "wb") as f:
             f.write(base64.b64decode(image_data))
-        logger.debug("Full image saved to disk for doc_id: %s", doc_id)
+        logger.debug(f"Full image saved to disk for doc_id: {doc_id}")
     else:
         with open(img_path, "rb") as f:
             image_data = base64.b64encode(f.read()).decode("utf-8")
@@ -372,16 +366,12 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
             image_filename = IMG_DIR / f"{doc_ids[idx]}.jpg"
             if not os.path.exists(image_filename):
                 logger.debug(
-                    "Message generator: Full image not ready for query_id: %s, idx: %s",
-                    query_id,
-                    idx,
+                    f"Message generator: Full image not ready for query_id: {query_id}, idx: {idx}"
                 )
                 continue
             else:
                 logger.debug(
-                    "Message generator: image ready for query_id: %s, idx: %s",
-                    query_id,
-                    idx,
+                    f"Message generator: image ready for query_id: {query_id}, idx: {idx}"
                 )
                 images.append(Image.open(image_filename))
         if len(images) < num_images:
@@ -424,7 +414,6 @@ def get():
 
 
 if __name__ == "__main__":
-    # ModelManager.get_instance()  # Initialize once at startup
     HOT_RELOAD = os.getenv("HOT_RELOAD", "False").lower() == "true"
-    logger.info("Starting app with hot reload: %s", HOT_RELOAD)
+    logger.info(f"Starting app with hot reload: {HOT_RELOAD}")
     serve(port=7860, reload=HOT_RELOAD)
