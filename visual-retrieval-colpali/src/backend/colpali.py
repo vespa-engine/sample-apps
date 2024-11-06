@@ -23,7 +23,6 @@ class SimMapGenerator:
     Generates similarity maps based on query embeddings and image patches using the ColPali model.
     """
 
-    COLPALI_GEMMA_MODEL_NAME = "vidore/colpaligemma-3b-pt-448-base"
     colormap = cm.get_cmap("viridis")  # Preload colormap for efficiency
 
     def __init__(
@@ -55,7 +54,7 @@ class SimMapGenerator:
         """
         model = ColPali.from_pretrained(
             self.model_name,
-            torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+            torch_dtype=torch.bfloat16,  # Note that the embeddings created during feed were float32 -> binarized, yet setting this seem to produce the most similar results both locally (mps) and HF (Cuda)
             device_map=self.device,
         ).eval()
 

@@ -354,7 +354,7 @@ async def get_suggestions(query: str = ""):
 
 async def message_generator(query_id: str, query: str, doc_ids: list):
     """Generator function to yield SSE messages for chat response"""
-    images = {}
+    images = []
     num_images = 3  # Number of images before firing chat request
     max_wait = 10  # seconds
     start_time = time.time()
@@ -363,6 +363,7 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
         len(images) < min(num_images, len(doc_ids))
         and time.time() - start_time < max_wait
     ):
+        images = []
         for idx in range(num_images):
             image_filename = IMG_DIR / f"{doc_ids[idx]}.jpg"
             if not os.path.exists(image_filename):
@@ -378,10 +379,10 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
                     query_id,
                     idx,
                 )
-                images[image_filename] = Image.open(image_filename)
-        await asyncio.sleep(0.2)
+                images.append(Image.open(image_filename))
+        if(len(images) < num_images):
+            await asyncio.sleep(0.2)
 
-    images = list(images.values())
     # yield message with number of images ready
     yield f"event: message\ndata: Generating response based on {len(images)} images...\n\n"
     if not images:
