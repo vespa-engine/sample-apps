@@ -257,7 +257,6 @@ class SimMapGenerator:
         )
         return bool(pattern.match(token))
 
-    # TODO: Would be nice to @lru_cache this method.
     @lru_cache(maxsize=128)
     def get_query_embeddings_and_token_map(
         self, query: str
