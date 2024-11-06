@@ -199,7 +199,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
         autocomplete_script,
         action=f"/search?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
         method="GET",
-        hx_get=f"/fetch_results?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
+        hx_get="/fetch_results",  # As the component is a form, input components query and ranking are sent as query parameters automatically, see https://htmx.org/docs/#parameters
         hx_trigger="load",
         hx_target="#search-results",
         hx_swap="outerHTML",
@@ -381,7 +381,8 @@ def SearchInfo(search_time, total_count):
 
 def SearchResult(
     results: list,
-   query: str, query_id: Optional[str] = None,
+    query: str,
+    query_id: Optional[str] = None,
     search_time: float = 0,
     total_count: int = 0,
 ):
@@ -584,16 +585,13 @@ def SearchResult(
     return [
         Div(
             SearchInfo(search_time, total_count),
-        *result_items,
-        image_swapping,
-        toggle_text_content,
-        dynamic_elements_scrollbars,
-        id="search-results",
-        cls="grid grid-cols-1 gap-px bg-border min-h-0",
-    )
-
-
-,
+            *result_items,
+            image_swapping,
+            toggle_text_content,
+            dynamic_elements_scrollbars,
+            id="search-results",
+            cls="grid grid-cols-1 gap-px bg-border min-h-0",
+        ),
         Div(
             ChatResult(query_id=query_id, query=query, doc_ids=doc_ids),
             hx_swap_oob="true",
