@@ -99,7 +99,7 @@ app, rt = fast_app(
         ShadHead(tw_cdn=False, theme_handle=True),
     ),
 )
-vespa_app: Vespa = VespaQueryClient()
+vespa_app: Vespa = VespaQueryClient(logger=logger)
 thread_pool = ThreadPoolExecutor()
 # Gemini config
 
@@ -123,7 +123,7 @@ os.makedirs(SIM_MAP_DIR, exist_ok=True)
 
 @app.on_event("startup")
 def load_model_on_startup():
-    app.sim_map_generator = SimMapGenerator()
+    app.sim_map_generator = SimMapGenerator(logger=logger)
     return
 
 
