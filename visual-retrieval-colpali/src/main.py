@@ -155,10 +155,20 @@ def get():
     return Layout(Main(AboutThisDemo()))
 
 
+def truncate_query(query: str, max_length: int = 256) -> str:
+    """Truncate query if raw length exceeds limit"""
+    if not query:
+        return ""
+    if len(query) > max_length:
+        logger.warning(f"Query truncated from {len(query)} to {max_length} chars")
+        query = query[:max_length]
+    return query
+
+
 @rt("/search")
 def get(request, query: str = "", ranking: str = "nn+colpali"):
+    query = truncate_query(query)
     logger.info(f"/search: Fetching results for query: {query}, ranking: {ranking}")
-
     # Always render the SearchBox first
     if not query:
         # Show SearchBox and a message for missing query
@@ -193,6 +203,7 @@ def get(request, query: str = "", ranking: str = "nn+colpali"):
 async def get(session, request, query: str, ranking: str):
     if "hx-request" not in request.headers:
         return RedirectResponse("/search")
+    query = truncate_query(query)
 
     # Get the hash of the query and ranking value
     query_id = generate_query_id(query, ranking)
