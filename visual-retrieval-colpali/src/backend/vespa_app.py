@@ -9,6 +9,7 @@ from vespa.application import Vespa
 from vespa.io import VespaQueryResponse
 from .colpali import SimMapGenerator
 import backend.stopwords
+import logging
 
 
 class VespaQueryClient:
@@ -16,14 +17,15 @@ class VespaQueryClient:
     VESPA_SCHEMA_NAME = "pdf_page"
     SELECT_FIELDS = "id,title,url,blur_image,page_number,snippet,text"
 
-    def __init__(self):
+    def __init__(self, logger: logging.Logger):
         """
         Initialize the VespaQueryClient by loading environment variables and establishing a connection to the Vespa application.
         """
         load_dotenv()
+        self.logger = logger
 
         if os.environ.get("USE_MTLS") == "true":
-            print("Connected using mTLS")
+            self.logger.info("Connected using mTLS")
             mtls_key = os.environ.get("VESPA_CLOUD_MTLS_KEY")
             mtls_cert = os.environ.get("VESPA_CLOUD_MTLS_CERT")
 
@@ -52,7 +54,7 @@ class VespaQueryClient:
                 url=self.vespa_app_url, key=mtls_key_path, cert=mtls_cert_path
             )
         else:
-            print("Connected using token")
+            self.logger.info("Connected using token")
             self.vespa_app_url = os.environ.get("VESPA_APP_TOKEN_URL")
             if not self.vespa_app_url:
                 raise ValueError(
@@ -73,7 +75,7 @@ class VespaQueryClient:
             )
 
         self.app.wait_for_application_up()
-        print(f"Connected to Vespa at {self.vespa_app_url}")
+        self.logger.info(f"Connected to Vespa at {self.vespa_app_url}")
 
     def get_fields(self, sim_map: bool = False):
         if not sim_map:
@@ -99,7 +101,7 @@ class VespaQueryClient:
         query_time = round(query_time, 2)
         count = response.json.get("root", {}).get("fields", {}).get("totalCount", 0)
         result_text = f"Query text: '{query}', query time {query_time}s, count={count}, top results:\n"
-        print(result_text)
+        self.logger.debug(result_text)
         return response.json
 
     async def query_vespa_default(
@@ -143,7 +145,7 @@ class VespaQueryClient:
             )
             assert response.is_successful(), response.json
             stop = time.perf_counter()
-            print(
+            self.logger.debug(
                 f"Query time + data transfer took: {stop - start} s, Vespa reported searchtime was "
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
@@ -190,7 +192,7 @@ class VespaQueryClient:
             )
             assert response.is_successful(), response.json
             stop = time.perf_counter()
-            print(
+            self.logger.debug(
                 f"Query time + data transfer took: {stop - start} s, Vespa reported searchtime was "
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
@@ -215,7 +217,7 @@ class VespaQueryClient:
             )
             binary_query_embeddings[key] = binary_vector
             if len(binary_query_embeddings) >= self.MAX_QUERY_TERMS:
-                print(
+                self.logger.warning(
                     f"Warning: Query has more than {self.MAX_QUERY_TERMS} terms. Truncating."
                 )
                 break
@@ -292,12 +294,11 @@ class VespaQueryClient:
             result = await self.query_vespa_bm25(query, q_embs, sim_map=sim_map)
         else:
             raise ValueError(f"Unsupported ranking: {rank_method}")
-        # Print score, title id, and text of the results
         if "root" not in result or "children" not in result["root"]:
             result["root"] = {"children": []}
             return result
         for single_result in result["root"]["children"]:
-            print(single_result["fields"].keys())
+            self.logger.debug(single_result["fields"].keys())
         return result
 
     def get_sim_maps_from_query(
@@ -349,7 +350,7 @@ class VespaQueryClient:
             )
             assert response.is_successful(), response.json
             stop = time.perf_counter()
-            print(
+            self.logger.debug(
                 f"Getting image from Vespa took: {stop - start} s, Vespa reported searchtime was "
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
@@ -386,7 +387,7 @@ class VespaQueryClient:
             )
             assert response.is_successful(), response.json
             stop = time.perf_counter()
-            print(
+            self.logger.debug(
                 f"Getting suggestions from Vespa took: {stop - start} s, Vespa reported searchtime was "
                 f"{response.json.get('timing', {}).get('searchtime', -1)} s"
             )
