@@ -1,7 +1,7 @@
 from typing import Optional
 from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, H3, Br, Div, Form, Img, NotStr, P, Span
+from fasthtml.components import H1, H2, H3, Br, Div, Form, Img, NotStr, P, Span, Strong
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
@@ -137,6 +137,19 @@ dynamic_elements_scrollbars = Script(
     """
 )
 
+submit_form_on_radio_change = Script(
+    """
+    document.addEventListener('click', function (e) {
+        // if target has data-ref="radio-item" and type is button
+        if (e.target.getAttribute('data-ref') === 'radio-item' && e.target.type === 'button') {
+            console.log('Radio button clicked');
+            const form = e.target.closest('form');
+            form.submit();
+        }
+    });
+    """
+)
+
 
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted w-full"
@@ -183,6 +196,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
                     name="ranking",
                     default_value=ranking_value,
                     cls="grid-flow-col gap-x-5 text-muted-foreground",
+                    # Submit form when radio button is clicked
                 ),
                 cls="grid grid-flow-col items-center gap-x-3 border border-input px-3 rounded-sm",
             ),
@@ -197,6 +211,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
         ),
         check_input_script,
         autocomplete_script,
+        submit_form_on_radio_change,
         action=f"/search?query={quote_plus(query_value)}&ranking={quote_plus(ranking_value)}",
         method="GET",
         hx_get="/fetch_results",  # As the component is a form, input components query and ranking are sent as query parameters automatically, see https://htmx.org/docs/#parameters
@@ -368,8 +383,13 @@ def SimMapButtonPoll(query_id, idx, token, token_idx):
 def SearchInfo(search_time, total_count):
     return (
         Div(
-            NotStr(
-                f"<span>Found <strong>{total_count}</strong> results in <strong>{search_time}</strong> seconds.</span>"
+            Span(
+                "Retrieved ",
+                Strong(total_count),
+                Span(" results"),
+                Span(" in "),
+                Strong(f"{search_time:.3f}"),  # 3 significant digits
+                Span(" seconds."),
             ),
             cls="grid bg-background border-t text-sm text-center p-3",
         ),
@@ -514,7 +534,7 @@ def SearchResult(
                         Div(
                             A(
                                 Lucide(icon="external-link", size="18"),
-                                f"PDF Source (Page {fields['page_number']})",
+                                f"PDF Source (Page {fields['page_number'] + 1})",
                                 href=f"{fields['url']}#page={fields['page_number'] + 1}",
                                 target="_blank",
                                 cls="flex items-center gap-1.5 font-mono bold text-sm",
