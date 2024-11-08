@@ -402,8 +402,7 @@ class VespaQueryClient:
                 for result in search_results
                 if "questions" in result["fields"]
             ]
-            for q in questions:
-                print(q)
+
             unique_questions = set([item for sublist in questions for item in sublist])
 
             # remove an artifact from our data generation
@@ -422,7 +421,7 @@ class VespaQueryClient:
         self,
         query: str,
         q_emb: torch.Tensor,
-        target_hits_per_query_tensor: int = 20,
+        target_hits_per_query_tensor: int = 100,
         hits: int = 3,
         timeout: str = "10s",
         sim_map: bool = False,
