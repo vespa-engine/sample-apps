@@ -376,10 +376,11 @@ class VespaQueryClient:
     async def get_suggestions(self, query: str) -> list:
         async with self.app.asyncio(connections=1) as session:
             start = time.perf_counter()
-            yql = f'select questions from {self.VESPA_SCHEMA_NAME} where questions matches "{query}" limit 3'
+            yql = f'select questions from {self.VESPA_SCHEMA_NAME} where questions matches (".*{query}.*")'
             response: VespaQueryResponse = await session.query(
                 body={
                     "yql": yql,
+                    "query": query,
                     "ranking": "unranked",
                     "presentation.timing": True,
                     "presentation.summary": "suggestions",
@@ -401,8 +402,15 @@ class VespaQueryClient:
                 for result in search_results
                 if "questions" in result["fields"]
             ]
-            flat_questions = [item for sublist in questions for item in sublist]
-            return flat_questions
+            for q in questions:
+                print(q)
+            unique_questions = set([item for sublist in questions for item in sublist])
+
+            # remove an artifact from our data generation
+            if "string" in unique_questions:
+                unique_questions.remove("string")
+
+            return list(unique_questions)
 
     def get_rank_profile(self, ranking: str, sim_map: bool) -> str:
         if sim_map:
