@@ -220,7 +220,8 @@ async def get(session, request, query: str, ranking: str):
         f"Search results fetched in {end - start:.2f} seconds. Vespa search time: {result['timing']['searchtime']}"
     )
     search_time = result["timing"]["searchtime"]
-    total_count = result["root"]["fields"]["totalCount"]
+    # Safely get total_count with a default of 0
+    total_count = result.get("root", {}).get("fields", {}).get("totalCount", 0)
 
     search_results = vespa_app.results_to_search_results(result, idx_to_token)
 
