@@ -670,11 +670,7 @@ colpali_schema = Schema(
     fieldsets=[
         FieldSet(
             name="default",
-            fields=["title", "url", "blur_image", "page_number", "text"],
-        ),
-        FieldSet(
-            name="image",
-            fields=["full_image"],
+            fields=["title", "text"],
         ),
     ],
     document_summaries=[
