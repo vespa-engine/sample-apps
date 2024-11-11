@@ -151,6 +151,30 @@ submit_form_on_radio_change = Script(
 )
 
 
+def ShareButtons():
+    title = "Visual RAG over PDFs with Vespa and ColPali"
+    url = "https://huggingface.co/spaces/vespa-engine/colpali-vespa-visual-retrieval"
+    return Div(
+        A(
+            Img(src="/static/img/linkedin.svg", aria_hidden="true", cls="h-[21px]"),
+            "Share on LinkedIn",
+            href=f"https://www.linkedin.com/sharing/share-offsite/?url={quote_plus(url)}",
+            rel="noopener noreferrer",
+            target="_blank",
+            cls="bg-[#0A66C2] text-white inline-flex items-center gap-x-1.5 px-2.5 py-1.5 border rounded-md text-sm font-semibold",
+        ),
+        A(
+            Img(src="/static/img/x.svg", aria_hidden="true", cls="h-[21px]"),
+            "Share on X",
+            href=f"https://twitter.com/intent/tweet?text={quote_plus(title)}&url={quote_plus(url)}",
+            rel="noopener noreferrer",
+            target="_blank",
+            cls="bg-black text-white inline-flex items-center gap-x-1.5 px-2.5 py-1.5 border rounded-md text-sm font-semibold",
+        ),
+        cls="flex items-center justify-center space-x-8 mt-5",
+    )
+
+
 def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted w-full"
 
@@ -225,11 +249,11 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
 
 def SampleQueries():
     sample_queries = [
+        "What percentage of the funds unlisted real estate investments were in Switzerland 2023?",
+        "Gender balance at level 4 or above in NY office 2023?",
+        "Number of internship applications trend 2021-2023",
         "Total amount of fixed salaries paid in 2023?",
         "Proportion of female new hires 2021-2023?",
-        "Number of internship applications trend 2021-2023",
-        "Gender balance at level 4 or above in NY office 2023?",
-        "What percentage of the funds unlisted real estate investments were in Switzerland 2023?",
         "child jumping over puddle",
         "hula hoop kid",
     ]
@@ -260,12 +284,12 @@ def SampleQueries():
 def Hero():
     return Div(
         H1(
-            "Vespa.ai + ColPali",
-            cls="text-5xl md:text-7xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-slate-700 dark:from-white dark:to-slate-300 animate-fade-in",
+            "Visual RAG over PDFs",
+            cls="text-5xl md:text-6xl font-bold tracking-wide md:tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-black to-slate-700 dark:from-white dark:to-slate-300 animate-fade-in",
         ),
         P(
-            "Efficient Document Retrieval with Vision Language Models",
-            cls="text-lg md:text-2xl text-muted-foreground md:tracking-wide",
+            "See how Vespa and ColPali can be used for Visual RAG in this demo",
+            cls="text-base md:text-2xl text-muted-foreground md:tracking-wide",
         ),
         cls="grid gap-5 text-center",
     )
@@ -277,6 +301,7 @@ def Home():
             Hero(),
             SearchBox(with_border=True),
             SampleQueries(),
+            ShareButtons(),
             cls="grid gap-8 content-start mt-[13vh]",
         ),
         cls="grid w-full h-full max-w-screen-md gap-4 mx-auto",
