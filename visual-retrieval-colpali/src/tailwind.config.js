@@ -8,8 +8,8 @@ function filterDefault(values) {
 export default {
     darkMode: ["selector"],
     content: [
-        "./**/*.py",
-        "./.venv/lib/python3.12/site-packages/shad4fast/**/*.{py,js}",
+        "../**/*.py",
+        "../.venv/lib/python3.12/site-packages/shad4fast/**/*.{py,js}",
     ],
     theme: {
         container: {
