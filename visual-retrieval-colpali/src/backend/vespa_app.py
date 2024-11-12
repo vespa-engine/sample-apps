@@ -422,6 +422,7 @@ class VespaQueryClient:
         query: str,
         q_emb: torch.Tensor,
         target_hits_per_query_tensor: int = 100,
+        hnsw_explore_additional_hits: int = 300,
         hits: int = 3,
         timeout: str = "10s",
         sim_map: bool = False,
@@ -468,6 +469,7 @@ class VespaQueryClient:
                     "timeout": timeout,
                     "hits": hits,
                     "query": query,
+                    "hnsw.exploreAdditionalHits": hnsw_explore_additional_hits,
                     **kwargs,
                 },
             )
