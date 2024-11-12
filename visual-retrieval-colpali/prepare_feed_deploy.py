@@ -178,8 +178,10 @@ for year_div in soup.find_all("div", id=lambda x: x and x.startswith("year-")):
     for a_tag in year_div.select("a.button.button--download-secondary[href]"):
         href = a_tag["href"]
         full_url = urljoin(url, href)
-        links.append(full_url)
-        url_to_year[full_url] = year
+        # exclude non-pdf links
+        if full_url.endswith(".pdf"):
+            links.append(full_url)
+            url_to_year[full_url] = year
 links, url_to_year
 # -
 
