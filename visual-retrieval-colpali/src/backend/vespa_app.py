@@ -115,6 +115,7 @@ class VespaQueryClient:
     ) -> dict:
         """
         Query Vespa using the default ranking profile.
+        This corresponds to the "Hybrid ColPali+BM25" radio button in the UI.
 
         Args:
             query (str): The query text.
@@ -162,6 +163,7 @@ class VespaQueryClient:
     ) -> dict:
         """
         Query Vespa using the BM25 ranking profile.
+        This corresponds to the "BM25" radio button in the UI.
 
         Args:
             query (str): The query text.
@@ -422,6 +424,7 @@ class VespaQueryClient:
         query: str,
         q_emb: torch.Tensor,
         target_hits_per_query_tensor: int = 100,
+        hnsw_explore_additional_hits: int = 300,
         hits: int = 3,
         timeout: str = "10s",
         sim_map: bool = False,
@@ -429,6 +432,7 @@ class VespaQueryClient:
     ) -> dict:
         """
         Query Vespa using nearest neighbor search with mixed tensors for MaxSim calculations.
+        This corresponds to the "ColPali" radio button in the UI.
 
         Args:
             query (str): The query text.
@@ -468,6 +472,8 @@ class VespaQueryClient:
                     "timeout": timeout,
                     "hits": hits,
                     "query": query,
+                    "hnsw.exploreAdditionalHits": hnsw_explore_additional_hits,
+                    "ranking.rerankCount": 100,
                     **kwargs,
                 },
             )
