@@ -375,6 +375,11 @@ def AboutThisDemo():
             "This demo showcases a Visual Retrieval-Augmented Generation (RAG) application over PDFs using ColPali embeddings in Vespa, built entirely in Python, using FastHTML. The code is fully open source.",
             cls="text-base",
         ),
+        Img(
+            src="/static/img/colpali_child.png",
+            alt="Example of token level similarity map",
+            cls="w-full",
+        ),
         H2("Resources", cls="text-2xl font-semibold"),
         Ul(
             *[
