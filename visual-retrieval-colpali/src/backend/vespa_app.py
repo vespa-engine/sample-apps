@@ -104,54 +104,6 @@ class VespaQueryClient:
         self.logger.debug(result_text)
         return response.json
 
-    async def query_vespa_default(
-        self,
-        query: str,
-        q_emb: torch.Tensor,
-        hits: int = 3,
-        timeout: str = "10s",
-        sim_map: bool = False,
-        **kwargs,
-    ) -> dict:
-        """
-        Query Vespa using the default ranking profile.
-        This corresponds to the "Hybrid ColPali+BM25" radio button in the UI.
-
-        Args:
-            query (str): The query text.
-            q_emb (torch.Tensor): Query embeddings.
-            hits (int, optional): Number of hits to retrieve. Defaults to 3.
-            timeout (str, optional): Query timeout. Defaults to "10s".
-
-        Returns:
-            dict: The formatted query results.
-        """
-        async with self.app.asyncio(connections=1) as session:
-            query_embedding = self.format_q_embs(q_emb)
-
-            start = time.perf_counter()
-            response: VespaQueryResponse = await session.query(
-                body={
-                    "yql": (
-                        f"select {self.get_fields(sim_map=sim_map)} from {self.VESPA_SCHEMA_NAME} where userQuery();"
-                    ),
-                    "ranking": self.get_rank_profile("default", sim_map),
-                    "query": query,
-                    "timeout": timeout,
-                    "hits": hits,
-                    "input.query(qt)": query_embedding,
-                    "presentation.timing": True,
-                    **kwargs,
-                },
-            )
-            assert response.is_successful(), response.json
-            stop = time.perf_counter()
-            self.logger.debug(
-                f"Query time + data transfer took: {stop - start} s, Vespa reported searchtime was "
-                f"{response.json.get('timing', {}).get('searchtime', -1)} s"
-            )
-        return self.format_query_results(query, response)
-
     async def query_vespa_bm25(
         self,
         query: str,
