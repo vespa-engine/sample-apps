@@ -26,12 +26,10 @@ schema purchase {
 
     }
 
-    rank-profile song inherits default {
-
+    rank-profile default {
         first-phase {
-            expression:nativeRank(price,item)
+            expression: attribute(price)
         }
-
     }
 
 }
