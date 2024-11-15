@@ -175,7 +175,7 @@ def ShareButtons():
     )
 
 
-def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
+def SearchBox(with_border=False, query_value="", ranking_value="hybrid"):
     grid_cls = "grid gap-2 items-center p-3 bg-muted w-full"
 
     if with_border:
@@ -203,7 +203,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
                 Span("Ranking by:", cls="text-muted-foreground text-xs font-semibold"),
                 RadioGroup(
                     Div(
-                        RadioGroupItem(value="nn+colpali", id="nn+colpali"),
+                        RadioGroupItem(value="colpali", id="colpali"),
                         Label("ColPali", htmlFor="ColPali"),
                         cls="flex items-center space-x-2",
                     ),
@@ -213,7 +213,7 @@ def SearchBox(with_border=False, query_value="", ranking_value="nn+colpali"):
                         cls="flex items-center space-x-2",
                     ),
                     Div(
-                        RadioGroupItem(value="bm25+colpali", id="bm25+colpali"),
+                        RadioGroupItem(value="hybrid", id="hybrid"),
                         Label("Hybrid ColPali + BM25", htmlFor="Hybrid ColPali + BM25"),
                         cls="flex items-center space-x-2",
                     ),
@@ -349,7 +349,7 @@ def AboutThisDemo():
 
 def Search(request, search_results=[]):
     query_value = request.query_params.get("query", "").strip()
-    ranking_value = request.query_params.get("ranking", "nn+colpali")
+    ranking_value = request.query_params.get("ranking", "hybrid")
     return Div(
         Div(
             Div(

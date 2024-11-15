@@ -156,7 +156,7 @@ def get():
 
 
 @rt("/search")
-def get(request, query: str = "", ranking: str = "nn+colpali"):
+def get(request, query: str = "", ranking: str = "hybrid"):
     logger.info(f"/search: Fetching results for query: {query}, ranking: {ranking}")
 
     # Always render the SearchBox first

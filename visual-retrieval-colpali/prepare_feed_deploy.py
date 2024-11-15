@@ -725,7 +725,7 @@ mapfunctions = [
 ]
 
 # Define the 'bm25' rank profile
-colpali_bm25_profile = RankProfile(
+bm25 = RankProfile(
     name="bm25",
     inputs=[("query(qt)", "tensor<float>(querytoken{}, v[128])")],
     first_phase="bm25(title) + bm25(text)",
@@ -743,38 +743,11 @@ def with_quantized_similarity(rank_profile: RankProfile) -> RankProfile:
     )
 
 
-colpali_schema.add_rank_profile(colpali_bm25_profile)
-colpali_schema.add_rank_profile(with_quantized_similarity(colpali_bm25_profile))
+colpali_schema.add_rank_profile(bm25)
+colpali_schema.add_rank_profile(with_quantized_similarity(bm25))
 
-# Update the 'default' rank profile
-colpali_profile = RankProfile(
-    name="default",
-    inputs=[("query(qt)", "tensor<float>(querytoken{}, v[128])")],
-    first_phase="bm25_score",
-    second_phase=SecondPhaseRanking(expression="max_sim", rerank_count=10),
-    functions=mapfunctions
-    + [
-        Function(
-            name="max_sim",
-            expression="""
-                sum(
-                    reduce(
-                        sum(
-                            query(qt) * unpack_bits(attribute(embedding)), v
-                        ),
-                        max, patch
-                    ),
-                    querytoken
-                )
-            """,
-        ),
-        Function(name="bm25_score", expression="bm25(title) + bm25(text)"),
-    ],
-)
-colpali_schema.add_rank_profile(colpali_profile)
-colpali_schema.add_rank_profile(with_quantized_similarity(colpali_profile))
 
-# Update the 'retrieval-and-rerank' rank profile
+# Update the 'colpali' rank profile
 input_query_tensors = []
 MAX_QUERY_TERMS = 64
 for i in range(MAX_QUERY_TERMS):
@@ -787,8 +760,8 @@ input_query_tensors.extend(
     ]
 )
 
-colpali_retrieval_profile = RankProfile(
-    name="retrieval-and-rerank",
+colpali = RankProfile(
+    name="colpali",
     inputs=input_query_tensors,
     first_phase="max_sim_binary",
     second_phase=SecondPhaseRanking(expression="max_sim", rerank_count=10),
@@ -824,8 +797,51 @@ colpali_retrieval_profile = RankProfile(
         ),
     ],
 )
-colpali_schema.add_rank_profile(colpali_retrieval_profile)
-colpali_schema.add_rank_profile(with_quantized_similarity(colpali_retrieval_profile))
+colpali_schema.add_rank_profile(colpali)
+colpali_schema.add_rank_profile(with_quantized_similarity(colpali))
+
+# Update the 'hybrid' rank profile
+hybrid = RankProfile(
+    name="hybrid",
+    inputs=input_query_tensors,
+    first_phase="max_sim_binary",
+    second_phase=SecondPhaseRanking(
+        expression="max_sim + 2 * (bm25(text) + bm25(title))", rerank_count=10
+    ),
+    functions=mapfunctions
+    + [
+        Function(
+            name="max_sim",
+            expression="""
+                sum(
+                    reduce(
+                        sum(
+                            query(qt) * unpack_bits(attribute(embedding)), v
+                        ),
+                        max, patch
+                    ),
+                    querytoken
+                )
+            """,
+        ),
+        Function(
+            name="max_sim_binary",
+            expression="""
+                sum(
+                    reduce(
+                        1 / (1 + sum(
+                            hamming(query(qtb), attribute(embedding)), v)
+                        ),
+                        max, patch
+                    ),
+                    querytoken
+                )
+            """,
+        ),
+    ],
+)
+colpali_schema.add_rank_profile(hybrid)
+colpali_schema.add_rank_profile(with_quantized_similarity(hybrid))
 
 # +
 from vespa.configuration.services import (
