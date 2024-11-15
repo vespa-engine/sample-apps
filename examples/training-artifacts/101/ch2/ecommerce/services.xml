@@ -26,10 +26,10 @@
               The below sets up a client with read permissions.
               Note that the "myToken" token must be created in
               the console before deploying.
-            -->
             <client id="tokenClient" permissions="read,write">
               <token id="myToken"/>
             </client>
+            -->
           </clients>
         <!--
             <document-api> tells the container that it should accept documents for indexing. Through the
