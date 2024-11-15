@@ -286,12 +286,14 @@ class VespaQueryClient:
 
         rank_method = ranking.split("_")[0]
         sim_map: bool = len(ranking.split("_")) > 1 and ranking.split("_")[1] == "sim"
-        if rank_method == "nn+colpali":
-            result = await self.query_vespa_nearest_neighbor(
-                query, q_embs, sim_map=sim_map
+        if rank_method == "colpali":  # ColPali
+            result = await self.query_vespa_colpali(
+                query=query, ranking=rank_method, q_emb=q_embs, sim_map=sim_map
             )
-        elif rank_method == "bm25+colpali":
-            result = await self.query_vespa_default(query, q_embs, sim_map=sim_map)
+        elif rank_method == "hybrid":  # Hybrid ColPali+BM25
+            result = await self.query_vespa_colpali(
+                query=query, ranking=rank_method, q_emb=q_embs, sim_map=sim_map
+            )
         elif rank_method == "bm25":
             result = await self.query_vespa_bm25(query, q_embs, sim_map=sim_map)
         else:
@@ -419,9 +421,10 @@ class VespaQueryClient:
         else:
             return ranking
 
-    async def query_vespa_nearest_neighbor(
+    async def query_vespa_colpali(
         self,
         query: str,
+        ranking: str,
         q_emb: torch.Tensor,
         target_hits_per_query_tensor: int = 100,
         hnsw_explore_additional_hits: int = 300,
@@ -467,7 +470,7 @@ class VespaQueryClient:
                         f"select {self.get_fields(sim_map=sim_map)} from {self.VESPA_SCHEMA_NAME} where {nn_string} or userQuery()"
                     ),
                     "ranking.profile": self.get_rank_profile(
-                        "retrieval-and-rerank", sim_map
+                        ranking=ranking, sim_map=sim_map
                     ),
                     "timeout": timeout,
                     "hits": hits,
