@@ -1,7 +1,30 @@
 from typing import Optional
 from urllib.parse import quote_plus
 
-from fasthtml.components import H1, H2, H3, Br, Div, Form, Img, NotStr, P, Span, Strong
+from fasthtml.components import (
+    H1,
+    H2,
+    H3,
+    Br,
+    Div,
+    Form,
+    Img,
+    NotStr,
+    P,
+    Hr,
+    Span,
+    A,
+    Script,
+    Button,
+    Label,
+    RadioGroup,
+    RadioGroupItem,
+    Separator,
+    Ul,
+    Li,
+    Strong,
+    Iframe,
+)
 from fasthtml.xtend import A, Script
 from lucide_fasthtml import Lucide
 from shad4fast import Badge, Button, Input, Label, RadioGroup, RadioGroupItem, Separator
@@ -308,42 +331,118 @@ def Home():
     )
 
 
-def AboutThisDemo():
-    return Div(
-        Div(
-            Div(
-                H1(
-                    "Vespa.ai + ColPali",
-                    cls="text-5xl font-bold tracking-wide md:tracking-wider",
-                ),
-                P(
-                    "Efficient Document Retrieval with Vision Language Models",
-                    cls="text-lg text-muted-foreground md:tracking-wide",
-                ),
-                Div(
-                    Img(
-                        src="/static/img/vespa-colpali.png",
-                        alt="Vespa and ColPali",
-                        cls="object-contain h-[377px]",
-                    ),
-                    cls="grid justify-center",
-                ),
-                Div(
-                    P(
-                        "This is a demo application showcasing the integration of Vespa.ai and ColPali for visual retrieval of documents.",
-                        cls="text-base",
-                    ),
-                    P(
-                        "The application uses a combination of neural networks and traditional search algorithms to retrieve relevant documents based on visual and textual queries.",
-                        cls="text-base",
-                    ),
-                    cls="grid gap-2 text-center",
-                ),
-                cls="grid gap-5 text-center",
-            ),
-            cls="grid gap-8 content-start mt-[8vh]",
+def LinkResource(text, href):
+    return Li(
+        A(
+            Lucide(icon="external-link", size="18"),
+            text,
+            href=href,
+            target="_blank",
+            cls="flex items-center gap-1.5 hover:underline bold text-md",
         ),
-        cls="grid w-full h-full max-w-screen-md gap-4 mx-auto",
+    )
+
+
+def AboutThisDemo():
+    resources = [
+        {
+            "text": "Vespa Blog: How we built this demo",
+            "href": "https://blog.vespa.ai/visual-rag-in-practice",
+        },
+        {
+            "text": "Notebook to set up Vespa application and feed dataset",
+            "href": "https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html",
+        },
+        {
+            "text": "Web App (FastHTML) Code",
+            "href": "https://github.com/vespa-engine/sample-apps/tree/master/visual-retrieval-colpali",
+        },
+        {
+            "text": "Vespa Blog: Scaling ColPali to Billions",
+            "href": "https://blog.vespa.ai/scaling-colpali-to-billions/",
+        },
+        {
+            "text": "Vespa Blog: Retrieval with Vision Language Models",
+            "href": "https://blog.vespa.ai/retrieval-with-vision-language-models-colpali/",
+        },
+    ]
+    return Div(
+        H1(
+            "About This Demo",
+            cls="text-3xl md:text-5xl font-bold tracking-wide md:tracking-wider",
+        ),
+        P(
+            "This demo showcases a Visual Retrieval-Augmented Generation (RAG) application over PDFs using ColPali embeddings in Vespa, built entirely in Python, using FastHTML. The code is fully open source.",
+            cls="text-base",
+        ),
+        Img(
+            src="/static/img/colpali_child.png",
+            alt="Example of token level similarity map",
+            cls="w-full",
+        ),
+        H2("Resources", cls="text-2xl font-semibold"),
+        Ul(
+            *[
+                LinkResource(resource["text"], resource["href"])
+                for resource in resources
+            ],
+            cls="space-y-2 list-disc pl-5",
+        ),
+        H2("Architecture Overview", cls="text-2xl font-semibold"),
+        Img(
+            src="/static/img/visual-retrieval-demoapp-arch.png",
+            alt="Architecture Overview",
+            cls="w-full",
+        ),
+        Ul(
+            Li(
+                Strong("Vespa Application: "),
+                "Vespa Application that handles indexing, search, ranking and queries, leveraging features like phased ranking and multivector MaxSim calculations.",
+            ),
+            Li(
+                Strong("Frontend: "),
+                "Built with FastHTML, offering a professional and responsive user interface without the complexity of separate frontend frameworks.",
+            ),
+            Li(
+                Strong("Backend: "),
+                "Also built with FastHTML. Handles query embedding inference using ColPali, serves static files, and is responsible for orchestrating interactions between Vespa and the frontend.",
+            ),
+            Li(
+                Strong("Gemini API: "),
+                "VLM for the AI response, providing responses based on the top results from Vespa.",
+                cls="list-disc list-inside",
+            ),
+            H2("User Experience Highlights", cls="text-2xl font-semibold"),
+            Ul(
+                Li(
+                    Strong("Fast and Responsive: "),
+                    "Optimized for quick loading times, with phased content delivery to display essential information immediately while loading detailed data in the background.",
+                ),
+                Li(
+                    Strong("Similarity Maps: "),
+                    "Provides visual highlights of the most relevant parts of a page in response to a query, enhancing interpretability.",
+                ),
+                Li(
+                    Strong("Type-Ahead Suggestions: "),
+                    "Offers query suggestions to assist users in formulating effective searches.",
+                ),
+                cls="list-disc list-inside",
+            ),
+            cls="grid gap-5",
+        ),
+        H2("Dataset", cls="text-2xl font-semibold"),
+        P(
+            "The dataset used in this demo is retrieved from reports published by the Norwegian Government Pension Fund Global. It contains 6,992 pages from 116 PDF reports (2000–2024). The information is often presented in visual formats, making it an ideal dataset for visual retrieval applications.",
+            cls="text-base",
+        ),
+        Iframe(
+            src="https://huggingface.co/datasets/vespa-engine/gpfg-QA/embed/viewer",
+            frameborder="0",
+            width="100%",
+            height="500",
+        ),
+        Hr(),  # To add some margin to bottom. Probably a much better way to do this, but the mb-[16vh] class doesn't seem to be applied
+        cls="w-full h-full max-w-screen-md gap-4 mx-auto mt-[8vh] mb-[16vh] grid gap-8 content-start",
     )
 
 
