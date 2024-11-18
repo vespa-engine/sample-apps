@@ -302,6 +302,7 @@ class VespaQueryClient:
                     "yql": f'select full_image from {self.VESPA_SCHEMA_NAME} where id contains "{doc_id}"',
                     "ranking": "unranked",
                     "presentation.timing": True,
+                    "ranking.matching.numThreadsPerSearch": 1,
                 },
             )
             assert response.is_successful(), response.json
@@ -340,6 +341,7 @@ class VespaQueryClient:
                     "ranking": "unranked",
                     "presentation.timing": True,
                     "presentation.summary": "suggestions",
+                    "ranking.matching.numThreadsPerSearch": 1,
                 },
             )
             assert response.is_successful(), response.json
