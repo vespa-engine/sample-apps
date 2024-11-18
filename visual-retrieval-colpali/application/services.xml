@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <services version="1.0">
   <container id="colpalidemo_container" version="1.0">
+  <nodes count="2">
+    <resources vcpu="4.0" memory="16Gb" architecture="x86_64" storage-type="remote" disk="48Gb"/>
+  </nodes>
     <search></search>
     <document-api></document-api>
     <document-processing></document-processing>
@@ -28,6 +31,7 @@
       <document type="pdf_page" mode="index"></document>
     </documents>
     <nodes count="2">
+    <resources vcpu="8.0" memory="16Gb" architecture="arm64" storage-type="local" disk="474Gb"/>
     </nodes>
      <engine>
             <proton>
