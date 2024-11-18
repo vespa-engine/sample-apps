@@ -274,7 +274,7 @@ def SampleQueries():
     sample_queries = [
         "What percentage of the funds unlisted real estate investments were in Switzerland 2023?",
         "Gender balance at level 4 or above in NY office 2023?",
-        "Number of internship applications trend 2021-2023",
+        "Number of graduate applications trend 2021-2023",
         "Total amount of fixed salaries paid in 2023?",
         "Proportion of female new hires 2021-2023?",
         "child jumping over puddle",

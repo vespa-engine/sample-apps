@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<services version="1.0">
+  <container id="colpalidemo_container" version="1.0">
+  <nodes count="2">
+    <resources vcpu="4.0" memory="16Gb" architecture="x86_64" storage-type="remote" disk="48Gb"/>
+  </nodes>
+    <search></search>
+    <document-api></document-api>
+    <document-processing></document-processing>
+    <clients>
+      <client id="mtls" permissions="read,write">
+        <certificate file="security/clients.pem"></certificate>
+      </client>
+      <client id="token_write" permissions="read,write">
+        <token id="colpalidemo_write"></token>
+      </client>
+    </clients>
+    <config name="container.qr-searchers">
+      <tag>
+        <bold>
+          <open>&lt;strong&gt;</open>
+          <close>&lt;/strong&gt;</close>
+        </bold>
+        <separator>...</separator>
+      </tag>
+    </config>
+  </container>
+  <content id="colpalidemo_content" version="1.0">
+    <redundancy>2</redundancy>
+    <documents>
+      <document type="pdf_page" mode="index"></document>
+    </documents>
+    <nodes count="2">
+    <resources vcpu="8.0" memory="16Gb" architecture="arm64" storage-type="local" disk="474Gb"/>
+    </nodes>
+     <engine>
+            <proton>
+                <tuning>
+                    <searchnode>
+                        <requestthreads>
+                            <persearch>4</persearch> 
+                        </requestthreads>
+                    </searchnode>
+                </tuning>
+            </proton>
+        </engine>
+    <config name="vespa.config.search.summary.juniperrc">
+      <max_matches>2</max_matches>
+      <length>1000</length>
+      <surround_max>500</surround_max>
+      <min_length>300</min_length>
+    </config>
+  </content>
+</services>
