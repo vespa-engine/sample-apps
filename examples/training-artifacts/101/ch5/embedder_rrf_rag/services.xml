@@ -57,7 +57,7 @@
     </container>
 
     <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
-    <content id="text" version="1.0">
+    <content id="content" version="1.0">
         <min-redundancy>2</min-redundancy>
         <documents>
             <document type="product" mode="index" />
