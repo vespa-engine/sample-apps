@@ -17,7 +17,7 @@ vespa query "yql=select * from purchase where true limit 0 | all(
   )"
 
 ### use total $$$ instead of count. But output count as well
-vesap query "yql=select * from purchase where true limit 0 | all(
+vespa query "yql=select * from purchase where true limit 0 | all(
     group(item)
     order(-sum(price))
     each(
@@ -41,13 +41,13 @@ vespa query "yql=select * from purchase where true limit 0 | all(
 vespa query "yql=select * from purchase where true limit 0 | all(
     group(time.date(date))
     each(
-        output(-sum(price) as(revenue_per_day))
+        output(sum(price) as(revenue_per_day))
         output(count())
         all(
             group(item)
             order(-sum(price))
             each(
-                output(sum(price) as(revenue_per_item_per_day)
+                output(sum(price) as(revenue_per_item_per_day))
                 output(count())
             )
         )
