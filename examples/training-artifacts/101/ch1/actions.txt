@@ -14,7 +14,8 @@ actions to take at the start of training:
 - also recommended:
   * jq
 
-- ensure you have the "vespa" CLI tool installed
+- ensure you have the "vespa" CLI tool installed:
+  https://github.com/vespa-engine/vespa/releases/tag/v8.447.14
 
 vespa auth login
 vespa auth show
