@@ -1,0 +1,15 @@
+{
+    "name": "Feed prior to upgrade",
+    "comment": "Deploy with 'stemming: none' for the album field, then run this, and expect 0 hits in the staging test.",
+    "steps": [
+        {
+            "name": "feed foo",
+            "request": {
+                "cluster": "default",
+                "method": "POST",
+                "uri": "/document/v1/test/music/docid/foo",
+                "body": "../foo.json"
+            }
+        }
+    ]
+}

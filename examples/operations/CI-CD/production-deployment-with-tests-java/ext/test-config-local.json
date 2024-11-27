@@ -1,0 +1,5 @@
+{
+    "localEndpoints": {
+        "default" : "http://localhost:8080/"
+    }
+}

@@ -18,7 +18,8 @@ Boolean document side constraints allows the document to specify which type of q
 
 ### Operations
 See [operations](operations) for sample applications for multinode clusters,
-deployed in various infrastructure like Kubernetes. Also find examples for security and monitoring.
+deployed in various infrastructure like Kubernetes.
+Also find examples for CI/CD, security and monitoring.
 
 ### Vespa custom linguistics Integration
 The [vespa-chinese-linguistics](vespa-chinese-linguistics) app

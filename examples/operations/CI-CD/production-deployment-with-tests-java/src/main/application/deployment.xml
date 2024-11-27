@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<deployment version="1.0">
+    <prod>
+        <region>aws-us-east-1c</region>
+    </prod>
+</deployment>
+
