@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -8,6 +7,12 @@
 </picture>
 
 # Vespa sample applications
+First-time users should go through the [getting-started](https://docs.vespa.ai/en/getting-started.html) guides first.
+
+The [Vespa](https://vespa.ai/) sample applications are created to run both self-hosted and on Vespa Cloud.
+You can easily deploy the sample applications to Vespa Cloud without changing the files -
+just follow the same steps as for [vector-search](#vector-search), adding security credentials.
+
 For operational sample applications, see [examples/operations](examples/operations). See
 also [PyVespa examples](https://pyvespa.readthedocs.io/en/latest/examples.html). 
 
