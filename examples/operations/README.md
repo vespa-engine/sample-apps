@@ -20,7 +20,7 @@ See [vespa.ai/support](https://vespa.ai/support) for how to get help / FAQ / Sta
 [Admin procedures](https://docs.vespa.ai/en/operations/admin-procedures.html) can be a good read, too.
 
 ## CI/CD
-Refer to the examples at [CI/CD](https://github.com/vespa-cloud/examples/tree/main/CI-CD)
+Refer to the examples at [CI/CD](CI-CD/)
 for how to add continuous integration and continuous delivery/deployment tests to an application.
 
 
