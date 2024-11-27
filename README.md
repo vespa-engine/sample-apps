@@ -17,6 +17,13 @@ also [PyVespa examples](https://pyvespa.readthedocs.io/en/latest/examples.html).
 The [album-recommendation](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
+### Vector Search
+There is a growing interest in AI-powered vector representations of unstructured multimodal data
+and searching efficiently over these representations.
+[vector-search](https://github.com/vespa-cloud/vector-search)
+describes how your organization can unlock the full potential of multimodal AI-powered vector representations
+using Vespa Cloud - the industry-leading managed Vector Search Service.
+
 ### Simple hybrid semantic search
 The [simple semantic search](simple-semantic-search/)
 application demonstrates indexed vector search using `HNSW`, 
@@ -102,6 +109,21 @@ using Vespa as a stateless ML model inference server
 where Vespa takes care of distributing ML models to multiple serving containers,
 offering horizontal scaling and safe deployment.
 Model versioning and feature processing pipeline.
+
+### Vespa Documentation Search
+[vespa-documentation-search](https://github.com/vespa-cloud/vespa-documentation-search)
+is the search application that powers [search.vespa.ai](https://search.vespa.ai/) -
+refer to this for GitHub Actions automation.
+This sample app is a good start for [automated deployments](https://cloud.vespa.ai/en/automated-deployments),
+as it has system, staging and production test examples.
+It uses the [Document API](https://docs.vespa.ai/en/document-api-guide.html)
+both for regular PUT operations but also for UPDATE with _create-if-nonexistent_.
+
+### CORD-19 Search
+[cord19.vespa.ai](https://cord19.vespa.ai/) is a full-featured application,
+based on the [Covid-19 Open Research Dataset](https://huggingface.co/datasets/allenai/cord19):
+* [cord-19](https://github.com/vespa-engine/cord-19): frontend
+* [cord-19-search](https://github.com/vespa-cloud/cord-19-search): search backend
 
 
 <!--

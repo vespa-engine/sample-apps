@@ -19,8 +19,12 @@ Use the AWS multinode quick-start guides in [getting started](https://docs.vespa
 See [vespa.ai/support](https://vespa.ai/support) for how to get help / FAQ / Stack Overflow.
 [Admin procedures](https://docs.vespa.ai/en/operations/admin-procedures.html) can be a good read, too.
 
-## Multinode applications
+## CI/CD
+Refer to the examples at [CI/CD](https://github.com/vespa-cloud/examples/tree/main/CI-CD)
+for how to add continuous integration and continuous delivery/deployment tests to an application.
 
+
+## Multinode applications
 
 ### Multinode
 The [Multinode](multinode/) application sets up a three-node application and experiment with node start/stop.
