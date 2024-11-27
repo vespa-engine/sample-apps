@@ -1,0 +1,38 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://cloud.vespa.ai/en/automated-deployments for details
+
+name: Deploy an example application with HTTP Tests to production
+on:
+  push:
+    branches: [ main ]
+
+# Set values as organization or repository secrets
+env:
+  VESPA_CLI_API_KEY: ${{ secrets.API_KEY }}
+  TENANT_NAME:       ${{ secrets.TENANT_NAME }}
+  APP_NAME:          ${{ secrets.APP_NAME }}
+
+defaults:
+  run:
+    working-directory: production-deployment-with-tests
+
+jobs:
+  deploy-production-deployment-with-tests:
+    runs-on: ubuntu-latest
+    steps:
+
+    # Check out the source code from the repository
+    - uses: actions/checkout@v3
+
+    - name: Get Vespa CLI - update to later versions as needed
+      run: |
+        apt update && apt -y install curl
+        curl -SsLo vespa-cli.tar.gz https://github.com/vespa-engine/vespa/releases/download/v8.448.13/vespa-cli_8.448.13_linux_amd64.tar.gz
+        tar -xvf vespa-cli.tar.gz && ln -fs vespa-cli_8.448.13_linux_amd64/bin/vespa
+
+    - name: Deploy to Vespa Cloud
+      run: |
+        ./vespa config set target cloud
+        ./vespa config set application "$TENANT_NAME.$APP_NAME"
+        ./vespa prod deploy
