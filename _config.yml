@@ -11,6 +11,9 @@ exclude:
   - .idea
   - vespaapps_index.json
 
+include:
+  - .github/
+
 defaults:
   -
     scope:
