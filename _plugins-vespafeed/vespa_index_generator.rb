@@ -13,6 +13,9 @@ module Jekyll
             namespace = site.config["search"]["namespace"]
             operations = []
             site.pages.each do |page|
+                if not page.url.include?("README")
+                    next
+                end                
                 if page.url.include?("-README.html")
                     path = page.url.sub(/README.html/, "README.md")
                 else
