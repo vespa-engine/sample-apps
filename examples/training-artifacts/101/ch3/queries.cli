@@ -1,0 +1,70 @@
+### group by item. Show first 3
+vespa query "yql=select * from purchase where true | all(
+    group(item)
+    max(3)
+    each(
+      output(count())
+    )
+  )"
+
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(item)
+    order(-count())
+    max(3)
+    each(
+        output(count() as(count_per_item))
+    )
+  )"
+
+### use total $$$ instead of count. But output count as well
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(item)
+    order(-sum(price))
+    each(
+        output(sum(price) as(revenue))
+        output(count())
+    )
+  )"
+
+### sales by day
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(
+      time.date(date)
+    )
+    each(
+        output(sum(price) as(revenue_per_day))
+        output(count())
+    )
+  )" | jq ".root.children[].children[].children[]"
+
+### sales by day, by item
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(time.date(date))
+    each(
+        output(sum(price) as(revenue_per_day))
+        output(count())
+        all(
+            group(item)
+            order(-sum(price))
+            each(
+                output(sum(price) as(revenue_per_item_per_day))
+                output(count())
+            )
+        )
+    )
+  )" | jq ".root.children[].children[].children[]"
+
+
+### top items, but also show 3 sample orders
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(item)
+    order(-sum(price))
+    each(
+        output(sum(price) as(revenue))
+        output(count())
+        max(3)
+        each(
+            output(summary())
+        )
+    )
+  )"

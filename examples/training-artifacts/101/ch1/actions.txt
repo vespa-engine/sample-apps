@@ -1,0 +1,44 @@
+actions to take at the start of training:
+
+- ensure you're able to login using a google
+  or github account on https://console.vespa-cloud.com/
+
+- You do not need to create your own "tenant"
+  (the organization / billing entity in vespa cloud);
+  if you contact Radu he will give you access to the
+  "training1" tenant.
+
+- we'll assume you have installed standard developer tools:
+  * git
+  * curl
+- also recommended:
+  * jq
+
+- ensure you have the "vespa" CLI tool installed:
+  https://github.com/vespa-engine/vespa/releases/tag/v8.447.14
+
+vespa auth login
+vespa auth show
+vespa config set target cloud
+# replace "myusername" with your user name
+vespa config set application training1.myusername-test1
+
+git clone https://github.com/vespa-engine/sample-apps.git
+cd sample-apps/examples/training-artifacts/101/ch1
+# you are "here"
+cd ecommerce
+vespa auth cert
+vespa deploy --wait 900
+cd ..
+vespa document put f1f2-doc.json
+vespa document get id:ecommerce:product::1
+vespa visit
+vespa query "yql=select * from product where true"
+vespa query "yql=select * from product where true" | jq ".root.children"
+vespa document remove id:ecommerce:product::1
+
+- if you want to see usage of the underlying REST api, try these:
+vespa document -v put f1f2-doc.json
+vespa document -v get id:ecommerce:product::1
+vespa query -v "yql=select field1 from product where true"
+vespa document -v remove id:ecommerce:product::1
