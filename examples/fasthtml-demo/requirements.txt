@@ -104,7 +104,7 @@ python-dotenv==1.0.1
     #   uvicorn
 python-fasthtml==0.4.4
     # via -r requirements.in
-python-multipart==0.0.9
+python-multipart==0.0.18
     # via python-fasthtml
 pyvespa==0.46.0
     # via -r requirements.in
