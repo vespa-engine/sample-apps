@@ -1,0 +1,47 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema passage {
+
+  document passage {
+
+    field id type string {
+      indexing: summary | attribute
+    }
+
+    field text type string {
+      indexing: summary | index
+      index: enable-bm25
+    }
+
+    field prompt type string {
+    }
+
+  }
+
+  field topic type string {
+    indexing: input prompt . input text | generate openai | index | summary
+    index: enable-bm25
+  }
+  
+  function my_alias {
+    expression: attribute(id)
+  }
+
+  field questions type string {
+    indexing: input text | generate prompt | index | summary
+    index: enable-bm25
+  }
+
+  fieldset default {
+    fields: text
+  }
+
+  rank-profile default {
+    first-phase {
+        fun
+    
+      expression: bm25(text)
+    }
+  }
+
+}
