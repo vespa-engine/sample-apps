@@ -1,0 +1,5 @@
+Given the following paragraph, generate a single question that this
+paragraph answers. The question should be as short as possible. Be concrete and specific.
+
+{context}
+
