@@ -81,7 +81,7 @@ Pull and start the most recent Vespa container image:
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa-rag --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 

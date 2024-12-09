@@ -44,7 +44,7 @@ $ (cd sample-apps/examples/multiple-bundles-lib &amp;&amp; mvn clean install)
 <pre data-test="exec">
 $ cd sample-apps/examples/multiple-bundles &amp;&amp; mvn clean verify
 $ docker run --detach --name vespa --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 

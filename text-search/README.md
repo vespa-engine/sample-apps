@@ -52,7 +52,7 @@ $ ./bin/convert-msmarco.sh
 
 <pre data-test="exec">
 $ docker run --detach --name vespa-msmarco --hostname vespa-msmarco \
-  --publish 8080:8080 --publish 19112:19112 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19112:19112 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 
