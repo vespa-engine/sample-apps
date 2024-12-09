@@ -30,9 +30,9 @@ brew install maven
 docker run --rm --detach \
   --name vespa \
   --hostname vespa-container \
-  --publish 8080:8080 \
-  --publish 19071:19071 \
-  --publish 19050:19050 \
+  --publish 127.0.0.1:8080:8080 \
+  --publish 127.0.0.1:19071:19071 \
+  --publish 127.0.0.1:19050:19050 \
   vespaengine/vespa:8.237.19
 
 # To observe the logs from LuceneLinguistics run in a separate terminal

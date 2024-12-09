@@ -59,7 +59,7 @@ $ vespa config set target local
 ### Start a Vespa Docker container:
 <pre data-test="exec">
 $ docker run --detach --name vespa --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 
