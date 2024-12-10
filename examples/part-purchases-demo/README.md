@@ -38,7 +38,7 @@ for details and troubleshooting:
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/examples/part-purchases-demo
 $ docker run --detach --name vespa --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 
