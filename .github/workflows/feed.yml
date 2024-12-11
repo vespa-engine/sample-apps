@@ -54,7 +54,7 @@ jobs:
         # VESPA_CLI_API_KEY must be set and empty as below.
         export VESPA_CLI_DATA_PLANE_CERT
         export VESPA_CLI_DATA_PLANE_KEY
-        export VESPA_CLI_API_KEY=
+        # export VESPA_CLI_API_KEY=
         ./feed_to_vespa.py _config.yml
 
     - name: Feed paragraphs site
