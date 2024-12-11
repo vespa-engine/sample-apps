@@ -39,8 +39,11 @@ jobs:
     - name: Get Vespa CLI - update to later versions as needed
       run: |
         apt update && apt -y install curl
-        curl -SsLo vespa-cli.tar.gz https://github.com/vespa-engine/vespa/releases/download/v8.209.11/vespa-cli_8.209.11_linux_amd64.tar.gz
-        tar -xvf vespa-cli.tar.gz && ln -fs vespa-cli_8.209.11_linux_amd64/bin/vespa
+        mkdir -p opt
+        VESPA_CLI_VERSION=$(curl -fsSL https://api.github.com/repos/vespa-engine/vespa/releases/latest | grep -Po '"tag_name": "v\K.*?(?=")')
+        curl -fsSL https://github.com/vespa-engine/vespa/releases/download/v${VESPA_CLI_VERSION}/vespa-cli_${VESPA_CLI_VERSION}_linux_amd64.tar.gz | \
+          tar -zxf - -C opt
+        ln -fs ./opt/*/bin/vespa
 
     - name: Feed site
       run: |
