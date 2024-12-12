@@ -6,8 +6,16 @@
 
     <document-api/>
 
+    <secrets>
+      <openai-api-key vault="<my-vault-name>" name="<my-secret-name>"/>
+    </secrets>
+
     <!-- Setup the client to OpenAI -->
-    <component id="openai" class="ai.vespa.llm.clients.OpenAI" />
+    <component id="openai" class="ai.vespa.llm.clients.OpenAI">
+      <config name = "ai.vespa.llm.clients.llm-client">
+        <apiKeySecretName>openai-api-key</apiKeySecretName>
+      </config>
+    </component>
 
     <!-- Setup a local inference on a small Llama 3.2 text model -->
     <!-- Comment out this component to avoid downloading the model file during startup -->

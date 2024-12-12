@@ -120,6 +120,19 @@ have created a tenant at
 tenant name, it will be used in the next steps. For more information, see the
 Vespa Cloud [getting started](https://cloud.vespa.ai/en/getting-started) guide.
 
+Add your OpenAI API key to the Vespa secret store as described in
+[Secret Management](https://cloud.vespa.ai/en/security/secret-store.html#secret-management).
+Create a new vault, unless you already have one, and add your OpenAI API key
+as a secret.
+
+The `services.xml` file must refer to the newly added secret in the secret store.
+Replace `<my-vault-name>` and `<my-secret-name>` below with your own values:
+<pre>
+    &lt;secrets&gt;
+      &lt;openai-api-key vault="&lt;my-vault-name&gt;" name="&lt;my-secret-name&gt;"/&gt;
+    &lt;/secrets&gt;
+</pre>
+
 Configure the vespa client. Replace `tenant-name` below with your tenant name.
 We use the application name `rag-app` here, but you are free to choose your own
 application name:
@@ -170,6 +183,10 @@ $ vespa query \
     format=sse \
     traceLevel=1
 </pre>
+
+On Vespa cloud, just skip the `--header` parameter, as the API key is already
+set up in the services.xml file, and will be retrieved from the Vespa secret
+store.
 
 Here, we specifically set the search chain to `openai`. This calls the
 `RAGSearcher` which is set up to use the `OpenAI` client. Note that this
@@ -228,4 +245,3 @@ To remove the application from Vespa Cloud:
 <pre>
 $ vespa destroy
 </pre>
-
