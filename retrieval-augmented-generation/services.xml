@@ -7,7 +7,7 @@
     <document-api/>
 
     <secrets>
-      <openai-api-key vault="<my-vault-name>" name="<my-secret-name>"/>
+      <openai-api-key vault="my-vault-name" name="my-secret-name"/>
     </secrets>
 
     <!-- Setup the client to OpenAI -->
