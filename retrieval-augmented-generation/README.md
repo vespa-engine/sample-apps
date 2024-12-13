@@ -166,7 +166,7 @@ At this point, open the console
 (the link is like https://console.vespa-cloud.com/tenant/mytenant/account/secrets)
 and assign access:
 
-![edit application access dialog](/ext/edit-app-access.png)
+![edit application access dialog](ext/edit-app-access.png)
 
 Deploy the application again. This can take some time for all nodes to be provisioned:
 <pre>
