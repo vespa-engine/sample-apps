@@ -60,9 +60,75 @@ $ vespa clone retrieval-augmented-generation rag && cd rag
 </pre>
 
 
+### Deploying to the Vespa Cloud using GPU
+Deploy the sample application to Vespa Cloud on a GPU instance to perform the generative part.
+Note that this application can fit within the free quota, so it is free to try.
+
+In the following section, we will set the Vespa CLI target to the cloud.
+Make sure you have created a tenant at
+[console.vespa-cloud.com](https://console.vespa-cloud.com/). Make a note of the
+tenant's name; it will be used in the next steps. For more information, see the
+Vespa Cloud [getting started](https://cloud.vespa.ai/en/getting-started) guide.
+
+Add your OpenAI API key to the Vespa secret store as described in
+[Secret Management](https://cloud.vespa.ai/en/security/secret-store.html#secret-management).
+Unless you already have one, create a new vault, and add your OpenAI API key as a secret.
+
+The `services.xml` file must refer to the newly added secret in the secret store.
+Replace `<my-vault-name>` and `<my-secret-name>` below with your own values:
+
+```xml
+<secrets>
+    <openai-api-key vault=">my-vault-name>" name="<my-secret-name>"/>
+</secrets>
+```
+
+Configure the vespa client. Replace `tenant-name` below with your tenant name.
+We use the application name `rag-app` here, but you are free to choose your own
+application name:
+<pre>
+$ vespa config set target cloud
+$ vespa config set application tenant-name.rag-app
+</pre>
+
+Log in and add your public certificates to the application for Dataplane access:
+<pre>
+$ vespa auth login
+$ vespa auth cert
+</pre>
+
+Grant application access to the secret.
+Applications must be created first so one can use the Vespa Cloud Console to grant access.
+The easiest way is to deploy, which will auto-create the application.
+The first deployment will fail:
+
+<pre>
+$ vespa deploy --wait 900
+</pre>
+
+```
+[09:47:43] warning Deployment failed: Invalid application: Vault 'my_vault' does not exist,
+or application does not have access to it
+```
+
+At this point, open the console
+(the link is like https://console.vespa-cloud.com/tenant/mytenant/account/secrets)
+and grant access:
+
+![edit application access dialog](ext/edit-app-access.png)
+
+Deploy the application again. This can take some time for all nodes to be provisioned:
+<pre>
+$ vespa deploy --wait 900
+</pre>
+
+The application should now be deployed!
+You can continue to the [querying](#querying) section below to test it.
+
+
 ### Deploying locally to a Docker container
 
-Here we will deploy the sample application locally to a
+Here, we will deploy the sample application locally to a
 [Docker](https://www.docker.com/) or [Podman](https://podman.io/) container.
 Please ensure that either Docker or Podman is installed and running with 12 GB
 available memory.
@@ -95,7 +161,7 @@ Verify that the configuration service (deploy API) is ready:
 $ vespa status deploy --wait 300
 </pre>
 
-Deploy the application. This downloads the LLM file which can take some time.
+Deploy the application. This downloads the LLM file, which can take some time.
 Note that if you don't want to perform local inference of the LLM, you can
 remove the corresponding section in `services.xml` so the application skips
 this downloading.
@@ -103,77 +169,7 @@ this downloading.
 $ vespa deploy --wait 900
 </pre>
 
-Now the application should be deployed! You can continue to the
-[querying](#querying) section below for testing this application.
-
-
-
-### Deploying to the Vespa Cloud using GPU
-
-Here will deploy the sample application to Vespa Cloud on a GPU
-instance to perform the generative part. Note that this application can fit
-within the free quota, so it is free to try.
-
-In the following we will set the Vespa CLI target to the cloud. Make sure you
-have created a tenant at
-[console.vespa-cloud.com](https://console.vespa-cloud.com/). Make note of the
-tenant name, it will be used in the next steps. For more information, see the
-Vespa Cloud [getting started](https://cloud.vespa.ai/en/getting-started) guide.
-
-Add your OpenAI API key to the Vespa secret store as described in
-[Secret Management](https://cloud.vespa.ai/en/security/secret-store.html#secret-management).
-Create a new vault, unless you already have one, and add your OpenAI API key
-as a secret.
-
-The `services.xml` file must refer to the newly added secret in the secret store.
-Replace `<my-vault-name>` and `<my-secret-name>` below with your own values:
-
-```xml
-<secrets>
-    <openai-api-key vault=">my-vault-name>" name="<my-secret-name>"/>
-</secrets>
-```
-
-Configure the vespa client. Replace `tenant-name` below with your tenant name.
-We use the application name `rag-app` here, but you are free to choose your own
-application name:
-<pre>
-$ vespa config set target cloud
-$ vespa config set application tenant-name.rag-app
-</pre>
-
-Log in and add your public certificates to the application for Dataplane access:
-<pre>
-$ vespa auth login
-$ vespa auth cert
-</pre>
-
-Assign application access to the secret.
-Applications must be created first, so one can use the Vespa Cloud Console to grant access.
-The easiest way to do this is to do a deployment, which will auto-create the application.
-The first deployment will fail:
-
-<pre>
-$ vespa deploy --wait 900
-</pre>
-
-```
-[09:47:43] warning Deployment failed: Invalid application: Vault 'my_vault' does not exist,
-or application does not have access to it
-```
-
-At this point, open the console
-(the link is like https://console.vespa-cloud.com/tenant/mytenant/account/secrets)
-and assign access:
-
-![edit application access dialog](ext/edit-app-access.png)
-
-Deploy the application again. This can take some time for all nodes to be provisioned:
-<pre>
-$ vespa deploy --wait 900
-</pre>
-
-Now the application should be deployed!
+The application should now be deployed!
 
 
 ## Querying
@@ -183,7 +179,7 @@ Let's feed the documents:
 $ vespa feed ext/docs.jsonl
 </pre>
 
-Run a query, first to check the retrieval:
+Run a query first to check the retrieval:
 <pre data-test="exec" data-test-assert-contains="Manhattan">
 $ vespa query query="what was the manhattan project?" hits=5
 </pre>
@@ -191,8 +187,7 @@ $ vespa query query="what was the manhattan project?" hits=5
 
 #### Openai
 
-To test generation using the OpenAI client, post a query which runs
-the `openai` search chain:
+To test generation using the OpenAI client, post a query that runs the `openai` search chain:
 <pre>
 $ vespa query \
     --timeout 60 \
@@ -219,8 +214,7 @@ We also add a timeout as token generation can take some time.
 
 #### Local
 
-To test generation using the local LLM model, post a query which runs
-the `local` search chain:
+To test generation using the local LLM model, post a query that runs the `local` search chain:
 <pre data-test="exec" data-test-assert-contains="Manhattan">
 $ vespa query \
     --timeout 120 \
@@ -234,10 +228,10 @@ $ vespa query \
 Note that if you are submitting this query to a local Docker deployment, it can
 take some time before the tokens start appearing. This is because the prompt
 evaluation can take a significant amount of time, particularly on CPUs without
-a lot cores. To alleviate this a bit, you can reduce the number of hits
-retrieved by Vespa to for instance 3.
+a lot of cores. To alleviate this a bit, you can reduce the number of hits
+retrieved by Vespa to, for instance, 3.
 
-Prompt evaluation and token generation is much more efficient on the GPU.
+Prompt evaluation and token generation are much more efficient on the GPU.
 
 
 ## Query parameters
@@ -250,14 +244,14 @@ The parameters here are:
   generative process
 - `format`: sets the format to server-sent events, which will stream the tokens
   as they are generated.
-- `traceLevel`: outputs some debug information such as the actual prompt that
+- `traceLevel`: outputs some debug information, such as the actual prompt that
   was sent to the LLM and token timing.
 
 For more information on how to customize the prompt, please refer to the [RAG
 in Vespa](https://docs.vespa.ai/en/llms-rag.html) documentation.
 
 
-## Shutdown and removing the RAG application
+## Shutdown and remove the RAG application
 
 For the `local` deployments, shutdown and remove this container:
 <pre data-test="exec">
