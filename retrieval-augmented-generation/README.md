@@ -127,11 +127,12 @@ as a secret.
 
 The `services.xml` file must refer to the newly added secret in the secret store.
 Replace `<my-vault-name>` and `<my-secret-name>` below with your own values:
-<pre>
-    &lt;secrets&gt;
-      &lt;openai-api-key vault="&lt;my-vault-name&gt;" name="&lt;my-secret-name&gt;"/&gt;
-    &lt;/secrets&gt;
-</pre>
+
+```xml
+<secrets>
+    <openai-api-key vault=">my-vault-name>" name="<my-secret-name>"/>
+</secrets>
+```
 
 Configure the vespa client. Replace `tenant-name` below with your tenant name.
 We use the application name `rag-app` here, but you are free to choose your own
@@ -141,19 +142,38 @@ $ vespa config set target cloud
 $ vespa config set application tenant-name.rag-app
 </pre>
 
-Authorize Vespa Cloud access and add your public certificates to the application:
+Log in and add your public certificates to the application for Dataplane access:
 <pre>
 $ vespa auth login
 $ vespa auth cert
 </pre>
 
-Deploy the application. This can take some time for all nodes to be provisioned:
+Assign application access to the secret.
+Applications must be created first, so one can use the Vespa Cloud Console to grant access.
+The easiest way to do this is to do a deployment, which will auto-create the application.
+The first deployment will fail:
+
 <pre>
 $ vespa deploy --wait 900
 </pre>
 
-Now the application should be deployed! You can continue to the
-[querying](#querying) section below for testing this application.
+```
+[09:47:43] warning Deployment failed: Invalid application: Vault 'my_vault' does not exist,
+or application does not have access to it
+```
+
+At this point, open the console
+(the link is like https://console.vespa-cloud.com/tenant/mytenant/account/secrets)
+and assign access:
+
+![edit application access dialog](/ext/edit-app-access.png)
+
+Deploy the application again. This can take some time for all nodes to be provisioned:
+<pre>
+$ vespa deploy --wait 900
+</pre>
+
+Now the application should be deployed!
 
 
 ## Querying
@@ -184,14 +204,17 @@ $ vespa query \
     traceLevel=1
 </pre>
 
-On Vespa cloud, just skip the `--header` parameter, as the API key is already
-set up in the services.xml file, and will be retrieved from the Vespa secret
-store.
+On Vespa cloud, just skip the `--header` parameter,
+as the API key is already set up in [services.xml](services.xml),
+and will be retrieved from the Vespa secret store.
 
-Here, we specifically set the search chain to `openai`. This calls the
-`RAGSearcher` which is set up to use the `OpenAI` client. Note that this
-requires an OpenAI API key, which is sent in the header. We also add a timeout
-as token generation can take some time.
+Here, we specifically set the search chain to `openai`.
+This calls the
+[RAGSearcher](https://github.com/vespa-engine/vespa/blob/master/container-search/src/main/java/ai/vespa/search/llm/RAGSearcher.java)
+which is set up to use the
+[OpenAI](https://github.com/vespa-engine/vespa/blob/master/model-integration/src/main/java/ai/vespa/llm/clients/OpenAI.java) client.
+Note that this requires an OpenAI API key.
+We also add a timeout as token generation can take some time.
 
 
 #### Local
