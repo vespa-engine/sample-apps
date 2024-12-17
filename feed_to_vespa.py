@@ -69,10 +69,27 @@ def vespa_remove(endpoint, doc_ids, namespace, doc_type):
 
 
 def vespa_feed(endpoint, feed, namespace, doc_type):
-    if doc_type == "paragraph" or doc_type == "term" or doc_type == "doc":
-        splits = re.split(r'/|\.', endpoint)
-        app_string = splits[3] + '.' + splits[2]
-        print(subprocess.run(['./vespa', 'feed', '-a', app_string, '-t', endpoint, feed], capture_output=True))
+    if doc_type not in ["paragraph", "term", "doc"]:
+        raise ValueError(":error:Unknown vespa doc_type: {0}".format(doc_type))
+
+    splits = re.split(r'/|\.', endpoint)
+    app_string = splits[3] + '.' + splits[2]
+    print("Feeding to app: {0} , endpoint: {1}".format(app_string, endpoint))
+
+    process = subprocess.run(['vespa', 'feed', '-a', app_string, '-t', endpoint, feed], capture_output=True)
+
+    # Print sderr if not empty
+    if process.stderr:
+        print("::group::VespaCLI-Error")
+        print("::error::Errors reported by VespaCLI:")
+        print(process.stderr.decode('utf-8'))
+        print("::endgroup::")
+
+    if process.returncode != 0:
+        print("::error::Errors encountered while feeding Vespa application.")
+        sys.exit(process.returncode)
+
+    return process.stdout.decode('utf-8')
 
 
 def get_docs(index):
