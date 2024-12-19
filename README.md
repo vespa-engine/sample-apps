@@ -136,22 +136,40 @@ with a 32x decrease in storage footprint.
 
 
 
+## Retrieval Augmented Generation (RAG) and Generative AI
+The [retrieval-augmented-generation](retrieval-augmented-generation) sample application
+demonstrates how to build an end-to-end RAG pipeline with API-based and local LLMs.
+
+[Pyvespa: Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://pyvespa.readthedocs.io/en/latest/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
+illustrates using [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
+to build cost-efficient RAG applications over naturally sharded data.
+This notebook is also available as a blog post:
+[Turbocharge RAG with LangChain and Vespa Streaming Mode for Sharded Data](https://blog.vespa.ai/turbocharge-rag-with-langchain-and-vespa-streaming-mode/).
+
+[Pyvespa: Visual PDF RAG with Vespa - ColPali demo application](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html).
+We created an end-to-end demo application for visual retrieval of PDF pages using Vespa, including a frontend web application.
+To see the live demo, visit [vespa-engine-colpali-vespa-visual-retrieval.hf.space](https://vespa-engine-colpali-vespa-visual-retrieval.hf.space/).
+The main goal of the demo is to make it easy for you to create your own PDF Enterprise Search application using Vespa.
+
+[Pyvespa: Chat with your pdfs with ColBERT, LangChain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html)
+illustrates using [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
+to build cost-efficient RAG applications over naturally sharded data.
+It also demonstrates how you can now use ColBERT ranking natively in Vespa,
+which can now handle the ColBERT embedding process for you with no custom code!
+
+[Pyvespa: Building cost-efficient retrieval-augmented personal AI assistants](https://pyvespa.readthedocs.io/en/latest/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
+demonstrates how to use [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
+for cost-efficient retrieval for applications that store and retrieve personal data.
+This notebook connects a custom [LlamaIndex Retriever](https://docs.llamaindex.ai/)
+with a Vespa app using streaming mode to retrieve personal data.
+
+
+
 ## Visual search
 * [PDF-Retrieval using ColQWen2 (ColPali) with Vespa](https://pyvespa.readthedocs.io/en/latest/examples/pdf-retrieval-with-ColQwen2-vlm_Vespa-cloud.html)
 * [ColPali Ranking Experiments on DocVQA](https://pyvespa.readthedocs.io/en/latest/examples/colpali-benchmark-vqa-vlm_Vespa-cloud.html)
 * [Vespa 🤝 ColPali: Efficient Document Retrieval with Vision Language Models](https://pyvespa.readthedocs.io/en/latest/examples/colpali-document-retrieval-vision-language-models-cloud.html)
 * [Scaling ColPALI (VLM) Retrieval](https://pyvespa.readthedocs.io/en/latest/examples/simplified-retrieval-with-colpali-vlm_Vespa-cloud.html)
-
-
-
-## Retrieval Augmented Generation (RAG) and Generative AI
-The [retrieval-augmented-generation](retrieval-augmented-generation) sample application
-demonstrates how to build an end-to-end RAG pipeline with API-based and local LLMs.
-
-* [Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://pyvespa.readthedocs.io/en/latest/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
-* [Visual PDF RAG with Vespa - ColPali demo application](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html)
-* [Chat with your pdfs with ColBERT, langchain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html)
-* [Building cost-efficient retrieval-augmented personal AI assistants](https://pyvespa.readthedocs.io/en/latest/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
 
 
 
