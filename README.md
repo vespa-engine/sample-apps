@@ -189,19 +189,70 @@ This notebook demonstrates using the new ColQWen2 model checkpoint.
 
 
 
-
 ## Ranking
-* [Using Mixedbread.ai cross-encoder for reranking in Vespa.ai](https://pyvespa.readthedocs.io/en/latest/examples/cross-encoders-for-global-reranking.html)
-* [Standalone ColBERT + Vespa for long-context ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_long_context_Vespa-cloud.html)
-* [Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_Vespa-cloud.html)
-* [LightGBM: Training the model with Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical.html)
-* [LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
+[Pyvespa: Using Mixedbread.ai cross-encoder for reranking in Vespa.ai](https://pyvespa.readthedocs.io/en/latest/examples/cross-encoders-for-global-reranking.html).
+With Vespa’s phased ranking capabilities,
+doing cross-encoder inference for a subset of documents at a later stage in the ranking pipeline
+can be a good trade-off between ranking performance and latency.
+In this notebook, we show how to use the [Mixedbread.ai](https://www.mixedbread.ai/)
+cross-encoder for [global-phase reranking](https://docs.vespa.ai/en/reference/schema-reference.html#using-a-global-phase-expression) in Vespa.
+
+[Pyvespa: Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_Vespa-cloud.html).
+This notebook illustrates using [ColBERT](https://github.com/stanford-futuredata/ColBERT) package to produce token vectors,
+instead of using the native Vespa [ColBERT embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder).
+This guide illustrates how to feed and query using a single passage representation:
+* Compress token vectors using binarization compatible with Vespa's `unpack_bits` used in ranking.
+  This implements the binarization of token-level vectors using `numpy`.
+* Use Vespa [hex feed format](https://docs.vespa.ai/en/reference/document-json-format.html#tensor) for binary vectors.
+* Query examples.
+
+As a bonus, this also demonstrates how to use ColBERT end-to-end with Vespa for both retrieval and ranking.
+The retrieval step searches the binary token-level representations using hamming distance.
+This uses 32 nearestNeighbor operators in the same query, each finding 100 nearest hits in hamming space.
+Then the results are re-ranked using the full-blown MaxSim calculation.
+
+[Pyvespa: Standalone ColBERT + Vespa for long-context ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_long_context_Vespa-cloud.html).
+This is a guide on how to use the [ColBERT](https://github.com/stanford-futuredata/ColBERT) package to produce token-level vectors.
+This as an alternative to using the native Vespa [ColBERT embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder).
+This guide illustrates how to feed multiple passages per Vespa document (long-context):
+* Compress token vectors using binarization compatible with Vespa's `unpack_bits`.
+* Use Vespa hex feed format for binary vectors with mixed vespa tensors.
+* How to query Vespa with the ColBERT query tensor representation.
+
+The main goal of [Pyvespa: LightGBM: Training the model with Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical.html)
+is to deploy and use a LightGBM model in a Vespa application.
+The following tasks will be accomplished throughout the tutorial:
+1. Train a LightGBM classification model with variable names supported by Vespa.
+2. Create Vespa application package files and export then to an application folder.
+3. Export the trained LightGBM model to the Vespa application folder.
+4. Deploy the Vespa application using the application folder.
+5. Feed data to the Vespa application.
+6. Assert that the LightGBM predictions from the deployed model are correct.
+
+The main goal of [Pyvespa: LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
+is to show how to deploy a LightGBM model with feature names that do not match Vespa feature names.
+The following tasks will be accomplished throughout the tutorial:
+1. Train a LightGBM classification model with generic feature names that will not be available in the Vespa application.
+2. Create an application package and include a mapping from Vespa feature names to LightGBM model feature names.
+3. Create Vespa application package files and export then to an application folder.
+4. Export the trained LightGBM model to the Vespa application folder.
+5. Deploy the Vespa application using the application folder.
+6. Feed data to the Vespa application.
+7. Assert that the LightGBM predictions from the deployed model are correct.
 
 
 
 ## Performance
-* [Feeding performance](https://pyvespa.readthedocs.io/en/latest/examples/feed_performance.html)
-* [Feeding to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/examples/feed_performance_cloud.html)
+[Pyvespa: Feeding performance](https://pyvespa.readthedocs.io/en/latest/examples/feed_performance.html)
+This explorative notebook intends to shine some light on the different modes of feeding documents to Vespa.
+We will look at these 4 different methods:
+* Using `VespaSync`
+* Using `VespaAsync`
+* Using `feed_iterable()`
+* Using [Vespa CLI](https://docs.vespa.ai/en/vespa-cli)
+
+Try [Feeding to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/examples/feed_performance_cloud.html)
+to test feeding using Cloud.
 
 
 
