@@ -19,81 +19,33 @@ also [PyVespa examples](https://pyvespa.readthedocs.io/en/latest/examples.html).
 
 
 
-## Getting started - Basic Sample Applications
+## Getting started
 
-
-### Basic album-recommendation
 The [album-recommendation](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
+[Pyvespa: Hybrid Search - Quickstart](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa.html) and
+[Pyvespa: Hybrid Search - Quickstart on Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa-cloud.html)
+create a hybrid text search application combining traditional keyword matching with semantic vector search (dense retrieval).
+They also demonstrate the Vespa native embedder functionality.
+These are intro level applications for Python users using more advanced Vespa features.
+Use [Pyvespa: Authenticating to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/authenticating-to-vespa-cloud.html) for Vespa Cloud credentials.
 
-### Vector Search
-There is a growing interest in AI-powered vector representations of unstructured multimodal data
-and searching efficiently over these representations.
-[vector-search](https://github.com/vespa-cloud/vector-search)
-describes how your organization can unlock the full potential of multimodal AI-powered vector representations
-using Vespa Cloud - the industry-leading managed Vector Search Service.
+[Pyvespa: Querying Vespa](https://pyvespa.readthedocs.io/en/latest/query.html)
+is a good start for Python users, exploring how to query Vespa using the Vespa Query Language (YQL).
 
+[Pyvespa: Read and write operations](https://pyvespa.readthedocs.io/en/latest/reads-writes.html)
+documents ways to feed, get, update and delete data;
+Using context manager with with for efficiently managing resources
+and feeding streams of data using `feed_iter` which can feed from streams, Iterables, Lists
+and files by the use of generators.
 
-### Simple hybrid semantic search
-The [simple semantic search](simple-semantic-search/)
-application demonstrates indexed vector search using `HNSW`, 
-creating embedding vectors from a transformer language model inside Vespa, and hybrid
-text and semantic ranking. This app also demonstrates using native Vespa embedders. 
+[Pyvespa: Application packages](https://pyvespa.readthedocs.io/en/latest/application-packages.html)
+is a good intro to the concept of application packages in Vespa.
+Try [Advanced Configuration](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for Vespa Services configuration.
 
-
-### Retrieval Augmented Generation (RAG)
-The [retrieval-augmented-generation](retrieval-augmented-generation) sample application
-demonstrates how to build an end-to-end RAG pipeline with API-based and local LLMs.  
-
-
-### Indexing multiple vectors per field
-The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) app demonstrates how to 
-index multiple vectors per document field for semantic search for longer documents.  
-
-
-### Vespa streaming mode for naturally partitioned data
-The [vector-streaming-search](vector-streaming-search) app 
-demonstrates how to use vector streaming search. See also [blog post](https://blog.vespa.ai/announcing-vector-streaming-search/). 
-
-
-### ColBERT token-level embeddings
-The [colbert](colbert) application demonstrates how to 
-use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder) 
-for explainable semantic search with better accuracy than regular
-text embedding models. 
-
-
-### ColBERT token-level embeddings for long documents
-The [colbert-long](colbert-long) application demonstrates how to 
-use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder) 
-for explainable semantic search for longer documents. 
-
-
-### SPLADE sparse learned weights for ranking
-The [splade](splade) application demonstrates how to 
-use the Vespa [splade-embedder](https://docs.vespa.ai/en/embedding.html#splade-embedder) for 
-semantic search using sparse vector representations. 
-
-
-### Multilingual semantic search
-The [multilingual](multilingual-search) sample application demonstrates multilingual semantic search 
-with multilingual text embedding models. 
-
-
-### Customizing embeddings 
-The [custom-embeddings](custom-embeddings) application demonstrates customizing frozen document embeddings for downstream tasks. 
-
-
-### Pyvespa intro notebooks
-* [Querying Vespa](https://pyvespa.readthedocs.io/en/latest/query.html)
-* [Read and write operations](https://pyvespa.readthedocs.io/en/latest/reads-writes.html)
-* [Hybrid Search - Quickstart](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa.html)
-* [Hybrid Search - Quickstart on Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa-cloud.html)
-* [Application packages](https://pyvespa.readthedocs.io/en/latest/application-packages.html)
-* [Advanced Configuration](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html)
-* [Authenticating to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/authenticating-to-vespa-cloud.html)
-* [Pyvespa examples](https://pyvespa.readthedocs.io/en/latest/examples/pyvespa-examples.html)
+[Pyvespa: Examples](https://pyvespa.readthedocs.io/en/latest/examples/pyvespa-examples.html)
+is a repository of small snippets and examples, e.g. really simple vector distance search applications.
 
 
 
@@ -107,6 +59,44 @@ The [custom-embeddings](custom-embeddings) application demonstrates customizing 
 
 
 ## Vector Search, Hybrid Search and Embeddings
+There is a growing interest in AI-powered vector representations of unstructured multimodal data
+and searching efficiently over these representations.
+
+[vector-search](https://github.com/vespa-cloud/vector-search)
+describes how your organization can unlock the full potential of multimodal AI-powered vector representations using Vespa Cloud -
+the industry-leading managed Vector Search Service.
+
+The [simple semantic search](simple-semantic-search/)
+application demonstrates indexed vector search using `HNSW`,
+creating embedding vectors from a transformer language model inside Vespa, and hybrid text and semantic ranking.
+This app also demonstrates using native Vespa embedders.
+
+The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) app demonstrates how to
+index multiple vectors per document field for semantic search for longer documents.
+
+The [vector-streaming-search](vector-streaming-search) app
+demonstrates how to use vector streaming search for naturally partitioned data.
+See also [blog post](https://blog.vespa.ai/announcing-vector-streaming-search/).
+
+The [colbert](colbert) application (simple hybrid search with ColBERT) demonstrates how to
+use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
+for explainable semantic search with better accuracy than regular text embedding models.
+
+The [multilingual](multilingual-search) sample application demonstrates multilingual semantic search
+with multilingual text embedding models.
+
+ColBERT token-level embeddings for long documents;
+The [colbert-long](colbert-long) application demonstrates how to
+use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
+for explainable semantic search for longer documents.
+
+SPLADE sparse learned weights for ranking;
+The [splade](splade) application demonstrates how to
+use the Vespa [splade-embedder](https://docs.vespa.ai/en/embedding.html#splade-embedder) for
+semantic search using sparse vector representations.
+
+The [custom-embeddings](custom-embeddings) application demonstrates customizing frozen document embeddings for downstream tasks.
+
 * [Billion-scale vector search with Cohere binary embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/billion-scale-vector-search-with-cohere-embeddings-cloud.html)
 * [Multi-vector indexing with HNSW](https://pyvespa.readthedocs.io/en/latest/examples/multi-vector-indexing.html)
 * [BGE-M3 - The Mother of all embedding models](https://pyvespa.readthedocs.io/en/latest/examples/mother-of-all-embedding-models-cloud.html)
@@ -126,7 +116,10 @@ The [custom-embeddings](custom-embeddings) application demonstrates customizing 
 
 
 
-## RAG and Generative AI
+## Retrieval Augmented Generation (RAG) and Generative AI
+The [retrieval-augmented-generation](retrieval-augmented-generation) sample application
+demonstrates how to build an end-to-end RAG pipeline with API-based and local LLMs.
+
 * [Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://pyvespa.readthedocs.io/en/latest/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
 * [Visual PDF RAG with Vespa - ColPali demo application](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html)
 * [Chat with your pdfs with ColBERT, langchain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html)
