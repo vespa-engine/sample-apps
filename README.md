@@ -12,15 +12,14 @@ First-time users should go through the [getting-started](https://docs.vespa.ai/e
 
 The [Vespa](https://vespa.ai/) sample applications are created to run both self-hosted and on Vespa Cloud.
 You can easily deploy the sample applications to Vespa Cloud without changing the files -
-just follow the same steps as for [vector-search](#vector-search), adding security credentials.
+just follow the same steps as for [vector-search](https://github.com/vespa-cloud/vector-search),
+adding security credentials.
 
-For operational sample applications, see [examples/operations](examples/operations). See
-also [PyVespa examples](https://pyvespa.readthedocs.io/en/latest/examples.html). 
+For operational sample applications, see [examples/operations](examples/operations).
 
 
 
 ## Getting started
-
 The [album-recommendation](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
@@ -49,21 +48,11 @@ is a repository of small snippets and examples, e.g. really simple vector distan
 
 
 
-## Ranking
-* [Using Mixedbread.ai cross-encoder for reranking in Vespa.ai](https://pyvespa.readthedocs.io/en/latest/examples/cross-encoders-for-global-reranking.html)
-* [Standalone ColBERT + Vespa for long-context ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_long_context_Vespa-cloud.html)
-* [Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_Vespa-cloud.html)
-* [LightGBM: Training the model with Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical.html)
-* [LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
-
-
-
 ## Vector Search, Hybrid Search and Embeddings
 There is a growing interest in AI-powered vector representations of unstructured multimodal data
 and searching efficiently over these representations.
-
 [vector-search](https://github.com/vespa-cloud/vector-search)
-describes how your organization can unlock the full potential of multimodal AI-powered vector representations using Vespa Cloud -
+describes how to unlock the full potential of multimodal AI-powered vector representations using Vespa Cloud -
 the industry-leading managed Vector Search Service.
 
 The [simple semantic search](simple-semantic-search/)
@@ -71,8 +60,9 @@ application demonstrates indexed vector search using `HNSW`,
 creating embedding vectors from a transformer language model inside Vespa, and hybrid text and semantic ranking.
 This app also demonstrates using native Vespa embedders.
 
-The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) app demonstrates how to
-index multiple vectors per document field for semantic search for longer documents.
+The [Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) /
+[Pyvespa: Multi-vector indexing with HNSW](https://pyvespa.readthedocs.io/en/latest/examples/multi-vector-indexing.html)
+applications demonstrate how to index multiple vectors per document field for semantic search for longer documents.
 
 The [vector-streaming-search](vector-streaming-search) app
 demonstrates how to use vector streaming search for naturally partitioned data.
@@ -95,16 +85,54 @@ The [splade](splade) application demonstrates how to
 use the Vespa [splade-embedder](https://docs.vespa.ai/en/embedding.html#splade-embedder) for
 semantic search using sparse vector representations.
 
-The [custom-embeddings](custom-embeddings) application demonstrates customizing frozen document embeddings for downstream tasks.
+[custom-embeddings](custom-embeddings)
+demonstrates customizing frozen document embeddings for downstream tasks.
 
-* [Billion-scale vector search with Cohere binary embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/billion-scale-vector-search-with-cohere-embeddings-cloud.html)
-* [Multi-vector indexing with HNSW](https://pyvespa.readthedocs.io/en/latest/examples/multi-vector-indexing.html)
-* [BGE-M3 - The Mother of all embedding models](https://pyvespa.readthedocs.io/en/latest/examples/mother-of-all-embedding-models-cloud.html)
-* [Evaluating retrieval with Snowflake arctic embed](https://pyvespa.readthedocs.io/en/latest/examples/evaluating-with-snowflake-arctic-embed.html)
-* [Multilingual Hybrid Search with Cohere binary embeddings and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/multilingual-multi-vector-reps-with-cohere-cloud.html)
-* [Using Cohere Binary Embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/cohere-binary-vectors-in-vespa-cloud.html)
-* [Exploring the potential of OpenAI Matryoshka 🪆 embeddings with Vespa](https://pyvespa.readthedocs.io/en/latest/examples/Matryoshka_embeddings_in_Vespa-cloud.html)
-* [Using Mixedbread.ai embedding model with support for binary vectors](https://pyvespa.readthedocs.io/en/latest/examples/mixedbread-binary-embeddings-with-sentence-transformers-cloud.html)
+[Pyvespa: Billion-scale vector search with Cohere binary embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/billion-scale-vector-search-with-cohere-embeddings-cloud.html)
+demonstrates using the [Cohere int8 & binary Embeddings](https://cohere.com/blog/int8-binary-embeddings)
+with a coarse-to-fine search and re-ranking pipeline that reduces costs, but offers the same retrieval (nDCG) accuracy.
+The packed binary vector representation is stored in memory,
+with an optional [HNSW index](https://docs.vespa.ai/en/approximate-nn-hnsw.html) using
+[hamming](https://docs.vespa.ai/en/reference/schema-reference.html#hamming) distance.
+The `int8` vector representation is stored on disk
+using Vespa’s [paged](https://docs.vespa.ai/en/attributes.html#paged-attributes) option.
+
+[Pyvespa: BGE-M3 - The Mother of all embedding models](https://pyvespa.readthedocs.io/en/latest/examples/mother-of-all-embedding-models-cloud.html).
+This notebook demonstrates how to use the [BGE-M3](https://github.com/FlagOpen/FlagEmbedding/blob/master/research/BGE_M3/BGE_M3.pdf) embeddings
+and represent all three embedding representations in Vespa!
+Vespa is the only scalable serving engine that can handle all M3 representations.
+This code is inspired by the README from the model hub [BAAI/bge-m3](https://huggingface.co/BAAI/bge-m3).
+
+[Pyvespa: Evaluating retrieval with Snowflake arctic embed](https://pyvespa.readthedocs.io/en/latest/examples/evaluating-with-snowflake-arctic-embed.html).
+demonstrates how different rank profiles in Vespa can be set up and evaluated.
+For the rank profiles that use semantic search,
+we will use the small version of [Snowflake’s arctic embed model series](https://huggingface.co/Snowflake/snowflake-arctic-embed-s) for generating embeddings.
+
+[Pyvespa: Using Cohere Binary Embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/cohere-binary-vectors-in-vespa-cloud.html)
+demonstrates how to use the Cohere binary vectors with Vespa,
+including a re-ranking phase that uses the float query vector version for improved accuracy.
+
+[Pyvespa: Multilingual Hybrid Search with Cohere binary embeddings and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/multilingual-multi-vector-reps-with-cohere-cloud.html).
+This notebook demonstrates:
+* Building a multilingual search application over a sample of the German split of Wikipedia using
+  [binarized Cohere embeddings](https://huggingface.co/datasets/Cohere/wikipedia-2023-11-embed-multilingual-v3-int8-binary).
+* Indexing multiple binary embeddings per document; without having to split the chunks across multiple retrievable units.
+* Hybrid search, combining the lexical matching capabilities of Vespa with Cohere binary embeddings.
+* Re-scoring the binarized vectors for improved accuracy.
+
+[Pyvespa: Exploring the potential of OpenAI Matryoshka 🪆 embeddings with Vespa](https://pyvespa.readthedocs.io/en/latest/examples/Matryoshka_embeddings_in_Vespa-cloud.html)
+demonstrates the effectiveness of using the recently released (as of January 2024) OpenAI `text-embedding-3` embeddings with Vespa.
+Specifically, we are interested in the [Matryoshka Representation Learning](https://aniketrege.github.io/blog/2024/mrl/) technique used in training,
+which lets us “shorten embeddings (i.e. remove some numbers from the end of the sequence) without the embedding losing its concept-representing properties”.
+This allow us to trade off a small amount of accuracy in exchange for much smaller embedding sizes,
+so we can store more documents and search them faster.
+
+[Pyvespa: Using Mixedbread.ai embedding model with support for binary vectors](https://pyvespa.readthedocs.io/en/latest/examples/mixedbread-binary-embeddings-with-sentence-transformers-cloud.html)
+demonstrates how to use the Mixedbread [mixedbread-ai/mxbai-embed-large-v1](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1) model
+with support for binary vectors with Vespa.
+The notebook example also includes a re-ranking phase that uses the float query vector version for improved accuracy.
+The re-ranking step makes the model perform at 96.45% of the full float version,
+with a 32x decrease in storage footprint.
 
 
 
@@ -124,6 +152,15 @@ demonstrates how to build an end-to-end RAG pipeline with API-based and local LL
 * [Visual PDF RAG with Vespa - ColPali demo application](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html)
 * [Chat with your pdfs with ColBERT, langchain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html)
 * [Building cost-efficient retrieval-augmented personal AI assistants](https://pyvespa.readthedocs.io/en/latest/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
+
+
+
+## Ranking
+* [Using Mixedbread.ai cross-encoder for reranking in Vespa.ai](https://pyvespa.readthedocs.io/en/latest/examples/cross-encoders-for-global-reranking.html)
+* [Standalone ColBERT + Vespa for long-context ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_long_context_Vespa-cloud.html)
+* [Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_Vespa-cloud.html)
+* [LightGBM: Training the model with Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical.html)
+* [LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
 
 
 
