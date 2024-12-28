@@ -26,14 +26,14 @@ go to the application package directory and play with the following commands:
 brew install vespa-cli
 # Maven must be 3.6+
 brew install maven
-
+# Requires Vespa 8.315.19 or later
 docker run --rm --detach \
   --name vespa \
   --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 \
   --publish 127.0.0.1:19071:19071 \
   --publish 127.0.0.1:19050:19050 \
-  vespaengine/vespa:8.237.19
+  vespaengine/vespa
 
 # To observe the logs from LuceneLinguistics run in a separate terminal
 docker logs  vespa -f | grep -i "lucene"
