@@ -82,13 +82,12 @@ semantic search using sparse vector representations.
 demonstrates customizing frozen document embeddings for downstream tasks.
 
 ColBERT token-level embeddings:
-* The [![logo](vespa-logomark-tiny.png) colbert](colbert) application (simple hybrid search with ColBERT)
+* [![logo](vespa-logomark-tiny.png) simple hybrid search with ColBERT](colbert)
   demonstrates how to use the Vespa
   [![logo](vespa-logomark-tiny.png) colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
   for explainable semantic search with better accuracy than regular text embedding models.
-* The [![logo](vespa-logomark-tiny.png) colbert-long](colbert-long) application demonstrates how to
-  use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
-  for explainable semantic search for longer documents.
+* The [![logo](vespa-logomark-tiny.png) Long-Context ColBERT](colbert-long)
+  uses the same embedder, for longer documents.
 
 [![logo](vespa-logomark-tiny.png) Pyvespa: Using Cohere Binary Embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/cohere-binary-vectors-in-vespa-cloud.html)
 demonstrates how to use the Cohere binary vectors with Vespa,
@@ -142,28 +141,25 @@ with a 32x decrease in storage footprint.
 The [![logo](vespa-logomark-tiny.png) retrieval-augmented-generation](retrieval-augmented-generation) sample application
 demonstrates how to build an end-to-end RAG pipeline with API-based and local LLMs.
 
-[![logo](vespa-logomark-tiny.png) Pyvespa: Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://pyvespa.readthedocs.io/en/latest/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
-illustrates using [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
-to build cost-efficient RAG applications over naturally sharded data.
-This notebook is also available as a blog post:
-[Turbocharge RAG with LangChain and Vespa Streaming Mode for Sharded Data](https://blog.vespa.ai/turbocharge-rag-with-langchain-and-vespa-streaming-mode/).
-
 [![logo](vespa-logomark-tiny.png) Pyvespa: Visual PDF RAG with Vespa - ColPali demo application](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html).
 We created an end-to-end demo application for visual retrieval of PDF pages using Vespa, including a frontend web application.
 To see the live demo, visit [vespa-engine-colpali-vespa-visual-retrieval.hf.space](https://vespa-engine-colpali-vespa-visual-retrieval.hf.space/).
 The main goal of the demo is to make it easy for you to create your own PDF Enterprise Search application using Vespa.
 
-[![logo](vespa-logomark-tiny.png) Pyvespa: Chat with your pdfs with ColBERT, LangChain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html)
-illustrates using [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
-to build cost-efficient RAG applications over naturally sharded data.
-It also demonstrates how you can now use ColBERT ranking natively in Vespa,
-which can now handle the ColBERT embedding process for you with no custom code!
-
 [![logo](vespa-logomark-tiny.png) Pyvespa: Building cost-efficient retrieval-augmented personal AI assistants](https://pyvespa.readthedocs.io/en/latest/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
-demonstrates how to use [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
+uses [Vespa streaming mode](https://docs.vespa.ai/en/streaming-search.html)
 for cost-efficient retrieval for applications that store and retrieve personal data.
 This notebook connects a custom [LlamaIndex Retriever](https://docs.llamaindex.ai/)
 with a Vespa app using streaming mode to retrieve personal data.
+
+[![logo](vespa-logomark-tiny.png) Pyvespa: Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://pyvespa.readthedocs.io/en/latest/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
+uses [streaming mode](https://docs.vespa.ai/en/streaming-search.html)
+to build cost-efficient RAG applications over naturally sharded data - also available as a blog post:
+[Turbocharge RAG with LangChain and Vespa Streaming Mode for Sharded Data](https://blog.vespa.ai/turbocharge-rag-with-langchain-and-vespa-streaming-mode/).
+Also try [![logo](vespa-logomark-tiny.png) Pyvespa: Chat with your pdfs with ColBERT, LangChain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html),
+also using [streaming mode](https://docs.vespa.ai/en/streaming-search.html) -
+this demonstrates how you can now use ColBERT ranking natively in Vespa,
+which can now handle the ColBERT embedding process for you with no custom code!
 
 
 
@@ -231,9 +227,9 @@ The following tasks will be accomplished throughout the tutorial:
 5. Feed data to the Vespa application.
 6. Assert that the LightGBM predictions from the deployed model are correct.
 
-The main goal of [![logo](vespa-logomark-tiny.png) Pyvespa: LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
-is to show how to deploy a LightGBM model with feature names that do not match Vespa feature names.
-In addition to the steps above, this tutorial:
+[![logo](vespa-logomark-tiny.png) Pyvespa: LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
+shows how to deploy a LightGBM model with feature names that do not match Vespa feature names.
+In addition to the steps in the app above, this tutorial:
 1. Trains a LightGBM classification model with generic feature names that will not be available in the Vespa application.
 2. Creates an application package and include a mapping from Vespa feature names to LightGBM model feature names.
 
