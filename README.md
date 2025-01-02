@@ -25,27 +25,27 @@ For operational sample applications, see [examples/operations](examples/operatio
 [![logo](vespa-logomark-tiny.png) album-recommendation](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
-[![logo](vespa-logomark-tiny.png)Pyvespa: Hybrid Search - Quickstart](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa.html) and
-[![logo](vespa-logomark-tiny.png)Pyvespa: Hybrid Search - Quickstart on Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa-cloud.html)
+[![logo](vespa-logomark-tiny.png) Pyvespa: Hybrid Search - Quickstart](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa.html) and
+[![logo](vespa-logomark-tiny.png) Pyvespa: Hybrid Search - Quickstart on Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa-cloud.html)
 create a hybrid text search application combining traditional keyword matching with semantic vector search (dense retrieval).
 They also demonstrate the Vespa native embedder functionality.
 These are intro level applications for Python users using more advanced Vespa features.
-Use [![logo](vespa-logomark-tiny.png)Pyvespa: Authenticating to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/authenticating-to-vespa-cloud.html) for Vespa Cloud credentials.
+Use [![logo](vespa-logomark-tiny.png) Pyvespa: Authenticating to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/authenticating-to-vespa-cloud.html) for Vespa Cloud credentials.
 
-[![logo](vespa-logomark-tiny.png)Pyvespa: Querying Vespa](https://pyvespa.readthedocs.io/en/latest/query.html)
+[![logo](vespa-logomark-tiny.png) Pyvespa: Querying Vespa](https://pyvespa.readthedocs.io/en/latest/query.html)
 is a good start for Python users, exploring how to query Vespa using the Vespa Query Language (YQL).
 
-[![logo](vespa-logomark-tiny.png)Pyvespa: Read and write operations](https://pyvespa.readthedocs.io/en/latest/reads-writes.html)
+[![logo](vespa-logomark-tiny.png) Pyvespa: Read and write operations](https://pyvespa.readthedocs.io/en/latest/reads-writes.html)
 documents ways to feed, get, update and delete data;
 Using context manager with for efficiently managing resources
 and feeding streams of data using `feed_iter` which can feed from streams, Iterables, Lists
 and files by the use of generators.
 
-[![logo](vespa-logomark-tiny.png)Pyvespa: Application packages](https://pyvespa.readthedocs.io/en/latest/application-packages.html)
+[![logo](vespa-logomark-tiny.png) Pyvespa: Application packages](https://pyvespa.readthedocs.io/en/latest/application-packages.html)
 is a good intro to the concept of application packages in Vespa.
 Try [Advanced Configuration](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for Vespa Services configuration.
 
-[![logo](vespa-logomark-tiny.png)Pyvespa: Examples](https://pyvespa.readthedocs.io/en/latest/examples/pyvespa-examples.html)
+[![logo](vespa-logomark-tiny.png) Pyvespa: Examples](https://pyvespa.readthedocs.io/en/latest/examples/pyvespa-examples.html)
 is a repository of small snippets and examples, e.g. really simple vector distance search applications.
 
 
