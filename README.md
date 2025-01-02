@@ -19,8 +19,9 @@ For operational sample applications, see [examples/operations](examples/operatio
 
 
 
+
 ## Getting started
-The [album-recommendation](album-recommendation/) is the intro application to Vespa.
+[![logo](vespa-logomark-tiny.png) album-recommendation](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
 [Pyvespa: Hybrid Search - Quickstart](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa.html) and
@@ -35,7 +36,7 @@ is a good start for Python users, exploring how to query Vespa using the Vespa Q
 
 [Pyvespa: Read and write operations](https://pyvespa.readthedocs.io/en/latest/reads-writes.html)
 documents ways to feed, get, update and delete data;
-Using context manager with with for efficiently managing resources
+Using context manager with for efficiently managing resources
 and feeding streams of data using `feed_iter` which can feed from streams, Iterables, Lists
 and files by the use of generators.
 
