@@ -67,21 +67,11 @@ The [![logo](vespa-logomark-tiny.png) Vespa Multi-Vector Indexing with HNSW](mul
 applications demonstrate how to index multiple vectors per document field for semantic search for longer documents.
 
 The [![logo](vespa-logomark-tiny.png) vector-streaming-search](vector-streaming-search) app
-demonstrates how to use vector streaming search for naturally partitioned data.
-See also [blog post](https://blog.vespa.ai/announcing-vector-streaming-search/).
+demonstrates how to use vector streaming search for naturally partitioned data -
+[blog post](https://blog.vespa.ai/announcing-vector-streaming-search/).
 
-The [![logo](vespa-logomark-tiny.png) colbert](colbert) application (simple hybrid search with ColBERT)
-demonstrates how to use the Vespa
-[![logo](vespa-logomark-tiny.png) colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
-for explainable semantic search with better accuracy than regular text embedding models.
-
-The [![logo](vespa-logomark-tiny.png) multilingual](multilingual-search) sample application demonstrates multilingual semantic search
-with multilingual text embedding models.
-
-ColBERT token-level embeddings for long documents;
-The [![logo](vespa-logomark-tiny.png) colbert-long](colbert-long) application demonstrates how to
-use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
-for explainable semantic search for longer documents.
+[![logo](vespa-logomark-tiny.png) multilingual](multilingual-search)
+demonstrates multilingual semantic search with multilingual text embedding models.
 
 SPLADE sparse learned weights for ranking;
 The [![logo](vespa-logomark-tiny.png) splade](splade) application demonstrates how to
@@ -91,6 +81,19 @@ semantic search using sparse vector representations.
 [![logo](vespa-logomark-tiny.png) custom-embeddings](custom-embeddings)
 demonstrates customizing frozen document embeddings for downstream tasks.
 
+ColBERT token-level embeddings:
+* The [![logo](vespa-logomark-tiny.png) colbert](colbert) application (simple hybrid search with ColBERT)
+  demonstrates how to use the Vespa
+  [![logo](vespa-logomark-tiny.png) colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
+  for explainable semantic search with better accuracy than regular text embedding models.
+* The [![logo](vespa-logomark-tiny.png) colbert-long](colbert-long) application demonstrates how to
+  use the Vespa [colbert-embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder)
+  for explainable semantic search for longer documents.
+
+[![logo](vespa-logomark-tiny.png) Pyvespa: Using Cohere Binary Embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/cohere-binary-vectors-in-vespa-cloud.html)
+demonstrates how to use the Cohere binary vectors with Vespa,
+including a re-ranking phase that uses the float query vector version for improved accuracy.
+
 [![logo](vespa-logomark-tiny.png) Pyvespa: Billion-scale vector search with Cohere binary embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/billion-scale-vector-search-with-cohere-embeddings-cloud.html)
 demonstrates using the [Cohere int8 & binary Embeddings](https://cohere.com/blog/int8-binary-embeddings)
 with a coarse-to-fine search and re-ranking pipeline that reduces costs, but offers the same retrieval (nDCG) accuracy.
@@ -99,6 +102,14 @@ with an optional [HNSW index](https://docs.vespa.ai/en/approximate-nn-hnsw.html)
 [hamming](https://docs.vespa.ai/en/reference/schema-reference.html#hamming) distance.
 The `int8` vector representation is stored on disk
 using Vespa’s [paged](https://docs.vespa.ai/en/attributes.html#paged-attributes) option.
+
+[![logo](vespa-logomark-tiny.png) Pyvespa: Multilingual Hybrid Search with Cohere binary embeddings and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/multilingual-multi-vector-reps-with-cohere-cloud.html).
+This notebook demonstrates:
+* Building a multilingual search application over a sample of the German split of Wikipedia using
+  [binarized Cohere embeddings](https://huggingface.co/datasets/Cohere/wikipedia-2023-11-embed-multilingual-v3-int8-binary).
+* Indexing multiple binary embeddings per document; without having to split the chunks across multiple retrievable units.
+* Hybrid search, combining the lexical matching capabilities of Vespa with Cohere binary embeddings.
+* Re-scoring the binarized vectors for improved accuracy.
 
 [![logo](vespa-logomark-tiny.png) Pyvespa: BGE-M3 - The Mother of all embedding models](https://pyvespa.readthedocs.io/en/latest/examples/mother-of-all-embedding-models-cloud.html).
 This notebook demonstrates how to use the [BGE-M3](https://github.com/FlagOpen/FlagEmbedding/blob/master/research/BGE_M3/BGE_M3.pdf) embeddings
@@ -110,18 +121,6 @@ This code is inspired by the README from the model hub [BAAI/bge-m3](https://hug
 demonstrates how different rank profiles in Vespa can be set up and evaluated.
 For the rank profiles that use semantic search,
 we will use the small version of [Snowflake’s arctic embed model series](https://huggingface.co/Snowflake/snowflake-arctic-embed-s) for generating embeddings.
-
-[![logo](vespa-logomark-tiny.png) Pyvespa: Using Cohere Binary Embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/cohere-binary-vectors-in-vespa-cloud.html)
-demonstrates how to use the Cohere binary vectors with Vespa,
-including a re-ranking phase that uses the float query vector version for improved accuracy.
-
-[![logo](vespa-logomark-tiny.png) Pyvespa: Multilingual Hybrid Search with Cohere binary embeddings and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/multilingual-multi-vector-reps-with-cohere-cloud.html).
-This notebook demonstrates:
-* Building a multilingual search application over a sample of the German split of Wikipedia using
-  [binarized Cohere embeddings](https://huggingface.co/datasets/Cohere/wikipedia-2023-11-embed-multilingual-v3-int8-binary).
-* Indexing multiple binary embeddings per document; without having to split the chunks across multiple retrievable units.
-* Hybrid search, combining the lexical matching capabilities of Vespa with Cohere binary embeddings.
-* Re-scoring the binarized vectors for improved accuracy.
 
 [![logo](vespa-logomark-tiny.png) Pyvespa: Exploring the potential of OpenAI Matryoshka 🪆 embeddings with Vespa](https://pyvespa.readthedocs.io/en/latest/examples/Matryoshka_embeddings_in_Vespa-cloud.html)
 demonstrates the effectiveness of using the recently released (as of January 2024) OpenAI `text-embedding-3` embeddings with Vespa.
@@ -234,14 +233,9 @@ The following tasks will be accomplished throughout the tutorial:
 
 The main goal of [![logo](vespa-logomark-tiny.png) Pyvespa: LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
 is to show how to deploy a LightGBM model with feature names that do not match Vespa feature names.
-The following tasks will be accomplished throughout the tutorial:
-1. Train a LightGBM classification model with generic feature names that will not be available in the Vespa application.
-2. Create an application package and include a mapping from Vespa feature names to LightGBM model feature names.
-3. Create Vespa application package files and export then to an application folder.
-4. Export the trained LightGBM model to the Vespa application folder.
-5. Deploy the Vespa application using the application folder.
-6. Feed data to the Vespa application.
-7. Assert that the LightGBM predictions from the deployed model are correct.
+In addition to the steps above, this tutorial:
+1. Trains a LightGBM classification model with generic feature names that will not be available in the Vespa application.
+2. Creates an application package and include a mapping from Vespa feature names to LightGBM model feature names.
 
 
 
