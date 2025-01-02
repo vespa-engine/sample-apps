@@ -43,7 +43,7 @@ and files by the use of generators.
 
 [![logo](vespa-logomark-tiny.png) Pyvespa: Application packages](https://pyvespa.readthedocs.io/en/latest/application-packages.html)
 is a good intro to the concept of application packages in Vespa.
-Try [Advanced Configuration](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for Vespa Services configuration.
+Try [![logo](vespa-logomark-tiny.png) Pyvespa: Advanced Configuration](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for Vespa Services configuration.
 
 [![logo](vespa-logomark-tiny.png) Pyvespa: Examples](https://pyvespa.readthedocs.io/en/latest/examples/pyvespa-examples.html)
 is a repository of small snippets and examples, e.g. really simple vector distance search applications.
