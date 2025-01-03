@@ -12,7 +12,7 @@ This sample application is used to demonstrate how to adapt frozen embeddings fr
 embedding models.
 Frozen data embeddings from Foundational models are an emerging industry practice for reducing the complexity of maintaining and versioning embeddings. The frozen data embeddings are re-used for various tasks, such as classification, search, or recommendations.
 
-Read the [blog post](https://blog.vespa.ai/).
+Read the [blog post]([blog post](https://blog.vespa.ai/tailoring-frozen-embeddings-with-vespa/)).
 
 
 ## Quick start
