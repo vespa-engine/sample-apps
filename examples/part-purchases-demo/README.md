@@ -6,10 +6,16 @@
   <img alt="#Vespa" width="200" src="https://assets.vespa.ai/logos/Vespa-logo-dark-RGB.svg" style="margin-bottom: 25px;">
 </picture>
 
-# Vespa sample applications - Part Purchases Demo
+# Vespa sample applications - Grouping Results
 
-A sample Vespa application to assist with learning how to group according to the
-[Grouping Guide](https://docs.vespa.ai/en/grouping.html).
+Vespa grouping is a powerful feature that allows you to group search results based on field values.
+This is useful when you want to present search results in a structured way,
+such as grouping search results by category or price range.
+Grouping can be used to create faceted search results and to aggregate data.
+
+Read more in the [Grouping](https://docs.vespa.ai/en/grouping.html) guide.
+
+----
 
 **Requirements:**
 
@@ -64,15 +70,9 @@ $ vespa deploy --wait 300
 </pre>
 
 
-**Generate sample from csv**
+**Generate sample from csv and feed to Vespa**
 <pre data-test="exec">
-$ python3 ext/parts.py -f ext/purchase.csv > ext/purchase.json
-</pre>
-
-
-**Feed data into application:**
-<pre data-test="exec" data-test-wait-for='"feeder.ok.count": 20'>
-$ vespa feed ext/purchase.json
+$ python3 ext/parts.py -f ext/purchase.csv | vespa feed -
 </pre>
 
 
