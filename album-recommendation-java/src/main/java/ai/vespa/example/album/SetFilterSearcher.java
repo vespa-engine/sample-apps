@@ -12,7 +12,7 @@ import com.yahoo.search.Searcher;
 import com.yahoo.search.searchchain.Execution;
 
 /**
- * Searcher which accepts a input set filter which which bypass YQL parsing of large set
+ * Searcher which accepts an input set filter which will bypass YQL parsing of large set
  * filters https://docs.vespa.ai/en/performance/feature-tuning.html#multi-lookup-set-filtering
  *
  * Example usage
