@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.311.28">
+
+    <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
+    <container id="default" version="1.0">
+        <component id="modernbert" class="ai.vespa.example.myembedder.MyEmbedder" bundle="my-embedder-bundle">
+            <config name="ai.vespa.example.myembedder.my-embedder">
+                <model>
+                    <path>files/vocab.txt</path>
+                    <modelId>bert-base-uncased</modelId>
+                </model>
+                <vocab>
+                    <path>files/vocab.txt</path>
+                </vocab>
+                <myValue>defaultValue</myValue>
+            </config>
+        </component>
+        <document-api/>
+        <search/>
+        <nodes>
+            <node hostalias="node1" />
+        </nodes>
+    </container>
+
+    <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
+    <content id="text" version="1.0">
+        <min-redundancy>2</min-redundancy>
+        <documents>
+            <document type="doc" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+
+</services>

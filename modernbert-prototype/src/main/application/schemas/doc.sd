@@ -1,0 +1,47 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://docs.vespa.ai/en/schemas.html
+schema doc {
+
+    document doc {
+
+        field text type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+    fieldset default {
+        fields: text
+    }
+
+    # See https://docs.vespa.ai/en/embedding.html#embedding-a-document-field
+    # and https://docs.vespa.ai/en/approximate-nn-hnsw.html
+    field embedding type tensor<float>(x[128]) {
+        indexing: input text | embed modernbert | summary | attribute | index
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    # See https://docs.vespa.ai/en/ranking.html
+    rank-profile default inherits default {
+        inputs {
+            query(e) tensor<float>(x[384])
+        }
+        first-phase {
+            expression: nativeRank(text) + closeness(field, embedding)
+        }
+        match-features: bm25(text) closeness(field, embedding)
+        global-phase {
+            expression {
+              reciprocal_rank(closeness(field,embedding)) + 
+              reciprocal_rank(bm25(text))
+            }
+        }
+    }
+    document-summary default {
+        summary embedding {}
+        summary text {}
+    }
+   
+}

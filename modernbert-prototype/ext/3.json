@@ -1,0 +1,6 @@
+{
+    "put": "id:doc:doc::3",
+    "fields": {
+        "text": "The galaxy is filled with stars"
+    }
+}
