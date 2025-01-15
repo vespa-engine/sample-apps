@@ -68,6 +68,27 @@ $ vespa feed ext/vespa.json
 $ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=what is dad bod' 
 </pre>
 
+### Using Logstash to feed data
+
+Instead of using the `vespa feed` command above, we can use Logstash to feed data. This way:
+* You don't need to convert the data to JSON via `./bin/convert-msmarco.sh`.
+* You can more easily adapt this sample application to your own data (e.g. by making Logstash read from a different file [database](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jdbc.html)).
+
+You'll need to [install Logstash](https://www.elastic.co/downloads/logstash). Then:
+
+1. Install [Logstash Output Plugin for Vespa](https://github.com/vespa-engine/vespa/tree/master/integration/logstash-plugins/logstash-output-vespa) via:
+
+<pre>
+bin/logstash-plugin install logstash-output-vespa_feed
+</pre>
+
+2. Change [logstash.conf](ext/logstash.conf) to point to the absolute path of [msmarco-docs.tsv](ext/sample/msmarco-docs.tsv).
+
+3. Run Logstash with the modified `logstash.conf`:
+
+<pre>
+bin/logstash -f $PATH_TO_LOGSTASH_CONF/logstash.conf
+</pre>
 
 ### Delete container
 Remove app and data:
