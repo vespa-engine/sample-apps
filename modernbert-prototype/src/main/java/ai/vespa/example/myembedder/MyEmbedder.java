@@ -11,19 +11,34 @@ import com.google.inject.Inject;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.time.Duration;
+import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MyEmbedder implements Embedder {
 
     private static final Logger logger = Logger.getLogger(MyEmbedder.class.getName());
     private static final int FIXED_DIMENSION_SIZE = 128;
+    private static final int MAX_RETRIES = 3;
+    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    
+    private final HttpClient httpClient;
+    private final ObjectMapper objectMapper;
+    private final String baseUrl;
     private final Random random = new Random();
     private final MyEmbedderConfig config;
     private final Path modelPath;    
     private final Path vocabPath;    
     private final String modelId;
+    
 
     /**
      * Constructor for MyEmbedder.
@@ -54,6 +69,51 @@ public class MyEmbedder implements Embedder {
         logger.log(Level.INFO, "MyEmbedder initialized with modelPath: " + modelPath.toString() +
                                ", vocabPath: " + vocabPath.toString() +
                                ", modelId: " + modelId);
+
+        this.baseUrl = "http://embedder:1337";
+        this.httpClient = HttpClient.newBuilder()
+            .connectTimeout(TIMEOUT)
+            .version(HttpClient.Version.HTTP_1_1)  // Force HTTP 1.1
+            .build();
+        this.objectMapper = new ObjectMapper();
+        
+        initializeModel();
+    }
+
+    private void initializeModel() {
+        for (int i = 0; i < MAX_RETRIES; i++) {
+            try {
+                String payload = objectMapper.writeValueAsString(Map.of("modelId", modelId));
+                HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/initialize"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .build();
+                    
+                logger.log(Level.INFO, "Attempting to initialize model (attempt " + (i+1) + "/" + MAX_RETRIES + ")");
+                
+                HttpResponse<String> response = httpClient.send(request, 
+                    HttpResponse.BodyHandlers.ofString());
+                    
+                if (response.statusCode() == 200) {
+                    logger.log(Level.INFO, "Model initialized successfully");
+                    return;
+                }
+                
+                Thread.sleep(2000); // Wait 2 seconds between retries
+                
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to initialize model (attempt " + (i+1) + "/" + MAX_RETRIES + ")", e);
+                if (i == MAX_RETRIES - 1) {
+                    throw new RuntimeException("Failed to initialize model after " + MAX_RETRIES + " attempts", e);
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
     }
 
     @Override
@@ -71,21 +131,50 @@ public class MyEmbedder implements Embedder {
 
     @Override
     public Tensor embed(String text, Context context, TensorType tensorType) {
-        // For this example, we assume the tensor type is something like tensor<float>(d0[128])
-        // We'll fill that with random floats. Adjust as needed.
         validateTensorType(tensorType);
-        // Log that tensor type is valid
-        logger.log(Level.INFO, "Tensor type is valid: " + tensorType.toString());
-        // Build a tensor of the given type
-        Builder builder = Tensor.Builder.of(tensorType);
+        logger.log(Level.INFO, "Generating embedding for text: " + text);
 
-        // We assume a single bounded dimension (e.g. d0[128])
-        // Fill with random float values
-        for (int i = 0; i < FIXED_DIMENSION_SIZE; i++) {
-            builder.cell(random.nextFloat(), i);
+        try {
+            // Prepare request payload
+            String payload = objectMapper.writeValueAsString(Map.of(
+                "modelId", modelId,
+                "text", text
+            ));
+
+            // Create and send HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/embed"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payload))
+                .build();
+                
+            HttpResponse<String> response = httpClient.send(request, 
+                HttpResponse.BodyHandlers.ofString());
+                
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Embedding failed: " + response.body());
+            }
+
+            // Parse response - assuming response is array of floats
+            float[] embeddings = objectMapper.readValue(
+                response.body(), 
+                float[].class
+            );
+
+            // Build tensor
+            Builder builder = Tensor.Builder.of(tensorType);
+            for (int i = 0; i < FIXED_DIMENSION_SIZE; i++) {
+                builder.cell(embeddings[i], i);
+            }
+
+            Tensor result = builder.build();
+            logger.log(Level.INFO, "Successfully generated embedding tensor");
+            return result;
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to generate embedding", e);
+            throw new RuntimeException("Failed to generate embedding", e);
         }
-
-        return builder.build();
     }
 
     /**

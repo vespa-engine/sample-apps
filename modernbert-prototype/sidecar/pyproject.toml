@@ -1,0 +1,11 @@
+[project]
+name = "sidecar"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]>=0.115.6",
+    "numpy>=2.2.1",
+    "uvicorn>=0.34.0",
+]

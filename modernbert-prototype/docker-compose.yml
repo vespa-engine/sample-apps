@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  vespa:
+    image: vespaengine/vespa
+    ports:
+      - "8080:8080"
+      - "19071:19071"
+    depends_on:
+      - embedder
+    networks:
+      - vespa_net
+
+  embedder:
+    build:
+      context: sidecar
+    ports:
+      - "1337:1337"
+    working_dir: /app
+    volumes:
+      - ./sidecar:/app
+      - ./sidecar/uv.lock:/app/uv.lock
+      - ./sidecar/pyproject.toml:/app/pyproject.toml
+    
+    networks:
+      - vespa_net
+
+networks:
+  vespa_net:
+    driver: bridge
