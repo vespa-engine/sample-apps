@@ -1,0 +1,8 @@
+{
+    "put": "id:passage:passage::0", 
+    "fields": {
+        "text": "hello",
+        "id": "0",
+        "prompt": "define"
+    }
+}
