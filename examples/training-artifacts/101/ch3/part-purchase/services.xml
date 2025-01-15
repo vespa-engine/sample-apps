@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+  <container id="default" version="1.0">
+    <document-api />
+    <search />
+    <nodes>
+      <node hostalias="node1" />
+    </nodes>
+  </container>
+
+  <content version="1.0">
+    <min-redundancy>2</min-redundancy>
+    <documents>
+      <document type="purchase" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>
+

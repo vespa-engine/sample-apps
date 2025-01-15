@@ -2,7 +2,7 @@
 #    uv pip compile requirements.in --output-file requirements.txt
 aiohappyeyeballs==2.4.0
     # via aiohttp
-aiohttp==3.10.5
+aiohttp==3.10.11
     # via pyvespa
 aiosignal==1.3.1
     # via aiohttp
@@ -78,7 +78,7 @@ idna==3.7
     #   yarl
 itsdangerous==2.2.0
     # via python-fasthtml
-jinja2==3.1.4
+jinja2==3.1.5
     # via pyvespa
 markupsafe==2.1.5
     # via jinja2
@@ -104,7 +104,7 @@ python-dotenv==1.0.1
     #   uvicorn
 python-fasthtml==0.4.4
     # via -r requirements.in
-python-multipart==0.0.9
+python-multipart==0.0.18
     # via python-fasthtml
 pyvespa==0.46.0
     # via -r requirements.in

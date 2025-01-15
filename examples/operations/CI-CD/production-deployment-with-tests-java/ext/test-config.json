@@ -1,0 +1,5 @@
+{
+    "localEndpoints": {
+        "default" : "https://default.myapp.mytenant.aws-us-east-1c.dev.z.vespa-app.cloud/"
+    }
+}

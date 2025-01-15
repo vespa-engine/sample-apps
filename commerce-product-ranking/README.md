@@ -6,24 +6,22 @@
   <img alt="#Vespa" width="200" src="https://assets.vespa.ai/logos/Vespa-logo-dark-RGB.svg" style="margin-bottom: 25px;">
 </picture>
 
-# Vespa Product Ranking 
+# Vespa Product Ranking
 
 This sample application is used to demonstrate how to improve Product Search with Learning to Rank (LTR).
 
 Blog post series:
 
 * [Improving Product Search with Learning to Rank - part one](https://blog.vespa.ai/improving-product-search-with-ltr/)
-This post introduces the dataset used in this sample application and several baseline ranking models. 
+  introduces the dataset used in this sample application and several baseline ranking models.
 * [Improving Product Search with Learning to Rank - part two](https://blog.vespa.ai/improving-product-search-with-ltr-part-two/)
-This post demonstrates how to train neural methods for search ranking. The neural training routine is found in this
-[notebook](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb).
+  demonstrates how to train neural methods for search ranking. The neural training routine is found in
+  [Learning to rank with Transformer models](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/train_neural.ipynb).
 * [Improving Product Search with Learning to Rank - part three](https://blog.vespa.ai/improving-product-search-with-ltr-part-three/)
-This post demonstrates how to train GBDT methods for search ranking. The model uses also neural signals as features. See notebooks:
-[XGBoost](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-xgboost.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-xgboost.ipynb) and 
-[LightGBM](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-lightgbm.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-lightgbm.ipynb) 
+  shows how to train GBDT methods for search ranking. The model uses also neural signals as features. See notebooks:
+  * [XGBoost](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-xgboost.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-xgboost.ipynb)
+  * [LightGBM](https://github.com/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-lightgbm.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vespa-engine/sample-apps/blob/master/commerce-product-ranking/notebooks/Train-lightgbm.ipynb)
 
 This work uses the largest product relevance dataset released by Amazon:
 
@@ -35,12 +33,12 @@ This work uses the largest product relevance dataset released by Amazon:
 > Each query-product pair is accompanied by additional information.
 > The dataset is multilingual, as it contains queries in English, Japanese, and Spanish.
 
-The dataset is found at [amazon-science/esci-data](https://github.com/amazon-science/esci-data). 
+The dataset is found at [amazon-science/esci-data](https://github.com/amazon-science/esci-data).
 The dataset is released under the [Apache 2.0 license](https://github.com/amazon-science/esci-data/blob/main/LICENSE).
 
 ## Quick start
 
-The following is a quick start recipe on how to get started with this application. 
+The following is a quick start recipe on how to get started with this application.
 
 * [Docker](https://www.docker.com/) Desktop installed and running. 6 GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
@@ -48,14 +46,16 @@ The following is a quick start recipe on how to get started with this applicatio
 * Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
-* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download 
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * zstd: `brew install zstd`
-* Python3 with `requests` `pyarrow` and `pandas` installed 
+* Python3 with `requests` `pyarrow` and `pandas` installed
 
 Validate Docker resource settings, should be minimum 6 GB:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
@@ -72,7 +72,7 @@ Pull and start the vespa docker container image:
 <pre data-test="exec">
 $ docker pull vespaengine/vespa
 $ docker run --detach --name vespa --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 
@@ -94,7 +94,7 @@ $ curl -L -o application/models/title_ranker.onnx \
 
 See [scripts/export-bi-encoder.py](scripts/export-bi-encoder.py) and
 [scripts/export-cross-encoder.py](scripts/export-cross-encoder.py) for how
-to export models from PyTorch to ONNX format. 
+to export models from PyTorch to ONNX format.
 
 Deploy the application:
 <pre data-test="exec" data-test-assert-contains="Success">
@@ -113,7 +113,7 @@ It is possible to deploy this app to
 
 ## Run basic system test
 
-This step is optional, but it indexes two 
+This step is optional, but it indexes two
 documents and runs a query [test](https://docs.vespa.ai/en/reference/testing.html)
 
 <pre data-test="exec" data-test-assert-contains="Success">
@@ -130,9 +130,9 @@ $ zstdcat sample-data/sample-products.jsonl.zstd | vespa feed -
 </pre>
 
 
-## Evaluation 
+## Evaluation
 
-Evaluate the `semantic-title` rank profile using the evaluation 
+Evaluate the `semantic-title` rank profile using the evaluation
 script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 Install requirements
@@ -145,7 +145,7 @@ pip3 install numpy pandas pyarrow requests
 $ python3 scripts/evaluate.py \
   --endpoint http://localhost:8080/search/ \
   --example_file sample-data/test-sample.parquet \
-  --ranking semantic-title 
+  --ranking semantic-title
 </pre>
 
 [evaluate.py](scripts/evaluate.py) runs all the queries in the test split using the `--ranking` `<rank-profile>`
@@ -153,7 +153,7 @@ and produces a `<ranking>.run` file with the top ranked results.
 This file is formatted in the format that `trec_eval` expects.
 
 <pre data-test="exec" data-test-assert-contains="B08PB9TTKT">
-$ cat semantic-title.run 
+$ cat semantic-title.run
 </pre>
 
 Example ranking produced by Vespa using the `semantic-title` rank-profile for query 535:
@@ -196,10 +196,10 @@ Run evaluation :
 $ trec_eval test.qrels semantic-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
 </pre>
 
-This particular product ranking for the query produces a NDCG score of 0.7046. 
+This particular product ranking for the query produces a NDCG score of 0.7046.
 Note that the `sample-data/test-sample.parquet` file only contains one query.
 To get the overall score, one must compute all the NDCG scores of all queries in the
-test split and report the *average* NDCG score.  
+test split and report the *average* NDCG score.
 
 Note that the evaluation uses custom NDCG label gains:
 
@@ -231,7 +231,7 @@ $ docker rm -f vespa
 </pre>
 
 
-## Full evaluation 
+## Full evaluation
 
 Download a pre-processed feed file with all (1,215,854) products:
 
@@ -240,21 +240,21 @@ $  curl -L -o product-search-products.jsonl.zstd \
     https://data.vespa-cloud.com/sample-apps-data/product-search-products.jsonl.zstd
 </pre>
 
-This step is resource intensive as the semantic embedding model encodes 
+This step is resource intensive as the semantic embedding model encodes
 the product title and description into the dense embedding vector space.
 
 <pre>
 $ zstdcat product-search-products.jsonl.zstd | vespa feed -
 </pre>
 
-Evaluate the `hybrid` baseline rank profile using the evaluation 
+Evaluate the `hybrid` baseline rank profile using the evaluation
 script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 <pre>
 $ python3 scripts/evaluate.py \
   --endpoint http://localhost:8080/search/ \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
-  --ranking semantic-title 
+  --ranking semantic-title
 </pre>
 
 For Vespa cloud deployments we need to pass certificate and the private key.

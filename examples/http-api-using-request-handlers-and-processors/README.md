@@ -1,4 +1,3 @@
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -22,6 +21,8 @@ Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-c
 for details and troubleshooting:
 <pre>
 $ docker info | grep "Total Memory"
+or
+$ podman info | grep "memTotal"
 </pre>
 
 **Check-out, compile and run:**
@@ -29,7 +30,7 @@ $ docker info | grep "Total Memory"
 $ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 $ cd sample-apps/examples/http-api-using-request-handlers-and-processors &amp;&amp; mvn clean package
 $ docker run --detach --name vespa --hostname vespa-container \
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 

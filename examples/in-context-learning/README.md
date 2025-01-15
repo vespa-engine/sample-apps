@@ -28,7 +28,7 @@ Use the [quick start](https://docs.vespa.ai/en/vespa-quick-start.html) or
 [Vespa getting started](https://cloud.vespa.ai/en/getting-started) to deploy this - laptop example:
 ```shell
 podman run --detach --name vespa --hostname vespa-container \  
-  --publish 8080:8080 --publish 19071:19071 \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
   
 vespa deploy app --wait 600

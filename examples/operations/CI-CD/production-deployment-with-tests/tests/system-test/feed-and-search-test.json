@@ -1,0 +1,56 @@
+{
+    "name": "Feed and query test",
+    "comment": "This field is not part of the test specification, and is therefore ignored, and can be used for comments.",
+    "defaults": {
+        "cluster": "default",
+        "parameters": {
+            "timeout": "2s"
+        }
+    },
+    "steps": [
+        {
+            "name": "clear documents",
+            "request": {
+                "method": "DELETE",
+                "uri": "/document/v1/",
+                "parameters": {
+                    "cluster": "music",
+                    "selection": "true"
+                }
+            }
+        },
+        {
+            "name": "feed foo",
+            "request": {
+                "method": "POST",
+                "uri": "/document/v1/test/music/docid/foo",
+                "body": {
+                    "fields": {
+                        "artist": "Foo Fighters"
+                    }
+                }
+            }
+        },
+        {
+            "name": "query for foo",
+            "request": {
+                "parameters": {
+                    "yql": "select * from sources * where artist contains \"foo\""
+                }
+            },
+            "response": {
+                "body": {
+                    "root": {
+                        "children": [
+                            {
+                                "fields": {
+                                    "artist": "Foo Fighters"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}

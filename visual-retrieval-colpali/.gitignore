@@ -1,8 +1,15 @@
 .sesskey
 .venv/
 __pycache__/
+ipynb_checkpoints/
 .python-version
 .env
 template/
 *.json
 output/
+pdfs/
+colpalidemo/
+src/static/full_images/
+src/static/sim_maps/
+embeddings/
+hf_dataset/

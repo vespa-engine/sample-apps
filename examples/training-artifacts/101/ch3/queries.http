@@ -45,7 +45,7 @@ curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cl
       time.date(date)
     )
     each(
-        output(sum(price))
+        output(sum(price) as(revenue))
         output(count())
     )
   )"
@@ -56,7 +56,7 @@ curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cl
   "yql": "select * from purchase where true | all(
     group(time.date(date))
     each(
-        output(-sum(price))
+        output(sum(price))
         output(count())
 
         # within each bucket, take all orders
@@ -67,7 +67,7 @@ curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cl
             # order by revenue descending, like we did before
             order(-sum(price))
             each(
-                output(sum(price))
+                output(sum(price) as(revenue_per_item_per_day))
                 output(count())
             )
         )
@@ -102,5 +102,6 @@ curl -H "Content-Type:application/json" https://ebe5e25b.d78af55d.z.vespa-app.cl
   "yql": "select * from purchase where true | all(
     group(item)
     output(count())
+    output(max(price))
   )"
 }'

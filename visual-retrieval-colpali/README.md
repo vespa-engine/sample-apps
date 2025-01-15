@@ -1,22 +1,3 @@
----
-title: ColPali 🤝 Vespa - Visual Retrieval
-short_description: Visual Retrieval with ColPali and Vespa
-emoji: 👀
-colorFrom: purple
-colorTo: blue
-sdk: gradio
-sdk_version: 4.44.0
-app_file: main.py
-pinned: false
-license: apache-2.0
-models:
-  - vidore/colpaligemma-3b-pt-448-base
-  - vidore/colpali-v1.2
-preload_from_hub:
-  - vidore/colpaligemma-3b-pt-448-base config.json,model-00001-of-00002.safetensors,model-00002-of-00002.safetensors,model.safetensors.index.json,preprocessor_config.json,special_tokens_map.json,tokenizer.json,tokenizer_config.json 12c59eb7e23bc4c26876f7be7c17760d5d3a1ffa
-  - vidore/colpali-v1.2 adapter_config.json,adapter_model.safetensors,preprocessor_config.json,special_tokens_map.json,tokenizer.json,tokenizer_config.json 9912ce6f8a462d8cf2269f5606eabbd2784e764f
----
-
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 
 <picture>
@@ -25,103 +6,110 @@ preload_from_hub:
   <img alt="#Vespa" width="200" src="https://assets.vespa.ai/logos/Vespa-logo-dark-RGB.svg" style="margin-bottom: 25px;">
 </picture>
 
-# Visual Retrieval ColPali
+# 🔍 Visual Retrieval ColPali 👀
 
-# Developing
+This readme contains the code for a web app including a frontend that can be set up as a user facing interface.
 
-First, install `uv`:
+## Why?
+
+To enable _you_ to showcase the power of ColPali and Vespa to your users, and to provide a starting point for your own projects.
+
+> "But I only know Python, how can I create a web app that's not Gradio or Streamlit?" 🤔
+
+No worries! This project uses [FastHTML](https://fastht.ml/) to create a beautiful web app - and it's all Python! 🐍
+
+Also, 👇
+
+<a href="https://imgflip.com/i/98mhch"><img src="https://i.imgflip.com/98mhch.jpg" title="made at imgflip.com" alt="Funny meme about json output in demo"/></a>
+
+As a prerequisite, you should run [this notebook](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html) 
+to prepare the data and deploy the Vespa application. 
+
+## Setting up your .env variables
+
+The following variables are required in your `.env` file for the application to be able to connect to the Vespa application and the Gemini API:
+
+You can rename the `.env.example` file to `.env` and fill in the required values.
+The other variables are optional, if you want to use mTLS authentication against the Vespa application.
+
+```bash
+VESPA_APP_TOKEN_URL=https://abcde.z.vespa-app.cloud
+VESPA_CLOUD_SECRET_TOKEN=vespa_cloud_xxxxxxxx
+GEMINI_API_KEY=asdf
+```
+
+If you want to deploy the application to Huggingface, you also need to set a `HF_TOKEN` variable, with write permissions.
+This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens).
+
+```bash
+HF_TOKEN=hf_xxxxxxxxxx
+```
+
+## Setting up python environment
+
+This application should work on Python 3.8 and above.
+
+You can install the dependencies with `pip`, but we recommend using `uv`. 
+Skip to [Installing dependencies using `uv`](#installing-dependencies-using-uv) if you want to use `uv`.
+
+### Installing dependencies using `pip`
+
+You can install the dependencies with `pip`:
+
+```bash
+pip install -r src/requirements.txt
+```
+
+### Installing dependencies using `uv`
+
+We recommend installing the amazing `uv` to manage your python environment:
+See also [installation - uv docs](https://docs.astral.sh/uv/getting-started/installation/) for other installation options.
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Then, in this directory, run:
+Then, create a virtual environment:
 
 ```bash
-uv sync --extra dev
+uv venv 
 ```
 
-This will generate a virtual environment with the required dependencies at `.venv`.
-
-To activate the virtual environment, run:
+Activate the virtual environment:
 
 ```bash
 source .venv/bin/activate
 ```
 
-And run development server:
+Sync your virtual environment with the dependencies:
 
 ```bash
-python hello.py
+uv sync --extra dev
 ```
 
-## Preparation
+## Running the application locally
 
-First, set up your `.env` file by renaming `.env.example` to `.env` and filling in the required values.
-(Token can be shared with 1password, `HF_TOKEN` is personal and must be created at huggingface)
-If you are just connecting to a deployed Vespa app, you can skip
-to [Connecting to the Vespa app](#connecting-to-the-vespa-app-and-querying).
-
-### Deploying the Vespa app
-
-To deploy the Vespa app, run:
-
-```bash
-python deploy_vespa_app.py --tenant_name mytenant --vespa_application_name myapp --token_id_write mytokenid_write --token_id_read mytokenid_read
-```
-
-You should get an output like:
-
-```bash
-Found token endpoint: https://abcde.z.vespa-app.cloud
-````
-
-### Feeding the data
-
-#### Dependencies
-
-In addition to the python dependencies, you also need `poppler`
-On Mac:
-
-```bash
-brew install poppler
-```
-
-First, you need to create a huggingface token, after you have accepted the term to use the model
-at https://huggingface.co/google/paligemma-3b-mix-448.
-Add the token to your environment variables as `HF_TOKEN`:
-
-```bash
-export HF_TOKEN=yourtoken
-```
-
-To feed the data, run:
-
-```bash
-python feed_vespa.py --vespa_app_url https://myapp.z.vespa-app.cloud --vespa_cloud_secret_token mysecrettoken
-```
-
-### Connecting to the Vespa app and querying
-
-As a first step, you can run the `query_vespa.py` script to run some sample queries against the Vespa app:
-
-```bash
-python query_vespa.py
-```
-
-### Starting the front-end
+To run the application locally, you can change into the `src` directory and run:
 
 ```bash
 python main.py
 ```
 
-## Deploy to huggingface 🤗
+This will start a local server, and you can access the application at `http://localhost:7860`.
 
-To deploy, run
+## Deploy to huggingface 🤗 spaces
+
+### Compiling dependencies
+
+Before a deploy, make sure to run this to compile the `uv` lock file to `requirements.txt` if you have made changes to the dependencies:
 
 ```bash
-huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval . . --repo-type=space
+uv pip compile pyproject.toml -o src/requirements.txt
 ```
+
+This will make sure that the dependencies in your `pyproject.toml` are compiled to the `requirements.txt` file, which is used by the huggingface space.
+
+### Deploying to huggingface
 
 Note that you need to set `HF_TOKEN` environment variable first.
 This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens).
@@ -129,6 +117,44 @@ Make sure the token has `write` access.
 Be aware that this will not delete existing files, only modify or add,
 see [huggingface-cli](https://huggingface.co/docs/huggingface_hub/en/guides/upload#upload-from-the-cli) for more
 information.
+
+#### Update your space configuration
+
+The `src/README.md` file contains the configuration for the space.
+Feel free to update this file to match your own configuration - name, description, etc.
+
+Note that we can actually use the `gradio` SDK of spaces, to serve FastHTML apps as well, as long as we serve the app on port `7860`.
+See [Custom python spaces](https://huggingface.co/docs/hub/en/spaces-sdks-python) for more information.
+
+#### Upload the files
+
+To deploy, run
+
+(Replace `vespa-engine/colpali-vespa-visual-retrieval` with your own huggingface user/repo name, does not need to exist beforehand)
+
+```bash
+huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval src . --repo-type=space
+```
+
+Note that we upload only the `src` directory.
+
+## Development
+
+This section applies if you want to make changes to the web app.
+
+### Adding dependencies
+
+To add dependencies, you can add them to the `pyproject.toml` file and run:
+
+```bash
+uv compile
+```
+
+and then sync the dependencies:
+
+```bash
+uv sync --extra dev
+```
 
 ### Making changes to CSS
 
@@ -139,3 +165,48 @@ shad4fast watch # watches all files passed through the tailwind.config.js conten
 
 shad4fast build # minifies the current output.css file to reduce bundle size in production.
 ```
+
+### Instructions on creating and feeding the full dataset
+
+This section is only relevant if you want to create and feed the full dataset to Vespa.
+The notebook referenced in the beginning of this readme should be sufficient if you just want to spin up a scaled down version of the demo.
+
+#### Prepare data and Vespa application
+
+First, install `uv`:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Then, run:
+
+```bash
+uv sync --extra dev --extra feed
+```
+
+#### Converting to notebook
+
+If you want to run the `prepare_feed_deploy.py` as a notebook, you can convert it using `jupytext`:
+
+Convert the `prepare_feed_deploy.py` to notebook to:
+
+```bash
+jupytext --to notebook prepare_feed_deploy.py
+```
+
+And launch a Jupyter instance with:
+
+```bash
+uv run --with jupyter jupyter lab
+```
+
+## Credits
+
+Huge thanks to the amazing projects that made it a joy to create this demo 🙏🙌
+
+- Freeing us from python dependency hell - [uv](https://astral.sh/uv/)
+- Allowing us to build **beautiful** full stack web apps in Python [FastHTML](https://fastht.ml/)
+- Introducing the ColPali architecture - [ColPali](https://huggingface.co/vidore/colpali-v1.2)
+- Adding `shadcn` components to FastHTML - [Shad4Fast](https://www.shad4fasthtml.com/)
+  

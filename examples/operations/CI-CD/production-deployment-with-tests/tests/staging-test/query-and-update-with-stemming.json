@@ -1,0 +1,43 @@
+{
+    "name": "Query before and after album update, after application upgrade",
+    "comment": "Run staging-setup, with no stemming on the 'album' field, then re-add that, and run this.",
+    "defaults": {
+        "cluster": "default"
+    },
+    "steps": [
+        {
+            "name": "query before album update",
+            "comment": [ "If the document in the staging-setup step was fed with default stemming, one document will be matched here.",
+                         "If the document was instead fed with no stemming, zero documents will match. Try it out!" ],
+            "request": {
+                "parameters": "../query.json"
+            },
+            "response": {
+                "body": {
+                    "root": {
+                        "fields": {
+                            "totalCount": 1
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "update album field",
+            "request": {
+                "method": "PUT",
+                "uri": "/document/v1/test/music/docid/foo",
+                "body": "../update.json"
+            }
+        },
+        {
+            "name": "query after album update",
+            "request": {
+                "parameters": "../query.json"
+            },
+            "response": {
+                "body": "../hit.json"
+            }
+        }
+    ]
+}
