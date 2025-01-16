@@ -3,23 +3,25 @@
 <services version="1.0">
 
     <container id="container" version="1.0">
-        <component id="local_llm" class="ai.vespa.llm.clients.LocalLLM">
+        <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
             <config name="ai.vespa.llm.clients.llm-local-client">
-
-                <!-- File is approx 130Mb" -->
-                <model url="https://data.vespa-cloud.com/gguf_models/Llama-160M-Chat-v1.Q6_K.gguf" />
-
-                <contextSize>512</contextSize>
-                <parallelRequests>1</parallelRequests>
-                <maxQueueSize>0</maxQueueSize>
-                <maxTokens>10</maxTokens>
+                <model model-id="phi-3.5-mini-q4"/>
+                <contextSize>4096</contextSize>
+                <parallelRequests>10</parallelRequests>
             </config>
         </component>
         
-        <component id="local_llm_gen" class="ai.vespa.llm.generation.LanguageModelTextGenerator">
+        <component id="names_generator" class="ai.vespa.llm.generation.LanguageModelTextGenerator">
             <config name="ai.vespa.llm.generation.language-model-text-generator">
-                <providerId>local_llm</providerId>
-                <promptTemplateFile>files/prompt.txt</promptTemplateFile>
+                <providerId>llm</providerId>
+                <promptTemplateFile>files/names_prompt.txt</promptTemplateFile>
+            </config>
+        </component>
+
+        <component id="title_generator" class="ai.vespa.llm.generation.LanguageModelTextGenerator">
+            <config name="ai.vespa.llm.generation.language-model-text-generator">
+                <providerId>llm</providerId>
+                <promptTemplateFile>files/title_prompt.txt</promptTemplateFile>
             </config>
         </component>
 
@@ -27,8 +29,10 @@
         
         <search/>
 
-        <nodes>
-            <node hostalias="node1"/>
+        <nodes count="1">
+            <resources vcpu="4.0" memory="16Gb" architecture="x86_64" storage-type="local" disk="125Gb">
+                <gpu count="1" memory="16.0Gb"/>
+            </resources>
         </nodes>
     </container>
 
