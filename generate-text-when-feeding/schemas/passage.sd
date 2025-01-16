@@ -15,13 +15,18 @@ schema passage {
         }
     }
     
-    field local_llm_gen type string {
-        indexing: input text | generate local_llm_gen | index | summary
+    field names type array<string> {
+        indexing: input text | generate names_generator | split '\n' | index | summary
+        index: enable-bm25
+    }
+    
+    field title type string {
+        indexing: input text | generate title_generator | index | summary
         index: enable-bm25
     }
     
     fieldset default {
-        fields: text, prompt, local_llm_gen
+        fields: text, prompt, names
     }
     
     rank-profile default {
@@ -30,9 +35,9 @@ schema passage {
         }
     }
     
-    rank-profile local_llm_gen {
+    rank-profile with_names {
         first-phase {
-            expression: bm25(local_llm_gen)
+            expression: 0.6 * bm25(names) * 0.4 * bm25(text)
         }
     }
 }
