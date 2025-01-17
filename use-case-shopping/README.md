@@ -136,3 +136,33 @@ Shutdown and remove the container:
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
+
+### Using Logstash to feed items and reviews
+
+Instead of using `vespa feed`, you can use Logstash to feed items and reviews. This way:
+* You can more easily adapt this sample application to your own data. For example, by making Logstash read from different files or other sources, because Logstash is an excellent ETL tool.
+* You don't need to convert the reviews to Vespa documents via `./convert_reviews.py`.
+* You don't need to convert the items to Vespa documents via `./convert_meta.py` in order to feed them to Vespa. However, this is still needed for suggestions, as `./create_suggestions.py` depends on `feed_items.json`.
+
+You'll need to [install Logstash](https://www.elastic.co/downloads/logstash). Then:
+
+1. Install [Logstash Output Plugin for Vespa](https://github.com/vespa-engine/vespa/tree/master/integration/logstash-plugins/logstash-output-vespa) via:
+
+<pre>
+bin/logstash-plugin install logstash-output-vespa_feed
+</pre>
+
+2. Change [logstash.conf](logstash.conf) to point to the absolute paths of `meta_sports_20k_sample.json` and `reviews_sports_24k_sample.json`. Which still need to be downloaded and uncompressed, as mentioned above:
+
+<pre>
+$ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst
+$ unzstd meta_sports_20k_sample.json.zst
+$ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/reviews_sports_24k_sample.json.zst
+$ unzstd reviews_sports_24k_sample.json.zst
+</pre>
+
+3. Run Logstash with the modified `logstash.conf`:
+
+<pre>
+bin/logstash -f $PATH_TO_LOGSTASH_CONF/logstash.conf
+</pre>

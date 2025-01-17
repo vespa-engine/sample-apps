@@ -72,7 +72,7 @@ $ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=wh
 
 Instead of using the `vespa feed` command above, we can use Logstash to feed data. This way:
 * You don't need to convert the data to JSON via `./bin/convert-msmarco.sh`.
-* You can more easily adapt this sample application to your own data (e.g. by making Logstash read from a different file [database](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jdbc.html)).
+* You can more easily adapt this sample application to your own data (e.g. by making Logstash read from a different file or [database](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jdbc.html)).
 
 You'll need to [install Logstash](https://www.elastic.co/downloads/logstash). Then:
 
