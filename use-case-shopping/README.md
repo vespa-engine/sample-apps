@@ -152,7 +152,7 @@ You'll need to [install Logstash](https://www.elastic.co/downloads/logstash). Th
 bin/logstash-plugin install logstash-output-vespa_feed
 </pre>
 
-2. Change [logstash.conf](ext/logstash.conf) to point to the absolute paths of `meta_sports_20k_sample.json` and `reviews_sports_24k_sample.json`. Which still need to be downloaded and uncompressed, as mentioned above:
+2. Change [logstash.conf](logstash.conf) to point to the absolute paths of `meta_sports_20k_sample.json` and `reviews_sports_24k_sample.json`. Which still need to be downloaded and uncompressed, as mentioned above:
 
 <pre>
 $ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst
