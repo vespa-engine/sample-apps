@@ -80,3 +80,25 @@ $ python3 ext/parts.py -f ext/purchase.csv | vespa feed -
 <pre data-test="after">
 $ docker rm -f vespa
 </pre>
+
+----
+
+**Feed the data with Logstash from the CSV file**
+
+You can also feed the data with Logstash from the CSV file directly (no need to run `parts.py`). It may be useful if you want to feed your own data.
+
+You'll need to [install Logstash](https://www.elastic.co/downloads/logstash), then:
+
+1. Install the [Logstash Output Plugin for Vespa](https://github.com/vespa-engine/vespa/tree/master/integration/logstash-plugins/logstash-output-vespa) via:
+
+```
+bin/logstash-plugin install logstash-output-vespa_feed
+```
+
+2. Adapt [logstash.conf from training-artifacts/101/ch3](../training-artifacts/101/ch3/logstash.conf) to point to the absolute path of [purchase.csv](ext/purchase.csv).
+
+3. Run Logstash with the modified `logstash.conf`:
+
+```
+bin/logstash -f $PATH_TO_LOGSTASH_CONF/logstash.conf
+```
