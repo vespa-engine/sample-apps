@@ -12,16 +12,18 @@ services:
       - vespa_net
 
   embedder:
-    build:
-      context: sidecar
+    image: michaelf34/infinity
     ports:
-      - "1337:1337"
-    working_dir: /app
+      - "${PORT:-1337}:${PORT:-1337}"
     volumes:
-      - ./sidecar:/app
-      - ./sidecar/uv.lock:/app/uv.lock
-      - ./sidecar/pyproject.toml:/app/pyproject.toml
-    
+      - ${CACHE_VOLUME:-./cache}:/app/.cache
+    command: [
+      "v2",
+      "--engine", "optimum",
+      "--model-id", "michaelfeil/bge-small-en-v1.5",
+      #"--model-id", "${MODEL2}",
+      "--port", "1337"
+    ]
     networks:
       - vespa_net
 
