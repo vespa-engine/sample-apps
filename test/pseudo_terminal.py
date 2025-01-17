@@ -60,7 +60,7 @@ class PseudoTerminal:
         self._pty.close()
 
     def run(self, command, verbose):
-        command_id = random.randint(10e4, 10e5)
+        command_id = random.randint(10000, 100000)
         sentinel = "sentinel-{0}> exit code: ".format(command_id)
         sentinel_pattern = re.compile(sentinel + "(\d+)")
 
