@@ -34,9 +34,7 @@ public class MyEmbedder implements Embedder {
     private final ObjectMapper objectMapper;
     private final String baseUrl;
     private final Random random = new Random();
-    private final MyEmbedderConfig config;
-    private final Path modelPath;    
-    private final Path vocabPath;    
+    private final MyEmbedderConfig config;   
     private final String modelId;
     
 
@@ -50,25 +48,14 @@ public class MyEmbedder implements Embedder {
     public MyEmbedder(MyEmbedderConfig config) {
         this.config = config;
         
-        // Validate required config
-        if (config.model().path() == null) {
-            throw new IllegalArgumentException("model.path must be specified in config");
-        }
-        if (config.vocab().path() == null) {
-            throw new IllegalArgumentException("vocab.path must be specified in config");
-        }
         if (config.model().modelId().isEmpty()) {
             throw new IllegalArgumentException("model.modelId must be specified in config");
         }
 
-        this.modelPath = config.model().path();    
-        this.vocabPath = config.vocab().path(); 
         this.modelId = config.model().modelId();
         
         // Log config values
-        logger.log(Level.INFO, "MyEmbedder initialized with modelPath: " + modelPath.toString() +
-                               ", vocabPath: " + vocabPath.toString() +
-                               ", modelId: " + modelId);
+        logger.log(Level.INFO, "MyEmbedder initialized with modelId: " + modelId);
 
         this.baseUrl = "http://embedder:1337";
         this.httpClient = HttpClient.newBuilder()
@@ -148,7 +135,7 @@ public class MyEmbedder implements Embedder {
             //     "modality": "text"
             //   }
             String payload = objectMapper.writeValueAsString(Map.of(
-                "model", "nomic-ai/modernbert-embed-base", // modelId,
+                "model", modelId,
                 "encoding_format", "float",
                 "input", List.of(text),
                 "modality", "text"

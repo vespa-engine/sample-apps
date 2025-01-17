@@ -2,5 +2,3 @@ package=ai.vespa.example.myembedder
 
 myValue string
 model.modelId string
-model.path path
-vocab.path path
