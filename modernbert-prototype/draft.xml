@@ -1,0 +1,17 @@
+<sidecar id="mysidecar" version="1.0">
+    <dockerfile>
+        <path>src/main/docker/Dockerfile</path>
+    </dockerfile>
+    <protos>
+        <proto type="searcher">
+            <path>src/main/protobuf/searcher.proto</path>
+        </proto>
+        <proto type="docproc">
+            <path>src/main/protobuf/docproc.proto</path>
+        </proto>
+    </protos>
+    <nodes count="4">
+        <resources vcpu="8" memory="16Gb" disk="200Gb"/>
+        <gpu count="1" memory="16Gb"/>
+    </nodes>
+</sidecar>
