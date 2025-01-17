@@ -20,7 +20,7 @@ services:
     command: [
       "v2",
       "--engine", "optimum",
-      "--model-id", "michaelfeil/bge-small-en-v1.5",
+      "--model-id", "nomic-ai/modernbert-embed-base",
       #"--model-id", "${MODEL2}",
       "--port", "1337"
     ]

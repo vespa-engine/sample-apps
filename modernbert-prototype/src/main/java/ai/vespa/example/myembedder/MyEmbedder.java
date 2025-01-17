@@ -148,7 +148,7 @@ public class MyEmbedder implements Embedder {
             //     "modality": "text"
             //   }
             String payload = objectMapper.writeValueAsString(Map.of(
-                "model", "michaelfeil/bge-small-en-v1.5", // modelId,
+                "model", "nomic-ai/modernbert-embed-base", // modelId,
                 "encoding_format", "float",
                 "input", List.of(text),
                 "modality", "text"
