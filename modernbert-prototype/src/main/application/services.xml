@@ -7,12 +7,8 @@
         <component id="myembedder" class="ai.vespa.example.myembedder.MyEmbedder" bundle="my-embedder-bundle">
             <config name="ai.vespa.example.myembedder.my-embedder">
                 <model>
-                    <path>files/vocab.txt</path>
-                    <modelId>michaelfeil/bge-small-en-v1.5</modelId>
+                    <modelId>nomic-ai/modernbert-embed-base</modelId>
                 </model>
-                <vocab>
-                    <path>files/vocab.txt</path>
-                </vocab>
                 <myValue>defaultValue</myValue>
             </config>
         </component>
