@@ -25,7 +25,7 @@ You can also feed the data with Logstash from the CSV file directly. You'll need
 bin/logstash-plugin install logstash-output-vespa_feed
 ```
 
-2. Change [logstash.conf](logstash.conf) to point to the absolute path of [myntra_products_catalog.csv](ecommerce/ext/myntra_products_catalog.csv).
+2. Change [logstash.conf](ecommerce/ext/logstash.conf) to point to the absolute path of [myntra_products_catalog.csv](ecommerce/ext/myntra_products_catalog.csv).
 
 3. Run Logstash with the modified `logstash.conf`:
 
