@@ -83,11 +83,11 @@ public class MyEmbedder implements Embedder {
     private void initializeModel() {
         for (int i = 0; i < MAX_RETRIES; i++) {
             try {
-                String payload = objectMapper.writeValueAsString(Map.of("modelId", modelId));
+                // this is what we need
                 HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/initialize"))
+                    .uri(URI.create(baseUrl + "/models"))
                     .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .GET()
                     .build();
                     
                 logger.log(Level.INFO, "Attempting to initialize model (attempt " + (i+1) + "/" + MAX_RETRIES + ")");
@@ -97,6 +97,8 @@ public class MyEmbedder implements Embedder {
                     
                 if (response.statusCode() == 200) {
                     logger.log(Level.INFO, "Model initialized successfully");
+                    // also log response body
+                    logger.log(Level.INFO, "Response body: " + response.body());
                     return;
                 }
                 
@@ -136,14 +138,25 @@ public class MyEmbedder implements Embedder {
 
         try {
             // Prepare request payload
+            // need to match this format:
+            // {
+            //     "model": "michaelfeil/bge-small-en-v1.5",
+            //     "encoding_format": "float",
+            //     "input": [
+            //       "this is my string to encode"
+            //     ],
+            //     "modality": "text"
+            //   }
             String payload = objectMapper.writeValueAsString(Map.of(
-                "modelId", modelId,
-                "text", text
+                "model", "michaelfeil/bge-small-en-v1.5", // modelId,
+                "encoding_format", "float",
+                "input", List.of(text),
+                "modality", "text"
             ));
 
             // Create and send HTTP request
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/embed"))
+                .uri(URI.create(baseUrl + "/embeddings"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(payload))
                 .build();
@@ -155,22 +168,34 @@ public class MyEmbedder implements Embedder {
                 throw new RuntimeException("Embedding failed: " + response.body());
             }
 
-            // Parse response - assuming response is array of floats
-            float[] embeddings = objectMapper.readValue(
-                response.body(), 
-                float[].class
-            );
-
+            // Parse response 
+            // {
+            // "object": "list",
+            // "data": [
+            //     {
+            //     "object": "embedding",
+            //     "embedding": [
+            //         -0.0686255693435669,
+            //         -0.05378103256225586,
+            //         -0.04283014312386513,
+            //         ... 
+            Map<String, Object> jsonResponse = objectMapper.readValue(response.body(), Map.class);
+            List<Map<String, Object>> data = (List<Map<String, Object>>) jsonResponse.get("data");
+            List<Number> embeddingsList = (List<Number>) data.get(0).get("embedding");
+            
+            float[] embeddings = new float[embeddingsList.size()];
+            for (int i = 0; i < embeddingsList.size(); i++) {
+                embeddings[i] = embeddingsList.get(i).floatValue();
+            }
+            
             // Build tensor
             Builder builder = Tensor.Builder.of(tensorType);
             for (int i = 0; i < FIXED_DIMENSION_SIZE; i++) {
                 builder.cell(embeddings[i], i);
             }
-
             Tensor result = builder.build();
             logger.log(Level.INFO, "Successfully generated embedding tensor");
             return result;
-
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to generate embedding", e);
             throw new RuntimeException("Failed to generate embedding", e);
