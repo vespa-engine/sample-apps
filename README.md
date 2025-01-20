@@ -17,7 +17,7 @@ adding security credentials.
 First-time users should go through the [getting-started](https://docs.vespa.ai/en/getting-started.html) guides first.
 
 Explore the [examples](examples) for smaller applications helping you getting started with a particular feature,
-and see [examples/operations](operations) for operational examples.
+and see [operations](examples/operations) for operational examples.
 
 
 
