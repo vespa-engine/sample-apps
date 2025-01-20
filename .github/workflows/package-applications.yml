@@ -1,4 +1,4 @@
-name: Link checker
+name: Package Applications
 
 on:
   workflow_dispatch:
