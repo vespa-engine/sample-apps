@@ -205,6 +205,12 @@ exported in [ONNX](https://onnx.ai/)-format for retrieval.
 It features separation of compute from storage and query-time vector similarity de-duping.
 It uses PCA to reduce from 768 to 128 dimensions.
 
+[![logo](/assets/vespa-logomark-tiny.png) Text-video search](text-video-search/) is a notebook that
+downloads a set of videos, converts from `.avi` to `.mp4`, creates CLIP embeddings,
+feeds to Vespa and lets you query the videos in text in a Streamlit application.
+It is a good start for creating a video search application using Vespa!
+
+
 
 ## Ranking
 [![logo](/assets/vespa-logomark-tiny.png) MS Marco Passage Ranking](msmarco-ranking/)
