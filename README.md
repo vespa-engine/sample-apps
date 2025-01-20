@@ -16,8 +16,8 @@ adding security credentials.
 
 First-time users should go through the [getting-started](https://docs.vespa.ai/en/getting-started.html) guides first.
 
-See [examples/operations](examples/operations) for operational sample applications.
-
+Explore the [examples](examples) for smaller applications helping you getting started with a particular feature,
+and see [examples/operations](operations) for operational examples.
 
 
 
@@ -199,9 +199,30 @@ without much loss in ranking accuracy but with a significant speedup (close to 4
 is a continuation of the notebooks related to the ColPali models (above) for complex document retrieval,
 and demonstrates use of the [ColQWen2](https://huggingface.co/vidore/colqwen2-v0.1) model checkpoint.
 
+[![logo](/assets/vespa-logomark-tiny.png) Billion-Scale Image Search](billion-scale-image-search/)
+demonstrates billion-scale image search using a [CLIP](https://github.com/openai/CLIP) model
+exported in [ONNX](https://onnx.ai/)-format for retrieval.
+It features separation of compute from storage and query-time vector similarity de-duping.
+It uses PCA to reduce from 768 to 128 dimensions.
 
 
 ## Ranking
+[![logo](/assets/vespa-logomark-tiny.png) MS Marco Passage Ranking](msmarco-ranking/)
+shows how to represent state-of-the-art text ranking using Transformer (BERT) models.
+It uses the MS Marco passage ranking datasets and features
+bi-encoders, cross-encoders, and late-interaction models (ColBERT):
+- Simple single-stage sparse retrieval accelerated by the
+  [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html)
+  dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.
+- Dense (vector) search retrieval for efficient candidate retrieval
+  using Vespa's support for [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
+- Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model.
+- Re-ranking using a *cross-encoder* with cross attention between the query and document terms.
+- [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html)
+  combining efficient retrieval (WAND or ANN) with re-ranking stages.
+- Using Vespa [embedder](https://docs.vespa.ai/en/embedding.html) functionality.
+- Hybrid ranking.
+
 With Vespa’s phased ranking capabilities,
 doing cross-encoder inference for a subset of documents at a later stage in the ranking pipeline
 can be a good trade-off between ranking performance and latency.
@@ -276,23 +297,7 @@ to test feeding using [Vespa Cloud](https://vespa.ai/free-trial/).
 
 
 
-## More advanced sample applications
-
-
-### Billion-scale Image Search
-[![logo](/assets/vespa-logomark-tiny.png) Billion-Scale Image Search](billion-scale-image-search/)
-demonstrates billion-scale image search using a [CLIP](https://github.com/openai/CLIP) model
-exported in [ONNX](https://onnx.ai/)-format for retrieval.
-It features separation of compute from storage and query-time vector similarity de-duping.
-It uses PCA to reduce from 768 to 128 dimensions.
-
-
-### State-of-the-art Text Ranking
-[![logo](/assets/vespa-logomark-tiny.png) MS Marco Passage Ranking](msmarco-ranking/)
-shows how to represent state-of-the-art text ranking using Transformer (BERT) models.
-It uses the MS Marco passage ranking datasets and features
-bi-encoders, cross-encoders, and late-interaction models (ColBERT).
-
+## Other sample applications and demos
 
 ### Next generation E-Commerce Search
 The [![logo](/assets/vespa-logomark-tiny.png) e-commerce](use-case-shopping/) application is an end-to-end shopping engine,
@@ -340,14 +345,6 @@ for custom code.
 based on the [Covid-19 Open Research Dataset](https://huggingface.co/datasets/allenai/cord19):
 * [cord-19](https://github.com/vespa-engine/cord-19): frontend
 * [cord-19-search](https://github.com/vespa-cloud/cord-19-search): search backend
-
-
-<!--
-[travis](travis)
-[part-purchases-demo](part-purchases-demo): A sample Vespa application to assist with learning how to group according to the [Grouping Guide](https://docs.vespa.ai/en/grouping.html).
-[generic-request-processing](generic-request-processing)
-http-api-using-*
--->
 
 ----
 
