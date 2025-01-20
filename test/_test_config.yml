@@ -23,7 +23,6 @@ urls:
     - examples/vespa-chinese-linguistics/README.md
     - incremental-search/search-as-you-type/README.md
     - incremental-search/search-suggestions/README.md
-    - transformers/README.md
     - examples/operations/multinode-HA/README.md
     - msmarco-ranking/README.md
     - use-case-shopping/README.md

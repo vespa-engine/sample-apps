@@ -14,7 +14,6 @@ Please refer to the [text search tutorial](https://docs.vespa.ai/en/tutorials/te
 for more information.
 
 See also the [MS Marco Ranking](../msmarco-ranking) sample application for ranking using state-of-the-art retrieval and ranking methods.
-There is also a [Ranking with Transformers](../transformers) sample application. 
 
 The following is for deploying the end to end application including a custom front-end.
 
