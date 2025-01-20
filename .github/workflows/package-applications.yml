@@ -1,0 +1,73 @@
+name: Link checker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "00 3 * * 1-5"
+jobs:
+  package-applications:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Package applications
+        run: |
+          # Find all directories at the root level
+          for folder in $(find . -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
+            echo "Processing folder: $folder"
+
+            # Check if the folder is a Java or Python project
+            if find $folder -type f \( -name "*.java" -o -name "*.py" \) | grep -q .; then
+              echo "Skipping $folder as it is a Java or Python project."
+              continue
+            fi
+
+            # Check for changes or if the zip file does not already exist
+            if git diff --quiet HEAD^ -- $folder && [ -f "$folder/application.zip" ]; then
+              echo "No changes and zip already exists for $folder. Skipping."
+              continue
+            fi
+
+            echo "Creating zip for $folder"
+
+            # Check if .vespaignore exists and create exclude list
+            exclude_args=""
+            if [ -f "$folder/.vespaignore" ]; then
+              while IFS= read -r line || [ -n "$line" ]; do
+                exclude_args="$exclude_args --exclude=$line"
+              done < "$folder/.vespaignore"
+            fi
+
+            # Create the zip inside the folder
+            (cd $folder && zip -r application.zip . $exclude_args)
+          done
+
+      - name: Upload zip files
+        uses: actions/upload-artifact@v2
+        with:
+          name: applications
+          path: "*.zip"
+
+          # Configure Git
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Commit Changes
+        run: |
+          git add .
+          git commit -m "Create application.zip for new or editted folders" || echo "No application.zips created"
+
+      - name: Push Changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}
