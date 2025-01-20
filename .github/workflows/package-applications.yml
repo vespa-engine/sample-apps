@@ -6,8 +6,6 @@ on:
     branches:
       - master
   pull_request:
-    branches:
-      - "*"
 jobs:
   package-applications:
     runs-on: ubuntu-latest
