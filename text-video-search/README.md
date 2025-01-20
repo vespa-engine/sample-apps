@@ -14,7 +14,7 @@ Build a text-video search from scratch based on CLIP models with Vespa python AP
 ## Create the application in a Jupyter Notebook
 
 Create, deploy, feed and query the application from [a single notebook](src/python/create-feed-query-text-video-search.ipynb)
-with [tPyvespa](https://pyvespa.readthedocs.io/en/latest/index.html).
+with [Pyvespa](https://pyvespa.readthedocs.io/en/latest/index.html).
 
 
 ### Demo the search app
