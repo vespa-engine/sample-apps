@@ -8,15 +8,28 @@
 
 # MS Marco Passage Ranking
 
-This sample application demonstrates how to efficiently represent three ways of applying Transformer-based ranking
-models for text ranking in Vespa.
 
-Blog posts with more details:
+## Short description
+Marco Passage Ranking demonstrates how to efficiently represent three ways of applying Transformer-based ranking
+models for text ranking in Vespa:
+Dense vector search retrieval, re-ranking using a cross-encoder and re-ranking using ColBERT.
 
-- [Post one: Introduction to neural ranking and the MS Marco passage ranking dataset](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/).
-- [Post two: Efficient retrievers, sparse, dense, and hybrid retrievers](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/).
-- [Post three: Re-ranking using multi-representation models (ColBERT)](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/).
-- [Post four: Re-ranking using cross-encoders](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/).
+
+## Features
+- Simple single-stage sparse retrieval accelerated by the
+  [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html)
+  dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.
+- Dense (vector) search retrieval for efficient candidate retrieval
+  using Vespa's support for [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
+  Illustrated in figure **a**.
+- Re-ranking using a *cross-encoder* with cross attention between the query and document terms.
+  This method is illustrated in figure **c**.
+- Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model.
+  This method is illustrated in figure **d**.
+- [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html)
+  combining efficient retrieval (WAND or ANN) with re-ranking stages.
+- Using Vespa [embedder](https://docs.vespa.ai/en/embedding.html) functionality.
+- Hybrid ranking functionality
 
 
 ## Transformers for Ranking
@@ -24,22 +37,19 @@ Blog posts with more details:
 
 *Illustration from [ColBERT paper](https://arxiv.org/abs/2004.12832)*.
 
-This sample application demonstrates:
-
-- Simple single-stage sparse retrieval accelerated by the
-  [WAND](https://docs.vespa.ai/en/using-wand-with-vespa.html)
-  dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.
+From the feature list above:
 - Dense (vector) search retrieval for efficient candidate retrieval
-  using Vespa's support for [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
-  Illustrated in figure **a**.
+  is illustrated in figure **a**.
+- Re-ranking using a *cross-encoder* with cross attention between the query and document terms
+  is illustrated in figure **c**.
 - Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model
-  This method is illustrated in figure **d**.
-- Re-ranking using a *cross-encoder* with cross attention between the query and document terms.
-  This method is illustrated in figure **c**.
-- [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html)
-  combining efficient retrieval (WAND or ANN) with re-ranking stages.
-- Using Vespa [embedder](https://docs.vespa.ai/en/embedding.html) functionality.
-- Hybrid ranking functionality
+  is illustrated in figure **d**.
+
+To use this sample application to the best, find more details in the blog posts:
+- [Post one: Introduction to neural ranking and the MS Marco passage ranking dataset](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-1/).
+- [Post two: Efficient retrievers, sparse, dense, and hybrid retrievers](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-2/).
+- [Post three: Re-ranking using multi-representation models (ColBERT)](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-3/).
+- [Post four: Re-ranking using cross-encoders](https://blog.vespa.ai/pretrained-transformer-language-models-for-search-part-4/).
 
 
 ## Retrieval and Ranking
