@@ -21,11 +21,8 @@ Dense vector search retrieval, re-ranking using a cross-encoder and re-ranking u
   dynamic pruning algorithm with [BM25](https://docs.vespa.ai/en/reference/bm25.html) ranking.
 - Dense (vector) search retrieval for efficient candidate retrieval
   using Vespa's support for [approximate nearest neighbor search](https://docs.vespa.ai/en/approximate-nn-hnsw.html).
-  Illustrated in figure **a**.
 - Re-ranking using a *cross-encoder* with cross attention between the query and document terms.
-  This method is illustrated in figure **c**.
 - Re-ranking using the [Late contextual interaction over BERT (ColBERT)](https://arxiv.org/abs/2004.12832) model.
-  This method is illustrated in figure **d**.
 - [Multiphase retrieval and ranking](https://docs.vespa.ai/en/phased-ranking.html)
   combining efficient retrieval (WAND or ANN) with re-ranking stages.
 - Using Vespa [embedder](https://docs.vespa.ai/en/embedding.html) functionality.
