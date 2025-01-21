@@ -12,9 +12,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Package applications
         run: |
+          # Initialize the file to store folder names
+          folder_list_file="packaged_samples_apps.txt"
+          echo "Processed folders:" > $folder_list_file
           # Find all directories at the root level
           for folder in $(find . -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
             echo "Processing folder: $folder"
@@ -43,6 +49,9 @@ jobs:
 
             # Create the zip inside the folder
             (cd $folder && zip -r application.zip . $exclude_args)
+
+            # Add the folder name to the list
+            echo "$folder" >> $folder_list_file
           done
 
       - name: Upload zip files
@@ -50,6 +59,12 @@ jobs:
         with:
           name: applications
           path: "*.zip"
+
+      - name: Upload processed folder list
+        uses: actions/upload-artifact@v2
+        with:
+          name: packaged_samples_apps
+          path: packaged_samples_apps.txt
 
       # Configure Git
       - name: Configure Git
