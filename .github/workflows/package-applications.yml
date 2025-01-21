@@ -61,7 +61,7 @@ jobs:
           path: "*.zip"
 
       - name: Upload processed folder list
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: packaged_samples_apps
           path: packaged_samples_apps.txt
