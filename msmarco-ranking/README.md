@@ -10,7 +10,7 @@
 
 
 ## Short description
-Marco Passage Ranking demonstrates how to efficiently represent three ways of applying Transformer-based ranking
+MS Marco Passage Ranking demonstrates how to efficiently represent three ways of applying Transformer-based ranking
 models for text ranking in Vespa:
 Dense vector search retrieval, re-ranking using a cross-encoder and re-ranking using ColBERT.
 
