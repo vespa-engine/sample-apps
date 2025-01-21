@@ -51,19 +51,17 @@ jobs:
           name: applications
           path: "*.zip"
 
-          # Configure Git
+      # Configure Git
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: Commit Changes
+      # Commit and push changes
+      - name: Commit and Push Changes
         run: |
           git add .
           git commit -m "Create application.zip for new or editted folders" || echo "No application.zips created"
-
-      - name: Push Changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
