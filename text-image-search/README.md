@@ -8,11 +8,27 @@
 
 # Vespa sample application - Text-Image Search
 
-This sample is an example of a text-to-image search application. Taking a textual query, such as "two people bicycling," it will return images containing two people on bikes. This application is built using [CLIP (Contrastive Language-Image Pre-Training)](https://github.com/openai/CLIP), which enables "zero-shot prediction." This means that the system can return sensible results for images it hasn't seen during training, allowing it to process and index any image. In this use case, we use the [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names) dataset, which was not explicitly used during training of the CLIP model.
+## Short description
+Text-Image Search takes a textual description and returns the file names of images that best match the description.
+E.g., the query "two people bicycling" will return images with two people on bikes.
+This application is built using [CLIP (Contrastive Language-Image Pre-Training)](https://github.com/openai/CLIP),
+which enables "zero-shot prediction."
+This means that the system can return sensible results for images it hasn't seen during training,
+allowing it to process and index any image.
+The dataset is  [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names), which was explicitly not used during training of the CLIP model.
+The transformation from text to a vector representation,
+including tokenization and transformer model evaluation,
+is handled entirely within Vespa.
 
-This sample application is implemented as a stand-alone Vespa application, suitable for production. The application takes a textual description and returns the file names of the images that best match the description.
+See the [blog post](https://blog.vespa.ai/text-image-search/) for more details.
 
-The transformation from text to a vector representation, including tokenization and transformer model evaluation, is handled entirely within Vespa.
+
+
+## Features
+- CLIP Image embeddings.
+- Approximate Nearest Neighbor Search using the `closeness` ranking feature.
+
+
 
 ## Quick start
 Requirements:
