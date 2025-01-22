@@ -1,0 +1,4 @@
+data/
+.Rhistory
+Pipfile
+*.pyc
