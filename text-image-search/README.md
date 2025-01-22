@@ -74,7 +74,7 @@ Deploy the application and wait for services to start:
 $ vespa deploy --wait 300 --color never
 </pre>
 
-#### Deployment
+#### Deployment note
 It is possible to deploy this app to
 [Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
 
