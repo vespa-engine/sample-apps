@@ -4,18 +4,33 @@
 
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">
+        <components>
         <component id="myembedder" class="ai.vespa.example.myembedder.MyEmbedder" bundle="my-embedder-bundle">
             <config name="ai.vespa.example.myembedder.my-embedder">
                 <model>
                     <modelId>nomic-ai/modernbert-embed-base</modelId>
                 </model>
-                <myValue>defaultValue</myValue>
+                <baseUrl>http://embedder:10337</baseUrl>
+                <numDims>768</numDims>
             </config>
         </component>
+        <component id="nomic_modernbert" type="hugging-face-embedder">
+            <transformer-model url="https://data.vespa-cloud.com/onnx_models/nomic-ai-modernbert-embed-base/model.onnx"/>
+            <tokenizer-model url="https://data.vespa-cloud.com/onnx_models/nomic-ai-modernbert-embed-base/tokenizer.json"/>
+            <transformer-token-type-ids></transformer-token-type-ids>
+            <transformer-output>token_embeddings</transformer-output>
+            <max-tokens>8192</max-tokens>
+            <prepend>
+                <query>search_query:</query>
+                <document>search_document:</document>
+            </prepend>
+        </component>
+        </components>
         <document-api/>
         <search/>
-        <nodes>
-            <node hostalias="node1" />
+        <nodes count="1">
+            <resources vcpu="8" memory="16Gb" disk="200Gb"/>
+            <jvm allocated-memory="50%" />
         </nodes>
     </container>
 
