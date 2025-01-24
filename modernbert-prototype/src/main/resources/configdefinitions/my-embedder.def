@@ -1,4 +1,5 @@
 package=ai.vespa.example.myembedder
 
-myValue string
+numDims int
+baseUrl string
 model.modelId string
