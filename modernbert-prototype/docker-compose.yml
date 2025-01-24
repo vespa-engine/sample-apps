@@ -7,23 +7,30 @@ services:
       - "8080:8080"
       - "19071:19071"
     depends_on:
-      - embedder
+      embedder:
+        condition: service_healthy
     networks:
       - vespa_net
 
   embedder:
     image: michaelf34/infinity
     ports:
-      - "${PORT:-1337}:${PORT:-1337}"
+      - "${PORT:-10337}:${PORT:-10337}"
     volumes:
       - ${CACHE_VOLUME:-./cache}:/app/.cache
     command: [
       "v2",
       "--engine", "optimum",
       "--model-id", "nomic-ai/modernbert-embed-base",
-      #"--model-id", "${MODEL2}",
-      "--port", "1337"
+      "--port", "10337",
+      "--dtype", "int8",
     ]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10337/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 120s
     networks:
       - vespa_net
 
