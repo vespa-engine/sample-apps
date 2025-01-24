@@ -26,16 +26,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MyEmbedder implements Embedder {
 
     private static final Logger logger = Logger.getLogger(MyEmbedder.class.getName());
-    private static final int FIXED_DIMENSION_SIZE = 128;
-    private static final int MAX_RETRIES = 3;
-    private static final Duration TIMEOUT = Duration.ofSeconds(10);
+    private static final int MAX_RETRIES = 120;
+    private static final Duration TIMEOUT = Duration.ofSeconds(30);
     
-    private final HttpClient httpClient;
+    private volatile HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String baseUrl;
-    private final Random random = new Random();
+    private final Random random;
     private final MyEmbedderConfig config;   
     private final String modelId;
+    private final int numDims;
     
 
     /**
@@ -54,55 +54,47 @@ public class MyEmbedder implements Embedder {
 
         this.modelId = config.model().modelId();
         
-        // Log config values
-        logger.log(Level.INFO, "MyEmbedder initialized with modelId: " + modelId);
+        // get base URL from config
+        this.baseUrl = config.baseUrl();
 
-        this.baseUrl = "http://embedder:1337";
-        this.httpClient = HttpClient.newBuilder()
-            .connectTimeout(TIMEOUT)
-            .version(HttpClient.Version.HTTP_1_1)  // Force HTTP 1.1
-            .build();
-        this.objectMapper = new ObjectMapper();
+        // get numDims from config
+        this.numDims = config.numDims();
+
+
+        // Log config values
+        logger.log(Level.INFO, "MyEmbedder initialized with modelId: " + modelId + "\n" +
+                "numDims" + numDims + "\n" 
+                + "and baseUrl: " + baseUrl);
         
-        initializeModel();
+        this.objectMapper = new ObjectMapper();
+        this.random = new Random();
+    }
+    private class HttpClientInitializationException extends RuntimeException {
+        public HttpClientInitializationException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 
-    private void initializeModel() {
-        for (int i = 0; i < MAX_RETRIES; i++) {
-            try {
-                // this is what we need
-                HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/models"))
-                    .header("Content-Type", "application/json")
-                    .GET()
-                    .build();
-                    
-                logger.log(Level.INFO, "Attempting to initialize model (attempt " + (i+1) + "/" + MAX_RETRIES + ")");
-                
-                HttpResponse<String> response = httpClient.send(request, 
-                    HttpResponse.BodyHandlers.ofString());
-                    
-                if (response.statusCode() == 200) {
-                    logger.log(Level.INFO, "Model initialized successfully");
-                    // also log response body
-                    logger.log(Level.INFO, "Response body: " + response.body());
-                    return;
-                }
-                
-                Thread.sleep(2000); // Wait 2 seconds between retries
-                
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Failed to initialize model (attempt " + (i+1) + "/" + MAX_RETRIES + ")", e);
-                if (i == MAX_RETRIES - 1) {
-                    throw new RuntimeException("Failed to initialize model after " + MAX_RETRIES + " attempts", e);
-                }
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
+    private HttpClient getHttpClient() throws HttpClientInitializationException {
+        HttpClient result = httpClient;
+        if (result == null) {
+            synchronized (this) {
+                result = httpClient;
+                if (result == null) {
+                    try {
+                        httpClient = result = HttpClient.newBuilder()
+                            .connectTimeout(TIMEOUT)
+                            .version(HttpClient.Version.HTTP_1_1)
+                            .build();
+                    } catch (Exception e) {
+                        String msg = "Failed to initialize HTTP client";
+                        logger.log(Level.SEVERE, msg, e);
+                        throw new HttpClientInitializationException(msg, e);
+                    }
                 }
             }
         }
+        return result;
     }
 
     @Override
@@ -148,7 +140,7 @@ public class MyEmbedder implements Embedder {
                 .POST(HttpRequest.BodyPublishers.ofString(payload))
                 .build();
                 
-            HttpResponse<String> response = httpClient.send(request, 
+            HttpResponse<String> response = getHttpClient().send(request, 
                 HttpResponse.BodyHandlers.ofString());
                 
             if (response.statusCode() != 200) {
@@ -177,7 +169,7 @@ public class MyEmbedder implements Embedder {
             
             // Build tensor
             Builder builder = Tensor.Builder.of(tensorType);
-            for (int i = 0; i < FIXED_DIMENSION_SIZE; i++) {
+            for (int i = 0; i < numDims; i++) {
                 builder.cell(embeddings[i], i);
             }
             Tensor result = builder.build();
@@ -197,9 +189,9 @@ public class MyEmbedder implements Embedder {
         // Check only for single dimension with correct size
         if (tensorType.dimensions().size() != 1 ||
             !tensorType.dimensions().get(0).size().isPresent() ||
-            tensorType.dimensions().get(0).size().get() != FIXED_DIMENSION_SIZE) {
+            tensorType.dimensions().get(0).size().get() != numDims) {
             throw new IllegalArgumentException("MyEmbedder requires a tensor type with a single " +
-                                             "dimension of size " + FIXED_DIMENSION_SIZE +
+                                             "dimension of size " + numDims +
                                              ", but got: " + tensorType.toString());
         }
     }
