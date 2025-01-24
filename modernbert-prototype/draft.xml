@@ -1,17 +1,77 @@
-<sidecar id="mysidecar" version="1.0">
-    <dockerfile>
-        <path>src/main/docker/Dockerfile</path>
-    </dockerfile>
-    <protos>
-        <proto type="searcher">
-            <path>src/main/protobuf/searcher.proto</path>
-        </proto>
-        <proto type="docproc">
-            <path>src/main/protobuf/docproc.proto</path>
-        </proto>
-    </protos>
-    <nodes count="4">
-        <resources vcpu="8" memory="16Gb" disk="200Gb"/>
-        <gpu count="1" memory="16Gb"/>
-    </nodes>
-</sidecar>
+<!-- MINIMAL -->
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.400.1">
+    <sidecar id="default" version="1.0"> <!--This would default provision sidecar cluster from podman image provided by Vespa-->
+        <capabilities>
+            <embedders> <!--This would add and register a SidecarEmbedder Embedder with component to the container--> 
+                <model id="modernbert" hf_repo_id="nomic-ai/modernbert-embed-base" path="onnx/model.onnx" engine="onnx"/>
+                <model id="colpali" hf_repo_id="vidore/colpali-v1.2-merged" engine="torch"/>
+            </embedders> <!--Should now be able to call embed modernbert in indexing and embed(@query, modernbert) at query time-->
+        </capabilities>
+        <nodes count="2">
+            <resources vcpu="8" memory="16Gb" disk="200Gb"/>
+            <gpu count="2" memory="16Gb"/>
+        </nodes>
+    </sidecar>
+    <!-- Other services-->
+</services>
+
+<!-- EXPANDED -->
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.400.1">
+    <sidecar id="default" version="1.0">
+        <secrets>
+            <apiKey vault="my-vault" name="hf-token" env="HF_TOKEN" /> <!--This would add a secret as env var to the sidecar container(s). Will enable access to private models-->
+        </secrets>
+        <capabilities>
+            <embedders> <!--This would add and register a SidecarEmbedder Embedder with component to the container--> 
+                <model id="modernbert" hf_repo_id="nomic-ai/modernbert-embed-base" path="onnx/model.onnx" engine="onnx"/>
+                <model id="colpali" hf_repo_id="vidore/colpali-v1.2-merged" engine="torch"/>
+            </embedders> <!--Should now be able to call embed modernbert in indexing and embed(@query, modernbert) at query time-->
+            <rerankers> <!--This would add a SidecarReranker Searcher component to the container-->
+                <model id="bge_m3" hf_repo_id="BAAI/bge-reranker-v2-m3" path="onnx/model_quantized.onnx" engine="onnx"/>
+            </rerankers> <!-- Future: Would be amazing if this could enable e.g. rerank_ext(query,attribute(text), bge_m3) in global-phase-->
+            <classifiers> <!--This would add a SidecarClassifier component to the container-->
+                <model id="deberta" hf_repo_id="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli" path="onnx/model_quantized.onnx" hf_revision="8adb042d524ecd5c26d3e3ba0e3fbcf7e2d0864c" engine="onnx"/>
+            </classifiers> <!--Future: Would be amazing if this could enable | classify deberta during indexing and classify(@query, deberta) at query time-->
+        </capabilities>
+        <nodes count="2">
+            <resources vcpu="8" memory="16Gb" disk="200Gb"/>
+            <gpu count="2" memory="16Gb"/>
+        </nodes>
+    </sidecar>
+    <!-- Other services-->
+</services>
+
+<!-- CUSTOM DOCKER IMAGE -->
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.400.1">
+    <sidecar id="default" type="custom" version="1.0">
+        <secrets>
+            <myApiKey vault="my-vault" name="docker-pat"/>
+        </secrets>
+        <image>
+            <dockerfile path="files/Dockerfile" /> <!--This would use a custom Dockerfile from application package to build the sidecar container-->
+            <!-- OR provide a pre-built image -->
+            <fromRegistry><!--This would use a pre-built image from a registry-->
+                <image>myregistry/myimage:latest</image>
+                <username>myusername</username>
+                <accessTokenName>myApiKey</accessTokenName>
+            </fromRegistry> 
+        </image>
+        <capabilities>
+            <customApis> <!--This would add a custom API endpoint, either HTTP or gRPC, to the container-->
+                <httpApi name="myhttpapi" port="65000" path="/myapi" method="GET" client_component="myHttpComponent" /> 
+                <grpcApi name="mygrpcapi" port="65001" proto_path="myapi.proto" service="MyService" client_component="myGrpcComponent" />
+            </customApis>
+        </capabilities>
+        <nodes count="2">
+            <resources vcpu="8" memory="16Gb" disk="200Gb"/>
+            <gpu count="2" memory="16Gb"/>
+        </nodes>
+    </sidecar>
+    <!-- Other services-->
+</services>
