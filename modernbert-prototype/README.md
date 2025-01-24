@@ -39,16 +39,83 @@ See https://github.com/michaelfeil/infinity for details.
    vespa deploy
    ```
 
-5. Feed to generate embeddings.
+5. Generate data:
 
    ```bash
-   vespa feed ext/*.json
+   python datagen.py
    ```
 
-6. Verify that embeddings are created
+6. Feed to generate embeddings inside Vespa:
 
    ```bash
-   vespa query "select * from doc where true"
+   vespa feed data/inside/*.json
+   ```
+
+   Results:
+
+   ```json
+   {
+      "feeder.operation.count": 1000,
+      "feeder.seconds": 62.485,
+      "feeder.ok.count": 1000,
+      "feeder.ok.rate": 16.004,
+      "feeder.error.count": 0,
+      "feeder.inflight.count": 0,
+      "http.request.count": 191222,
+      "http.request.bytes": 67667135,
+      "http.request.MBps": 1.083,
+      "http.exception.count": 0,
+      "http.response.count": 191222,
+      "http.response.bytes": 24220744,
+      "http.response.MBps": 0.388,
+      "http.response.error.count": 190222,
+      "http.response.latency.millis.min": 0,
+      "http.response.latency.millis.avg": 159,
+      "http.response.latency.millis.max": 59276,
+      "http.response.code.counts": {
+         "200": 1000,
+         "429": 190222
+      }
+   }
+   ```
+
+7. Feed to generate embeddings in sidecar:
+
+   ```bash
+   vespa feed data/sidecar/*.json
+   ```
+
+   Results:
+
+   ```json
+   {
+   "feeder.operation.count": 1000,
+   "feeder.seconds": 37.654,
+   "feeder.ok.count": 1000,
+   "feeder.ok.rate": 26.558,
+   "feeder.error.count": 0,
+   "feeder.inflight.count": 0,
+   "http.request.count": 1000,
+   "http.request.bytes": 359075,
+   "http.request.MBps": 0.010,
+   "http.exception.count": 0,
+   "http.response.count": 1000,
+   "http.response.bytes": 68000,
+   "http.response.MBps": 0.002,
+   "http.response.error.count": 0,
+   "http.response.latency.millis.min": 549,
+   "http.response.latency.millis.avg": 18994,
+   "http.response.latency.millis.max": 35922,
+   "http.response.code.counts": {
+      "200": 1000
+   }
+   }
+   ```
+
+8. Verify that embeddings are created
+
+   ```bash
+   vespa query "select * from doc where true limit 1"
    ```
 
 ### Podman
