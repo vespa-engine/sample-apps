@@ -50,3 +50,22 @@ See https://github.com/michaelfeil/infinity for details.
    ```bash
    vespa query "select * from doc where true"
    ```
+
+### Podman
+
+```bash
+sudo mkdir -p cache
+```
+
+```bash
+sudo podman run -d \
+  --name modernbert \
+  -p 10337:10337 \
+  -v ./cache:/app/.cache \
+  --network container:44cb11a0fe35 \
+  michaelf34/infinity \
+  v2 \
+  --engine optimum \
+  --model-id nomic-ai/modernbert-embed-base \
+  --port 10337
+```
