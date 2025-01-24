@@ -9,39 +9,55 @@ schema doc {
             indexing: index | summary
             index: enable-bm25
         }
+        field text_sidecar type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
     }
     fieldset default {
         fields: text
     }
 
-    # See https://docs.vespa.ai/en/embedding.html#embedding-a-document-field
-    # and https://docs.vespa.ai/en/approximate-nn-hnsw.html
-    field embedding type tensor<float>(x[128]) {
-        indexing: input text | embed myembedder | summary | attribute | index
+    field embedding_sidecar type tensor<float>(x[768]) {
+        indexing: input text_sidecar | embed myembedder | summary | attribute | index
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    field embedding_inside type tensor<float>(x[768]) {
+        indexing: input text | embed nomic_modernbert | summary | attribute | index
         attribute {
             distance-metric: angular
         }
     }
 
     # See https://docs.vespa.ai/en/ranking.html
-    rank-profile default inherits default {
+    rank-profile inside inherits default {
         inputs {
-            query(e) tensor<float>(x[384])
+            query(e) tensor<float>(x[768])
         }
         first-phase {
-            expression: nativeRank(text) + closeness(field, embedding)
+            expression: closeness(field, embedding_inside)
         }
-        match-features: bm25(text) closeness(field, embedding)
-        global-phase {
-            expression {
-              reciprocal_rank(closeness(field,embedding)) + 
-              reciprocal_rank(bm25(text))
-            }
+        match-features: closeness(field, embedding_inside)
+        
+    }
+    rank-profile sidecar inherits default {
+        inputs {
+            query(e) tensor<float>(x[768])
         }
+        first-phase {
+            expression: closeness(field, embedding_sidecar)
+        }
+        match-features: closeness(field, embedding_sidecar)
+        
     }
     document-summary default {
-        summary embedding {}
+        summary embedding_inside {}
+        summary embedding_sidecar {}
         summary text {}
+        summary text_sidecar {}
     }
    
 }
