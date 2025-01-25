@@ -165,6 +165,9 @@ with a Vespa app using streaming mode to retrieve personal data.
 uses [streaming mode](https://docs.vespa.ai/en/streaming-search.html)
 to build cost-efficient RAG applications over naturally sharded data - also available as a blog post:
 [Turbocharge RAG with LangChain and Vespa Streaming Mode for Sharded Data](https://blog.vespa.ai/turbocharge-rag-with-langchain-and-vespa-streaming-mode/).
+This example features using [elementSimilarity](https://docs.vespa.ai/en/reference/rank-features.html#elementSimilarity(name))
+in search results to easily inspect each chunk's closeness to the query embedding.
+
 Also try [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Chat with your pdfs with ColBERT, LangChain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html) -
 this demonstrates how you can now use ColBERT ranking natively in Vespa,
 which handles the ColBERT embedding process with no custom code.
