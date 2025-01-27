@@ -11,17 +11,7 @@
 ## Short description
 Text-Image Search takes a textual description and returns the file names of images that best match the description.
 E.g., the query "two people bicycling" will return images with two people on bikes.
-This application is built using [CLIP (Contrastive Language-Image Pre-Training)](https://github.com/openai/CLIP),
-which enables "zero-shot prediction."
-This means that the system can return sensible results for images it hasn't seen during training,
-allowing it to process and index any image.
-The dataset is  [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names), which was explicitly not used during training of the CLIP model.
-The transformation from text to a vector representation,
-including tokenization and transformer model evaluation,
-is handled entirely within Vespa.
-
 See the [blog post](https://blog.vespa.ai/text-image-search/) for more details.
-
 
 
 ## Features
@@ -29,8 +19,18 @@ See the [blog post](https://blog.vespa.ai/text-image-search/) for more details.
 - Approximate Nearest Neighbor Search using the `closeness` ranking feature.
 
 
-
 ## Quick start
+This application is built using [CLIP (Contrastive Language-Image Pre-Training)](https://github.com/openai/CLIP),
+which enables "zero-shot prediction."
+This means that the system can return sensible results for images it hasn't seen during training,
+allowing it to process and index any image.
+
+The dataset is  [Flickr8k](https://github.com/jbrownlee/Datasets/blob/master/Flickr8k_Dataset.names),
+which was explicitly not used during training of the CLIP model.
+The transformation from text to a vector representation,
+including tokenization and transformer model evaluation,
+is handled entirely within Vespa.
+
 Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 6GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
