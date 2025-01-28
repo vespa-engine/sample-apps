@@ -30,3 +30,5 @@ bin/logstash-plugin install logstash-output-vespa_feed
 ```
 bin/logstash -f $PATH_TO_LOGSTASH_CONF/logstash.conf
 ```
+
+For more examples of using Logstash with Vespa, check out [this tutorial blog post](https://blog.vespa.ai/logstash-vespa-tutorials/).
