@@ -89,6 +89,8 @@ bin/logstash-plugin install logstash-output-vespa_feed
 bin/logstash -f $PATH_TO_LOGSTASH_CONF/logstash.conf
 </pre>
 
+For more examples of using Logstash with Vespa, check out [this tutorial blog post](https://blog.vespa.ai/logstash-vespa-tutorials/).
+
 ### Delete container
 Remove app and data:
 <pre data-test="after">
