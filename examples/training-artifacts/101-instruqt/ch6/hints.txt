@@ -1,0 +1,108 @@
+Add Hugging face embedder to services.xml
+
+    <component id="e5" type="hugging-face-embedder">
+        <transformer-model url="https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx"/>
+        <tokenizer-model url="https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json"/>
+        <prepend> <!-- E5 prompt instructions -->
+            <query>query:</query>
+            <document>passage:</document>
+        </prepend>
+    </component>
+
+Add field embedding into product.sd
+
+  field embedding type tensor<float>(x[384]) {
+    indexing {
+      (input title || "") . " " . ( input description || "") | embed e5 | attribute | index # Index keyword enables HNSW index
+    }
+    attribute {
+      distance-metric: angular #match the E5 embedding model distance metric
+    }
+  }
+
+Add RRF ranking
+
+    rank-profile rrf inherits closeness {
+        function best_bm25() {
+            expression: max(bm25(title), bm25(description))
+        }
+
+        global-phase {
+            rerank-count: 200
+            expression: reciprocal_rank(closeness(field, embedding)) + reciprocal_rank(best_bm25())
+        }
+    }
+
+curl -X POST -H "Content-Type: application/json" --key /Users/piotr/.vespa/vespa-presales.training.default/data-plane-private-key.pem --cert /Users/piotr/.vespa/vespa-presales.training.default/data-plane-public-cert.pem 'https://cb0cfea9.f8176be8.z.vespa-app.cloud/search/' -d '{
+    "yql": "select * from passage where ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "closeness",
+    "query_text": "Manhattan project",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'|jq
+
+curl -X POST -H "Content-Type: application/json"   --key /Users/piotr/.vespa/vespa-presales.training.default/data-plane-private-key.pem   --cert /Users/piotr/.vespa/vespa-presales.training.default/data-plane-public-cert.pem   'https://ee1b1c9b.f8176be8.z.vespa-app.cloud/search/' -d '{
+    "queryProfile": "vector-search",
+    "query_text": "what was the manhattan project?",
+    "query": "what was the manhattan project?",
+    "searchChain": "local",
+    "format": "sse",
+    "traceLevel": "1",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'
+
+vespa query \
+    --timeout 120 \
+    queryProfile=vector-search\
+    query_text="what was the manhattan project?" \
+    "input.query(q_embedding)"="embed(@query_text)"
+
+
+vespa query \
+    --timeout 120 \
+    queryProfile=vector-search\
+    query_text="what was the manhattan project?" \
+    query="what was the manhattan project?" \
+    hits=5 \
+    searchChain=local \
+    format=sse \
+    "input.query(q_embedding)"="embed(@query_text)" \
+    prompt="{context} @query Describe in details, list all the documents provided and its content" \
+    traceLevel=1
+
+vespa query \
+    --header="X-LLM-API-KEY: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"\
+    --timeout 120 \
+    queryProfile=vector-search\
+    query_text="what was the manhattan project?" \
+    query="what was the manhattan project?" \
+    hits=5 \
+    searchChain=openai \
+    format=sse \
+    "input.query(q_embedding)"="embed(@query_text)" \
+    prompt="{context} @query Describe in details, list all the documents provided and its content" \
+    traceLevel=1
+
+### did we successfully feed?
+curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
+  "yql": "select * from product where true",
+  "presentation.summary": "medium"
+}'|jq
+
+### ANN
+curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
+    "yql": "select * from product where ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "closeness",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'|jq
+
+
+### RRF
+curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
+    "yql": "select * from product where title contains @query_text OR ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "rrf",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'|jq

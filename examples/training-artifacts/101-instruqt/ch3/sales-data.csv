@@ -1,0 +1,148 @@
+date,price,tax,item,customer
+2024-09-18 08:00:00,1200,0.24,Intake valve,Smith
+2024-09-18 08:30:00,980,0.12,Rocker arm,Jones
+2024-09-18 09:00:00,2100,0.24,Spring,Brown
+2024-09-18 09:30:00,3200,0.12,Valve cover,Davis
+2024-09-18 10:00:00,4800,0.24,Intake port,Wilson
+2024-09-18 10:30:00,7900,0.12,Head,Thompson
+2024-09-18 11:00:00,1450,0.24,Coolant,Anderson
+2024-09-18 11:30:00,2300,0.12,Engine block,Taylor
+2024-09-18 12:00:00,3600,0.24,Oil pan,Moore
+2024-09-18 12:30:00,5700,0.12,Oil sump,White
+2024-09-18 13:00:00,9100,0.24,Camshaft,Harris
+2024-09-18 13:30:00,1380,0.12,Exhaust valve,Martin
+2024-09-18 14:00:00,2250,0.24,Rocker arm,Clark
+2024-09-18 14:30:00,3650,0.12,Spring,Lewis
+2024-09-18 15:00:00,5900,0.24,Spark plug,Lee
+2024-09-18 15:30:00,9550,0.12,Exhaust port,Walker
+2024-09-18 16:00:00,1540,0.24,Piston,Hall
+2024-09-18 16:30:00,2490,0.12,Connection rod,Allen
+2024-09-18 17:00:00,4030,0.24,Rod bearing,Young
+2024-09-18 17:30:00,6520,0.12,Crankshaft,King
+2024-09-18 18:00:00,10550,0.24,Intake valve,Wright
+2024-09-18 18:30:00,1710,0.12,Rocker arm,Lopez
+2024-09-18 19:00:00,2760,0.24,Spring,Hill
+2024-09-18 19:30:00,4470,0.12,Valve cover,Scott
+2024-09-18 20:00:00,7230,0.24,Intake port,Green
+2024-09-18 20:30:00,11700,0.12,Head,Adams
+2024-09-18 21:00:00,1890,0.24,Coolant,Baker
+2024-09-18 21:30:00,3060,0.12,Engine block,Gonzalez
+2024-09-18 22:00:00,4950,0.24,Oil pan,Nelson
+2024-09-18 22:30:00,8010,0.12,Oil sump,Carter
+2024-09-18 23:00:00,12960,0.24,Camshaft,Mitchell
+2024-09-18 23:30:00,2100,0.12,Exhaust valve,Perez
+2024-09-19 00:00:00,3390,0.24,Rocker arm,Roberts
+2024-09-19 00:30:00,5490,0.12,Spring,Turner
+2024-09-19 01:00:00,8880,0.24,Spark plug,Phillips
+2024-09-19 01:30:00,14370,0.12,Exhaust port,Campbell
+2024-09-19 02:00:00,2320,0.24,Piston,Parker
+2024-09-19 02:30:00,3760,0.12,Connection rod,Evans
+2024-09-19 03:00:00,6080,0.24,Rod bearing,Edwards
+2024-09-19 03:30:00,9840,0.12,Crankshaft,Collins
+2024-09-19 04:00:00,15920,0.24,Intake valve,Stewart
+2024-09-19 04:30:00,2580,0.12,Rocker arm,Sanchez
+2024-09-19 05:00:00,4170,0.24,Spring,Morris
+2024-09-19 05:30:00,6750,0.12,Valve cover,Rogers
+2024-09-19 06:00:00,10920,0.24,Intake port,Reed
+2024-09-19 06:30:00,17670,0.12,Head,Cook
+2024-09-19 07:00:00,2860,0.24,Coolant,Morgan
+2024-09-19 07:30:00,4620,0.12,Engine block,Bell
+2024-09-19 08:00:00,7480,0.24,Oil pan,Murphy
+2024-09-19 08:30:00,12100,0.12,Oil sump,Bailey
+2024-09-19 09:00:00,19580,0.24,Camshaft,Rivera
+2024-09-19 09:30:00,3170,0.12,Exhaust valve,Cooper
+2024-09-19 10:00:00,5130,0.24,Rocker arm,Richardson
+2024-09-19 10:30:00,8300,0.12,Spring,Cox
+2024-09-19 11:00:00,13430,0.24,Spark plug,Howard
+2024-09-19 11:30:00,21730,0.12,Exhaust port,Ward
+2024-09-19 12:00:00,3520,0.24,Piston,Torres
+2024-09-19 12:30:00,5690,0.12,Connection rod,Peterson
+2024-09-19 13:00:00,9210,0.24,Rod bearing,Gray
+2024-09-19 13:30:00,14900,0.12,Crankshaft,Ramirez
+2024-09-19 14:00:00,24110,0.24,Intake valve,James
+2024-09-19 14:30:00,3900,0.12,Rocker arm,Watson
+2024-09-19 15:00:00,6310,0.24,Spring,Brooks
+2024-09-19 15:30:00,10210,0.12,Valve cover,Kelly
+2024-09-19 16:00:00,16520,0.24,Intake port,Sanders
+2024-09-19 16:30:00,26730,0.12,Head,Price
+2024-09-19 17:00:00,4330,0.24,Coolant,Bennett
+2024-09-19 17:30:00,7000,0.12,Engine block,Wood
+2024-09-19 18:00:00,11330,0.24,Oil pan,Barnes
+2024-09-19 18:30:00,18330,0.12,Oil sump,Ross
+2024-09-19 19:00:00,29660,0.24,Camshaft,Henderson
+2024-09-19 19:30:00,4800,0.12,Exhaust valve,Coleman
+2024-09-19 20:00:00,7760,0.24,Rocker arm,Jenkins
+2024-09-19 20:30:00,12560,0.12,Spring,Perry
+2024-09-19 21:00:00,20320,0.24,Spark plug,Powell
+2024-09-19 21:30:00,32880,0.12,Exhaust port,Long
+2024-09-19 22:00:00,5320,0.24,Piston,Patterson
+2024-09-19 22:30:00,8610,0.12,Connection rod,Hughes
+2024-09-19 23:00:00,13930,0.24,Rod bearing,Flores
+2024-09-19 23:30:00,22540,0.12,Crankshaft,Washington
+2024-09-20 00:00:00,36470,0.24,Intake valve,Butler
+2024-09-20 00:30:00,5900,0.12,Rocker arm,Simmons
+2024-09-20 01:00:00,9540,0.24,Spring,Foster
+2024-09-20 01:30:00,15440,0.12,Valve cover,Gonzales
+2024-09-20 02:00:00,24980,0.24,Intake port,Bryant
+2024-09-20 02:30:00,40420,0.12,Head,Alexander
+2024-09-20 03:00:00,6540,0.24,Coolant,Russell
+2024-09-20 03:30:00,10580,0.12,Engine block,Griffin
+2024-09-20 04:00:00,17120,0.24,Oil pan,Diaz
+2024-09-20 04:30:00,27700,0.12,Oil sump,Hayes
+2025-07-14 19:30:00,9870,0.12,Exhaust port,Freeman
+2025-07-14 20:00:00,15970,0.24,Piston,Wells
+2025-07-14 20:30:00,25840,0.12,Connection rod,Webb
+2025-07-14 21:00:00,41810,0.24,Rod bearing,Simpson
+2025-07-14 21:30:00,67650,0.12,Crankshaft,Stevens
+2025-07-14 22:00:00,10950,0.24,Intake valve,Tucker
+2025-07-14 22:30:00,17720,0.12,Rocker arm,Porter
+2025-07-14 23:00:00,28670,0.24,Spring,Hunter
+2025-07-14 23:30:00,46390,0.12,Valve cover,Hicks
+2025-07-15 00:00:00,75060,0.24,Intake port,Crawford
+2025-07-15 00:30:00,12150,0.12,Head,Henry
+2025-07-15 01:00:00,19660,0.24,Coolant,Boyd
+2025-07-15 01:30:00,31810,0.12,Engine block,Mason
+2025-07-15 02:00:00,51470,0.24,Oil pan,Morales
+2025-07-15 02:30:00,83280,0.12,Oil sump,Kennedy
+2025-07-15 03:00:00,13480,0.24,Camshaft,Warren
+2025-07-15 03:30:00,21810,0.12,Exhaust valve,Dixon
+2025-07-15 04:00:00,35290,0.24,Rocker arm,Ramos
+2025-07-15 04:30:00,57100,0.12,Spring,Reyes
+2025-07-15 05:00:00,92390,0.24,Spark plug,Burns
+2025-07-15 05:30:00,14950,0.12,Exhaust port,Gordon
+2025-07-15 06:00:00,24190,0.24,Piston,Shaw
+2025-07-15 06:30:00,39140,0.12,Connection rod,Holmes
+2025-07-15 07:00:00,63330,0.24,Rod bearing,Rice
+2025-07-15 07:30:00,102470,0.12,Crankshaft,Robertson
+2025-07-15 08:00:00,16580,0.24,Intake valve,Hunt
+2025-07-15 08:30:00,26830,0.12,Rocker arm,Black
+2025-07-15 09:00:00,43410,0.24,Spring,Daniels
+2025-07-15 09:30:00,70240,0.12,Valve cover,Palmer
+2025-07-15 10:00:00,113650,0.24,Intake port,Mills
+2025-07-15 10:30:00,18390,0.12,Head,Nichols
+2025-07-15 11:00:00,29750,0.24,Coolant,Grant
+2025-07-15 11:30:00,48140,0.12,Engine block,Knight
+2025-07-15 12:00:00,77890,0.24,Oil pan,Ferguson
+2025-07-15 12:30:00,126030,0.12,Oil sump,Rose
+2025-07-15 13:00:00,20390,0.24,Camshaft,Stone
+2025-07-15 13:30:00,32990,0.12,Exhaust valve,Hawkins
+2025-07-15 14:00:00,53380,0.24,Rocker arm,Dunn
+2025-07-15 14:30:00,86370,0.12,Spring,Perkins
+2025-07-15 15:00:00,139750,0.24,Spark plug,Hudson
+2025-07-15 15:30:00,22610,0.12,Exhaust port,Spencer
+2025-07-15 16:00:00,36580,0.24,Piston,Gardner
+2025-07-15 16:30:00,59190,0.12,Connection rod,Stephens
+2025-07-15 17:00:00,95770,0.24,Rod bearing,Payne
+2025-07-15 17:30:00,154960,0.12,Crankshaft,Pierce
+2025-07-15 18:00:00,25070,0.24,Intake valve,Berry
+2025-07-15 18:30:00,40560,0.12,Rocker arm,Matthews
+2025-07-15 19:00:00,65630,0.24,Spring,Arnold
+2025-07-15 19:30:00,106190,0.12,Valve cover,Wagner
+2025-07-15 20:00:00,171820,0.24,Intake port,Willis
+2025-07-15 20:30:00,27800,0.12,Head,Ray
+2025-07-15 21:00:00,44970,0.24,Coolant,Watkins
+2025-07-15 21:30:00,72770,0.12,Engine block,Olson
+2025-07-15 22:00:00,117740,0.24,Oil pan,Carroll
+2025-07-15 22:30:00,190510,0.12,Oil sump,Duncan
+2025-07-15 23:00:00,30820,0.24,Camshaft,Snyder
+2025-07-15 23:30:00,49860,0.12,Exhaust valve,Hart

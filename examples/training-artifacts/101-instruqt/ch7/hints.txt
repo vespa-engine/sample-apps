@@ -1,0 +1,84 @@
+Add Hugging face embedder to services.xml
+
+    <component id="e5" type="hugging-face-embedder">
+        <transformer-model url="https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx"/>
+        <tokenizer-model url="https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json"/>
+        <prepend> <!-- E5 prompt instructions -->
+            <query>query:</query>
+            <document>passage:</document>
+        </prepend>
+    </component>
+
+Add field embedding into product.sd
+
+  field embedding type tensor<float>(x[384]) {
+    indexing {
+      (input title || "") . " " . ( input description || "") | embed e5 | attribute | index # Index keyword enables HNSW index
+    }
+    attribute {
+      distance-metric: angular #match the E5 embedding model distance metric
+    }
+  }
+
+ Add semantic search rank profile. Refer to it in your query by adding:
+ "ranking.profile": "closeness"
+
+  rank-profile closeness {
+    inputs {
+      query(q_embedding) tensor<float>(x[384])
+    }
+    first-phase {
+      expression: closeness(field, embedding)
+    }
+  }
+
+Setup the client to OpenAI
+
+    <component id="openai" class="ai.vespa.llm.clients.OpenAI">
+      <config name = "ai.vespa.llm.clients.llm-client">
+        <apiKeySecretName>openai-api-key</apiKeySecretName>
+      </config>
+    </component>
+
+Setup a local inference on a small Llama 3.2 text model
+
+    <component id="phi" class="ai.vespa.llm.clients.LocalLLM">
+      <config name="ai.vespa.llm.clients.llm-local-client">
+        <model url="https://data.vespa-cloud.com/gguf_models/llama-3.2-1b-instruct-q8_0.gguf" />
+        <contextSize>4096</contextSize>
+        <parallelRequests>1</parallelRequests>
+      </config>
+    </component>
+
+Setup a searcher chain for RAG Searcher using OpenAI 
+
+     <chain id="openai" inherits="vespa">
+        <searcher id="ai.vespa.search.llm.RAGSearcher">
+          <config name="ai.vespa.search.llm.llm-searcher">
+            <providerId>openai</providerId>
+          </config>
+        </searcher>
+      </chain>
+
+Setup a searcher chain for RAG Searcher using local inference 
+
+      <chain id="local" inherits="vespa">
+        <searcher id="ai.vespa.search.llm.RAGSearcher">
+          <config name="ai.vespa.search.llm.llm-searcher">
+            <providerId>phi</providerId>
+          </config>
+        </searcher>
+      </chain>
+
+
+vespa query \
+    --timeout 120 \
+    queryProfile=vector-search\
+    query_text="what was the manhattan project?" \
+    query="what was the manhattan project?" \
+    hits=5 \
+    searchChain=local \
+    format=sse \
+    "input.query(q_embedding)"="embed(@query_text)" \
+    prompt="{context} @query Describe in details, list all the documents provided and its content" \
+    traceLevel=1

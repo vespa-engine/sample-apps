@@ -1,0 +1,13 @@
+{
+    "put": "id:mynamespace:music::when-we-all-fall-asleep-where-do-we-go",
+    "fields": {
+        "album": "When We All Fall Asleep, Where Do We Go?",
+        "artist": "Billie Eilish",
+        "year": 2019,
+        "category_scores": {
+            "pop": 1.0,
+            "rock": 0,
+            "jazz": 0.1
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "put": "id:mynamespace:music::liebe-ist-f\u00fcr-alle-da",
+    "fields": {
+        "album": "Liebe ist f\u00fcr alle da",
+        "artist": "Rammstein",
+        "year": 2009,
+        "category_scores": {
+            "pop": 0.1,
+            "rock": 1.0,
+            "jazz": 0
+        }
+    }
+}
