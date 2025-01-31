@@ -1,0 +1,13 @@
+{
+    "put": "id:mynamespace:music::hardwired-to-self-destruct",
+    "fields": {
+        "album": "Hardwired...To Self-Destruct",
+        "artist": "Metallica",
+        "year": 2016,
+        "category_scores": {
+            "pop": 0,
+            "rock": 1,
+            "jazz": 0
+        }
+    }
+}

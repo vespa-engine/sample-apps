@@ -1,0 +1,13 @@
+{
+    "put": "id:mynamespace:music::love-is-here-to-stay",
+    "fields": {
+        "album": "Love Is Here To Stay",
+        "artist": "Diana Krall",
+        "year": 2018,
+        "category_scores": {
+            "pop": 0.4,
+            "rock": 0,
+            "jazz": 0.8
+        }
+    }
+}

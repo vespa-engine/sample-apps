@@ -1,0 +1,4 @@
+<validation-overrides>
+    <allow until='2024-12-15'>indexing-change</allow>
+    <allow until='2024-12-15'>schema-removal</allow>
+</validation-overrides>

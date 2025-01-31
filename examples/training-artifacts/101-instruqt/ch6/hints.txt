@@ -1,0 +1,60 @@
+Add Hugging face embedder to services.xml
+
+    <component id="e5" type="hugging-face-embedder">
+        <transformer-model url="https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx"/>
+        <tokenizer-model url="https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json"/>
+        <prepend> <!-- E5 prompt instructions -->
+            <query>query:</query>
+            <document>passage:</document>
+        </prepend>
+    </component>
+
+Add field embedding into product.sd
+
+  field embedding type tensor<float>(x[384]) {
+    indexing {
+      (input title || "") . " " . ( input description || "") | embed e5 | attribute | index # Index keyword enables HNSW index
+    }
+    attribute {
+      distance-metric: angular #match the E5 embedding model distance metric
+    }
+  }
+
+Add RRF ranking
+
+    rank-profile rrf inherits closeness {
+        function best_bm25() {
+            expression: max(bm25(title), bm25(description))
+        }
+
+        global-phase {
+            rerank-count: 200
+            expression: reciprocal_rank(closeness(field, embedding)) + reciprocal_rank(best_bm25())
+        }
+    }
+
+
+### did we successfully feed?
+curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
+  "yql": "select * from product where true",
+  "presentation.summary": "medium"
+}'|jq
+
+### ANN
+curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
+    "yql": "select * from product where ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "closeness",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'|jq
+
+
+### RRF
+curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
+    "yql": "select * from product where title contains @query_text OR ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
+    "ranking.profile": "rrf",
+    "presentation.summary": "medium",
+    "query_text": "Mini Stencil",
+    "input.query(q_embedding)": "embed(@query_text)"
+}'|jq

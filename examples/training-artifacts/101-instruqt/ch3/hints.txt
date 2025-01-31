@@ -1,0 +1,123 @@
+
+1. Navigate to the project directory:
+
+   cd ~/lab/ch3
+
+2. Deploy the application to Vespa:
+
+   vespa deploy part-purchase
+
+   Use `vespa status deployment` to check if the deployment was successful.
+
+1. Ensure Vespa is running, then feed the dataset:
+
+   vespa feed sales-data.jsonl
+
+
+The Most Sold Items
+Query to Group Orders by Item and Sort by Count (Descending)
+
+    vespa query "yql=select * from purchase where true limit 0 | all(
+    group(item)
+    order(-count())
+    each(
+        output(count() as(count_per_item))
+    )
+    )"
+
+
+Explanation:
+- `group(item)`: Groups purchases by item.
+- `output(count() as(count_per_item))`: Counts the number of purchases per item.
+- `order(-count)`: Sorts results in descending order of sales.
+
+
+Items Bringing Most Revenue
+Query to Group Orders by Item and Sort by Sum of Their Price
+
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(item)
+    order(-sum(price))
+    each(
+        output(sum(price) as(revenue))
+        output(count())
+    )
+  )"
+
+Explanation:
+- `group(item)`: Groups purchases by item.
+- `each(output(sum(price)))`: Computes total revenue per item.
+- `order(-sum(price))`: Sorts results in descending order of revenue.
+
+
+
+Sales by Day
+Query to Group Orders by Day
+
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(
+      time.date(date)
+    )
+    each(
+        output(sum(price) as(revenue_per_day))
+        output(count())
+    )
+  )" | jq ".root.children[].children[].children[]"
+
+
+Explanation:
+- `group(time.date(date))`: Groups purchases by day.
+- `each(output(count()))`: Counts the number of purchases per day.
+- 'output(sum(price) as(revenue_per_day))': Computes total revenue per day.
+- `order(-time.date)`: Sorts results in descending order by date.
+
+
+Revenue by Item Each Day
+Query to Show Revenue by Item Per Day
+
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(time.date(date))
+    each(
+        output(sum(price) as(revenue_per_day))
+        output(count())
+        all(
+            group(item)
+            order(-sum(price))
+            each(
+                output(sum(price) as(revenue_per_item_per_day))
+                output(count())
+            )
+        )
+    )
+  )" | jq ".root.children[].children[].children[]"
+
+Explanation:
+- `group(time.date)`: Groups purchases by day.
+- `each(group(item))`: Groups purchases within each day by item.
+- `each(output(sum(price)))`: Computes total revenue per item.
+- `order(-sum(price))`: Sorts items in descending order of revenue per day.
+
+
+Most Sold Items, but Show Three Orders of Each
+Query to Show Top-Selling Items with Three Orders Each
+
+vespa query "yql=select * from purchase where true limit 0 | all(
+    group(item)
+    order(-sum(price))
+    each(
+        output(sum(price) as(revenue))
+        output(count())
+        max(3)
+        each(
+            output(summary())
+        )
+    )
+  )"
+
+Explanation:
+- `group(item)`: Groups purchases by item.
+- `each(output(count(), max(3))each(output(summary())))`: Counts sales per item and limits displayed orders to three per group.
+- `order(-count)`: Sorts results in descending order by count.
+
+
+
