@@ -33,54 +33,6 @@ Add RRF ranking
         }
     }
 
-curl -X POST -H "Content-Type: application/json" --key /Users/piotr/.vespa/vespa-presales.training.default/data-plane-private-key.pem --cert /Users/piotr/.vespa/vespa-presales.training.default/data-plane-public-cert.pem 'https://cb0cfea9.f8176be8.z.vespa-app.cloud/search/' -d '{
-    "yql": "select * from passage where ({targetHits:100}nearestNeighbor(embedding,q_embedding))",
-    "ranking.profile": "closeness",
-    "query_text": "Manhattan project",
-    "input.query(q_embedding)": "embed(@query_text)"
-}'|jq
-
-curl -X POST -H "Content-Type: application/json"   --key /Users/piotr/.vespa/vespa-presales.training.default/data-plane-private-key.pem   --cert /Users/piotr/.vespa/vespa-presales.training.default/data-plane-public-cert.pem   'https://ee1b1c9b.f8176be8.z.vespa-app.cloud/search/' -d '{
-    "queryProfile": "vector-search",
-    "query_text": "what was the manhattan project?",
-    "query": "what was the manhattan project?",
-    "searchChain": "local",
-    "format": "sse",
-    "traceLevel": "1",
-    "input.query(q_embedding)": "embed(@query_text)"
-}'
-
-vespa query \
-    --timeout 120 \
-    queryProfile=vector-search\
-    query_text="what was the manhattan project?" \
-    "input.query(q_embedding)"="embed(@query_text)"
-
-
-vespa query \
-    --timeout 120 \
-    queryProfile=vector-search\
-    query_text="what was the manhattan project?" \
-    query="what was the manhattan project?" \
-    hits=5 \
-    searchChain=local \
-    format=sse \
-    "input.query(q_embedding)"="embed(@query_text)" \
-    prompt="{context} @query Describe in details, list all the documents provided and its content" \
-    traceLevel=1
-
-vespa query \
-    --header="X-LLM-API-KEY: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"\
-    --timeout 120 \
-    queryProfile=vector-search\
-    query_text="what was the manhattan project?" \
-    query="what was the manhattan project?" \
-    hits=5 \
-    searchChain=openai \
-    format=sse \
-    "input.query(q_embedding)"="embed(@query_text)" \
-    prompt="{context} @query Describe in details, list all the documents provided and its content" \
-    traceLevel=1
 
 ### did we successfully feed?
 curl -X POST  --cert <PRIVATE_KEY_FILE>.pem --key <PRIVATE_KEY_FILE>.key -H "Content-Type: application/json" "https://<YOUR_VESPA_ENDPOINT>/search/" -d '{
