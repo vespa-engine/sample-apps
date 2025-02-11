@@ -309,21 +309,36 @@ to test feeding using [Vespa Cloud](https://vespa.ai/free-trial/).
 
 
 
-## Other sample applications and demos
-
-### Next-generation E-Commerce Search
+## E-Commerce
 The [![logo](/assets/vespa-logomark-tiny.png) e-commerce](use-case-shopping/) application is an end-to-end shopping engine,
 using the [Amazon product data set](http://jmcauley.ucsd.edu/data/amazon/links.html).
 This use case bundles a front-end application.
 It demonstrates building next-generation E-commerce Search using Vespa,
 and is a good intro to using the Vespa Cloud [CI/CD tests](https://cloud.vespa.ai/en/automated-deployments#system-tests).
 
-Also, try [![logo](/assets/vespa-logomark-tiny.png) Vespa Product Ranking](commerce-product-ranking/) for using
+Data in e-commerce applications is structured,
+so [Gradient Boosted Decision Trees (GBDT)](https://en.wikipedia.org/wiki/Gradient_boosting#Gradient_tree_boosting)
+models are popular in this domain.
+Try [![logo](/assets/vespa-logomark-tiny.png) Vespa Product Ranking](commerce-product-ranking/) for using
 learning-to-rank (LTR) techniques (using [XGBoost](https://xgboost.readthedocs.io/) and [LightGBM](https://lightgbm.readthedocs.io/))
 for improving product search ranking.
 
+In Vespa, faceting (the attribute filtering) is called [grouping](https://docs.vespa.ai/en/grouping.html).
+[![logo](/assets/vespa-logomark-tiny.png) Grouping Results](part-purchases-demo)
+is a quick intro into implementing faceting/grouping in Vespa.
 
-### Search as you type and query suggestions 
+Recommendations is integral to e-commerce applications.
+The [![logo](/assets/vespa-logomark-tiny.png)recommendation tutorial](news/) is a good starting point.
+
+Finally, [search as you type and query suggestions](#search-as-you-type-and-query-suggestions)
+lets users quickly create good queries.
+
+
+
+## Other sample applications and demos
+
+
+### Search as you type and query suggestions
 [![logo](/assets/vespa-logomark-tiny.png) Incremental Search](incremental-search/) shows search-as-you-type functionality,
 where for each keystroke of the user, it retrieves matching documents. 
 It also demonstrates search suggestions (query auto-completion).
