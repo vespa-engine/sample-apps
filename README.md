@@ -324,10 +324,10 @@ learning-to-rank (LTR) techniques (using [XGBoost](https://xgboost.readthedocs.i
 for improving product search ranking.
 
 In Vespa, faceting (the attribute filtering) is called [grouping](https://docs.vespa.ai/en/grouping.html).
-[![logo](/assets/vespa-logomark-tiny.png) Grouping Results](part-purchases-demo)
-is a quick intro into implementing faceting/grouping in Vespa.
+[![logo](/assets/vespa-logomark-tiny.png) Grouping Results](examples/part-purchases-demo)
+is a quick intro to implementing faceting/grouping in Vespa.
 
-Recommendations is integral to e-commerce applications.
+Recommendations are integral to e-commerce applications.
 The [![logo](/assets/vespa-logomark-tiny.png)recommendation tutorial](news/) is a good starting point.
 
 Finally, [search as you type and query suggestions](#search-as-you-type-and-query-suggestions)
