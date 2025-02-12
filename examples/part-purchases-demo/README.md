@@ -70,9 +70,9 @@ $ vespa deploy --wait 300
 </pre>
 
 
-**Generate sample from csv and feed to Vespa**
+**Feed to Vespa**
 <pre data-test="exec">
-$ python3 ext/parts.py -f ext/purchase.csv | vespa feed -
+$ vespa feed ext/feed.jsonl
 </pre>
 
 
