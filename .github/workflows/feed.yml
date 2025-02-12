@@ -39,6 +39,14 @@ jobs:
     - name: Install Vespa CLI
       uses: vespa-engine/setup-vespa-cli-action@v1
 
+    - name: Feed part-purchases-demo
+      run: |
+        export VESPA_CLI_DATA_PLANE_CERT
+        export VESPA_CLI_DATA_PLANE_KEY
+        while IFS=, read -r app endpoint; do
+          vespa feed -a "$app" -t "$endpoint" examples/part-purchases-demo/ext/feed.jsonl
+        done < <(./scripts/print-app-endpoints.py _config.yml)
+
     - name: Feed site
       run: |
         # The python scripts below uses the Vespa CLI for feeding / data access.
