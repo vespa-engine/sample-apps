@@ -216,7 +216,13 @@ downloads a set of videos, converts from `.avi` to `.mp4`, creates CLIP embeddin
 feeds to Vespa and lets you query the videos in text using a Streamlit application.
 It is a good start for creating a video search application using Vespa!
 
-
+[![logo](/assets/vespa-logomark-tiny.png) Video Search and Retrieval with Vespa and TwelveLabs](https://github.com/vespa-engine/pyvespa/blob/master/docs/sphinx/source/examples/video_search_twelvelabs_cloud.ipynb) is a notebook
+showcasing the use of [TwelveLabs](https://www.twelvelabs.io/) state-of-the-art generation and embedding models 
+for video processing. It demonstrates how to generate rich metadata (including summaries and keywords) for videos 
+using TwelveLabs' technology, and how to embed video chunks for efficient retrieval. The notebook processes three 
+sample videos, segments them into chunks, and stores their embeddings along with metadata in Vespa's multi-vector 
+tensors. You can perform hybrid searches to find specific video scenes based on natural language descriptions. 
+This serves as an excellent starting point for implementing advanced video retrieval with Vespa!
 
 ## Ranking
 [![logo](/assets/vespa-logomark-tiny.png) MS Marco Passage Ranking](msmarco-ranking/)
