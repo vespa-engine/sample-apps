@@ -125,6 +125,11 @@ it is useful when you want to quickly do ranking experiments without rewriting a
 * [MLCon](https://mlconference.ai/machine-learning-advanced-development/adaptive-incontext-learning/)
 * [data science connect COLLIDE](https://datasciconnect.com/events/collide/agenda/)
 
+### Agentic Chatbot using Vespa
+
+[![logo](/assets/vespa-logomark-tiny.png) agentic-streamlit-chatbot](agentic-streamlit-chatbot) This sample Streamlit application demonstrates how to use [LangGraph](https://www.langchain.com/langgraph) agentic framework to develop an E-commerce chatbot using Vespa as a retrieval tool.
+
+
 For any questions, please register at the Vespa Slack and discuss in the general channel.
 
 ----
