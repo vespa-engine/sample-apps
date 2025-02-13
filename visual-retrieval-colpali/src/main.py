@@ -112,7 +112,7 @@ This means that newlines will be replaced with <br> tags, bold text will be encl
 Do NOT include backticks (`) in your response. Only simple HTML tags and text.
 """
 gemini_model = genai.GenerativeModel(
-    "gemini-1.5-flash-8b", system_instruction=GEMINI_SYSTEM_PROMPT
+    "gemini-2.0-flash", system_instruction=GEMINI_SYSTEM_PROMPT
 )
 STATIC_DIR = Path("static")
 IMG_DIR = STATIC_DIR / "full_images"
@@ -381,7 +381,7 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
     # yield message with number of images ready
     yield f"event: message\ndata: Generating response based on {len(images)} images...\n\n"
     if not images:
-        yield "event: message\ndata: Failed to send images to Gemini-8B!\n\n"
+        yield "event: message\ndata: Failed to send images to Gemini 2.0!\n\n"
         yield "event: close\ndata: \n\n"
         return
 
