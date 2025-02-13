@@ -8,7 +8,7 @@
 - Spin-up a Vespa Cloud [Trial](https://vespa.ai/free-trial) account:
   - Login to the account you just created and create a tenant at [console.vespa-cloud.com](https://console.vespa-cloud.com/).
   - Save the tenant name.
-- A Valid [OpenAI](https://openai.com/index/openai-api/) API key. Note that you have the option to use any other LLM, which may support Langgraph tools binding.
+- A Valid [OpenAI](https://platform.openai.com/docs/api-reference/introduction) API key. Note that you have the option to use any other LLM, which may support Langgraph tools binding.
 - Git clone the repo `https://github.com/vespa-engine/system-test.git`
 - The ecommerce_hybrid_search app will be deployed. For more information about the app, please review the [README.md](https://github.com/vespa-engine/system-test/blob/master/tests/performance/ecommerce_hybrid_search/dataprep/README.md). You do not have to follow the data prep steps there. Follow the instructions below instead.
 - Uncompress the data file: `zstd -d data/vespa_update-96k.json.zst`
