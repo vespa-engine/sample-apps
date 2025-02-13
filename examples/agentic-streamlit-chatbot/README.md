@@ -51,4 +51,16 @@
   ```
   streamlit run streamlit_vespa_app.py
   ```
+  # Testing the Application
 
+  You can try a mix of questions like:
+
+  `What is the weather in Toronto ?`
+
+  Followed by:
+
+  `I'm looking for a screwdriver`
+
+  And then:
+
+  `Which one do you recommend to fix a watch?`
