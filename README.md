@@ -7,7 +7,7 @@
 </picture>
 
 
-# Vespa sample applications
+# Vespa Sample Applications
 The [Vespa](https://vespa.ai/) sample applications are created to run both self-hosted and on Vespa Cloud.
 You can easily deploy the sample applications to Vespa Cloud without changing the files -
 just follow the same steps as for
@@ -21,7 +21,7 @@ and see [operations](examples/operations) for operational examples.
 
 
 
-## Getting started
+## Getting Started
 [![logo](/assets/vespa-logomark-tiny.png) Album Recommendations](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
@@ -66,14 +66,10 @@ and searching efficiently over these representations.
 [![logo](/assets/vespa-logomark-tiny.png) Managed Vector Search using Vespa Cloud](https://github.com/vespa-cloud/vector-search)
 describes how to unlock the full potential of multimodal AI-powered vector representations using Vespa Cloud.
 
-[![logo](/assets/vespa-logomark-tiny.png) Simple Semantic Search](simple-semantic-search/)
-demonstrates indexed vector search using [HNSW](https://docs.vespa.ai/en/reference/schema-reference.html#index-hnsw),
-creating embedding vectors from a transformer language model inside Vespa, and hybrid text and semantic ranking.
-This app also demonstrates using native Vespa embedders.
-
 [![logo](/assets/vespa-logomark-tiny.png) Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) and
 [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Multi-vector indexing with HNSW](https://pyvespa.readthedocs.io/en/latest/examples/multi-vector-indexing.html)
 demonstrate how to index multiple vectors per document field for semantic search for longer documents.
+These are more advanced than the Hybrid Search examples in the Getting Started section.
 
 [![logo](/assets/vespa-logomark-tiny.png) Vector Streaming Search](vector-streaming-search)
 uses vector streaming search for naturally partitioned data, see the
