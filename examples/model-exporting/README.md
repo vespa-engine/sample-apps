@@ -15,6 +15,10 @@ This example demonstrates how to export a Huggingface sentence-transformer model
 Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
 through the <code>vespa deploy</code> step, using this example instead of `album-recommendation`.
 
+<p data-test="run-macro init-deploy examples/model-exporting">
+minimum-required-vespa-version="8.311.28"
+</p>
+
 Feed documents (this includes embed inference in Vespa):
 
 <pre data-test="exec">

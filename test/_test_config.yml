@@ -1,6 +1,7 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
+    - examples/model-exporting/README.md
     - splade/README.md
     - colbert-long/README.md
     - multi-vector-indexing/README.md
@@ -16,7 +17,6 @@ urls:
     - examples/operations/multinode/README.md
     - examples/generic-request-processing/README.md
     - examples/http-api-using-request-handlers-and-processors/README.md
-    - examples/model-exporting/README.md
     - examples/multiple-bundles/README.md
     - model-inference/README.md
     - examples/part-purchases-demo/README.md
