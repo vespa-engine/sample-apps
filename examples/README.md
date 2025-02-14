@@ -109,9 +109,14 @@ It is built using [FastHTML](https://www.fastht.ml/) and written in pure Python.
 
 
 ### ONNX Model export and deployment example
-Use ![logo](/assets/vespa-logomark-tiny.png) [model-deployment](model-deployment) to generate a model in ONNX format in the models directory,
+Use [![logo](/assets/vespa-logomark-tiny.png) model-deployment](model-deployment) to generate a model in ONNX format in the models directory,
 by running the ONNXModelExport notebook.
 <!-- ToDo: improve this -->
+
+
+### Model exporting
+[![logo](/assets/vespa-logomark-tiny.png) Model exporting](model-exporting)
+demonstrates how to export a Huggingface sentence-transformer model to ONNX format.
 
 
 ### Reranker sample application
