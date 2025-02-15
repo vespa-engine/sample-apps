@@ -26,7 +26,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via uvicorn
-cryptography==43.0.1
+cryptography==44.0.1
     # via pyvespa
 docker==7.1.0
     # via pyvespa
@@ -92,6 +92,8 @@ packaging==24.1
     # via
     #   fastcore
     #   huggingface-hub
+propcache==0.2.1
+    # via yarl
 pycparser==2.22
     # via cffi
 python-dateutil==2.9.0.post0
@@ -154,5 +156,5 @@ watchfiles==0.23.0
     # via uvicorn
 websockets==13.0
     # via uvicorn
-yarl==1.9.4
+yarl==1.18.3
     # via aiohttp
