@@ -10,6 +10,9 @@
 # Vespa sample applications - Model Exporting
 This example demonstrates how to export a Huggingface sentence-transformer model to ONNX format.
 
+Please try [multi vector indexing](/multi-vector-indexing) for an intro to semantic search.
+
+
 ## To try this application
 
 Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
