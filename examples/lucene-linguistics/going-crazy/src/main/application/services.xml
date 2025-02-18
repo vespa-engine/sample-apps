@@ -6,7 +6,7 @@
                bundle="vespa-lucene-linguistics-crazy"/>
     <components>
       <component id="com.yahoo.language.lucene.LuceneLinguistics"
-                 bundle="vespa-lucene-linguistics-crazy">
+                 bundle="lucene-linguistics">
         <config name="com.yahoo.language.lucene.lucene-analysis">
           <configDir>linguistics</configDir>
           <analysis>
