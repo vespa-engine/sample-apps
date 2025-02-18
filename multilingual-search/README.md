@@ -64,7 +64,7 @@ $ vespa clone multilingual-search my-app && cd my-app
 This sample app embedder configuration in [services.xml](services.xml) points to a quantized model.
 
 Alternatively, [export your own model](https://docs.vespa.ai/en/onnx.html#onnx-export), see also the
-export script in [simple-semantic-search](/examples/model-exporting/README.md).
+export script in [simple-semantic-search](../simple-semantic-search/README.md).
 
 Deploy the application :
 <pre data-test="exec" data-test-assert-contains="Success">

@@ -7,8 +7,16 @@
   <img alt="#Vespa" width="200" src="https://assets.vespa.ai/logos/Vespa-logo-dark-RGB.svg" style="margin-bottom: 25px;">
 </picture>
 
-# Vespa sample applications - Model Exporting
-This example demonstrates how to export a Huggingface sentence-transformer model to ONNX format.
+# Vespa sample applications - Simple semantic search
+
+A minimal semantic search application: 
+- Query and document text is converted to embeddings by the application using Vespa's [embedder functionality](https://docs.vespa.ai/en/embedding.html#huggingface-embedder).
+- Search by embedding or text match and use [reciprocal rank fusion](https://docs.vespa.ai/en/phased-ranking.html#cross-hit-normalization-including-reciprocal-rank-fusion) to fuse 
+different rankings.
+
+<p data-test="run-macro init-deploy simple-semantic-search">
+minimum-required-vespa-version="8.311.28"
+</p>
 
 Please try [multi vector indexing](/multi-vector-indexing) for an intro to semantic search.
 
@@ -16,11 +24,7 @@ Please try [multi vector indexing](/multi-vector-indexing) for an intro to seman
 ## To try this application
 
 Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
-through the <code>vespa deploy</code> step, using this example instead of `album-recommendation`.
-
-<p data-test="run-macro init-deploy examples/model-exporting">
-minimum-required-vespa-version="8.311.28"
-</p>
+through the <code>vespa deploy</code> step, cloning `simple-semantic-search` instead of `album-recommendation`.
 
 Feed documents (this includes embed inference in Vespa):
 
@@ -54,6 +58,11 @@ Remove the container after use:
 $ docker rm -f vespa
 </pre>
 
+## Ready for production
+
+The E5-small-v2 [embedding model](https://huggingface.co/intfloat/e5-small-v2) used in this sample application
+is suitable for production use and will produce good results in many domains without fine-tuning,
+especially when combined with text match features.
 
 ## Model exporting
 Transformer-based embedding models have named inputs and outputs that must  

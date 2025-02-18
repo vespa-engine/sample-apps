@@ -67,10 +67,10 @@ Download a frozen embedding model file, see
 <pre data-test="exec">
 $ mkdir -p models
 $ curl -L -o models/tokenizer.json \
-  https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/model-exporting/model/tokenizer.json
+  https://raw.githubusercontent.com/vespa-engine/sample-apps/master/simple-semantic-search/model/tokenizer.json
 
 $ curl -L -o models/frozen.onnx \
-  https://github.com/vespa-engine/sample-apps/raw/master/examples/model-exporting/model/e5-small-v2-int8.onnx
+  https://github.com/vespa-engine/sample-apps/raw/master/simple-semantic-search/model/e5-small-v2-int8.onnx
 
 $ cp models/frozen.onnx models/tuned.onnx
 </pre>
