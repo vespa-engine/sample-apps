@@ -24,7 +24,7 @@
             <binding>http://*/site/*</binding>
             <binding>http://*/site</binding>
             <config name="ai.vespa.example.shopping.site.site-handler">
-                <vespaHostName>localhost</vespaHostName>
+                <vespaHostName>127.0.0.1</vespaHostName>
                 <vespaHostPort>8080</vespaHostPort>
             </config>
         </handler>
