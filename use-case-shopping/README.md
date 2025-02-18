@@ -22,7 +22,6 @@ Requirements:
 * [Docker](https://www.docker.com/) Desktop installed and running. 4 GB available memory for Docker is minimum.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
-* Alternatively, deploy using [Vespa Cloud](#deployment-note)
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
@@ -33,12 +32,12 @@ Requirements:
 * python3
 * zstd: `brew install zstd`
 
-See also [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
+Also read the [Vespa quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 
 Validate environment, should be minimum 4 GB:
 <pre>
 $ docker info | grep "Total Memory"
-or
+# or
 $ podman info | grep "memTotal"
 </pre>
 
@@ -80,29 +79,25 @@ Deploy the application package:
 $ vespa deploy --wait 300
 </pre>
 
-#### Deployment note
-It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
-
 Run [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html) -
 this runs a set of basic tests to verify that the application is working as expected:
 <pre data-test="exec" data-test-assert-contains="Success">
 $ vespa test src/test/application/tests/system-test/product-search-test.json
 </pre>
 
-First, create data feed for products:
+Create the data feed for products:
 <pre data-test="exec">
 $ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst
 $ zstdcat meta_sports_20k_sample.json.zst | ./convert_meta.py > feed_items.json
 </pre>
 
-Next, data feed for reviews:
+Generate the data feed for reviews:
 <pre data-test="exec">
 $ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/reviews_sports_24k_sample.json.zst
 $ zstdcat reviews_sports_24k_sample.json.zst | ./convert_reviews.py > feed_reviews.json
 </pre>
 
-Next, data feed for query suggestions:
+Generate the data feed for query suggestions:
 <pre data-test="exec">
 $ pip3 install spacy mmh3
 $ python3 -m spacy download en_core_web_sm
@@ -137,6 +132,8 @@ Shutdown and remove the container:
 $ docker rm -f vespa
 </pre>
 
+----
+
 ### Using Logstash to feed items and reviews
 
 Instead of using `vespa feed`, you can use Logstash to feed items and reviews. This way:
@@ -147,24 +144,22 @@ Instead of using `vespa feed`, you can use Logstash to feed items and reviews. T
 You'll need to [install Logstash](https://www.elastic.co/downloads/logstash). Then:
 
 1. Install [Logstash Output Plugin for Vespa](https://github.com/vespa-engine/vespa/tree/master/integration/logstash-plugins/logstash-output-vespa) via:
-
-<pre>
+```
 bin/logstash-plugin install logstash-output-vespa_feed
-</pre>
+```
 
-2. Change [logstash.conf](logstash.conf) to point to the absolute paths of `meta_sports_20k_sample.json` and `reviews_sports_24k_sample.json`. Which still need to be downloaded and uncompressed, as mentioned above:
-
-<pre>
+2. Change [logstash.conf](logstash.conf) to point to the absolute paths of `meta_sports_20k_sample.json` and `reviews_sports_24k_sample.json`.
+   Which still need to be downloaded and uncompressed, as mentioned above:
+```
 $ curl -L -o meta_sports_20k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/meta_sports_20k_sample.json.zst
 $ unzstd meta_sports_20k_sample.json.zst
 $ curl -L -o reviews_sports_24k_sample.json.zst https://data.vespa-cloud.com/sample-apps-data/reviews_sports_24k_sample.json.zst
 $ unzstd reviews_sports_24k_sample.json.zst
-</pre>
+```
 
 3. Run Logstash with the modified `logstash.conf`:
-
-<pre>
+```
 bin/logstash -f $PATH_TO_LOGSTASH_CONF/logstash.conf
-</pre>
+```
 
 For more examples of using Logstash with Vespa, check out [this tutorial blog post](https://blog.vespa.ai/logstash-vespa-tutorials/).
