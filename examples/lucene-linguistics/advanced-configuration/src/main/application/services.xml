@@ -7,7 +7,7 @@
                  bundle="vespa-lucene-linguistics-poc"/>
       <component id="linguistics"
                  class="com.yahoo.language.lucene.LuceneLinguistics"
-                 bundle="vespa-lucene-linguistics-poc">
+                 bundle="lucene-linguistics">
         <config name="com.yahoo.language.lucene.lucene-analysis"/>
       </component>
     </components>
