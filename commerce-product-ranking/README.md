@@ -49,7 +49,7 @@ The following is a quick start recipe on how to get started with this applicatio
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 * zstd: `brew install zstd`
-* Python3 with `requests` `pyarrow` and `pandas` installed
+* Either, python3 with `pyvespa` `pyarrow` and `pandas` installed, or [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 Validate Docker resource settings, should be minimum 6 GB:
 <pre>
@@ -138,91 +138,66 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 Install requirements
 
 <pre data-test="exec">
-pip3 install numpy pandas pyarrow requests
+pip3 install uv
 </pre>
 
+With `uv` installed, we can run the evaluation script with dependencies defined inline in the script:
+
 <pre data-test="exec">
-$ python3 scripts/evaluate.py \
-  --endpoint http://localhost:8080/search/ \
+$ uv run scripts/evaluate.py --endpoint http://localhost \
   --example_file sample-data/test-sample.parquet \
-  --ranking semantic-title
+  --ranking semantic-title \
+  --qrel_file https://data.vespa-cloud.com/sample-apps-data/test.qrels > results.txt
 </pre>
 
-[evaluate.py](scripts/evaluate.py) runs all the queries in the test split using the `--ranking` `<rank-profile>`
-and produces a `<ranking>.run` file with the top ranked results.
-This file is formatted in the format that `trec_eval` expects.
+[evaluate.py](scripts/evaluate.py) runs all the queries in the test split using the `--ranking` `<rank-profile>` and prints the NDCG score (and search time statistics).
 
-<pre data-test="exec" data-test-assert-contains="B08PB9TTKT">
-$ cat semantic-title.run
-</pre>
-
-Example ranking produced by Vespa using the `semantic-title` rank-profile for query 535:
-<pre>
-535 Q0 B08PB9TTKT 1 0.46388297538130346 semantic-title
-535 Q0 B00B4PJC9K 2 0.4314163871097326 semantic-title
-535 Q0 B0051GN8JI 3 0.4199624989861286 semantic-title
-535 Q0 B084TV3C1B 4 0.4177780086570998 semantic-title
-535 Q0 B08NVQ8MZX 5 0.4175260475587483 semantic-title
-535 Q0 B00DHUA9VA 6 0.41558328517364673 semantic-title
-535 Q0 B08SHMLP5S 7 0.41512211873088406 semantic-title
-535 Q0 B08VSJGP1N 8 0.41479904241634674 semantic-title
-535 Q0 B08QGZMCYQ 9 0.41107229418202607 semantic-title
-535 Q0 B0007KPRIS 10 0.4073851390694049 semantic-title
-535 Q0 B08VJ66CNL 11 0.4040355668337184 semantic-title
-535 Q0 B000J1HDWI 12 0.40354871020728317 semantic-title
-535 Q0 B0007KPS3C 13 0.39775755175088207 semantic-title
-535 Q0 B0072LFB68 14 0.39334250744409155 semantic-title
-535 Q0 B01M0SFMIH 15 0.3920197770681833 semantic-title
-535 Q0 B0742BZXC2 16 0.3778094352830984 semantic-title
-</pre>
-
-This run file can then be evaluated using the [trec_eval](https://github.com/usnistgov/trec_eval) utility.
-
-Download a pre-processed query-product relevance judgments in TREC format:
-<pre data-test="exec">
-$  curl -L -o test.qrels \
-    https://data.vespa-cloud.com/sample-apps-data/test.qrels
-</pre>
-
-Install `trec_eval` (your mileage may vary):
-
-<pre data-test="exec">
-git clone --depth 1 --branch v9.0.8 https://github.com/usnistgov/trec_eval && cd trec_eval && make install && cd ..
-</pre>
-
-Run evaluation :
-
-<pre data-test="exec" data-test-assert-contains="all">
-$ trec_eval test.qrels semantic-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
-</pre>
-
-This particular product ranking for the query produces a NDCG score of 0.7046.
-Note that the `sample-data/test-sample.parquet` file only contains one query.
-To get the overall score, one must compute all the NDCG scores of all queries in the
-test split and report the *average* NDCG score.
-
-Note that the evaluation uses custom NDCG label gains:
+Note that the evaluation script uses custom NDCG label gains:
 
 - Label 1 is **I**rrelevant with 0 gain
 - Label 2 is **S**upplement with 0.01 gain
 - Label 3 is **C**omplement with 0.1 gain
 - Label 4 is **E**xact with 1 gain
 
+<pre data-test="exec" data-test-assert-contains="0.704">
+cat results.txt
+</pre>
+
+Example ranking produced by Vespa using the `semantic-title` rank-profile for query 535:
+
+B08PB9TTKT 1 0.4638
+B00B4PJC9K 2 0.4314
+B0051GN8JI 3 0.4199
+B084TV3C1B 4 0.4177
+B08NVQ8MZX 5 0.4175
+B00DHUA9VA 6 0.4155
+B08SHMLP5S 7 0.4151
+B08VSJGP1N 8 0.4147
+B08QGZMCYQ 9 0.4110
+B0007KPRIS 10 0.4073
+B08VJ66CNL 11 0.4040
+B000J1HDWI 12 0.4035
+B0007KPS3C 13 0.3977
+B0072LFB68 14 0.3933
+B01M0SFMIH 15 0.3920
+B0742BZXC2 16 0.3778
+
+This particular product ranking for the query produces a NDCG score of 0.7046.
+Note that the `sample-data/test-sample.parquet` file only contains one query.
+To get the overall score, one must compute all the NDCG scores of all queries in the
+test split and report the *average* NDCG score.
+
 We can also try another ranking model:
 
 <pre data-test="exec">
-$ python3 scripts/evaluate.py \
-  --endpoint http://localhost:8080/search/ \
+$ uv run scripts/evaluate.py \
+  --endpoint http://localhost \
   --example_file sample-data/test-sample.parquet \
   --ranking cross-title
-</pre>
-
-<pre data-test="exec" data-test-assert-contains="all">
-$ trec_eval test.qrels cross-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1'
+  --qrel_file https://data.vespa-cloud.com/sample-apps-data/test.qrels
 </pre>
 
 Which for this query produces a NDCG score of 0.8208, better than the semantic-title model.
-
 
 ## Shutdown and remove the Docker container
 
@@ -251,24 +226,21 @@ Evaluate the `hybrid` baseline rank profile using the evaluation
 script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 <pre>
-$ python3 scripts/evaluate.py \
-  --endpoint http://localhost:8080/search/ \
+$ uv run scripts/evaluate.py \
+  --endpoint http://localhost \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking semantic-title
+  --qrel_file https://data.vespa-cloud.com/sample-apps-data/test.qrels
 </pre>
 
 For Vespa cloud deployments we need to pass certificate and the private key.
 
 <pre>
-$ python3 scripts/evaluate.py \
-  --endpoint https://productsearch.samples.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
+$ uv run scripts/evaluate.py \
+  --endpoint https://productsearch.samples.aws-us-east-1c.perf.z.vespa-app.cloud \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking semantic-title \
   --cert &lt;path-to-data-plane-cert.pem&gt; \
   --key &lt;path-to-data-plane-private-key.pem&gt;
-</pre>
-
-Run evaluation using `trec_eval`:
-<pre>
-$ trec_eval test.qrels semantic-title.run -m 'ndcg.1=0,2=0.01,3=0.1,4=1
+  --qrel_file https://data.vespa-cloud.com/sample-apps-data/test.qrels
 </pre>
