@@ -138,7 +138,7 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 Install requirements
 
 <pre data-test="exec">
-pip3 install uv
+$ pip3 install uv
 </pre>
 
 With `uv` installed, we can run the evaluation script with dependencies defined inline in the script:
@@ -160,7 +160,7 @@ Note that the evaluation script uses custom NDCG label gains:
 - Label 4 is **E**xact with 1 gain
 
 <pre data-test="exec" data-test-assert-contains="0.704">
-cat results.txt
+$ cat results.txt
 </pre>
 
 Example ranking produced by Vespa using the `semantic-title` rank-profile for query 535:
