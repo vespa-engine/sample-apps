@@ -137,7 +137,7 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 Install requirements
 
-<pre>
+<pre data-test="exec">
 $ pip3 install pandas pyarrow git+https://github.com/vespa-engine/pyvespa.git@6a1b12128bff426f90b82d212f439755b520584c
 </pre>
 
