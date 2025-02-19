@@ -1,11 +1,8 @@
 # /// script
+# requires-python = ">=3.9"
 # dependencies = [
-#     "ipykernel>=6.29.5",
-#     "jupyter>=1.1.1",
-#     "numpy>=2.2.3",
 #     "pandas>=2.2.3",
 #     "pyarrow>=19.0.0",
-#     "requests>=2.32.3",
 #     "pyvespa @ git+https://github.com/vespa-engine/pyvespa.git@6a1b12128bff426f90b82d212f439755b520584c",
 # ]
 # ///
