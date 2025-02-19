@@ -71,4 +71,3 @@ Followed by:
 `Which one would you recommend to repair a watch?`
 
 You will notice that the agentic application will leverage either a web search or query the e-commerce dataset stored on Vespa to address your queries seamlessly producing an engaging conversational experience.
-
