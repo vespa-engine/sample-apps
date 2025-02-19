@@ -137,14 +137,14 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 Install requirements
 
-<pre data-test="exec">
-$ pip3 install uv
+<pre>
+$ pip3 install pandas pyarrow git+https://github.com/vespa-engine/pyvespa.git@6a1b12128bff426f90b82d212f439755b520584c
 </pre>
 
-With `uv` installed, we can run the evaluation script with dependencies defined inline in the script:
+With the dependencies installed, we can evaluate the ranking model using the evaluation script:
 
 <pre data-test="exec">
-$ uv run scripts/evaluate.py --endpoint http://localhost \
+$ python3 scripts/evaluate.py --endpoint http://localhost \
   --example_file sample-data/test-sample.parquet \
   --ranking semantic-title \
   --qrel_file https://data.vespa-cloud.com/sample-apps-data/test.qrels > results.txt
@@ -190,7 +190,7 @@ test split and report the *average* NDCG score.
 We can also try another ranking model:
 
 <pre data-test="exec">
-$ uv run scripts/evaluate.py \
+$ python3 scripts/evaluate.py \
   --endpoint http://localhost \
   --example_file sample-data/test-sample.parquet \
   --ranking cross-title
@@ -226,7 +226,7 @@ Evaluate the `hybrid` baseline rank profile using the evaluation
 script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 <pre>
-$ uv run scripts/evaluate.py \
+$ python3 scripts/evaluate.py \
   --endpoint http://localhost \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking semantic-title
@@ -236,7 +236,7 @@ $ uv run scripts/evaluate.py \
 For Vespa cloud deployments we need to pass certificate and the private key.
 
 <pre>
-$ uv run scripts/evaluate.py \
+$ python3 scripts/evaluate.py \
   --endpoint https://productsearch.samples.aws-us-east-1c.perf.z.vespa-app.cloud \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking semantic-title \
