@@ -44,6 +44,7 @@ def main():
     )
     parser.add_argument("--key", type=str, help="Path to SSL key (optional)")
     args = parser.parse_args()
+    print(args)
 
     # ----------------------
     # Load and process examples
