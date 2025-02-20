@@ -37,6 +37,7 @@ jobs:
         /localhost:5001/
         src/main/application/search/query-profiles
         /hub.docker.com/r/vespaengine/vespa/tags/
+        /openai.com/index/openai-api/
       swap-urls: |-
         (https\://github.com.*/master/.*)#.*:\1
         (https\://github.com.*/main/.*)#.*:\1
