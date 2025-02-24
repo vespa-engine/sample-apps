@@ -68,7 +68,7 @@ public class DocumentReductionDocProcTest {
     }
 
     static TensorFieldValue getTensor() {
-        TensorType type = new TensorType.Builder(TensorType.Value.FLOAT).indexed("x", 768).build();
+        TensorType type = new TensorType.Builder(TensorType.Value.BFLOAT16).indexed("x", 768).build();
         IndexedTensor.Builder builder = IndexedTensor.Builder.of(type);
         for (int j = 0; j < 768; j++)
             builder.cell(1.0, j);
