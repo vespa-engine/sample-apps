@@ -82,9 +82,9 @@ $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-<pre data-test="exec">
+<!-- <pre data-test="exec">
 $ vespa clone commerce-product-ranking my-app && cd my-app
-</pre>
+</pre> -->
 
 Download cross-encoder model:
 <pre data-test="exec">
@@ -137,11 +137,27 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 Install requirements
 
-<pre data-test="exec">
+<!-- <pre data-test="exec">
 $ pip3 install pandas pyarrow git+https://github.com/vespa-engine/pyvespa.git@6a1b12128bff426f90b82d212f439755b520584c
-</pre>
+</pre> -->
 
 With the dependencies installed, we can evaluate the ranking model using the evaluation script:
+
+Echo pwd
+<pre data-test="exec">
+$ echo $PWD
+</pre>
+
+Echo ls
+<pre data-test="exec">
+$ ls
+</pre>
+
+run help to print args
+
+<pre data-test="exec">
+$ python3 scripts/evaluate.py --help
+</pre>
 
 <pre data-test="exec">
 $ python3 scripts/evaluate.py --endpoint http://localhost \
