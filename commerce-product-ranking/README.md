@@ -140,7 +140,7 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 Install requirements
 
 <pre data-test="exec">
-$ pip3 install pandas pyarrow pyvespa
+$ pip3 install pandas pyarrow pyvespa>=0.53.0
 </pre>
 
 With the dependencies installed, we can evaluate the ranking model using the evaluation script:

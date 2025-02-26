@@ -3,7 +3,7 @@
 # dependencies = [
 #     "pandas>=2.2.3",
 #     "pyarrow>=19.0.0",
-#     "pyvespa @ git+https://github.com/vespa-engine/pyvespa.git@6a1b12128bff426f90b82d212f439755b520584c",
+#     "pyvespa>=0.53.0",
 # ]
 # ///
 
