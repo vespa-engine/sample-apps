@@ -77,6 +77,7 @@ $ docker run --detach --name vespa --hostname vespa-container \
 </pre>
 
 Verify that configuration service (deploy api) is ready:
+
 <pre data-test="exec">
 $ vespa status deploy --wait 300
 </pre>
@@ -85,6 +86,11 @@ Download this sample application:
 <!-- <pre data-test="exec">
 $ vespa clone commerce-product-ranking my-app && cd my-app
 </pre> -->
+
+<pre data-test="exec">
+$ echo $PWD
+$ cd commerce-product-ranking
+</pre>
 
 Download cross-encoder model:
 <pre data-test="exec">
@@ -137,9 +143,9 @@ script ([scripts/evaluate.py](scripts/evaluate.py)).
 
 Install requirements
 
-<!-- <pre data-test="exec">
-$ pip3 install pandas pyarrow git+https://github.com/vespa-engine/pyvespa.git@6a1b12128bff426f90b82d212f439755b520584c
-</pre> -->
+<pre data-test="exec">
+$ pip3 install pandas pyarrow pyvespa
+</pre>
 
 With the dependencies installed, we can evaluate the ranking model using the evaluation script:
 
