@@ -84,7 +84,7 @@ $ vespa status deploy --wait 300
 
 Download this sample application:
 <pre data-test="exec">
-$ git clone --branch thomasht86/use-pyvespa-evaluate-in-commerce-product-ranking --single-branch https://github.com/vespa-engine/sample-apps.git && cd commerce-product-ranking
+$ git clone --branch thomasht86/use-pyvespa-evaluate-in-commerce-product-ranking --single-branch https://github.com/vespa-engine/sample-apps.git && cd sample-apps/commerce-product-ranking
 </pre>
 
 
