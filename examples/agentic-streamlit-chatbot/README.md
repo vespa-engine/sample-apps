@@ -8,7 +8,7 @@
 - Spin-up a Vespa Cloud [Trial](https://vespa.ai/free-trial) account:
   - Login to the account you just created and create a tenant at [console.vespa-cloud.com](https://console.vespa-cloud.com/).
   - Save the tenant name.
-- A Valid [OpenAI](https://openai.com/index/openai-api/) API key. Note that you have the option to use any other LLM, which may support Langgraph tools binding.
+- A Valid OpenAI API key. Note that you have the option to use any other LLM, which may support Langgraph tools binding.
 - Uncompress the data file: `zstd -d data/vespa_feed-96k.json.zst`
   
 
@@ -52,3 +52,22 @@
   streamlit run streamlit_vespa_app.py
   ```
 
+# Test your Application
+
+You can ask questions like:
+
+`What is the weather in Toronto ?`
+
+Followed by:
+
+`I need a screwdriver`
+
+Followed by:
+
+`How reliable is the TECKMAN brand ?`
+
+Followed by:
+
+`Which one would you recommend to repair a watch?`
+
+You will notice that the agentic application will leverage either a web search or query the e-commerce dataset stored on Vespa to address your queries seamlessly producing an engaging conversational experience.
