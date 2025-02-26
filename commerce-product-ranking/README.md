@@ -83,14 +83,10 @@ $ vespa status deploy --wait 300
 </pre>
 
 Download this sample application:
-<!-- <pre data-test="exec">
-$ vespa clone commerce-product-ranking my-app && cd my-app
-</pre> -->
-
 <pre data-test="exec">
-$ echo $PWD
-$ cd commerce-product-ranking
+$ git clone --branch thomasht86/use-pyvespa-evaluate-in-commerce-product-ranking --single-branch https://github.com/vespa-engine/sample-apps.git && cd commerce-product-ranking
 </pre>
+
 
 Download cross-encoder model:
 <pre data-test="exec">
