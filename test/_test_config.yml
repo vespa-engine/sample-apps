@@ -1,13 +1,12 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 urls:
-    - examples/model-exporting/README.md
+    - commerce-product-ranking/README.md
     - splade/README.md
     - colbert-long/README.md
     - multi-vector-indexing/README.md
     - vector-streaming-search/README.md
     - custom-embeddings/README.md
-    - commerce-product-ranking/README.md
     - colbert/README.md
     - text-image-search/README.md
     - text-search/README.md
@@ -18,6 +17,7 @@ urls:
     - examples/generic-request-processing/README.md
     - examples/http-api-using-request-handlers-and-processors/README.md
     - examples/multiple-bundles/README.md
+    - examples/model-exporting/README.md
     - model-inference/README.md
     - examples/part-purchases-demo/README.md
     - examples/vespa-chinese-linguistics/README.md
