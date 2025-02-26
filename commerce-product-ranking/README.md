@@ -211,7 +211,7 @@ We can also try another ranking model:
 $ python3 scripts/evaluate.py \
   --endpoint http://localhost \
   --example_file sample-data/test-sample.parquet \
-  --ranking cross-title
+  --ranking cross-title \
   --qrel_file https://data.vespa-cloud.com/sample-apps-data/test.qrels
 </pre>
 
