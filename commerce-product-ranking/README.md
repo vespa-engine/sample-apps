@@ -84,7 +84,7 @@ $ vespa status deploy --wait 300
 
 Download this sample application:
 <pre data-test="exec">
-$ git clone --branch thomasht86/use-pyvespa-evaluate-in-commerce-product-ranking --single-branch https://github.com/vespa-engine/sample-apps.git && cd sample-apps/commerce-product-ranking
+$ vespa clone commerce-product-ranking my-app && cd my-app
 </pre>
 
 
@@ -144,22 +144,6 @@ $ pip3 install pandas pyarrow pyvespa>=0.53.0
 </pre>
 
 With the dependencies installed, we can evaluate the ranking model using the evaluation script:
-
-Echo pwd
-<pre data-test="exec">
-$ echo $PWD
-</pre>
-
-Echo ls
-<pre data-test="exec">
-$ ls
-</pre>
-
-run help to print args
-
-<pre data-test="exec">
-$ python3 scripts/evaluate.py --help
-</pre>
 
 <pre data-test="exec">
 $ python3 scripts/evaluate.py --endpoint http://localhost \
