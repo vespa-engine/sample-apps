@@ -1,0 +1,72 @@
+[
+    {
+      "name": "album-recommendation",
+      "shortname": "album-recommendation",
+      "title": "Album Recommendation",
+      "description": "This application ranks music albums using a user profile: Albums with scores for a set of categories are matched with a user's preference.",
+      "features": [
+        "Search",
+        "Recommendation"
+      ],
+      "category": "Getting Started",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/album-recommendation/application.zip",
+      "sampleDataDir": "ext",
+      "exampleQuery": {
+        "yql": "select * from music where true",
+        "ranking": {
+            "profile": "rank_albums",
+            "features": {
+                "query(user_profile)": "{{cat:pop}:0.8,{cat:rock}:0.2,{cat:jazz}:0.1}"
+            }
+        }
+      }
+    },
+    {
+      "name": "text-search",
+      "shortname": "text-search",
+      "title": "Text Search",
+      "description": "The Text Search Tutorial demonstrates traditional text search using BM25/Vespa nativeRank, and is a good start to using the MS Marco dataset.",
+      "features": [
+        "BM25",
+        "nativeRank",
+        "MS Marco"
+      ],
+      "category": "Getting Started",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/text-search#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/text-search/application.zip",
+      "exampleQuery": {
+        "yql": "select title,url,id from msmarco where userQuery()",
+        "query": "what is dad bod"
+      }
+    },
+    {
+      "name": "msmarco-ranking",
+      "shortname": "msmarco-ranking",
+      "title": "MS Marco Passage Ranking",
+      "description": "MS Marco Passage Ranking demonstrates how to efficiently represent three ways of applying Transformer-based ranking models for text ranking in Vespa: Dense vector search retrieval, re-ranking using a cross-encoder and re-ranking using ColBERT.",
+      "features": [
+        "BM25",
+        "Approximate nearest neighbor search.",
+        "Re-ranking",
+        "ColBERT",
+        "WAND",
+        "ANN",
+        "Vespa embedder.",
+        "Hybrid ranking",
+        "MS Marco"
+      ],
+      "category": "Ranking",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/msmarco-ranking#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/msmarco-ranking/application.zip",
+      "exampleQuery": {
+        "query": "what was the manhattan project",
+        "yql": "select * from passage where {targetHits: 100}nearestNeighbor(e5, q)",
+        "input": {
+          "query(q)": "embed(e5, @query)",
+          "query(qt)": "embed(colbert, @query)"
+        },
+        "ranking": "e5-colbert"
+      }
+    }
+  ]
