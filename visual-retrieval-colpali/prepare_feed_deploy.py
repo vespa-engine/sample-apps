@@ -616,7 +616,6 @@ for pdf, embedding in zip(pdf_pages, embeddings):
 
 
 # Save vespa_feed to vespa_feed.json
-os.makedirs("output", exist_ok=True)
 with open("output/vespa_feed.json", "w") as f:
     vespa_feed_to_save = []
     for page in vespa_feed:
