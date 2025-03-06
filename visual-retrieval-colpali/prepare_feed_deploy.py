@@ -169,20 +169,45 @@ soup = BeautifulSoup(html_content, "html.parser")
 links = []
 url_to_year = {}
 
-# Find all 'div's with id starting with 'year-'
-for year_div in soup.find_all("div", id=lambda x: x and x.startswith("year-")):
-    year_id = year_div.get("id", "")
+# Find all the years
+for year_section in soup.find_all("section", attrs={"data-name": "report-year"}):
+    year_id = year_section.get("data-filter-section", "")
     year = year_id.replace("year-", "")
+    
+    # Find the yearly report section
+    report_section = year_section.find("div", attrs={
+        "data-filter-section": "year",
+        "data-name": "report-type"
+    })
+    if not report_section:
+        continue
+        
+    # Get the first link
+    report_link = report_section.select_one("ul.link-list a")
+    if not report_link:
+        continue
+        
+    report_url = urljoin(url, report_link["href"])
+    
+    # Visit the report page to find PDF download links
+    try:
+        report_response = requests.get(report_url)
+        report_response.raise_for_status()
+        report_soup = BeautifulSoup(report_response.text, "html.parser")
+        
+        # Find only the first PDF download link with the specific class
+        pdf_link = report_soup.select_one("a.btn.btn-secondary[data-right-icon='download']")
+        if not pdf_link or not pdf_link["href"].endswith(".pdf"):
+            continue
+            
+        pdf_url = urljoin(report_url, pdf_link["href"])
+        links.append(pdf_url)
+        url_to_year[pdf_url] = year
+        print(f"Found PDF: {pdf_url} (Year: {year})")
+    except Exception as e:
+        print(f"Error fetching report page {report_url}: {e}")
 
-    # Within this div, find all 'a' elements with the specific classes
-    for a_tag in year_div.select("a.button.button--download-secondary[href]"):
-        href = a_tag["href"]
-        full_url = urljoin(url, href)
-        # exclude non-pdf links
-        if full_url.endswith(".pdf"):
-            links.append(full_url)
-            url_to_year[full_url] = year
-links, url_to_year
+print(f"Found {len(links)} PDF links")
 # -
 
 # Limit the number of PDFs to download
@@ -471,6 +496,7 @@ pdf_pages[46]["queries"]
 
 # +
 # write title, url, page_no, text, queries, not image to JSON
+os.makedirs("output", exist_ok=True)
 with open("output/pdf_pages.json", "w") as f:
     to_write = [{k: v for k, v in pdf.items() if k != "image"} for pdf in pdf_pages]
     json.dump(to_write, f, indent=2)
