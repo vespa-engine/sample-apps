@@ -3,7 +3,7 @@ name = "visual-retrieval-colpali"
 version = "0.1.0"
 description = "Visual retrieval with ColPali"
 readme = "README.md"
-requires-python = ">=3.10, <3.13" 
+requires-python = ">=3.10, <3.12"
 license = { text = "Apache-2.0" }
 dependencies = [
     "python-fasthtml",
@@ -20,23 +20,19 @@ dependencies = [
     "shad4fast>=1.2.1",
     "google-generativeai>=0.7.2",
     "spacy",
-    "pip"
+    "pip",
 ]
 
 # dev-dependencies
 [project.optional-dependencies]
-dev = [
-    "ruff",
-    "python-dotenv",
-    "huggingface_hub[cli]"
-]
+dev = ["ruff", "python-dotenv", "huggingface_hub[cli]"]
 feed = [
     "ipykernel",
     "jupytext",
     "pydantic",
     "beautifulsoup4",
     "pdf2image",
-    "google-generativeai"
+    "google-generativeai",
 ]
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
