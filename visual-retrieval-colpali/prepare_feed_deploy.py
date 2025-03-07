@@ -4,7 +4,7 @@
 # We will use ColPali as the model to extract patch vectors from images of pdf pages.
 # At query time, we use MaxSim to retrieve and/or (based on the configuration) rank the page results.
 #
-# To see the application in action, visit TODO:
+# To see the application in action, visit https://huggingface.co/spaces/vespa-engine/colpali-vespa-visual-retrieval
 #
 # The web application is written in FastHTML, meaning the complete application is written in python.
 #
