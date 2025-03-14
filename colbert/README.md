@@ -27,7 +27,7 @@ through the <code>vespa deploy</code> step, cloning `colbert` instead of `album-
 
 Feed documents (this includes embed inference in Vespa):
 <pre data-test="exec">
-vespa feed ext/*.json
+vespa feed ext/doc.jsonl
 </pre>
 
 Example queries:
