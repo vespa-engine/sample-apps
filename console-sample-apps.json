@@ -11,7 +11,6 @@
       "category": "Getting Started",
       "repository": "https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation#readme",
       "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/album-recommendation/application.zip",
-      "sampleDataDir": "ext",
       "exampleQuery": {
         "yql": "select * from music where true",
         "ranking": {
@@ -20,6 +19,22 @@
                 "query(user_profile)": "{{cat:pop}:0.8,{cat:rock}:0.2,{cat:jazz}:0.1}"
             }
         }
+      }
+    },
+    {
+      "name": "news",
+      "shortname": "news",
+      "title": "News and Recommendation Tutorial",
+      "description": "This demonstrates basic search functionality and is a great place to start exploring Vespa features. It creates a recommendation system where the approximate nearest neighbor search in a shared user/item embedding space is used to retrieve recommended content for a user.",
+      "features": [
+        "Recommendation",
+        "Parent/child"
+      ],
+      "category": "Getting Started",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/news#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/news/application.zip",
+      "exampleQuery": {
+        "yql": "select * from news where title contains phrase(\"hello\",\"world\")"
       }
     },
     {
@@ -67,6 +82,27 @@
           "query(qt)": "embed(colbert, @query)"
         },
         "ranking": "e5-colbert"
+      }
+    },
+    {
+      "name": "colbert",
+      "shortname": "colbert",
+      "title": "Simple hybrid search with ColBERT",
+      "description": "This application uses a single vector embedding model for retrieval and ColBERT (multi-token vector representation) for re-ranking. This semantic search application demonstrates the colbert-embedder and the tensor expressions for ColBERT MaxSim.",
+      "features": [
+        "ColBERT",
+        "Re-ranking"
+      ],
+      "category": "Ranking",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/colbertg#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/colbert/application.zip",
+      "exampleQuery": {
+        "query": "shipping stuff over the sea",
+        "yql": "select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))",
+        "input": {
+          "query(q)": "embed(e5, @query)",
+          "query(qt)": "embed(colbert, @query)"
+        }
       }
     }
   ]
