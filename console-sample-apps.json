@@ -28,14 +28,16 @@
       "description": "This demonstrates basic search functionality and is a great place to start exploring Vespa features. It creates a recommendation system where the approximate nearest neighbor search in a shared user/item embedding space is used to retrieve recommended content for a user.",
       "features": [
         "Recommendation",
-        "Parent/child"
+        "Parent/child",
+        "E-commerce"
       ],
       "category": "Getting Started",
       "repository": "https://github.com/vespa-engine/sample-apps/tree/master/news#readme",
       "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/news/application.zip",
       "exampleQuery": {
         "yql": "select * from news where title contains phrase(\"hello\",\"world\")"
-      }
+      },
+      "cdOnly": true
     },
     {
       "name": "text-search",
@@ -54,6 +56,45 @@
         "yql": "select title,url,id from msmarco where userQuery()",
         "query": "what is dad bod"
       }
+    },
+    {
+      "name": "part-purchases-demo",
+      "shortname": "part-purchases-demo",
+      "title": "Grouping Results",
+      "description": "In Vespa, faceting (the attribute filtering) is called grouping. logo Grouping Results is a quick intro to implementing faceting/grouping in Vespa.",
+      "features": [
+        "Faceting",
+        "Grouping",
+        "E-commerce"
+      ],
+      "category": "E-commerce",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/part-purchases-demo#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/part-purchases-demo/application.zip",
+      "exampleQuery": {
+        "yql": "select * from purchase where true"
+      },
+      "cdOnly": true
+    },
+    {
+      "name": "commerce-product-ranking",
+      "shortname": "product-ranking",
+      "title": "Vespa Product Ranking",
+      "description": "Try Vespa Product Ranking for using learning-to-rank (LTR) techniques (using XGBoost and LightGBM) for improving product search ranking.",
+      "features": [
+        "Gradient Boosted Decision Trees (GBDT)",
+        "Learning-to-rank (LTR)",
+        "XGBoost",
+        "LightGBM",
+        "Product ranking",
+        "E-commerce"
+      ],
+      "category": "E-commerce",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/commerce-product-ranking#readme",
+      "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/product-ranking/application.zip",
+      "exampleQuery": {
+        "yql": "select * from product where true"
+      },
+      "cdOnly": true
     },
     {
       "name": "msmarco-ranking",
@@ -82,7 +123,8 @@
           "query(qt)": "embed(colbert, @query)"
         },
         "ranking": "e5-colbert"
-      }
+      },
+      "cdOnly": true
     },
     {
       "name": "colbert",
@@ -94,7 +136,7 @@
         "Re-ranking"
       ],
       "category": "Ranking",
-      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/colbertg#readme",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/colbert#readme",
       "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/colbert/application.zip",
       "exampleQuery": {
         "query": "shipping stuff over the sea",
