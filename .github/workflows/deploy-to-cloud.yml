@@ -1,0 +1,105 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+defaults:
+  run:
+    # Specify to ensure "pipefail and errexit" are set.
+    # Ref: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#defaultsrunshell
+    shell: bash
+
+permissions:
+  contents: read
+  id-token: write # Required for OIDC authentication
+  deployments: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    outputs:
+      app-list-json: ${{ steps.read-json.outputs.APP_LIST }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read JSON
+        id: read-json
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "APP_LIST<<${delimiter}"
+            sed -e '$a\' console-sample-apps.json # Ensures that an empty line is always present.
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
+
+  create-zip:
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.setup.outputs.app-list-json) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create artifact
+        env:
+          DEBUG: ${{ runner.debug }} # Automatically set by GitHub Actions when running in debug mode.
+        run: |
+          ./scripts/build-sample-app.sh "${{ matrix.app.name }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app.shortname }}
+          path: ${{ matrix.app.name }}/dist/
+
+  deploy-json:
+    runs-on: ubuntu-latest
+
+    # TODO: Commented out only while testing.
+    # if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+
+    environment:
+      name: Vespa Cloud
+      url: https://cloud.vespa.ai
+
+    needs:
+      - create-zip
+
+    steps:
+      - name: Download All Packages
+        uses: actions/download-artifact@v4
+        with:
+          path: apps
+
+      - name: List Downloaded
+        run: |
+          ls -lr apps
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::332934501266:role/github-deploy-sample-apps
+
+      - name: Push Zip to S3
+        id: deploy
+        env:
+          AWS_REGION: us-east-1
+          AWS_SYNC_OPTIONS: --dryrun --color=on --no-progress
+        run: |
+          aws s3 sync apps/ s3://vespa-cloud-data/console/one-click-sample-apps/ ${{ env.AWS_SYNC_OPTIONS }}
