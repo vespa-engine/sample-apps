@@ -74,6 +74,19 @@ jobs:
             exit 1
           fi
 
+      - name: Validate documents.jsonl
+        env:
+          DOCUMENTS_JSONL: ${{ matrix.app.name }}/dist/documents.jsonl
+        run: |
+          # Validate the entire JSONL file using jq --stream
+          if jq --stream . < "$DOCUMENTS_JSONL" >/dev/null 2>&1; then
+              echo "JSONL file '$DOCUMENTS_JSONL' is valid."
+              exit 0
+          else
+              echo "Error: Invalid JSONL format in '$FILE'."
+              exit 1
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
