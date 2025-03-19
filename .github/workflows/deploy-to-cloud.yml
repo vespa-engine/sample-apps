@@ -84,7 +84,8 @@ jobs:
     runs-on: ubuntu-latest
 
     environment:
-      name: Vespa Cloud
+      # Append "CD" to the environment name if not on "push" event on default branch.
+      name: ${{ (github.event_name != 'push' || github.ref_name != 'master' ) && 'Vespa Cloud CD' || 'Vespa Cloud' }}
       url: https://cloud.vespa.ai
 
     needs:
@@ -92,9 +93,9 @@ jobs:
 
     env:
       AWS_DEFAULT_REGION: us-east-1
-      AWS_S3_DEPLOY_ROLE: ${{ vars.AWS_S3_DEPLOY_ROLE }}
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
-      S3_BUKET: vespa-cloud-data
+      AWS_ROLE_SAMPLE_APP_DEPLOY: ${{ vars.AWS_ROLE_SAMPLE_APP_DEPLOY }}
+      AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME }}
       S3_UPLOAD_PREFIX: console/one-click-sample-apps/
 
     steps:
@@ -112,7 +113,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
-          role-to-assume: ${{ env.AWS_S3_DEPLOY_ROLE }}
+          role-to-assume: ${{ env.AWS_ROLE_SAMPLE_APP_DEPLOY }}
 
       - name: Push Zip and JSON to S3
         env:
@@ -122,10 +123,10 @@ jobs:
           # Not an app, but artifact from the setup job.
           mv ./apps/console-json ./console-json
 
-          aws s3 sync ${{ env.AWS_S3_OPTIONS }} ./apps/ "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
+          aws s3 sync ${{ env.AWS_S3_OPTIONS }} ./apps/ "s3://${AWS_S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}/"
           aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
 
       - name: Invalidate Cloudfront Cache
         if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths "${S3_UPLOAD_PREFIX}/*" --output text
+          aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text
