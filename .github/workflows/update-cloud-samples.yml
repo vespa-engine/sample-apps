@@ -1,4 +1,4 @@
-name: Deploy
+name: Update on Vespa Cloud
 
 on:
   push:
@@ -46,7 +46,8 @@ jobs:
           name: console-json
           path: console-sample-apps.json
 
-  create-zip:
+  create-and-validate:
+    name: Create Zip and Validate JSON
     runs-on: ubuntu-latest
 
     needs:
@@ -94,7 +95,8 @@ jobs:
           name: ${{ matrix.app.shortname }}
           path: ${{ matrix.app.name }}/dist/
 
-  deploy-json:
+  push:
+    name: Push to Vespa Cloud
     runs-on: ubuntu-latest
 
     environment:
@@ -103,14 +105,14 @@ jobs:
       url: https://cloud.vespa.ai
 
     needs:
-      - create-zip
+      - create-and-validate
 
     env:
       AWS_DEFAULT_REGION: us-east-1
       AWS_ROLE_SAMPLE_APP_DEPLOY: ${{ vars.AWS_ROLE_SAMPLE_APP_DEPLOY }}
       AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
       AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME }}
-      S3_UPLOAD_PREFIX: console/one-click-sample-apps/
+      S3_UPLOAD_PREFIX: console/one-click-sample-apps
 
     steps:
       - name: Download All Packages
@@ -141,6 +143,7 @@ jobs:
           aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
 
       - name: Invalidate Cloudfront Cache
-        if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+        env:
+          ECHO: ${{ (github.event_name == 'push' && github.ref_name == 'master') && '' || 'echo' }}
         run: |
-          aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text
+          $ECHO aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text
