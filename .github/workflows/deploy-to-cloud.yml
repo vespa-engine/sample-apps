@@ -61,6 +61,13 @@ jobs:
         run: |
           ./scripts/build-sample-app.sh "${{ matrix.app.name }}"
 
+          # Ensure that both application.zip and documents.jsonl are created.
+          if [ ! -f "${{ matrix.app.name }}/dist/application.zip" ] ||
+             [ ! -f "${{ matrix.app.name }}/dist/documents.jsonl" ]; then
+            echo "::error:: Build failure: application.zip or documents.jsonl not found in ${GITHUB_WORKSPACE}/${{ matrix.app.name }}/dist/"
+            exit 1
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -69,9 +76,6 @@ jobs:
 
   deploy-json:
     runs-on: ubuntu-latest
-
-    # TODO: Commented out only while testing.
-    # if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
 
     environment:
       name: Vespa Cloud
@@ -87,6 +91,7 @@ jobs:
           path: apps
 
       - name: List Downloaded
+        if: ${{ runner.debug }}
         run: |
           ls -lr apps
 
@@ -96,10 +101,12 @@ jobs:
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::332934501266:role/github-deploy-sample-apps
 
-      - name: Push Zip to S3
+      - name: Push Zip and JSON to S3
         id: deploy
         env:
           AWS_REGION: us-east-1
-          AWS_SYNC_OPTIONS: --dryrun --color=on --no-progress
+          # Add `--dryrun` if not on "push" event on default branch.
+          AWS_S3_OPTIONS: --color=on --no-progress ${{ (github.event_name == 'push' && github.ref_name == 'master' ) &&  '' || ' --dryrun' }}
         run: |
-          aws s3 sync apps/ s3://vespa-cloud-data/console/one-click-sample-apps/ ${{ env.AWS_SYNC_OPTIONS }}
+          aws s3 sync ${{ env.AWS_S3_SYNC_OPTIONS }} ./apps/ s3://vespa-cloud-data/console/one-click-sample-apps/
+          aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-sample-apps.json s3://vespa-cloud-data/console/one-click-sample-apps/
