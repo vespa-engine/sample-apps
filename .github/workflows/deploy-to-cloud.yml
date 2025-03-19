@@ -90,6 +90,13 @@ jobs:
     needs:
       - create-zip
 
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_S3_DEPLOY_ROLE: ${{ vars.AWS_S3_DEPLOY_ROLE }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      S3_BUKET: vespa-cloud-data
+      S3_UPLOAD_PREFIX: console/one-click-sample-apps/
+
     steps:
       - name: Download All Packages
         uses: actions/download-artifact@v4
@@ -104,15 +111,21 @@ jobs:
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::332934501266:role/github-deploy-sample-apps
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          role-to-assume: ${{ env.AWS_S3_DEPLOY_ROLE }}
 
       - name: Push Zip and JSON to S3
-        id: deploy
         env:
-          AWS_REGION: us-east-1
           # Add `--dryrun` if not on "push" event on default branch.
           AWS_S3_OPTIONS: --color=on --no-progress ${{ (github.event_name == 'push' && github.ref_name == 'master' ) &&  '' || ' --dryrun' }}
         run: |
-          aws s3 sync ${{ env.AWS_S3_OPTIONS }} ./apps/ s3://vespa-cloud-data/console/one-click-sample-apps/
-          aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json s3://vespa-cloud-data/console/one-click-sample-apps/
+          # Not an app, but artifact from the setup job.
+          mv ./apps/console-json ./console-json
+
+          aws s3 sync ${{ env.AWS_S3_OPTIONS }} ./apps/ "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
+          aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
+
+      - name: Invalidate Cloudfront Cache
+        if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths "${S3_UPLOAD_PREFIX}/*" --output text
