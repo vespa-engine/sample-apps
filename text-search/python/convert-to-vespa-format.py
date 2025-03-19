@@ -12,7 +12,7 @@ fields = sys.argv[3].split(",")
 
 sample_offset_file = os.path.join(data_dir, "test-docs-offset.tsv")
 docs_file = os.path.join(data_dir, "docs.tsv")
-out_file = os.path.join(data_dir, "vespa.json")
+out_file = os.path.join(data_dir, "documents.jsonl")
 
 
 def load_document_offsets():
@@ -29,7 +29,6 @@ def main():
 
     docs = 0
     with io.open(docs_file, "r", encoding="utf-8") as f, open(out_file, "w") as out:
-        out.write("[\n")
         for docid in document_offsets.keys():
             f.seek(document_offsets[docid])
             line = f.readline()
@@ -43,7 +42,7 @@ def main():
                 continue  # missing fields
 
             if docs > 0:
-                out.write(",\n")
+                out.write("\n")
             docs += 1
 
             doc = { "put" : f"id:{doc_type}:{doc_type}::{docid}", "fields" : {} }
@@ -51,7 +50,7 @@ def main():
                 doc["fields"][field] = content[i]
             json.dump(doc, out)
 
-        out.write("\n]\n")
+        out.write("\n")
 
 
 if __name__ == "__main__":
