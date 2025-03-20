@@ -1,0 +1,19 @@
+<!-- use the below instead of component with bundle="lucene-linguistics" -->
+
+<component id="com.yahoo.language.lucene.LuceneLinguistics" bundle="my-replacement-bundle">
+    <config name="com.yahoo.language.lucene.lucene-analysis" >
+        <configDir>analysis-config</configDir>
+        <analysis>
+            <item key="en">
+                <tokenizer>
+                    <name>whitespace</name>
+                </tokenizer>
+                <tokenFilters>
+                    <item>
+                        <name>myFilterFactory</name>
+                    </item>
+                </tokenFilters>
+            </item>
+        </analysis>
+    </config>
+</component>
