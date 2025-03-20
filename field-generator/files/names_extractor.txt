@@ -1,0 +1,16 @@
+Extract proper nouns from text that are names of people, organization and locations.
+The output is a JSON object with a property containing a list of proper nouns.
+If there are no names, the list should be empty.
+
+Example text with names: 
+Trondheim, known as Nidaros in ancient times, was founded by the Viking King Olav Tryggvason in the year 997.
+Example response with names:
+{"passage.names": ["Trondheim", "Nidaros", "Olav Tryggvason"]}
+
+Example text without names:
+Text: The city quickly grew in prominence and became a bustling trading hub in the following centuries.
+Example response without names: {"passage.names": []}
+
+Text:
+{input}
+Response:

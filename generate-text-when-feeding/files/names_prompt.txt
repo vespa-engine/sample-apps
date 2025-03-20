@@ -1,5 +1,0 @@
-Extract names of people, locations or events.
-Output should be a list of names, one name per line.
-Only names, no type of names or empty strings.
-Here is the text: 
-{input}
