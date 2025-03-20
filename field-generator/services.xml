@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <container id="container" version="1.0">
+        
+        <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
+            <config name="ai.vespa.llm.clients.llm-local-client">
+                <model model-id="phi-3.5-mini-q4"/>
+                <!--Context size, which is split evenly between requests.-->
+                <contextSize>10000</contextSize>
+                <!--To maximize throughput on CPU, setting it to number of ca. number of cores
+                considering we have enough memory for context size-->
+                <parallelRequests>10</parallelRequests>
+                <!--Context size is split evenly between requests so we have 1000 tokens per request 
+                that we split evenly between prompt and completion tokens.-->
+                <maxPromptTokens>500</maxPromptTokens>
+                <maxTokens>500</maxTokens>
+                <!-- Documents will be set in a queue to wait for processing -->
+                <maxQueueSize>3</maxQueueSize>
+                <!-- Both enqueue and queue wait has to be set proportional to max queues size 
+                because the last request will need to wait for all previous ones before starting the processing. -->
+                <maxEnqueueWait>100000</maxEnqueueWait>
+                <maxQueueWait>100000</maxQueueWait>
+                <!-- Context overflow leads to hallucinations, better to skip generation than generating nonsense. -->
+                <contextOverflowPolicy>DISCARD</contextOverflowPolicy>
+            </config>
+        </component>
+
+<!--        <component id="llm" class="ai.vespa.llm.clients.OpenAI">-->
+<!--            <config name = "ai.vespa.llm.clients.llm-client">-->
+<!--                <apiKeySecretName>openai-key</apiKeySecretName>-->
+<!--                <model>gpt-4o-mini</model>-->
+<!--            </config>-->
+<!--        </component>-->
+        
+        <component id="names_extractor" class="ai.vespa.llm.generation.LanguageModelFieldGenerator">
+            <config name="ai.vespa.llm.generation.language-model-field-generator">
+                <providerId>llm</providerId>
+                <promptTemplateFile>files/names_extractor.txt</promptTemplateFile>
+            </config>
+        </component>
+
+        <component id="questions_generator" class="ai.vespa.llm.generation.LanguageModelFieldGenerator">
+            <config name="ai.vespa.llm.generation.language-model-field-generator">
+                <providerId>llm</providerId>
+                <promptTemplate>Generate 3 questions relevant for this text: {input}</promptTemplate>
+            </config>
+        </component>
+        
+        <document-api/>
+        
+        <search/>
+
+        <nodes count="1">
+            <!-- Local models run much faster with GPU. CPUs with many cores can be used for smaller models 
+            but expect several seconds in latency per generate per doc.-->
+            <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb"/>
+<!--            <resources vcpu="4.0" memory="16Gb" architecture="x86_64" storage-type="local" disk="125Gb">-->
+<!--                <gpu count="1" memory="16.0Gb"/>-->
+<!--            </resources>-->
+        </nodes>
+    </container>
+
+    <content id="content" version="1.0">
+        <redundancy>1</redundancy>
+        
+        <documents>
+            <document mode="index" type="passage"/>
+        </documents>
+        
+        <nodes>
+            <node hostalias="node1" distribution-key="0"/>
+        </nodes>
+    </content>
+
+</services>

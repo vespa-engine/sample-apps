@@ -1,2 +1,0 @@
-Generate a very short title from text: 
-{input}
