@@ -21,6 +21,7 @@ public final class LemmagenTokenFilter extends TokenFilter {
     public LemmagenTokenFilter(final TokenStream input, final Lemmatizer lemmatizer) {
         super(input);
         this.lemmatizer = lemmatizer;
+        System.err.println("Hooray - we are using the LemmagenTokenFilter plugin");
     }
 
     public boolean incrementToken() throws IOException {
