@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <services version="1.0">
   <container id="container" version="1.0">
-    <component id="pl"
-               class="ai.vespa.linguistics.pl.PolishAnalyzer"
-               bundle="vespa-lucene-linguistics-crazy"/>
     <components>
+      <!-- note there are two components, but they need to be in the same bundle. -->
+      <component id="pl"
+                 class="ai.vespa.linguistics.pl.PolishAnalyzer"
+                 bundle="vespa-lucene-linguistics-crazy"/>
       <component id="com.yahoo.language.lucene.LuceneLinguistics"
-                 bundle="lucene-linguistics">
+                 bundle="vespa-lucene-linguistics-crazy">
         <config name="com.yahoo.language.lucene.lucene-analysis">
           <configDir>linguistics</configDir>
           <analysis>
