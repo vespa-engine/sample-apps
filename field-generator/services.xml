@@ -4,17 +4,22 @@
 
     <container id="container" version="1.0">
         
+        <!-- Local language model -->
         <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
             <config name="ai.vespa.llm.clients.llm-local-client">
-                <model model-id="phi-3.5-mini-q4"/>
-                <!--Context size, which is split evenly between requests.-->
+                <!-- Specify LLM by id for Vespa Cloud -->
+                <model model-id="phi-3.5-mini-q4"/>-->
+                <!-- Alternative is to use url, which also works outside Vespa Cloud -->
+<!--            <model url="https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf"/>-->
+                <!-- Number of tokens an LLM can attend in each inference for all parallel request. -->
                 <contextSize>5000</contextSize>
+                <!-- Requests are processed in parallel using continuous batching.
+                Each request will use 5000 / 5 = 1000 context tokens. -->
                 <parallelRequests>5</parallelRequests>
-                <!--Context size is split evenly between requests so we have 1000 tokens per request 
-                that we split evenly between prompt and completion tokens.-->
+                <!--Request context size split between prompt and completion tokens: 500 + 500 = 10000 -->
                 <maxPromptTokens>500</maxPromptTokens>
                 <maxTokens>500</maxTokens>
-                <!-- Documents will be set in a queue to wait for processing -->
+                <!-- Documents will be set in a queue to wait until one of the parallel requests is done process. -->
                 <maxQueueSize>3</maxQueueSize>
                 <!-- Both enqueue and queue wait has to be set proportional to max queues size 
                 because the last request will need to wait for all previous ones before starting the processing. -->
@@ -24,7 +29,8 @@
                 <contextOverflowPolicy>DISCARD</contextOverflowPolicy>
             </config>
         </component>
-
+        
+            <!-- OpenAI client -->
 <!--        <component id="llm" class="ai.vespa.llm.clients.OpenAI">-->
 <!--            <config name = "ai.vespa.llm.clients.llm-client">-->
 <!--                <apiKeySecretName>openai-key</apiKeySecretName>-->
