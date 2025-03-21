@@ -8,10 +8,8 @@
             <config name="ai.vespa.llm.clients.llm-local-client">
                 <model model-id="phi-3.5-mini-q4"/>
                 <!--Context size, which is split evenly between requests.-->
-                <contextSize>10000</contextSize>
-                <!--To maximize throughput on CPU, setting it to number of ca. number of cores
-                considering we have enough memory for context size-->
-                <parallelRequests>10</parallelRequests>
+                <contextSize>5000</contextSize>
+                <parallelRequests>5</parallelRequests>
                 <!--Context size is split evenly between requests so we have 1000 tokens per request 
                 that we split evenly between prompt and completion tokens.-->
                 <maxPromptTokens>500</maxPromptTokens>
@@ -54,11 +52,13 @@
 
         <nodes count="1">
             <!-- Local models run much faster with GPU. CPUs with many cores can be used for smaller models 
-            but expect several seconds in latency per generate per doc.-->
-            <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb"/>
-<!--            <resources vcpu="4.0" memory="16Gb" architecture="x86_64" storage-type="local" disk="125Gb">-->
+            but expect many seconds in latency per generate per doc.-->
+<!--            <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb">-->
 <!--                <gpu count="1" memory="16.0Gb"/>-->
 <!--            </resources>-->
+            <resources vcpu="8.0" memory="32Gb" architecture="x86_64" storage-type="local" disk="225Gb">
+                <gpu count="1" memory="16.0Gb"/>
+            </resources>
         </nodes>
     </container>
 

@@ -1,8 +1,5 @@
 export VESPA_CLI_CLOUD_SYSTEM=publiccd
 application := vespa-team.feed-generator
-# Number connections = number of container nodes
-connections := 1
-feed_args := --connections $(connections) --verbose
 
 config:
 	vespa config set target cloud
@@ -20,17 +17,20 @@ deploy:
 destroy:
 	vespa destroy
 
+# For LLM inference, reduce number of connections to 1 to avoid overloading the node.
+feed_cmd = vespa feed data/feed_$(1).jsonl --connections 1 --verbose
+
 feed_1:
-	vespa feed data/feed_1.jsonl --connections $(connections) --verbose
+	$(call feed_cmd,1)
 
 feed_10:
-	vespa feed data/feed_10.jsonl --connections $(connections) --verbose
+	$(call feed_cmd,10)
 
 feed_100:
-	vespa feed data/feed_100.jsonl --connections $(connections) --verbose
+	$(call feed_cmd,100)
 
 feed_1000:
-	vespa feed data/feed_1000.jsonl --connections $(connections) --verbose
+	$(call feed_cmd,1000)
 
 query_100:
 	vespa query 'yql=select * from passage where true' hits=100
