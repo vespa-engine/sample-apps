@@ -60,7 +60,7 @@ $ vespa deploy --wait 300
 </pre>
 
 <pre data-test="exec">
-$ vespa feed ext/vespa.json
+$ vespa feed ext/documents.jsonl
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="What Is A  Dad Bod">

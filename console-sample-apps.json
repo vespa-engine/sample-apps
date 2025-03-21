@@ -1,0 +1,60 @@
+[
+    {
+      "name": "album-recommendation",
+      "shortname": "album-recommendation",
+      "title": "Album Recommendation",
+      "description": "This application ranks music albums using a user profile: Albums with scores for a set of categories are matched with a user's preference.",
+      "features": [
+        "Search",
+        "Recommendation"
+      ],
+      "category": "Getting Started",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation#readme",
+      "exampleQuery": {
+        "yql": "select * from music where true",
+        "ranking": {
+            "profile": "rank_albums",
+            "features": {
+                "query(user_profile)": "{{cat:pop}:0.8,{cat:rock}:0.2,{cat:jazz}:0.1}"
+            }
+        }
+      }
+    },
+    {
+      "name": "text-search",
+      "shortname": "text-search",
+      "title": "Text Search",
+      "description": "The Text Search Tutorial demonstrates traditional text search using BM25/Vespa nativeRank, and is a good start to using the MS Marco dataset.",
+      "features": [
+        "BM25",
+        "nativeRank",
+        "MS Marco"
+      ],
+      "category": "Getting Started",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/text-search#readme",
+      "exampleQuery": {
+        "yql": "select title,url,id from msmarco where userQuery()",
+        "query": "what is dad bod"
+      }
+    },
+    {
+      "name": "colbert",
+      "shortname": "colbert",
+      "title": "Simple hybrid search with ColBERT",
+      "description": "This application uses a single vector embedding model for retrieval and ColBERT (multi-token vector representation) for re-ranking. This semantic search application demonstrates the colbert-embedder and the tensor expressions for ColBERT MaxSim.",
+      "features": [
+        "ColBERT",
+        "Re-ranking"
+      ],
+      "category": "Ranking",
+      "repository": "https://github.com/vespa-engine/sample-apps/tree/master/colbert#readme",
+      "exampleQuery": {
+        "query": "shipping stuff over the sea",
+        "yql": "select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))",
+        "input": {
+          "query(q)": "embed(e5, @query)",
+          "query(qt)": "embed(colbert, @query)"
+        }
+      }
+    }
+  ]

@@ -1,0 +1,149 @@
+name: Update on Vespa Cloud
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+defaults:
+  run:
+    # Specify to ensure "pipefail and errexit" are set.
+    # Ref: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#defaultsrunshell
+    shell: bash
+
+permissions:
+  contents: read
+  id-token: write # Required for OIDC authentication
+  deployments: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    outputs:
+      app-list-json: ${{ steps.read-json.outputs.APP_LIST }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read JSON
+        id: read-json
+        run: |
+          delimiter="$(openssl rand -hex 8)"
+          {
+            echo "APP_LIST<<${delimiter}"
+            sed -e '$a\' console-sample-apps.json # Ensures that an empty line is always present.
+            echo "${delimiter}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: console-json
+          path: console-sample-apps.json
+
+  create-and-validate:
+    name: Create Zip and Validate JSON
+    runs-on: ubuntu-latest
+
+    needs:
+      - setup
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.setup.outputs.app-list-json) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create artifact
+        env:
+          DEBUG: ${{ runner.debug }} # Automatically set by GitHub Actions when running in debug mode.
+        run: |
+          ./scripts/build-sample-app.sh "${{ matrix.app.name }}"
+
+          # Ensure that both application.zip and documents.jsonl are created.
+          if [ ! -f "${{ matrix.app.name }}/dist/application.zip" ] ||
+             [ ! -f "${{ matrix.app.name }}/dist/documents.jsonl" ]; then
+            echo "::error:: Build failure: application.zip or documents.jsonl not found in ${GITHUB_WORKSPACE}/${{ matrix.app.name }}/dist/"
+            exit 1
+          fi
+
+      - name: Validate documents.jsonl
+        env:
+          DOCUMENTS_JSONL: ${{ matrix.app.name }}/dist/documents.jsonl
+        run: |
+          # Validate each line as a standalone JSON object/array
+          LINE_NUM=0
+          while IFS= read -r line || [ -n "$line" ]; do
+              LINE_NUM=$((LINE_NUM + 1))
+              echo "$line" | jq empty || (
+                  echo "::error:: Invalid JSON on line $LINE_NUM: $line"
+                  exit 1
+              )
+          done < "$DOCUMENTS_JSONL"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app.shortname }}
+          path: ${{ matrix.app.name }}/dist/
+
+  push:
+    name: Push to Vespa Cloud
+    runs-on: ubuntu-latest
+
+    environment:
+      # Append "CD" to the environment name if not on "push" event on default branch.
+      name: ${{ (github.event_name != 'push' || github.ref_name != 'master' ) && 'Vespa Cloud CD' || 'Vespa Cloud' }}
+      url: https://cloud.vespa.ai
+
+    needs:
+      - create-and-validate
+
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ROLE_SAMPLE_APP_DEPLOY: ${{ vars.AWS_ROLE_SAMPLE_APP_DEPLOY }}
+      AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME }}
+      S3_UPLOAD_PREFIX: console/one-click-sample-apps
+
+    steps:
+      - name: Download All Packages
+        uses: actions/download-artifact@v4
+        with:
+          path: apps
+
+      - name: List Downloaded
+        if: ${{ runner.debug }}
+        run: |
+          ls -lr apps
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          role-to-assume: ${{ env.AWS_ROLE_SAMPLE_APP_DEPLOY }}
+
+      - name: Push Zip and JSON to S3
+        env:
+          # Add `--dryrun` if not on "push" event on default branch.
+          AWS_S3_OPTIONS: --color=on --no-progress ${{ (github.event_name == 'push' && github.ref_name == 'master' ) &&  '' || ' --dryrun' }}
+        run: |
+          # Not an app, but artifact from the setup job.
+          mv ./apps/console-json ./console-json
+
+          aws s3 sync ${{ env.AWS_S3_OPTIONS }} ./apps/ "s3://${AWS_S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}/"
+          aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
+
+      - name: Invalidate Cloudfront Cache
+        env:
+          ECHO: ${{ (github.event_name == 'push' && github.ref_name == 'master') && '' || 'echo' }}
+        run: |
+          $ECHO aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text

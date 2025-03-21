@@ -16,5 +16,3 @@ echo "Done sampling from corpus."
 echo "Converting to Vespa format..."
 ./python/convert-to-vespa-format.py $DIR $DOCTYPE id,url,title,body
 echo "Done converting to Vespa format."
-
-
