@@ -9,7 +9,10 @@ auth:
 	vespa auth login
 
 cert:
-	vespa auth cert add -f
+	vespa auth cert -f
+
+#cert-add:
+#	vespa auth cert add
 
 deploy:
 	vespa deploy --wait 3600
@@ -17,20 +20,20 @@ deploy:
 destroy:
 	vespa destroy
 
-# For LLM inference on one container node, reduce number of concurrent requests by setting connections to 1.
-feed_cmd = vespa feed data/feed_$(1).jsonl --connections 1 --verbose
+# For LLM inference on 1 container node, reduce number of concurrent requests by setting connections to 1.
+feed_cmd = vespa feed data/feed_$(1).jsonl --connections 12 --verbose
 
-feed_1:
+feed-1:
 	$(call feed_cmd,1)
 
-feed_10:
+feed-10:
 	$(call feed_cmd,10)
 
-feed_100:
+feed-100:
 	$(call feed_cmd,100)
 
-feed_1000:
+feed-1000:
 	$(call feed_cmd,1000)
 
-query_100:
+query-100:
 	vespa query 'yql=select * from passage where true' 'hits=100' 'ranking=enriched'

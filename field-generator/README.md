@@ -12,3 +12,14 @@ GPU
 5 parallel - 8 connections - 131 second
 5 parallel - 3 connections - 133 seconds
 10 parallel - 8 connection - 140 seconds
+
+2 GPU
+2 connection - 85 seconds
+3 conn  - 75 seconds
+4 connection - 70 seconds
+
+3 GPU
+8 connection - 46 seconds
+
+4 GPU
+12 connection - 34 seconds
