@@ -4,19 +4,17 @@ package ai.vespa.example.shopping;
 import com.yahoo.component.annotation.Inject;
 import com.yahoo.language.Language;
 import com.yahoo.language.Linguistics;
+import com.yahoo.language.process.LinguisticsParameters;
 import com.yahoo.language.process.StemMode;
 import com.yahoo.language.process.Token;
 import com.yahoo.prelude.query.PrefixItem;
-import com.yahoo.prelude.query.WeakAndItem;
 import com.yahoo.prelude.query.WordItem;
 import com.yahoo.prelude.query.FuzzyItem;
 import com.yahoo.prelude.query.OrItem;
 import com.yahoo.prelude.query.Item;
-import com.yahoo.processing.request.CompoundName;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
-import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 
 import java.util.ArrayList;
@@ -48,8 +46,8 @@ public class SuggestionSearcher extends Searcher {
 
     private List<String> tokenize(String userQuery) {
         List<String> result = new ArrayList<>(6);
-        Iterable<Token> tokens = this.linguistics.getTokenizer().
-                tokenize(userQuery, Language.fromLanguageTag("en"), StemMode.NONE,false);
+        Iterable<Token> tokens = this.linguistics.getTokenizer()
+                                         .tokenize(userQuery, new LinguisticsParameters(Language.fromLanguageTag("en"), StemMode.NONE, false, true));
         for(Token t: tokens) {
             if (t.isIndexable())
                 result.add(t.getTokenString());
