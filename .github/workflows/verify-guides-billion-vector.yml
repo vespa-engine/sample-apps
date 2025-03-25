@@ -9,12 +9,6 @@ on:
       - ".github/workflows/verify-guides-billion-vector.yml" # Test changes to this file
       - "billion-scale-vector-search/"
 
-  pull_request:
-    branches: ["master"]
-    paths:
-      - ".github/workflows/verify-guides-billion-vector.yml" # Test changes to this file
-      - "billion-scale-vector-search/"
-
 jobs:
   test:
     uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main
