@@ -239,7 +239,7 @@ def get_macro(macro):
                 "type": "default"
             },
             {
-                "$": "vespa deploy --wait 300",
+                "$": "vespa deploy --wait 300 ./app",
                 "type": "default"
             }
         ]
@@ -344,7 +344,7 @@ def run_file(file_name):
 
 def run_with_arguments():
     global verbose
-    global workdir 
+    global workdir
     config_file = ""
     argv = sys.argv[1:]
 
