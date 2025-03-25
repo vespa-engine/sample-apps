@@ -1,6 +1,7 @@
 #! /bin/bash
 
 DIR="ext"
+DATASET_DIR="dataset"
 DOCTYPE="msmarco"
 NUM_QUERIES=1000
 NUM_DOCS=100000
@@ -14,5 +15,5 @@ echo "Sampling from corpus..."
 echo "Done sampling from corpus."
 
 echo "Converting to Vespa format..."
-./python/convert-to-vespa-format.py $DIR $DOCTYPE id,url,title,body
+./python/convert-to-vespa-format.py "$DIR" "$DATASET_DIR" "$DOCTYPE" "id,url,title,body"
 echo "Done converting to Vespa format."

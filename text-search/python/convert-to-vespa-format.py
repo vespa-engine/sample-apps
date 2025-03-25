@@ -6,13 +6,24 @@ import sys
 import csv
 import json
 
-data_dir = sys.argv[1]
-doc_type = sys.argv[2]
-fields = sys.argv[3].split(",")
+if len(sys.argv) != 5:
+    print("Usage: convert-to-vespa-format.py <source_dir> <dest_dir> <doc_type> <fields>")
+    sys.exit(1)
 
-sample_offset_file = os.path.join(data_dir, "test-docs-offset.tsv")
-docs_file = os.path.join(data_dir, "docs.tsv")
-out_file = os.path.join(data_dir, "documents.jsonl")
+source_dir, dest_dir, doc_type, fields = sys.argv[1:5]
+fields = fields.split(",")
+
+# Validate directories exist
+if not os.path.isdir(source_dir):
+    print(f"Error: Source directory '{source_dir}' does not exist")
+    sys.exit(1)
+if not os.path.isdir(dest_dir):
+    print(f"Warnining: Destination directory '{dest_dir}' does not exist")
+    os.makedirs(dest_dir)
+
+sample_offset_file = os.path.join(source_dir, "test-docs-offset.tsv")
+docs_file = os.path.join(source_dir, "docs.tsv")
+out_file = os.path.join(dest_dir, "documents.jsonl")
 
 
 def load_document_offsets():

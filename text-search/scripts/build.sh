@@ -22,7 +22,7 @@ main() {
   echo '  * dist/documents.jsonl'
   bash scripts/convert-msmarco.sh
   mkdir -p dataset/
-  cp ext/documents.jsonl dist/documents.jsonl
+  cp dataset/documents.jsonl dist/documents.jsonl
 
   (
     echo '  * dist/application.zip'
