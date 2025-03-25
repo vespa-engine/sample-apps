@@ -463,7 +463,7 @@ Notes:
 ## Test feed and query endpoints
 Feed 5 documents, using the document-API endpoint in the _feed_ container cluster, here mapped to 8080/8081:
 <pre data-test="exec">
-$ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); \
+$ i=0; (for doc in $(ls ../../../album-recommendation/dataset/*.json); \
   do \
     curl -H Content-Type:application/json -d @$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
@@ -745,7 +745,7 @@ export VESPA_CLI_DATA_PLANE_KEY_FILE=pki/client/client.key
 ```
 Feed documents:
 ```
-vespa feed -t https://localhost:8443 ../../../album-recommendation/ext/documents.jsonl
+vespa feed -t https://localhost:8443 ../../../album-recommendation/dataset/documents.jsonl
 ```
 Visit documents:
 ```
@@ -762,7 +762,7 @@ Note that the _feed_ and _query_ container cluster nodes are mapped to 8443 and 
 ## Test feed and query endpoints using curl
 Feed 5 documents, using the document-API endpoint in the _feed_ container cluster, here mapped to 8080/8081:
 <pre data-test="exec">
-$ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); do \
+$ i=0; (for doc in $(ls ../../../album-recommendation/dataset/*.json); do \
     curl -s --key pki/client/client.key --cert pki/client/client.pem --cacert pki/vespa/ca-vespa.pem \
       -H Content-Type:application/json -d @$doc \
       https://localhost:8443/document/v1/mynamespace/music/docid/$i; \

@@ -148,9 +148,9 @@ Check that this works:
 $ curl http://localhost:19050/clustercontroller-status/v1/music
 </pre>
 Then open these in a browser:
-* http://localhost:19050/clustercontroller-status/v1/music 
-* http://localhost:19051/clustercontroller-status/v1/music 
-* http://localhost:19052/clustercontroller-status/v1/music 
+* http://localhost:19050/clustercontroller-status/v1/music
+* http://localhost:19051/clustercontroller-status/v1/music
+* http://localhost:19052/clustercontroller-status/v1/music
 
 0 is normally master, 1 is next (and hence has an overview table), 2 is cold.
 
@@ -246,7 +246,7 @@ see [troubleshooting](/examples/operations/README.md#troubleshooting).
 ## Feed data, check distribution
 Make sure the three nodes are started and up - then feed 5 documents:
 <pre data-test="exec" data-test-wait-for="id:mynamespace:music::4">
-$ i=0; (for doc in $(ls ../../../album-recommendation/ext/*.json); \
+$ i=0; (for doc in $(ls ../../../album-recommendation/dataset/*.json); \
     do \
       curl -H Content-Type:application/json -d @$doc \
       http://localhost:8080/document/v1/mynamespace/music/docid/$i; \

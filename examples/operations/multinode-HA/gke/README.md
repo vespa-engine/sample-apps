@@ -48,7 +48,7 @@ gcloud container clusters create vespa \
   --num-nodes=3 \
   --machine-type=n1-standard-2 \
   --disk-size=20
-  
+
 gcloud container clusters get-credentials vespa
 ```
 This is a minimum-configuration to start the multinode-HA application on GKE.
@@ -207,7 +207,7 @@ Feed data to the feed endpoint:
 kubectl port-forward svc/vespa-feed 8080
 ```
 ```
-i=0; (for doc in $(ls ../../../../album-recommendation/ext/*.json); \
+i=0; (for doc in $(ls ../../../../album-recommendation/dataset/*.json); \
   do \
     curl -H Content-Type:application/json -d @$doc \
     http://localhost:8080/document/v1/mynamespace/music/docid/$i; \
