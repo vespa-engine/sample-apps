@@ -23,11 +23,11 @@ The following is for deploying the end to end application including a custom fro
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
-* Architecture: x86_64 or arm64 
+* Architecture: x86_64 or arm64
 * Minimum **10 GB** memory dedicated to Docker (the default is 2 GB on Macs)
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
-* python 3 
+* python 3
 * <a href="https://openjdk.org/projects/jdk/17/" data-proofer-ignore>Java 17</a> installed.
 * [Apache Maven](https://maven.apache.org/install.html)
 
@@ -38,7 +38,7 @@ Vespa CLI is the official command-line client for Vespa.ai.
 It is a single binary without any runtime dependencies and is available for Linux, macOS and Windows.
 
 <pre>
-$ brew install vespa-cli 
+$ brew install vespa-cli
 </pre>
 
 <pre data-test="exec">
@@ -46,7 +46,7 @@ $ vespa clone text-search text-search && cd text-search
 </pre>
 
 <pre data-test="exec">
-$ ./bin/convert-msmarco.sh
+$ ./scripts/convert-msmarco.sh
 </pre>
 
 <pre data-test="exec">
@@ -56,15 +56,15 @@ $ docker run --detach --name vespa-msmarco --hostname vespa-msmarco \
 </pre>
 
 <pre data-test="exec">
-$ vespa deploy --wait 300 
+$ vespa deploy --wait 300 ./app
 </pre>
 
 <pre data-test="exec">
-$ vespa feed ext/documents.jsonl
+$ vespa feed dataset/documents.jsonl
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="What Is A  Dad Bod">
-$ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=what is dad bod' 
+$ vespa query 'yql=select title,url,id from msmarco where userQuery()' 'query=what is dad bod'
 </pre>
 
 ### Using Logstash to feed data
