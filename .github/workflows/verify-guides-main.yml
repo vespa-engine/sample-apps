@@ -13,16 +13,6 @@ on:
       - Gemfile.lock
       - "!.github/workflows/verify-guides-main.yml"
 
-  pull_request:
-    branches: ["master"]
-    paths-ignore:
-      - "billion-scale-vector-search/"
-      - "billion-scale-image-search/"
-      - "examples/model-deployment/"
-      - ".github/**"
-      - Gemfile.lock
-      - "!.github/workflows/verify-guides-main.yml"
-
 jobs:
   main:
     uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main
