@@ -132,8 +132,9 @@ it is useful when you want to quickly do ranking experiments without rewriting a
 
 ### Agentic Chatbot using Vespa
 
-[![logo](/assets/vespa-logomark-tiny.png) agentic-streamlit-chatbot](agentic-streamlit-chatbot) This sample Streamlit application demonstrates how to use [LangGraph](https://www.langchain.com/langgraph) agentic framework to develop an E-commerce chatbot using Vespa as a retrieval tool.
+[![logo](/assets/vespa-logomark-tiny.png) agentic-streamlit-chatbot](agentic-streamlit-chatbot/simple_app) This simple Streamlit application demonstrates how to use [LangGraph](https://www.langchain.com/langgraph) agentic framework to develop an E-commerce chatbot using Vespa as a retrieval tool.
 
+[![logo](/assets/vespa-logomark-tiny.png) agentic-streamlit-chatbot](agentic-streamlit-chatbot/advanced_app) This Streamlit application shows a more advanced example on how to use [LangGraph](https://www.langchain.com/langgraph) agentic framework to develop an E-commerce chatbot enabling a conversational search with human in the loop feedback with yql query generation using Vespa query builder.
 
 For any questions, please register at the Vespa Slack and discuss in the general channel.
 
