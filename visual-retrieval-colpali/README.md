@@ -66,7 +66,7 @@ We recommend installing the amazing `uv` to manage your python environment:
 See also [installation - uv docs](https://docs.astral.sh/uv/getting-started/installation/) for other installation options.
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+brew install uv
 ```
 
 Then, create a virtual environment:
