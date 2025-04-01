@@ -26,7 +26,6 @@ resource "grafana_rule_group" "vespa_rule_group" {
     name = "Vespa alert group"
     folder_uid = grafana_folder.rule_folder.uid
     interval_seconds = 60
-    org_id = 1
 
     rule {
         name = "content-cluster-disk-util"

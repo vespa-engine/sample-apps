@@ -18,6 +18,8 @@ scrape_configs:
       cert_file: data-plane-public-cert.pem
       key_file: data-plane-private-key.pem
 
+    params:
+      consumer: ['Vespa']
     #Replace <ENDPOINT> with your Vespa Cloud endpoint URL
     static_configs:
       - targets: ['<ENDPOINT>']
