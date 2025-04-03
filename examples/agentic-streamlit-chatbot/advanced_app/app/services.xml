@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<services version="1.0">
+    <container version="1.0">
+        <search/>
+        <document-api/>
+        <component id="arctic" type="hugging-face-embedder">
+            <transformer-model url="https://huggingface.co/Snowflake/snowflake-arctic-embed-xs/resolve/main/onnx/model_int8.onnx"/>
+            <tokenizer-model url="https://huggingface.co/Snowflake/snowflake-arctic-embed-xs/raw/main/tokenizer.json"/>
+        </component>
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
+        <clients>
+            <client id="mtls" permissions="read,write">
+                <certificate file="security/clients.pem"/>
+            </client>
+        </clients>
+    </container>
+
+    <content id="search" version="1.0">
+        <redundancy>1</redundancy>
+        <documents>
+            <document type="product" mode="index" />
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0" />
+        </nodes>
+    </content>
+</services>

@@ -1,0 +1,97 @@
+# Copyright Vespa.ai. All rights reserved.
+
+schema product {
+
+  document product {
+
+    field language type string {
+      indexing: "en" | set_language
+    }
+
+    field id type int {
+      indexing: attribute | summary
+    }
+
+    field title type string {
+      indexing: index | summary
+      index: enable-bm25
+    }
+
+    field description type string {
+      indexing: index | summary
+      index: enable-bm25
+    }
+
+    field category type string {
+      indexing: attribute | summary
+      attribute: fast-search
+      match: word
+      rank: filter
+    }
+
+    field price type int {
+      indexing: attribute | summary
+    }
+
+    field quantity type int {
+      indexing: attribute | summary
+    }
+
+    field average_rating type float {
+      indexing: attribute | summary
+    }
+  }
+  field embedding type tensor<float>(x[384]) {
+        indexing: input title . " " . input description | embed | index | attribute
+        attribute {
+            distance-metric: angular
+        }
+        index {
+            hnsw {
+                max-links-per-node: 16
+                neighbors-to-explore-at-insert: 200
+            }
+        }
+  }
+
+  fieldset default {
+    fields: title, description
+  }
+
+  rank-profile bm25 {
+    # This best matches the 'best_fields' (default) scoring in 'multi_match' ES queries.
+    function best_bm25() {
+      expression: max(bm25(title), bm25(description))
+    }
+    first-phase {
+      expression: best_bm25
+    }
+  }
+
+  rank-profile closeness {
+    inputs {
+      query(q_embedding) tensor<float>(x[384])
+    }
+    first-phase {
+      expression: closeness(field, embedding)
+    }
+  }
+
+  rank-profile hybrid inherits bm25, closeness {
+    first-phase {
+      # This matches the addition of scores used in ES hybrid queries containing both 'query' ('multi_query') and 'knn'.
+      expression: best_bm25 + closeness(field, embedding)
+    }
+  }
+
+  document-summary minimal {
+    summary id {}
+  }
+
+  document-summary medium {
+    summary id {}
+    summary title {}
+    summary description {}
+  }
+
+}

@@ -16,3 +16,4 @@ _work/
 links-to-check.html
 vespa-feed-client-cli/
 vespa-feed-client-cli.zip
+**/__pycache__/
