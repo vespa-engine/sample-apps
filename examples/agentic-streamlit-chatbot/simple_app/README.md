@@ -31,7 +31,7 @@
   ```
   vespa query "select id, category, title, price  from sources * where default contains 'screwdriver'"
   ```
- - You will need the URL of your Vespa application. Run the following command:
+ - You will need the URL for the MTLS end-point for your Vespa application. Run the following command:
   ```
   vespa status
   ```
@@ -39,7 +39,7 @@
   ```
   Container container at https://xxxxx.yyyyy.z.vespa-app.cloud/ is ready
   ```
-  Note down the URL.
+  Note down the URL for the MTLS end-point.
 
   # Configure and Launch your Streamlit Application
 
