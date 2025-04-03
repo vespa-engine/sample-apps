@@ -15,9 +15,6 @@
             <client id="mtls" permissions="read,write">
                 <certificate file="security/clients.pem"/>
             </client>
-                <client id="query-token-client" permissions="read,write">
-                <token id="ecommerce_write"/>
-            </client>
         </clients>
     </container>
 
