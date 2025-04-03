@@ -52,7 +52,7 @@ TavilySearch = TavilySearchResults(max_results=2)
 
 tools = [TavilySearch, VespaRetrieverTool]
 
-llm = ChatOpenAI(model="gpt-4o")
+llm = ChatOpenAI(model="gpt-4o-mini")
 llm_with_tools = llm.bind_tools(tools)
 
 # System message
