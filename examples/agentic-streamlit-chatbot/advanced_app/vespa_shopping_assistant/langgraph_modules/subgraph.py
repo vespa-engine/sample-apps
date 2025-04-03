@@ -45,7 +45,7 @@ def subgraph_GenerateKeywords (state: SubgraphState):
     )
 
     # Initialize the language model
-    model = ChatOpenAI(model="gpt-3.5-turbo",temperature=0)
+    model = ChatOpenAI(model="gpt-4o-mini",temperature=0)
     #model = ChatOllama(model="phi4")  
 
     # Create the chain
@@ -96,7 +96,7 @@ def subgraph_EvaluateCategory (state: SubgraphState):
     )
 
     # Initialize the language model
-    model = ChatOpenAI(model="gpt-4",temperature=0)
+    model = ChatOpenAI(model="gpt-4o-mini",temperature=0)
     #model = ChatOllama(model="phi4") 
     
     # Create the chain
@@ -146,7 +146,7 @@ def subgraph_EvaluateFilters (state: SubgraphState):
     )
 
     # Initialize the language model
-    model = ChatOpenAI(model="gpt-3.5-turbo",temperature=0)
+    model = ChatOpenAI(model="gpt-4o-mini",temperature=0)
     #model = ChatOllama(model="phi4")
     
     # Create the chain
@@ -179,11 +179,12 @@ def EvaluateResults(state: SubgraphState):
     
     # Create the prompt template
     prompt = PromptTemplate(
-        template="""You are a result evaluator and your role is to evaluate the search results and ensure result accuracy. You will follow the following the steps to evaluate the result set:
-                    - Step 1: Eliminate any result that is irrelevant for the user query. If the list of results is empty, you should return the string 'None'.
+ 	template="""You are a result evaluator and your role is to evaluate the search results and ensure result accuracy. You will follow the following the steps to evaluate the result set:
+                    - Step 1: Eliminate any result that is irrelevant for the user query in the search results. If the item has no relevance to the user query, it should be removed from the result set.
                     - Step 2: Assign a relevancy score between 0 and 100 to each remaining result. The higher the score, the more relevant the result.
                     - Step 3: Order the resulting set from the previous step by decreasing order of relevancy
-                    - Step 4: Truncate and return only the first 5 results. 
+                    - Step 4: Truncate and return up to the first five relevant results, eliminating any non-relevant results.
+                    - Step 5: If the resulting list is empty, you should return the string 'None'.
                     {format_instructions}\n,
                     Conversation Context: {conversation}\n
                     User Query: {userquery}\n
@@ -193,7 +194,7 @@ def EvaluateResults(state: SubgraphState):
     )
 
     # Initialize the language model
-    model = ChatOpenAI(model="gpt-3.5-turbo",temperature=0)
+    model = ChatOpenAI(model="gpt-4o-mini",temperature=0)
     #model = ChatOllama(model="phi4")
     
     # Create the chain
@@ -226,14 +227,6 @@ def CheckforClarificationCategory(state: SubgraphState)-> Literal["GetHumanFeedb
             return "GenerateQueryTerms"
     else: return "GetHumanFeedback"
 
-
-def CheckforClarificationKeywords(state: SubgraphState)-> Literal["GetHumanFeedback", "GenerateFilters"]:
-    
-    CQ = state["ClarifyingQuestion"]
-
-    if CQ == 'None':
-        return "GenerateFilters"
-    else: return "GetHumanFeedback"
 
 # Define the subgraph
 subgraph_builder = StateGraph(SubgraphState)
