@@ -55,6 +55,6 @@
   
   Launch your streamlit application from `vespa_shopping_assistant`:
   ```
-  streamlit run streamlit_vespa_app.py
+  streamlit run streamlit_app.py
   ```
 You can now start asking some conversational questions, like for example looking for a glue, or rain gear.
