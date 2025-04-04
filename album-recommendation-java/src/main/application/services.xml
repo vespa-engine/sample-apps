@@ -47,6 +47,9 @@
       <chain id="default" inherits="vespa">
         <searcher id="ai.vespa.example.album.SetFilterSearcher" bundle="album-recommendation-java"/>
       </chain>
+      <chain id="grouping" inherits="vespa">
+        <searcher id="ai.vespa.example.album.GroupingSearcher" bundle="album-recommendation-java"/>
+      </chain>
       <chain id="metalchain" inherits="vespa">
         <searcher id="ai.vespa.example.album.MetalSearcher" bundle="album-recommendation-java">
           <config name="ai.vespa.example.album.metal-names">
