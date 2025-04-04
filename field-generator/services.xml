@@ -7,28 +7,36 @@
         <!-- Local language model -->
         <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
             <config name="ai.vespa.llm.clients.llm-local-client">
-                <!-- Specify LLM by id for Vespa Cloud -->
+                <!-- For Vespa Cloud, specify model by model-id to speed-up deployment -->
                 <model model-id="phi-3.5-mini-q4"/>
-                <!-- Alternative is to use url, which also works outside Vespa Cloud -->
-                <!-- <model url="https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf"/> -->
-                <!-- Number of tokens a LLM can handle for each inference over all parallel request.
-                This includes input and output tokens.-->
+
+                <!-- For self-hosted Vespa and Vespa Cloud, specify model by URL -->
+                <!-- <model url="https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf"/>-->
+                
+                <!-- Number of tokens a LLM can do inference with.
+                This includes prompt and completion tokens for all parallel request.-->
                 <contextSize>5000</contextSize>
+                
                 <!-- Requests are processed in parallel using continuous batching.
                 Each request is allocated 5000 / 5 = 1000 context tokens. -->
                 <parallelRequests>5</parallelRequests>
+                
                 <!--Request context size split between prompt and completion tokens: 500 + 500 = 1000 -->
                 <maxPromptTokens>500</maxPromptTokens>
                 <maxTokens>500</maxTokens>
+                
                 <!-- A waiting line for requests to start processing. 
                 It is reasonable to set it to <= parallelRequests -->
                 <maxQueueSize>3</maxQueueSize>
+                
                 <!-- How long a request can wait until added to the queue, otherwise timeout. 
                 On average, Ca. = number of milliseconds it takes to process all parallel requests. -->
                 <maxEnqueueWait>100000</maxEnqueueWait>
+                
                 <!-- How long a request can wait in the queue until starting processing
                 In the worst case, ca. = number of milliseconds it takes to process all requests in the queue. -->
                 <maxQueueWait>100000</maxQueueWait>
+                
                 <!-- Context overflow occurs when a request uses more context tokens than allocated in contextSize / parallelRequests. 
                 This should not happen if contextSize, parallelRequests, maxPromptTokens, maxTokens are configured correctly.
                 In this case, we want the request to fail so we know if some configuration is wrong.-->
@@ -36,10 +44,15 @@
             </config>
         </component>
         
-            <!-- OpenAI client -->
+        <!-- OpenAI API key -->
+<!--        <secrets>-->
+<!--            <openai-api-key vault="sample-apps" name="openai-key"/>-->
+<!--        </secrets>-->
+        
+        <!-- OpenAI client -->
 <!--        <component id="llm" class="ai.vespa.llm.clients.OpenAI">-->
 <!--            <config name = "ai.vespa.llm.clients.llm-client">-->
-<!--                <apiKeySecretName>openai-key</apiKeySecretName>-->
+<!--                <apiKeySecretName>openai-api-key</apiKeySecretName>-->
 <!--                <model>gpt-4o-mini</model>-->
 <!--            </config>-->
 <!--        </component>-->
@@ -63,12 +76,12 @@
         <search/>
 
         <nodes count="1">
-            <!-- Local models run much faster with GPU. CPUs with many cores can be used for smaller models 
-            but expect many seconds in latency per generate per doc.-->
-            <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb"/>
-<!--            <resources vcpu="8.0" memory="32Gb" architecture="x86_64" storage-type="local" disk="225Gb" >-->
-<!--                <gpu count="1" memory="16.0Gb" type="T4"/>-->
-<!--            </resources>-->
+            <!-- Local models run order of magnitude faster on GPU than CPU -->
+            <resources vcpu="8.0" memory="32Gb" architecture="x86_64" storage-type="local" disk="225Gb" >
+                <gpu count="1" memory="16.0Gb" type="T4"/>
+            </resources>
+            
+            <!-- <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb"/> -->
         </nodes>
     </container>
 
