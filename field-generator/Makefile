@@ -42,8 +42,5 @@ feed-10:
 feed-100:
 	$(call feed_cmd,100)
 
-feed-1000:
-	$(call feed_cmd,1000)
-
 query-100:
 	vespa query 'yql=select * from passage where true' 'hits=100' 'ranking=enriched'
