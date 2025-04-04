@@ -1,0 +1,39 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema passage {
+    document passage {
+        field id type string {
+            indexing: summary | attribute
+        }
+    
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+    }
+    
+    # Relevant questions to increase recall and search suggestions
+    field questions type array<string> {
+        indexing: input text | generate questions_generator | summary | index
+        index: enable-bm25
+    }
+    
+    # Fuzzy matching for extracted names with ngrams
+    field names type array<string> {
+        indexing: input text | generate names_extractor | summary | index
+        match {
+            gram
+            gram-size: 3
+        }
+    }
+    
+    fieldset default {
+        fields: text
+    }
+
+    rank-profile enriched {
+        first-phase {
+            expression: 0.4 * nativeRank(text) + 0.1 * nativeRank(questions) + 0.5 * nativeRank(names)
+        }
+    }
+}
