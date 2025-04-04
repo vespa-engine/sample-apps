@@ -50,8 +50,10 @@ public class GroupingSearcher extends Searcher {
         Result result = execution.search(query);
 
         Group root = grpRequest.getResultGroup(result);
-
         GroupList yearGroups = root.getGroupList(GROUPING_FIELD);
+        if (yearGroups == null) {
+            return result;
+        }
         for(Hit hit : yearGroups) {
            Group group = (Group) hit;
             Long count = (Long) group.getField("count");
