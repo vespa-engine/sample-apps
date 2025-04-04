@@ -185,7 +185,7 @@ $ vespa query query="what was the manhattan project?" hits=5
 </pre>
 
 
-#### Openai
+#### OpenAI
 
 To test generation using the OpenAI client, post a query that runs the `openai` search chain:
 <pre>
@@ -233,6 +233,29 @@ retrieved by Vespa to, for instance, 3.
 
 Prompt evaluation and token generation are much more efficient on the GPU.
 
+### Structured output
+
+You can also specify a structured output format for the LLM.
+In the example below, we provide a JSON schema to force the LLM to return the answer in 3 different
+formats:
+
+- `answer-short`: a short answer to the question
+- `answer-short-french`: a translation of the short answer in French
+- `answer-short-eli5`: an explanation of the answer as if the user was 5 years old
+
+<pre data-test="exec" data-test-assert-contains="answer-short-french">
+vespa query \
+    --timeout 60 \
+    query="what was the manhattan project?" \
+    hits=5 \
+    searchChain=local \
+    format=sse \
+    llm.json_schema="{\"type\":\"object\",\"properties\":{\"answer-short\":{\"type\":\"string\"},\"answer-short-french\":{\"type\":\"string\",\"description\":\"exact translation of short answer in French language\"},\"answer-short-eli5\":{\"type\":\"string\",\"description\":\"explain the answer like I am 5 years old\"}},\"required\":[\"answer-short\",\"answer-short-french\",\"answer-short-eli5\"],\"additionalProperties\":false}" \
+    traceLevel=1
+</pre>
+
+The `llm.json_schema` parameter is used to specify the expected output format of the LLM.
+The schema is defined in JSON Schema format, which allows you to specify the expected structure of the output.
 
 ## Query parameters
 
