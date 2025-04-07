@@ -8,13 +8,7 @@ on:
     paths:
       - ".github/workflows/verify-guides-field-generator.yml" # Test changes to this file
       - "field-generator/"
-
-  pull_request:
-    branches: ["master"]
-    paths:
-      - ".github/workflows/verify-guides-field-generator.yml" # Test changes to this file
-      - "field-generator/"
-
+      
 jobs:
   test:
     uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main

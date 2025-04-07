@@ -4,7 +4,7 @@
 
     <container id="container" version="1.0">
         
-        <!-- Local language model -->
+        <!-- Local LLM -->
         <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
             <config name="ai.vespa.llm.clients.llm-local-client">
                 <!-- For Vespa Cloud, specify model by model-id to speed-up deployment -->
@@ -44,6 +44,8 @@
             </config>
         </component>
         
+        <!-- To use OpenAI instead of a local LLM, remove Local LLM component defined above 
+        and uncomment OpenAI API key and OpenAI client. -->
         <!-- OpenAI API key -->
 <!--        <secrets>-->
 <!--            <openai-api-key vault="sample-apps" name="openai-key"/>-->
@@ -81,6 +83,7 @@
                 <gpu count="1" memory="16.0Gb" type="T4"/>
             </resources>
             
+            <!-- To use CPU, remove resources block above and uncomment resources below. -->
             <!-- <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb"/> -->
         </nodes>
     </container>

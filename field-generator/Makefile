@@ -4,7 +4,6 @@ target := cloud
 #target := local
 
 export VESPA_CLI_CLOUD_SYSTEM=public
-#export VESPA_CLI_CLOUD_SYSTEM=publiccd
 
 tenant := vespa-team
 application := $(tenant).field-generator
