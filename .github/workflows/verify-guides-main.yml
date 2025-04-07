@@ -9,6 +9,7 @@ on:
       - "billion-scale-vector-search/"
       - "billion-scale-image-search/"
       - "examples/model-deployment/"
+      - "field-generator/"
       - ".github/**"
       - Gemfile.lock
       - "!.github/workflows/verify-guides-main.yml"
