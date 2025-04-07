@@ -10,7 +10,7 @@
 
 This sample application demonstrates how to use document enrichment with LLMs in Vespa.
 See [Document enrichment with LLMs](https://docs.vespa.ai/en/llms-document-enrichment.html) documentation for detailed walkthrough of this app.
-[Application schema](schemas/passage.sd) defines two fields with [generate indexing expression](reference/indexing-language-reference.html#generate).
+[Application schema](schemas/passage.sd) defines two fields with [generate indexing expression](https://docs.vespa.ai/en/reference/indexing-language-reference.html#generate).
 Value for these fields are generated with an LLM during feeding.
 
 Generators, LLMs and compute resources are configured in [services.xml](services.xml).
