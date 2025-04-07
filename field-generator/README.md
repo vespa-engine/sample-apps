@@ -8,30 +8,35 @@
 
 # Document enrichment with LLMs example
 
-This sample application demonstrates how to use document enrichment with LLMs in Vespa.
-See [Document enrichment with LLMs](https://docs.vespa.ai/en/llms-document-enrichment.html) documentation for detailed walkthrough of this app.
-[Application schema](schemas/passage.sd) defines two fields with [generate indexing expression](https://docs.vespa.ai/en/reference/indexing-language-reference.html#generate).
-Value for these fields are generated with an LLM during feeding.
+This sample app demonstrates how to use document enrichment with LLMs in Vespa.
+[App's schema](schemas/passage.sd) defines two fields using [generate indexing expression](https://docs.vespa.ai/en/reference/indexing-language-reference.html#generate).
+Values for these fields are generated with an LLM during feeding.
 
-Generators, LLMs and compute resources are configured in [services.xml](services.xml).
+The LLM, generator components and compute resources are configured in [services.xml](services.xml).
 The default configuration uses a [local LLM](https://docs.vespa.ai/en/llms-local.html) and a GPU node in Vespa Cloud.
-Comments in [services.xml](services.xml) contain instructions for reconfiguring this application including:
-1. How to use an external LLM (OpenAI API) instead of a local LLM
-2. Run the application locally instead of Vespa Cloud.
+See comments in [services.xml](services.xml) for instructions to reconfigure this app for the following scenarios:
+
+1. Replace local LLM with external LLM (OpenAI API)
+2. Run the app locally instead of Vespa Cloud
 3. Use CPU nodes instead of GPU
 
-## How to run this app
+See [document enrichment with LLMs](https://docs.vespa.ai/en/llms-document-enrichment.html) documentation for detailed walkthrough.
 
-This application contains [Makefile](Makefile) with [vespa cli](https://docs.vespa.ai/en/vespa-cli.html)
-commands to configure, deploy, feed and query the app.
-By default, it is configured for Vespa Cloud.
+<p data-test="run-macro init-deploy field-generator">
+Requires at least Vespa 8.507.34
+</p>
 
-Steps to run this app:
+## To try this application
 
-1. In the [Makefile](Makefile) change `tenant` to your tenant name.
-2. Configure the environment: `make config`
-3. Authenticate: `make auth`
-4. Deploy the app: `make deploy`
-5. Feed the app: `make feed-10`
-6. Query the app: `make query-100`
-7. Delete the app: `make destroy`
+Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
+through the <code>vespa deploy</code> step, cloning `field-generator` instead of `album-recommendation`.
+
+Feed 10 documents (this includes generating fields values with LLM in Vespa):
+<pre data-test="exec">
+vespa feed data/feed_10.jsonl --connections 1 --verbose
+</pre>
+
+Query 10 documents to see generated values:
+<pre data-test="exec" data-test-assert-contains="id:msmarco:passage::963">
+vespa query 'yql=select * from passage where true' 'hits=10' 'ranking=enriched'
+</pre>
