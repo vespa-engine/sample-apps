@@ -115,7 +115,7 @@ Which will produce the following hit output
 }
 ```
 
-The `rank-profile` used here is `default`, specified in the [schemas/doc.sd](schemas/doc.sd) file. 
+The `rank-profile` used here is `default`, specified in the [schemas/doc.sd](app/schemas/doc.sd) file. 
 
 It includes a [match-features](https://docs.vespa.ai/en/reference/schema-reference.html#match-features) configuration
 specifying tensor and rank-features we want to return with each hit. We have:
