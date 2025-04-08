@@ -22,14 +22,48 @@ See comments in [services.xml](services.xml) for instructions to reconfigure thi
 
 See [document enrichment with LLMs](https://docs.vespa.ai/en/llms-document-enrichment.html) documentation for detailed walkthrough.
 
-<p data-test="run-macro init-deploy field-generator">
-Requires at least Vespa 8.507.34
-</p>
-
 ## To try this application
 
-Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
-through the <code>vespa deploy</code> step, cloning `field-generator` instead of `album-recommendation`.
+The steps blow deploy and test this app in a docker container locally.
+It is also possible to deploy it in [Vespa Cloud](https://docs.vespa.ai/en/cloud/getting-started).
+
+Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
+<pre>
+$ brew install vespa-cli
+</pre>
+
+For local deployment using docker image:
+<pre data-test="exec">
+$ vespa config set target local
+</pre>
+
+Pull and start the vespa docker container image:
+<pre data-test="exec">
+$ docker pull vespaengine/vespa
+$ docker run --detach --name vespa --hostname vespa-container \
+  --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
+  vespaengine/vespa
+</pre>
+
+Download this sample application:
+<pre data-test="exec">
+$ vespa clone field-generator myapp && cd myapp
+</pre>
+
+Verify that configuration service (deploy api) is ready:
+<pre data-test="exec">
+$ vespa status deploy --wait 300
+</pre>
+
+Deploy the application:
+<pre data-test="exec" data-test-assert-contains="Success">
+$ vespa deploy --wait 300
+</pre>
+
+Wait for the application endpoint to become available:
+<pre data-test="exec">
+$ vespa status --wait 300
+</pre>
 
 Feed 10 documents (this includes generating fields values with LLM in Vespa):
 <pre data-test="exec">
