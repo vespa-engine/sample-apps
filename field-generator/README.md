@@ -55,9 +55,9 @@ Verify that configuration service (deploy api) is ready:
 $ vespa status deploy --wait 300
 </pre>
 
-Deploy the application:
+Deploy the application (it takes extra time to download the model):
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa deploy --wait 300
+$ vespa deploy --wait 900
 </pre>
 
 Wait for the application endpoint to become available:

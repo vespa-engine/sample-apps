@@ -8,10 +8,10 @@
         <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
             <config name="ai.vespa.llm.clients.llm-local-client">
                 <!-- For Vespa Cloud, specify model by model-id to speed-up deployment -->
-                <model model-id="phi-3.5-mini-q4"/>
+                <!--<model model-id="phi-3.5-mini-q4"/>-->
 
-                <!-- For self-hosted Vespa and Vespa Cloud, specify model by URL -->
-                <!-- <model url="https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf"/>-->
+                <!-- For self-hosted Vespa, specify model by URL -->
+                <model url="https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf"/>
                 
                 <!-- Number of tokens a LLM can do inference with.
                 This includes prompt and completion tokens for all parallel request.-->
