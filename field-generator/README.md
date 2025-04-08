@@ -25,7 +25,7 @@ See [document enrichment with LLMs](https://docs.vespa.ai/en/llms-document-enric
 ## To try this application
 
 The steps blow deploy and test this app in a docker container locally.
-It is also possible to deploy it in [Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
+It is also possible to deploy it in [Vespa Cloud](https://docs.vespa.ai/en/cloud/getting-started).
 
 Install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html):
 <pre>
