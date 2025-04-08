@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+    <container id="container" version="1.0">
+        
+        <!-- Local LLM -->
+        <component id="llm" class="ai.vespa.llm.clients.LocalLLM">
+            <config name="ai.vespa.llm.clients.llm-local-client">
+                <!-- For Vespa Cloud, specify model by model-id to speed-up deployment -->
+                <model model-id="phi-3.5-mini-q4"/>
+
+                <!-- For self-hosted Vespa and Vespa Cloud, specify model by URL -->
+                <!-- <model url="https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf"/>-->
+                
+                <!-- Number of tokens a LLM can do inference with.
+                This includes prompt and completion tokens for all parallel request.-->
+                <contextSize>5000</contextSize>
+                
+                <!-- Requests are processed in parallel using continuous batching.
+                Each request is allocated 5000 / 5 = 1000 context tokens. -->
+                <parallelRequests>5</parallelRequests>
+                
+                <!--Request context size split between prompt and completion tokens: 500 + 500 = 1000 -->
+                <maxPromptTokens>500</maxPromptTokens>
+                <maxTokens>500</maxTokens>
+                
+                <!-- A waiting line for requests to start processing. 
+                It is reasonable to set it to <= parallelRequests -->
+                <maxQueueSize>3</maxQueueSize>
+                
+                <!-- How long a request can wait until added to the queue, otherwise timeout. 
+                On average, Ca. = number of milliseconds it takes to process all parallel requests. -->
+                <maxEnqueueWait>100000</maxEnqueueWait>
+                
+                <!-- How long a request can wait in the queue until starting processing
+                In the worst case, ca. = number of milliseconds it takes to process all requests in the queue. -->
+                <maxQueueWait>100000</maxQueueWait>
+                
+                <!-- Context overflow occurs when a request uses more context tokens than allocated in contextSize / parallelRequests. 
+                This should not happen if contextSize, parallelRequests, maxPromptTokens, maxTokens are configured correctly.
+                In this case, we want the request to fail so we know if some configuration is wrong.-->
+                <contextOverflowPolicy>FAIL</contextOverflowPolicy>
+            </config>
+        </component>
+        
+        <!-- To use OpenAI instead of a local LLM, remove Local LLM component defined above 
+        and uncomment OpenAI API key and OpenAI client. -->
+        <!-- OpenAI API key -->
+<!--        <secrets>-->
+<!--            <openai-api-key vault="sample-apps" name="openai-key"/>-->
+<!--        </secrets>-->
+        
+        <!-- OpenAI client -->
+<!--        <component id="llm" class="ai.vespa.llm.clients.OpenAI">-->
+<!--            <config name = "ai.vespa.llm.clients.llm-client">-->
+<!--                <apiKeySecretName>openai-api-key</apiKeySecretName>-->
+<!--                <model>gpt-4o-mini</model>-->
+<!--            </config>-->
+<!--        </component>-->
+        
+        <component id="names_extractor" class="ai.vespa.llm.generation.LanguageModelFieldGenerator">
+            <config name="ai.vespa.llm.generation.language-model-field-generator">
+                <providerId>llm</providerId>
+                <promptTemplateFile>files/names_extractor.txt</promptTemplateFile>
+            </config>
+        </component>
+
+        <component id="questions_generator" class="ai.vespa.llm.generation.LanguageModelFieldGenerator">
+            <config name="ai.vespa.llm.generation.language-model-field-generator">
+                <providerId>llm</providerId>
+                <promptTemplate>Generate 3 questions relevant for this text: {input}</promptTemplate>
+            </config>
+        </component>
+        
+        <document-api/>
+        
+        <search/>
+
+        <nodes count="1">
+            <!-- Local models run order of magnitude faster on GPU than CPU -->
+            <resources vcpu="8.0" memory="32Gb" architecture="x86_64" storage-type="local" disk="225Gb" >
+                <gpu count="1" memory="16.0Gb" type="T4"/>
+            </resources>
+            
+            <!-- To use CPU, remove resources block above and uncomment resources below. -->
+            <!-- <resources vcpu="16.0" memory="32Gb" architecture="x86_64" disk="125Gb"/> -->
+        </nodes>
+    </container>
+
+    <content id="content" version="1.0">
+        <redundancy>1</redundancy>
+        
+        <documents>
+            <document mode="index" type="passage"/>
+        </documents>
+        
+        <nodes>
+            <node hostalias="node1" distribution-key="0"/>
+        </nodes>
+    </content>
+
+</services>

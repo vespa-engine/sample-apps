@@ -1,0 +1,16 @@
+name: Verify Guides (field-generator)
+
+on:
+  workflow_dispatch: # Allow manual triggering of this workflow.
+
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/verify-guides-field-generator.yml" # Test changes to this file
+      - "field-generator/"
+      
+jobs:
+  test:
+    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main
+    with:
+      test-file: "field-generator/README.md"
