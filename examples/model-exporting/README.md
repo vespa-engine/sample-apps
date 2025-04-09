@@ -94,3 +94,9 @@ in the format expected by the Vespa bert-embedder.
 <pre>
 ./export_model_from_hf.py --hf_model intfloat/e5-small-v2 --output_dir model
 </pre>
+
+
+### ToDo
+The model directory is duplicated as other apps depend on model file locations.
+This should be rewritten into using model hub.
+
