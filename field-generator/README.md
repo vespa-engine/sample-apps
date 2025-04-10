@@ -74,3 +74,8 @@ Query 10 documents to see generated values:
 <pre data-test="exec" data-test-assert-contains="id:msmarco:passage::963">
 vespa query 'yql=select * from passage where true' 'hits=10' 'ranking=enriched'
 </pre>
+
+Clean up after test:
+<pre data-test="after">
+$ docker rm -f vespa
+</pre>
