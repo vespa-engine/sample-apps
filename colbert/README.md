@@ -90,6 +90,6 @@ field colbert type tensor<int8>(dt{}, x[4])
 ### Terminate container
 
 Remove the container after use:
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>

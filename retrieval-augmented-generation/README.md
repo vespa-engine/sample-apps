@@ -254,7 +254,7 @@ in Vespa](https://docs.vespa.ai/en/llms-rag.html) documentation.
 ## Shutdown and remove the RAG application
 
 For the `local` deployments, shutdown and remove this container:
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa-rag
 </pre>
 

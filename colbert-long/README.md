@@ -91,7 +91,7 @@ trec_eval -mndcg_cut.10 ext/test_en_qrels.tsv colbert-max-sim-context-level.run
 
 ## Terminate
 Remove the container after use (Only relevant for our automatic testing of this sample app)
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>
 
