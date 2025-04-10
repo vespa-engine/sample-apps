@@ -1,0 +1,12 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.headlessName  }}
+  labels:
+    name: {{ .Values.headlessName  }}
+spec:
+  selector:
+    name: {{ .Values.headlessName  }}
+  clusterIP: None

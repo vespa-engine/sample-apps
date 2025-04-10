@@ -1,0 +1,3 @@
+content:
+  replicas: 2
+  storage: 10Gi
