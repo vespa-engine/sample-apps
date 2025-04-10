@@ -196,6 +196,6 @@ $ find models/ -type f ! -name 'model.onnx' ! -name 'tokenizer.json' | xargs rm
 #### Terminate container 
 
 This is only relevant when running this sample application locally. Remove the container after use:
-<pre data-test="exec">
+<pre data-test="after">
 $ docker rm -f vespa
 </pre>
