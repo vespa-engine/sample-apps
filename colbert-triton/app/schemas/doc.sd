@@ -1,0 +1,97 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://docs.vespa.ai/en/schemas.html
+schema doc {
+
+    document doc {
+
+        field id type string {
+            indexing: summary 
+        }
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+        field chunk type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+    fieldset default {
+	    fields: title, chunk
+    }
+
+    field embedding type tensor<bfloat16>(x[384]) {
+        indexing: (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index 
+	    attribute {
+	        distance-metric: angular
+	    }
+    }
+
+    field colbert type tensor<int8>(dt{}, x[16]) {
+        indexing: (input title || "") . " " . (input chunk || "") | embed colbert | attribute  
+    }
+
+    # See https://docs.vespa.ai/en/ranking.html
+    rank-profile default inherits default {
+        inputs {
+            query(qt) tensor<float>(qt{}, x[128])
+            query(q) tensor<bfloat16>(x[384])
+        }
+        function unpack() {
+            expression: unpack_bits(attribute(colbert))
+        }
+        function cos_sim() {
+            expression: cos(distance(field, embedding))
+        }
+        function max_sim() {
+            expression {
+                sum(
+                    reduce(
+                        sum(
+                            query(qt) * unpack() , x
+                        ),
+                        max, dt
+                    ),
+                    qt
+                )
+            }
+        }
+        first-phase {
+            expression: cos_sim
+        }
+        second-phase {
+            expression: max_sim
+        }
+        match-features: max_sim cos_sim bm25(title) bm25(chunk)
+    }
+
+    rank-profile bm25 inherits default {
+        first-phase {
+            expression: bm25(title) + bm25(chunk)
+        }
+        second-phase {
+            expression: firstPhase
+        }
+    }
+
+    rank-profile e5 inherits default {
+         first-phase {
+            expression: cos_sim
+        }
+        second-phase {
+            expression: firstPhase
+        }
+    }
+
+    rank-profile hybrid inherits default {
+        global-phase {
+            expression {
+              reciprocal_rank(max_sim) + 
+              reciprocal_rank(cos_sim) + 
+              reciprocal_rank(bm25(chunk)) + 
+              reciprocal_rank(bm25(title))
+            }
+        }
+    }
+}

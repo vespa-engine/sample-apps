@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.338.38">
+
+    <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
+    <container id="default" version="1.0">
+
+        <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+        <component id="e5" type="hugging-face-embedder">
+            <transformer-model url="https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx"/>
+            <tokenizer-model url="https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json"/>
+            <!-- E5 prompt instructions -->
+            <prepend>
+                <query>query:</query>
+                <document>passage:</document>
+            </prepend>
+        </component>
+
+        <!-- See https://docs.vespa.ai/en/embedding.html#colbert-embedder -->
+        <component id="colbert" type="colbert-embedder">
+            <transformer-model url="https://huggingface.co/colbert-ir/colbertv2.0/resolve/main/model.onnx"/>
+            <tokenizer-model url="https://huggingface.co/colbert-ir/colbertv2.0/raw/main/tokenizer.json"/>
+        </component>
+
+        <document-api/>
+        <search/>
+        <nodes count="1">
+            <resources vcpu="4" memory="16Gb" disk="125Gb">
+                <gpu count="1" memory="16Gb"/>
+            </resources>
+        </nodes>
+        
+    </container>
+
+    <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
+    <content id="text" version="1.0">
+        <min-redundancy>2</min-redundancy>
+        <documents>
+            <document type="doc" mode="index" />
+        </documents>
+        <nodes count="2"/>
+    </content>
+
+</services>
