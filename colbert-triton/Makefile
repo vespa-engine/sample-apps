@@ -2,7 +2,7 @@
 # Models are downloaded from HuggingFace
 download-models:
 	mkdir -p models/answerai-colbert-small-v1/1
-	wget -O models/answerai-colbert-small-v1/1/model.onnx https://huggingface.co/answerdotai/answerai-colbert-small-v1/resolve/main/onnx/model.onnx
+	wget -O models/answerai-colbert-small-v1/1/model.onnx https://huggingface.co/answerdotai/answerai-colbert-small-v1/resolve/main/vespa_colbert.onnx
 
 	mkdir -p models/colbert-v2/1
 	wget -O models/colbert-v2/1/model.onnx https://huggingface.co/colbert-ir/colbertv2.0/resolve/main/model.onnx
