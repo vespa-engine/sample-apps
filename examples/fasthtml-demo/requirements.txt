@@ -48,7 +48,7 @@ frozenlist==1.4.1
     #   aiosignal
 fsspec==2024.6.1
     # via huggingface-hub
-h11==0.14.0
+h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
