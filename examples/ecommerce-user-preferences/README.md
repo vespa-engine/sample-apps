@@ -61,7 +61,7 @@ vespa deploy --wait 900
 2. Update [logstash.conf](logstash.conf):
    - **Use your Vespa endpoint**. You'll see it in the Vespa Cloud UI, or comment it out if you run a local Vespa
    - **Update the certificate files** to files from your local `.vespa` directory
-   - **Point Logstash to the sample data** in [vespa_app/ext](vespa_app/ext)
+   - **Point Logstash to the sample data** in [dataset](dataset/)
 
 3. Run Logstash:
 
