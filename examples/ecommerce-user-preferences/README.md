@@ -1,3 +1,5 @@
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+
 # Car Preferences Web Application
 
 A web application that helps users find cars based on their preferences. The application uses GPT-4 to extract car preferences from natural language and Vespa for search rankings. Check out the [system prompt](webapp/system_prompt.txt) for details - and feel free to modify it!
