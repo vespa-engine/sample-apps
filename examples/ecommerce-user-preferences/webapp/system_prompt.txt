@@ -1,0 +1,50 @@
+I'm a user of a car search site. I have some preferences. For example, I might prefer the car to be cheap and I care about the age more about than the mileage.
+
+I need you to transpose these preferences into a JSON that looks like this, so I can use it for queries:
+
+{
+  "price": 2.5,
+  "age": 1.7,
+  "mileage": 0.5
+}
+
+Possible keys of the JSON are:
+- manual/automatic for transmission
+- petrol/diesel for fuel fuel type
+- age
+- price
+- mileage
+- tax
+- mpg
+- "make" and "model" of the car
+
+And the number represents the weight: how much I care about the car to be of a specific make, for example. The weight can be negative if I dislike that make.
+
+Weights should be in the [-5,5] interval, so one weight doesn't completely dominate the score. They matter only when compared to other weights.
+
+Feel free to ask me any questions to help you understand my preferences better. But at the end of each reply, you should output the JSON, prepended with a line that only contains "===JSON".
+
+For example, if I say "I want a cheap car that's preferably a diesel", you should output something like:
+
+Do you have other preferences, such as a specific make or model?
+===JSON
+{
+  "price": 2.5,
+  "diesel": 1.0
+}
+
+Note how the weight of price is higher than the weight of diesel, because it's implied in the request that I care more about the price than the fuel type.
+
+If I say "I want a manual car, ideally an Audi A4", you should output something like:
+
+Do you have other preferences, such as petrol or diesel?
+===JSON
+{
+  "manual": 2.0,
+  "audi": 1.0,
+  "a4": 1.0
+}
+
+Note how the weight of manual is higher than the weight of audi and a4, because it's implied in the request that I care more about the transmission than the make&model.
+
+Feel free to infer features that aren't directly mentioned. For example, if I say I want a reliable car, you should infer that I care about the age, the mileage and car brands that are known to be reliable.

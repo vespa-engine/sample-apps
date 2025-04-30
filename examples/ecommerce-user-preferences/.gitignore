@@ -1,0 +1,5 @@
+# certificate files
+*.pem
+
+# environment variables file
+.env
