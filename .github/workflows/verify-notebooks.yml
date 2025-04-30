@@ -7,14 +7,14 @@ on:
     paths:
       - ".github/workflows/verify-notebooks.yml"
       - "examples/model-deployment/"
-      - "text-image-search/"
+      - "commerce-product-ranking/notebooks"
   pull_request:
     branches:
       - master
     paths:
       - ".github/workflows/verify-notebooks.yml"
       - "examples/model-deployment/"
-      - "text-image-search/"
+      - "commerce-product-ranking/notebooks"
 
 defaults:
   run:
@@ -32,7 +32,14 @@ jobs:
         run: |
           pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn
 
-      - name: Run Notebooks
+      - name: Run ONNXModelExport
         working-directory: examples/model-deployment
         run: |
           runnb --allow-not-trusted ONNXModelExport.ipynb
+
+      - name: Run commerce-product-ranking notebooks
+        working-directory: commerce-product-ranking/notebooks
+        run: |
+          runnb --allow-not-trusted Train-lightgbm.ipynb
+          runnb --allow-not-trusted Train-xgboost.ipynb
+          runnb --allow-not-trusted train_neural.ipynb
