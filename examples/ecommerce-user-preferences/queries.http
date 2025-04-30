@@ -1,0 +1,166 @@
+
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+### local query
+POST http://localhost:8080/document/v1/post/post/docid/second
+content-type: application/json
+
+{
+  "fields": {
+    "text": "second product"
+  }
+}
+
+### reindex
+POST http://localhost:19071/application/v2/tenant/default/application/default/environment/default/region/default/instance/default/reindex
+
+### reindex progress
+GET http://localhost:19071/application/v2/tenant/default/application/default/environment/default/region/default/instance/default/reindexing
+
+### all
+POST https://dbe4de4d.b0d2b4c8.z.vespa-app.cloud/search/
+Content-Type: application/json
+
+{
+  "yql": "select * from product where true",
+  "hits": 10
+}
+
+### preferences
+POST https://dbe4de4d.b0d2b4c8.z.vespa-app.cloud/search/
+Content-Type: application/json
+
+{
+  "yql": "select * from product where true",
+  "hits": 10,
+  "ranking": "rank_cars",
+  "presentation.summary": "attributes",
+  "ranking.features.query(user_preferences)": "{{features:manual}:1,{features:diesel}:1.2,{features:audi}:1.7,{features:a4}:1.9}",
+  "trace.level": 0
+}
+
+### select syntax
+POST https://dbe4de4d.b0d2b4c8.z.vespa-app.cloud/search/
+Content-Type: application/json
+
+{
+  "select": {
+    "where": "true",
+    "grouping": [
+      {
+        "all": {
+          "group": "make",
+          "order": "-count()",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      },
+      {
+        "all": {
+          "group": "transmission",
+          "order": "-count()",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      },
+      {
+        "all": {
+          "group": "fuelType",
+          "order": "-count()",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      }
+    ]
+  },
+  "hits": 10,
+  "ranking": "rank_cars",
+  "presentation.summary": "attributes",
+  "ranking.features.query(user_preferences)": "{{features:manual}:1,{features:diesel}:1.2,{features:audi}:1.7,{features:a4}:1.9}",
+  "trace.level": 0
+}
+
+### Delete everything
+DELETE http://localhost:8080/document/v1/post/post/docid?selection=true&cluster=blog
+
+### with a filter
+POST https://dbe4de4d.b0d2b4c8.z.vespa-app.cloud/search/
+Content-Type: application/json
+
+{
+  "select": {
+    "where": {
+      "and": [
+        {
+          "contains": ["transmission", "manual"]
+        }
+      ]
+    },
+    "grouping": [
+      {
+        "all": {
+          "group": "make",
+          "order": "-count()",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      },
+      {
+        "all": {
+          "group": "transmission",
+          "order": "-count()",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      },
+      {
+        "all": {
+          "group": "fuelType",
+          "order": "-count()",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      }
+    ]
+  },
+  "hits": 10,
+  "ranking": "rank_cars",
+  "presentation.summary": "attributes",
+  "ranking.features.query(user_preferences)": "{{features:manual}:1,{features:diesel}:1.2,{features:audi}:1.7,{features:a4}:1.9}",
+  "trace.level": 0
+}
+
+### select syntax
+POST https://dbe4de4d.b0d2b4c8.z.vespa-app.cloud/search/
+Content-Type: application/json
+
+{
+  "select": {
+    "where": "true",
+    "grouping": [
+      {
+        "all": {
+          "group": "make",
+          "order": "max(make)",
+          "max": 10,
+          "each": {
+            "output": "count()"
+          }
+        }
+      }
+    ]
+  },
+  "hits": 1
+}

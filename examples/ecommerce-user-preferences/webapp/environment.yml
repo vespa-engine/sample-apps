@@ -1,0 +1,12 @@
+name: car_preferences
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - openai=1.68.2
+    - python-dotenv=1.1.0
+    - requests=2.32.3
+    - flask=3.1.0

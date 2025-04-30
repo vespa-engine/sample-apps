@@ -1,0 +1,92 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema product {
+    document product {
+        field make type string {
+            indexing: summary | attribute
+        }
+
+        field model type string {
+            indexing: summary | attribute
+        }
+        
+        field year type int {
+            indexing: summary | attribute
+        }
+
+        field price type int {
+            indexing: summary | attribute
+        }
+
+        field transmission type string {
+            indexing: summary | attribute
+        }
+
+        field mileage type int {
+            indexing: summary | attribute
+        }
+
+        field fuelType type string {
+            indexing: summary | attribute
+        }
+
+        field tax type int {
+            indexing: summary | attribute
+        }
+
+        field mpg type float {
+            indexing: summary | attribute
+        }
+
+        field engineSize type float {
+            indexing: summary | attribute
+        }
+
+        field car_features type tensor<float>(features{}) {
+            indexing: summary | attribute
+        }
+    }
+
+    document-summary attributes {
+        summary make {
+            source: make
+        }
+        summary model {
+            source: model
+        }
+        summary year {
+            source: year
+        }
+        summary price {
+            source: price
+        }
+        summary transmission {
+            source: transmission
+        }
+        summary mileage {
+            source: mileage
+        }
+        summary fuelType {
+            source: fuelType
+        }
+        summary tax {
+            source: tax
+        }
+        summary mpg {
+            source: mpg
+        }
+        summary engineSize {
+            source: engineSize
+        }
+    }
+
+    rank-profile rank_cars {
+        inputs {
+            query(user_preferences) tensor<float>(features{})
+        }
+
+        first-phase {
+            expression: sum(query(user_preferences) * attribute(car_features))
+        }
+    }
+}
