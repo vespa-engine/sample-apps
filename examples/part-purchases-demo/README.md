@@ -69,6 +69,10 @@ $ vespa status deploy --wait 300
 $ vespa deploy --wait 300
 </pre>
 
+**Generate the feed**
+<pre data-test="exec">
+$ python3 ext/parts.py -f  ext/purchase.csv > ext/feed.jsonl
+</pre>
 
 **Feed to Vespa**
 <pre data-test="exec">
