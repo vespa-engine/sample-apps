@@ -413,7 +413,7 @@ sentence-transformers==3.1.1
     #   vidore-benchmark
 sentencepiece==0.2.0
     # via vidore-benchmark
-setuptools==75.1.0
+setuptools==78.1.1
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   marisa-trie
