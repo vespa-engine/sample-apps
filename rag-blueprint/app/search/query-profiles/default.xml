@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<query-profile id="default">
+    <field name="schema">doc</field>
+    <field name="ranking.features.query(embedding)">embed(@query)</field>
+    <field name="yql">
+        select *
+        from %{schema}
+        where userInput(@query) or
+        ({targetHits:100}nearestNeighbor(title_embedding, embedding))
+    </field>
+    <field name="presentation.format.tensors">short-value</field>
+</query-profile>

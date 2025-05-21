@@ -1,0 +1,59 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+schema doc {
+
+    document doc {
+
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+
+        field text type string {
+        }
+
+    }
+
+    field title_embedding type tensor(x[768]) {
+        indexing: input title | embed | attribute | index
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    field chunks type array<string> {
+        indexing: input text | chunk fixed-length 1024 | summary | index
+        index: enable-bm25
+    }
+
+    field chunk_embeddings type tensor(chunk{}, x[768]) {
+        indexing: input text | chunk fixed-length 1024 | embed | attribute | index
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    fieldset default {
+        fields: title, chunks
+    }
+
+    rank-profile default {
+
+        inputs {
+            query(embedding) tensor<float>(x[768])
+        }
+
+        rank chunks {
+            element-gap: 0 # Fixed length chunking should not cause any positional gap between elements
+        }
+
+        first-phase {
+            expression {
+                0.35 * closeness(title_embedding) +
+                0.15 * closeness(chunk_embeddings) +
+                0.35 * bm25(title) +
+                0.15 * bm25(chunks)
+            }
+        }
+    }
+
+}
