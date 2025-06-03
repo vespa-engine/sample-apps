@@ -1,22 +1,44 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the
+project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties"
+    minimum-required-vespa-version="8.519.55">
 
     <container id="default" version="1.0">
-        <search />
         <document-processing />
         <document-api />
-        <component id="nomicmb" type="hugging-face-embedder">
-           <transformer-model url="https://data.vespa-cloud.com/onnx_models/nomic-ai-modernbert-embed-base/model.onnx" />
-           <transformer-token-type-ids />
-           <tokenizer-model url="https://data.vespa-cloud.com/onnx_models/nomic-ai-modernbert-embed-base/tokenizer.json" />
-           <transformer-output>token_embeddings</transformer-output>
-          <max-tokens>8192</max-tokens>
-          <prepend>
-            <query>search_query:</query>
-            <document>search_document:</document>
-           </prepend>
+        <!-- <secrets>
+            <openai-api-key vault="my-vault-name" name="my-secret-name"/>
+        </secrets> -->
+        <!-- Setup the client to OpenAI -->
+        <component id="openai" class="ai.vespa.llm.clients.OpenAI">
+            <config name="ai.vespa.llm.clients.llm-client">
+                <!-- <apiKeySecretName>openai-api-key</apiKeySecretName> -->
+            </config>
         </component>
+
+        <component id="nomicmb" type="hugging-face-embedder">
+            <transformer-model
+                url="https://data.vespa-cloud.com/onnx_models/nomic-ai-modernbert-embed-base/model.onnx" />
+            <transformer-token-type-ids />
+            <tokenizer-model
+                url="https://data.vespa-cloud.com/onnx_models/nomic-ai-modernbert-embed-base/tokenizer.json" />
+            <transformer-output>token_embeddings</transformer-output>
+            <max-tokens>8192</max-tokens>
+            <prepend>
+                <query>search_query:</query>
+                <document>search_document:</document>
+            </prepend>
+        </component>
+        <search>
+            <chain id="openai" inherits="vespa">
+                <searcher id="ai.vespa.search.llm.RAGSearcher">
+                    <config name="ai.vespa.search.llm.llm-searcher">
+                        <providerId>openai</providerId>
+                    </config>
+                </searcher>
+            </chain>
+        </search>
         <nodes>
             <node hostalias="node1" />
         </nodes>
