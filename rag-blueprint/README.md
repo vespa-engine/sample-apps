@@ -62,3 +62,35 @@ $ vespa feed dataset/docs.jsonl
 <pre data-test="exec" data-test-assert-contains="yc_b2b_sales_workshop_notes.md">
 $ vespa query 'query=yc b2b sales'
 </pre>
+
+### LLM-generation with OpenAI-client
+
+The recommended way of providing an API key is through using the Secret Store in Vespa Cloud. Alternatively, you can set the `X-LLM-API-KEY` header in your query to use the OpenAI client for generation.
+
+To test generation using the OpenAI client, post a query that runs the `openai` search chain, with `format=sse`. (Use `format=json` for a single response after generation completes.)
+<pre>
+$ vespa query \
+    --timeout 60 \
+    --header="X-LLM-API-KEY:<your-api-key>" \
+    yql='select *
+    from doc
+    where userInput(@query) or
+    ({label:"title_label", targetHits:100}nearestNeighbor(title_embedding, embedding)) or
+    ({label:"chunks_label", targetHits:100}nearestNeighbor(chunk_embeddings, embedding))' \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    searchChain=openai \
+    format=sse \
+    hits=5 \
+    traceLevel=1
+</pre>
+
+### Using a query profile
+
+Query with query profile, see `app/search/query-profiles/rag.xml`.
+<pre>
+$ vespa query \
+    --timeout 60 \
+    --header="X-LLM-API-KEY:<your-api-key>" \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    queryProfile=rag
+</pre>
