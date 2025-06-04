@@ -65,9 +65,24 @@ $ vespa query 'query=yc b2b sales'
 
 ### LLM-generation with OpenAI-client
 
-The recommended way of providing an API key is through using the Secret Store in Vespa Cloud. Alternatively, you can set the `X-LLM-API-KEY` header in your query to use the OpenAI client for generation.
+The recommended way of providing an API key is through using the Secret Store in Vespa Cloud.
+To enable this, you need to create a vault (if you don't have one already) and a secret through the Vespa Cloud console. If your vault is named `sample-apps` and contains a secret with the name `openai-api-key`, you would use the following configuration in your `services.xml` to set up the OpenAI client to use that secret:
 
-To test generation using the OpenAI client, post a query that runs the `openai` search chain, with `format=sse`. (Use `format=json` for a single response after generation completes.)
+```xml
+  <secrets>
+      <openai-api-key vault="sample-apps" name="openai-dev" />
+  </secrets>
+  <!-- Setup the client to OpenAI -->
+  <component id="openai" class="ai.vespa.llm.clients.OpenAI">
+      <config name="ai.vespa.llm.clients.llm-client">
+          <apiKeySecretName>openai-api-key</apiKeySecretName>
+      </config>
+  </component>
+```
+
+Alternatively, for local deployments, you can set the `X-LLM-API-KEY` header in your query to use the OpenAI client for generation.
+
+To test generation using the OpenAI client, post a query that runs the `openai` search chain, with `format=sse`. (Use `format=json` for a streaming json response including both the search hits and the LLM-generated tokens.)
 <pre>
 $ vespa query \
     --timeout 60 \
@@ -86,7 +101,8 @@ $ vespa query \
 
 ### Using a query profile
 
-Query with query profile, see `app/search/query-profiles/rag.xml`.
+As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you to define a set of query parameters to support different use cases. 
+For this sample app, we have added a query profile named `rag`, see `app/search/query-profiles/rag.xml`.
 <pre>
 $ vespa query \
     --timeout 60 \
