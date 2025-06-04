@@ -7,12 +7,14 @@ project root. -->
     <container id="default" version="1.0">
         <document-processing />
         <document-api />
+        <!-- Uncomment this to use secret from Vespa Cloud Secret Store -->
         <!-- <secrets>
-            <openai-api-key vault="my-vault-name" name="my-secret-name"/>
+            <openai-api-key vault="sample-apps" name="openai-dev" />
         </secrets> -->
         <!-- Setup the client to OpenAI -->
         <component id="openai" class="ai.vespa.llm.clients.OpenAI">
             <config name="ai.vespa.llm.clients.llm-client">
+                <!-- Uncomment this to use secret from Vespa Cloud Secret Store -->
                 <!-- <apiKeySecretName>openai-api-key</apiKeySecretName> -->
             </config>
         </component>
