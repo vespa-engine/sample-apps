@@ -9,14 +9,32 @@ schema doc {
         }
 
         field text type string {
+            
+        }
+
+        field created_timestamp type int {
+            indexing: attribute | summary
+        }
+        field modified_timestamp type int {
+            indexing: attribute | summary
+        }
+        
+        field last_opened_timestamp type int {
+            indexing: attribute | summary
+        }
+        field open_count type int {
+            indexing: attribute | summary
+        }
+        field favorite type bool {
+            indexing: attribute | summary
         }
 
     }
 
-    field title_embedding type tensor(x[768]) {
-        indexing: input title | embed | attribute | index
+    field title_embedding type tensor<int8>(x[96]) {
+        indexing: input title | embed | pack_bits | attribute | index
         attribute {
-            distance-metric: angular
+            distance-metric: hamming
         }
     }
 
@@ -25,10 +43,10 @@ schema doc {
         index: enable-bm25
     }
 
-    field chunk_embeddings type tensor(chunk{}, x[768]) {
-        indexing: input text | chunk fixed-length 1024 | embed | attribute | index
+    field chunk_embeddings type tensor<int8>(chunk{}, x[96]) {
+        indexing: input text | chunk fixed-length 1024 | embed | pack_bits | attribute | index
         attribute {
-            distance-metric: angular
+            distance-metric: hamming
         }
     }
 
@@ -37,9 +55,9 @@ schema doc {
     }
 
     rank-profile default {
-
+        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) 
         inputs {
-            query(embedding) tensor<float>(x[768])
+            query(embedding) tensor<int8>(x[96])
         }
 
         rank chunks {

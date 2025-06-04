@@ -1,0 +1,294 @@
+[
+  {
+    "query_id": "alex_q_01",
+    "query_text": "Find the Python script where I implemented the custom attention layer for the 'SynapseCore' module.",
+    "category": "Navigational - Code",
+    "description": "Locating a specific piece of code within his projects.",
+    "relevant_document_ids": [
+      1,
+      50,
+      59,
+      72,
+      82,
+      90
+    ]
+  },
+  {
+    "query_id": "alex_q_02",
+    "query_text": "Show me my notes from the YC workshop on 'Scaling B2B Sales' from last month.",
+    "category": "Navigational - Startup/YC",
+    "description": "Retrieving specific notes from a YC event.",
+    "relevant_document_ids": [
+      2,
+      63,
+      83
+    ]
+  },
+  {
+    "query_id": "alex_q_03",
+    "query_text": "Display my deadlift progression, including weights and reps, from my training logs for the past 6 months.",
+    "category": "Navigational - Fitness",
+    "description": "Accessing specific workout data over a period.",
+    "relevant_document_ids": [
+      3,
+      18,
+      27,
+      45,
+      54,
+      65,
+      100
+    ]
+  },
+  {
+    "query_id": "alex_q_04",
+    "query_text": "Summarize the key architectural decisions documented for SynapseFlow's v0.2 release.",
+    "category": "Insight - Single Document (Technical)",
+    "description": "Getting a summary from a specific technical document.",
+    "relevant_document_ids": [
+      4,
+      8,
+      30,
+      38,
+      46,
+      48,
+      66,
+      72,
+      74,
+      78
+    ]
+  },
+  {
+    "query_id": "alex_q_05",
+    "query_text": "What was my average daily protein intake during my last cutting phase, according to my nutrition tracker data?",
+    "category": "Insight - Single/Aggregated Data (Fitness)",
+    "description": "Querying specific nutritional data from logs.",
+    "relevant_document_ids": [
+      5,
+      40,
+      79
+    ]
+  },
+  {
+    "query_id": "alex_q_06",
+    "query_text": "What are the recurring themes in the user feedback received for SynapseFlow's beta API endpoint for model deployment?",
+    "category": "Insight - Aggregated (Startup/Product)",
+    "description": "Synthesizing information from multiple user feedback documents.",
+    "relevant_document_ids": [
+      6,
+      41,
+      46,
+      52,
+      76,
+      83,
+      88
+    ]
+  },
+  {
+    "query_id": "alex_q_07",
+    "query_text": "Based on my meeting notes with potential investors over the last quarter, what were the top 3 concerns raised about our market size assumptions?",
+    "category": "Insight - Aggregated (Startup/Investor Relations)",
+    "description": "Extracting key concerns from multiple meeting summaries.",
+    "relevant_document_ids": [
+      7,
+      23,
+      28,
+      31,
+      50,
+      62,
+      91,
+      99
+    ]
+  },
+  {
+    "query_id": "alex_q_08",
+    "query_text": "Compare my squat training volume (sets x reps x weight) and average intensity (% of 1RM) across my last two strength blocks.",
+    "category": "Insight - Aggregated (Fitness Performance)",
+    "description": "Analyzing and comparing training data across different periods.",
+    "relevant_document_ids": [
+      3,
+      18,
+      27,
+      45,
+      54,
+      60,
+      65
+    ]
+  },
+  {
+    "query_id": "alex_q_09",
+    "query_text": "I'm encountering a persistent bug related to data serialization in the new NLP pipeline. Search my past projects and technical notes for solutions or approaches to similar serialization issues in Python.",
+    "category": "Problem Solving - Technical",
+    "description": "Finding solutions to a current technical challenge based on past work.",
+    "relevant_document_ids": [
+      12,
+      19,
+      39,
+      80
+    ]
+  },
+  {
+    "query_id": "alex_q_10",
+    "query_text": "What were the main arguments for and against adopting Kubernetes for SynapseFlow's orchestration layer, based on our internal tech-debt discussions and strategy docs?",
+    "category": "Decision Support - Startup/Technical",
+    "description": "Recalling rationale behind past technical decisions.",
+    "relevant_document_ids": [
+      4,
+      8,
+      80
+    ]
+  },
+  {
+    "query_id": "alex_q_11",
+    "query_text": "Explain the concept of 'retrieval augmented generation' using the key papers and articles I've saved on this topic, and highlight any implementation details I noted.",
+    "category": "Learning & Research - AI",
+    "description": "Consolidating knowledge from saved research materials.",
+    "relevant_document_ids": [
+      9,
+      22,
+      38,
+      42,
+      56,
+      68,
+      82,
+      97
+    ]
+  },
+  {
+    "query_id": "alex_q_12",
+    "query_text": "What were my top 3 strategic priorities for SynapseFlow for Q2, as outlined in my planning documents?",
+    "category": "Productivity & Planning - Startup",
+    "description": "Recalling high-level strategic goals.",
+    "relevant_document_ids": [
+      10,
+      20,
+      28,
+      35,
+      41,
+      43,
+      55,
+      78,
+      86,
+      93
+    ]
+  },
+  {
+    "query_id": "alex_q_13",
+    "query_text": "Are there any principles from my powerlifting programming, like 'periodization' or 'RPE-based training', that I've noted down in my startup journals or product strategy docs as applicable to building SynapseFlow?",
+    "category": "Cross-Domain Synthesis",
+    "description": "Finding connections between his fitness philosophy and startup approach.",
+    "relevant_document_ids": [
+      11,
+      32,
+      49,
+      58,
+      70,
+      75,
+      95,
+      100
+    ]
+  },
+  {
+    "query_id": "alex_q_14",
+    "query_text": "What version of TensorFlow and CUDA did I use in the 'VisionServe' proof-of-concept project last year?",
+    "category": "Specific Fact Retrieval - Technical",
+    "description": "Finding specific technical details from past projects.",
+    "relevant_document_ids": [
+      12,
+      64
+    ]
+  },
+  {
+    "query_id": "alex_q_15",
+    "query_text": "Which YC partner gave the talk on 'Pivoting Effectively' that I attended in W25, and what were the main takeaways I recorded?",
+    "category": "Specific Fact Retrieval - Startup/YC",
+    "description": "Recalling details about a specific YC session.",
+    "relevant_document_ids": [
+      2,
+      13,
+      24,
+      63
+    ]
+  },
+  {
+    "query_id": "alex_q_16",
+    "query_text": "Analyze my bench press logs from the past 12 months. Identify any periods where progress stalled for more than 3 weeks and list the training variables (volume, frequency, exercise selection) I was using at that time.",
+    "category": "Trend Analysis & Problem Solving - Fitness",
+    "description": "Identifying plateaus and contextual training variables.",
+    "relevant_document_ids": [
+      3,
+      18,
+      27,
+      33,
+      45,
+      54,
+      60,
+      65,
+      73,
+      84,
+      92
+    ]
+  },
+  {
+    "query_id": "alex_q_17",
+    "query_text": "Compare the MLOps tools I evaluated last quarter. What were the key pros and cons I noted for MLflow versus Weights & Biases for our specific use case at SynapseFlow?",
+    "category": "Comparative Analysis - Technical/Startup",
+    "description": "Comparing previously evaluated tools based on his notes.",
+    "relevant_document_ids": [
+      14,
+      23,
+      62,
+      64,
+      97,
+      99
+    ]
+  },
+  {
+    "query_id": "alex_q_18",
+    "query_text": "Compile a list of key arguments, supporting data points, and relevant code examples from my documents regarding the efficiency of our new data preprocessing pipeline for the upcoming team presentation.",
+    "category": "Content Generation Support - Technical/Communication",
+    "description": "Gathering information for a presentation.",
+    "relevant_document_ids": [
+      1,
+      4,
+      15,
+      46,
+      50,
+      90
+    ]
+  },
+  {
+    "query_id": "alex_q_19",
+    "query_text": "What are the common pitfalls or challenges I've documented in my notes when fine-tuning large language models on domain-specific datasets?",
+    "category": "Learning & Best Practices - AI",
+    "description": "Recalling learned lessons and potential issues in a specific AI task.",
+    "relevant_document_ids": [
+      16,
+      22,
+      25,
+      26,
+      39,
+      56,
+      68,
+      82,
+      86
+    ]
+  },
+  {
+    "query_id": "alex_q_20",
+    "query_text": "Review my journal entries and notes from YC office hours. What patterns emerge regarding feedback on my communication style when explaining complex AI concepts, and what strategies did I note for improvement?",
+    "category": "Self-Reflection & Improvement - Startup/Personal",
+    "description": "Analyzing personal notes for patterns and areas of development.",
+    "relevant_document_ids": [
+      11,
+      17,
+      49,
+      53,
+      58,
+      70,
+      75,
+      83,
+      95,
+      100
+    ]
+  }
+]
