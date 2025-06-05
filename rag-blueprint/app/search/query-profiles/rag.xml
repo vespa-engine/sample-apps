@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the
+project root. -->
+<query-profile id="rag">
+  <field name="schema">doc</field>
+  <field name="ranking.features.query(embedding)">embed(@query)</field>
+  <field name="yql">
+    select *
+    from %{schema}
+    where userInput(@query) or
+    ({label:"title_label", targetHits:100}nearestNeighbor(title_embedding, embedding)) or
+    ({label:"chunks_label", targetHits:100}nearestNeighbor(chunk_embeddings, embedding))
+  </field>
+  <field name="hits">5</field>
+  <field name="searchChain">openai</field>
+  <field name="presentation.format">sse</field>
+  <field name="traceLevel">1</field>
+</query-profile>

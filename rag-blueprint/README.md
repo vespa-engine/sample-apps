@@ -31,7 +31,7 @@ By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RA
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
-## Installing vespa-cli
+## Quick start
 
 This tutorial uses [Vespa-CLI](https://docs.vespa.ai/en/vespa-cli.html),
 Vespa CLI is the official command-line client for Vespa.ai.
@@ -51,6 +51,11 @@ $ docker run --detach --name vespa-rag --hostname vespa-rag \
   vespaengine/vespa
 </pre>
 
+For local deployment using docker image:
+<pre data-test="exec">
+$ vespa config set target local
+</pre>
+
 <pre data-test="exec">
 $ vespa deploy --wait 300 ./app
 </pre>
@@ -61,4 +66,52 @@ $ vespa feed dataset/docs.jsonl
 
 <pre data-test="exec" data-test-assert-contains="yc_b2b_sales_workshop_notes.md">
 $ vespa query 'query=yc b2b sales'
+</pre>
+
+### LLM-generation with OpenAI-client
+
+The recommended way of providing an API key is through using the Secret Store in Vespa Cloud.
+To enable this, you need to create a vault (if you don't have one already) and a secret through the Vespa Cloud console. If your vault is named `sample-apps` and contains a secret with the name `openai-api-key`, you would use the following configuration in your `services.xml` to set up the OpenAI client to use that secret:
+
+```xml
+  <secrets>
+      <openai-api-key vault="sample-apps" name="openai-dev" />
+  </secrets>
+  <!-- Setup the client to OpenAI -->
+  <component id="openai" class="ai.vespa.llm.clients.OpenAI">
+      <config name="ai.vespa.llm.clients.llm-client">
+          <apiKeySecretName>openai-api-key</apiKeySecretName>
+      </config>
+  </component>
+```
+
+Alternatively, for local deployments, you can set the `X-LLM-API-KEY` header in your query to use the OpenAI client for generation.
+
+To test generation using the OpenAI client, post a query that runs the `openai` search chain, with `format=sse`. (Use `format=json` for a streaming json response including both the search hits and the LLM-generated tokens.)
+<pre>
+$ vespa query \
+    --timeout 60 \
+    --header="X-LLM-API-KEY:<your-api-key>" \
+    yql='select *
+    from doc
+    where userInput(@query) or
+    ({label:"title_label", targetHits:100}nearestNeighbor(title_embedding, embedding)) or
+    ({label:"chunks_label", targetHits:100}nearestNeighbor(chunk_embeddings, embedding))' \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    searchChain=openai \
+    format=sse \
+    hits=5 \
+    traceLevel=1
+</pre>
+
+### Using a query profile
+
+As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you to define a set of query parameters to support different use cases. 
+For this sample app, we have added a query profile named `rag`, see `app/search/query-profiles/rag.xml`.
+<pre>
+$ vespa query \
+    --timeout 60 \
+    --header="X-LLM-API-KEY:<your-api-key>" \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    queryProfile=rag
 </pre>
