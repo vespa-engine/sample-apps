@@ -31,7 +31,7 @@ By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RA
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
 
-## Installing vespa-cli
+## Quick start
 
 This tutorial uses [Vespa-CLI](https://docs.vespa.ai/en/vespa-cli.html),
 Vespa CLI is the official command-line client for Vespa.ai.
@@ -49,6 +49,11 @@ $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 $ docker run --detach --name vespa-rag --hostname vespa-rag \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19112:19112 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
+</pre>
+
+For local deployment using docker image:
+<pre data-test="exec">
+$ vespa config set target local
 </pre>
 
 <pre data-test="exec">
