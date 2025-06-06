@@ -190,11 +190,11 @@ Checking logs:
 
       WARNING : config-sentinel  sentinel.sentinel.connectivity	Only 4 of 10 nodes are up and OK, 40.0% (min is 50%)
 
-**Important note:**
+**Note:**
 This is the [startup sequence](https://docs.vespa.ai/en/operations-selfhosted/config-sentinel.html#cluster-startup) kicking in -
-container and content nodes are not started before 50% (configurable) of nodes have started.
-Meaning, here we have started only 4/10, so `logserver`, `slobrok`, `metrics-proxy` and `cluster-controller`
-are not started yet.
+services are not started before 50% of all nodes are up and have connectivity to other nodes. Here only 4 of 10 nodes are up,
+so the services on these 4 nodes (`logserver`, `slobrok`, `metrics-proxy` and `cluster-controller`)
+are not started yet. At least one more node need to be started before the services themselves are started.
 
 
 
