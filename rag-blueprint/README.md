@@ -112,6 +112,17 @@ $ vespa query \
     queryProfile=rag
 </pre>
 
+## Baseline rank features
+
+(This is WIP)
+For now, created some both document-level and chunk-level features to be collected.
+Example query with match-features in `resp.json`
+<pre>
+vespa query \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    queryProfile=hybrid > resp.json
+</pre>
+
 ## Evaluating and improving ranking
 
 ### 1. Evaluation intro
