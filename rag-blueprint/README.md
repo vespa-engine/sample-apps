@@ -149,6 +149,6 @@ flowchart TD
 
 ### 2. Retrieval (match-phase) evals
 
-The first thing we want to do is to measure recall of the matching phase, or "What percentage of the relevant docs are matched across all queries. We also want to make sure we can inspect the ones that are relevant, but not matched, as well as inspect total matches (indication for cost of match-phase). That way we might tune our match phase retrieval. 
+The first thing we want to do is to measure recall of the matching phase, or "What percentage of the relevant docs are matched across all queries. We also want to make sure we can inspect the ones that are relevant, but not matched, as well as inspect total matches (this is the number of docs that will be exposed to first-phase ranking). That way we might tune our match phase retrieval. 
 
-We can do this, using pyvespa TODO. 
+We can do this easily using pyvespa TODO (wait for VespaMatchEvaluator PR). 
