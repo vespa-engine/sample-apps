@@ -62,14 +62,10 @@ schema doc {
         inputs {
             query(embedding) tensor<int8>(x[96])
         }
-
-        first-phase {
-            expression: random
-        }
     }
 
     rank-profile default {
-        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) 
+        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) chunk_sim_scores chunk_text_scores
         inputs {
             query(embedding) tensor<int8>(x[96])
         }
@@ -77,13 +73,26 @@ schema doc {
         rank chunks {
             element-gap: 0 # Fixed length chunking should not cause any positional gap between elements
         }
+        function chunk_text_scores() {
+            expression: elementwise(bm25(chunks),chunk,float)
+        }
+
+        function chunk_dist_scores() {
+            expression: reduce(hamming(query(embedding), attribute(chunk_embeddings)), sum, x)
+        }
+
+        function chunk_sim_scores() {
+            expression: 1/ (1 + chunk_dist_scores())
+        }
 
         first-phase {
             expression {
                 0.35 * closeness(title_embedding) +
                 0.15 * closeness(chunk_embeddings) +
                 0.35 * bm25(title) +
-                0.15 * bm25(chunks)
+                0.15 * bm25(chunks) +
+                sum(chunk_sim_scores()) +
+                sum(chunk_text_scores())
             }
         }
     }
