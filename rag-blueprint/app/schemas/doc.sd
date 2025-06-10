@@ -3,6 +3,10 @@ schema doc {
 
     document doc {
 
+        field id type string {
+            indexing: summary | attribute
+        }
+
         field title type string {
             indexing: index | summary
             index: enable-bm25
@@ -52,6 +56,16 @@ schema doc {
 
     fieldset default {
         fields: title, chunks
+    }
+
+    rank-profile match-only {
+        inputs {
+            query(embedding) tensor<int8>(x[96])
+        }
+
+        first-phase {
+            expression: random
+        }
     }
 
     rank-profile default {
