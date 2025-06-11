@@ -34,6 +34,7 @@ jobs:
         /tensor-playground/src/main/resources/playground/
         /src/main/resources/site/index.html/
         /dense-passage-retrieval-with-ann/src/main/resources/frontend/index.html/
+        /examples/ecommerce-user-preferences/webapp/templates/index.html/
       ignore-urls: |-
         src/main/application/schemas/wiki.sd#L80
         /localhost:8080/
