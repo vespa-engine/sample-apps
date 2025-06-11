@@ -1,0 +1,4 @@
+# Ignore all files in the eval directory
+eval/.venv
+eval/.python-version
+eval/uv.lock

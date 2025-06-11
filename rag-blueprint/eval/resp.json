@@ -1,0 +1,359 @@
+{
+    "root": {
+        "id": "toplevel",
+        "relevance": 1.0,
+        "fields": {
+            "totalCount": 100
+        },
+        "coverage": {
+            "coverage": 100,
+            "documents": 100,
+            "full": true,
+            "nodes": 1,
+            "results": 1,
+            "resultsFull": 1
+        },
+        "children": [
+            {
+                "id": "id:doc:doc::4",
+                "relevance": 20.172758235679602,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 12.383726991695514,
+                        "bm25(title)": 4.293020289471454,
+                        "closeness(chunk_embeddings)": 0.006060606060606061,
+                        "closeness(title_embedding)": 0.00546448087431694,
+                        "chunk_sim_scores": {
+                            "0": 0.0060606058686971664,
+                            "1": 0.0034129691775888205
+                        },
+                        "chunk_text_scores": {
+                            "0": 12.406930923461914,
+                            "1": 4.393415927886963
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::4",
+                    "chunks": [
+                        "# SynapseFlow v0.2 - Architecture Document\n\n**Date:** 2024-04-01 (Last Updated: 2024-05-01)\n**Authors:** Alex Chen, [Co-founder Name]\n\n## 1. Overview\nSynapseFlow v0.2 aims to provide a robust platform for deploying and managing ML models with a focus on ease-of-use for developers and MLOps teams. This version introduces scalable inference endpoints and basic model versioning.\n\n## 2. Key Architectural Decisions:\n* **Microservices Architecture:** Core components (API Gateway, Model Serving, Orchestration, Monitoring) are designed as independent microservices.\n    * *Rationale:* Scalability, fault isolation, independent development cycles.\n* **Containerization:** Docker for packaging all services.\n    * *Rationale:* Consistency across environments, ease of deployment.\n* **Orchestration:** Kubernetes (EKS on AWS) for managing containerized services.",
+                        "\n    * *Rationale:* Auto-scaling, self-healing, rolling updates. (See also: `kubernetes_decision_notes.md`)\n* **API Gateway:** Kong chosen for its plugin architecture and performance.\n* **Model Serving:** Custom Python-based server using FastAPI for low latency, with considerations for Triton Inference Server for future GPU-heavy models.\n* **Database:** PostgreSQL for metadata, Redis for caching.\n\n## 3. Component Diagram\n(ASCII or Mermaid diagram embedded here)\n\n```mermaid\ngraph TD\n    A[User API] --> B(API Gateway - Kong);\n    B --> C{Orchestrator - K8s};\n    C --> D[Model Serving Instance 1];\n    C --> E[Model Serving Instance N];\n    D --> F[Model Artifact Store - S3];\n    E --> F;\n    C --> G[Metadata DB - PostgreSQL];\n```\n\n## <MORE_TEXT:HERE> (Detailed API specs, data flows, security considerations)"
+                    ],
+                    "id": "4",
+                    "title": "synapseflow_architecture_v0.2.md",
+                    "created_timestamp": 1680307200,
+                    "modified_timestamp": 1682899200,
+                    "last_opened_timestamp": 1716500000,
+                    "open_count": 30,
+                    "favorite": true
+                }
+            },
+            {
+                "id": "id:doc:doc::9",
+                "relevance": 14.40264400581725,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 8.99956878897655,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.0035087719298245615,
+                        "closeness(title_embedding)": 0.0028169014084507044,
+                        "chunk_sim_scores": {
+                            "0": 0.0030395137146115303,
+                            "1": 0.003508772002533078
+                        },
+                        "chunk_text_scores": {
+                            "0": 7.688950538635254,
+                            "1": 5.3556976318359375
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::9",
+                    "chunks": [
+                        "# Understanding Retrieval Augmented Generation (RAG) - Notes & Links\n\n## Core Concept:\nRetrieval Augmented Generation (RAG) combines pre-trained dense retrieval systems with sequence-to-sequence models (like LLMs) to improve generation quality by grounding responses in external knowledge.\n\n**Key Idea:** Instead of relying solely on the LLM's parametric memory (knowledge learned during training), RAG first retrieves relevant documents/passages from a corpus and then uses these as context for the LLM to generate an answer.\n\n## Foundational Papers (My Saved Copies/Summaries):\n* **\"Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\" (Lewis et al., 2020):** The original RAG paper. My notes highlight the dual encoder architecture for retriever and the generator conditioning on retrieved docs.\n    * *Implementation Detail Noted:* Using FAISS for efficient dense retrieval.\n* **\"Dense Passage Retrieval for Open-Domain Question Answering\" ",
+                        "(Karpukhin et al., 2020):** Focuses on DPR (Dense Passage Retriever). Notes on training DPR with positive/negative examples.\n\n## My Implementation Thoughts for SynapseFlow (Internal Search/Bot Idea):\n* **Retriever:** Could use a sentence-transformer model fine-tuned on our internal documentation (technical docs, meeting notes, code comments).\n* **Vector DB:** Milvus or Weaviate for storing and querying document embeddings.\n* **Generator:** GPT-3.5/4 via API, or a smaller open-source model if latency/cost is critical.\n* **Prompt Engineering:** Crucial to structure the prompt with retrieved context effectively.\n    * Example prompt structure: `\"Based on the following documents: [Doc1 Text], [Doc2 Text], ... Answer the question: [User Question]\"`\n\n## Articles & Blog Posts I Found Useful:\n* [Link to Pinecone blog on RAG]\n* [Link to Hugging Face blog on RAG implementations]\n\n## <MORE_TEXT:HERE> (Code snippets for basic retriever, prompt variations)"
+                    ],
+                    "id": "9",
+                    "title": "rag_research_and_notes.md",
+                    "created_timestamp": 1706745600,
+                    "modified_timestamp": 1706832000,
+                    "last_opened_timestamp": 1717350000,
+                    "open_count": 22,
+                    "favorite": true
+                }
+            },
+            {
+                "id": "id:doc:doc::8",
+                "relevance": 12.262935597396089,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 7.111473288578066,
+                        "bm25(title)": 2.6590596310738097,
+                        "closeness(chunk_embeddings)": 0.004098360655737705,
+                        "closeness(title_embedding)": 0.003115264797507788,
+                        "chunk_sim_scores": {
+                            "0": 0.004098360426723957,
+                            "1": 0.0036496350076049566
+                        },
+                        "chunk_text_scores": {
+                            "0": 5.012192726135254,
+                            "1": 5.243897914886475
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::8",
+                    "chunks": [
+                        "# Kubernetes Adoption - Pros, Cons, and Decision Log for SynapseFlow\nDate: 2024-10-01\n\n## Context:\nDiscussion regarding the orchestration layer for SynapseFlow's backend services. Options considered: Docker Swarm, Nomad, Kubernetes (K8s), custom scripting.\n\n## Arguments FOR Kubernetes:\n1.  **Industry Standard & Ecosystem:** Large community, extensive documentation, wide adoption, readily available talent.\n2.  **Scalability & Resilience:** Proven capabilities for auto-scaling, self-healing, rolling updates.\n3.  **Feature Richness:** Service discovery, load balancing, configuration management, secrets management built-in or easily integrated.\n4.  **Cloud Agnostic (mostly):** While managed K8s services (EKS, GKE, AKS) have vendor specifics, core K8s skills are transferable.\n5.  **YC Network Experience:** Many YC companies successfully use K8s.\n\n## Arguments AGAINST Kubernetes / Concerns:\n1.  **Complexity:** Steep learning curve, operational overhead,",
+                        " especially for a small team.\n    * \"Is this overkill for our current scale?\" - [Team Member]\n2.  **Resource Intensive:** Can require more resources (CPU/memory) for the control plane itself.\n3.  **Initial Setup Time:** Longer to get a production-ready cluster configured compared to simpler solutions.\n4.  **Potential for 'Yak Shaving':** Risk of spending too much time on K8s internals rather than product features.\n\n## Decision:\nProceed with managed Kubernetes (AWS EKS) for SynapseFlow v0.2.\n* **Rationale:** Long-term scalability benefits and ecosystem support outweigh initial complexity, especially with a managed service reducing some operational burden. Plan to invest in learning and potentially hire K8s expertise as we grow.\n* **Mitigation for Complexity:** Start with a simple setup, leverage EKS defaults, focus on core deployment needs first.\n\n## <MORE_TEXT:HERE> (Links to articles, team discussion summaries)"
+                    ],
+                    "id": "8",
+                    "title": "kubernetes_decision_notes.md",
+                    "created_timestamp": 1696118400,
+                    "modified_timestamp": 1696118400,
+                    "last_opened_timestamp": 1715000000,
+                    "open_count": 15,
+                    "favorite": true
+                }
+            },
+            {
+                "id": "id:doc:doc::25",
+                "relevance": 9.943273553531357,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 9.4315845690342,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.0037735849056603774,
+                        "closeness(title_embedding)": 0.0028735632183908046,
+                        "chunk_sim_scores": {
+                            "0": 0.0037735849618911743
+                        },
+                        "chunk_text_scores": {
+                            "0": 8.52319049835205
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::25",
+                    "chunks": [
+                        "# Quick thoughts on LLM evaluation metrics\nBeyond BLEU/ROUGE for summarization, need to consider:\n- Faithfulness / Factual Consistency: Does the summary contradict the source?\n- Relevance: Is the summary on-topic?\n- Coherence: Is it well-written and easy to understand?\n- Conciseness: Does it avoid redundancy?\nFor SynapseFlow's internal RAG bot, user satisfaction and task completion rate will be key.\n## <MORE_TEXT:HERE>"
+                    ],
+                    "id": "25",
+                    "title": "llm_eval_metrics_thoughts.md",
+                    "created_timestamp": 1717372800,
+                    "modified_timestamp": 1717372800,
+                    "last_opened_timestamp": 1717372800,
+                    "open_count": 1,
+                    "favorite": false
+                }
+            },
+            {
+                "id": "id:doc:doc::17",
+                "relevance": 9.559063567536343,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 4.463886533193739,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.004048582995951417,
+                        "closeness(title_embedding)": 0.0028011204481792717,
+                        "chunk_sim_scores": {
+                            "0": 0.003636363660916686,
+                            "1": 0.004048583097755909,
+                            "2": 0.0033444815780967474
+                        },
+                        "chunk_text_scores": {
+                            "0": 4.713094234466553,
+                            "1": 1.7423439025878906,
+                            "2": 2.4214253425598145
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::17",
+                    "chunks": [
+                        "# YC Office Hours Debrief - Communication Style Feedback (March 2025)\n\n**Date:** 2025-03-14\n**YC Partner:** [Partner Name]\n\n## Context:\nDiscussed SynapseFlow's pitch and how I explain our core technology to non-technical or semi-technical audiences (e.g., investors, potential business users).\n\n## Feedback Received on My Communication Style:\n* **Positive:** Clearly passionate and knowledgeable about the AI aspects.\n* **Areas for Improvement (Patterns Noted by Partner & My Reflection):**\n    1.  **Too Much Jargon Initially:** Tendency to dive into technical details (e.g., specific model architectures, infra components) too quickly before establishing the 'why' or the user benefit.\n        * *Partner Quote:",
+                        "* \"You lost me a bit when you started talking about vector embeddings in the first minute.\"\n    2.  **Assumed Knowledge:** Sometimes assume the audience understands certain AI concepts that are foundational to me but not to them.\n    3.  **Benefit vs. Feature:** Focus more on *what* a feature does (technical description) rather than *what problem it solves* or *what benefit it provides* to the user/customer.\n        * *My Reflection:* I get excited about the 'how', need to emphasize the 'so what?'.\n\n## Strategies for Improvement I Noted:\n* **Start with the Problem/Pain:** Always lead with the customer pain point SynapseFlow is addressing.\n* **Analogy Use:** Develop 2-3 simple analogies for complex AI concepts ",
+                        "(e.g., explaining model deployment like 'publishing a website for code').\n* **The 'Grandma Test':** Can I explain the core value proposition in a way my grandma would understand (at a high level)?\n* **Benefit-Driven Language:** Reframe feature descriptions. Instead of \"We use Kubernetes for orchestration,\" try \"This means your models scale automatically and reliably, so you don't have to worry about downtime.\"\n* **Practice Pitch with Non-Technical Friends:** Get feedback from people outside the AI bubble.\n* **Record Myself:** Review recordings to catch jargon or unclear explanations.\n\n## <MORE_TEXT:HERE> (Specific examples from the pitch I used, partner's suggested rephrasing)"
+                    ],
+                    "id": "17",
+                    "title": "yc_office_hours_communication_feedback.md",
+                    "created_timestamp": 1710460800,
+                    "modified_timestamp": 1710460800,
+                    "last_opened_timestamp": 1710500000,
+                    "open_count": 6,
+                    "favorite": false
+                }
+            },
+            {
+                "id": "id:doc:doc::50",
+                "relevance": 9.450909062286096,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 7.101098058218748,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.004149377593360996,
+                        "closeness(title_embedding)": 0.0030120481927710845,
+                        "chunk_sim_scores": {
+                            "0": 0.003968254197388887,
+                            "1": 0.004149377811700106
+                        },
+                        "chunk_text_scores": {
+                            "0": 6.347217082977295,
+                            "1": 2.028733015060425
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::50",
+                    "chunks": [
+                        "# Investor Meeting Prep: [VC Firm B] - Follow Up (May 2025)\n\n**Context:** Follow-up to initial chat. They requested more details on our technical differentiation and team.\n\n**Key Points to Emphasize:**\n1.  **Technical Differentiation (Beyond Ease-of-Use):**\n    * Our custom attention layer (`custom_attention_impl.py.md`) allows for X% faster inference on specific NLP tasks (show benchmark data from `prep_data_pipeline_presentation.md` if relevant to a model type).\n    * Scalable microservices architecture (`synapseflow_architecture_v0.2.md`) designed for high concurrency from day one.\n    * Roadmap for advanced features like [mention a specific, technically impressive future feature]",
+                        ".\n2.  **Team Strength:**\n    * My background in AI/ML at [Previous Top Company/Uni] and specific projects relevant to SynapseFlow.\n    * [Co-founder]'s expertise in [Product/Ops/Sales domain].\n    * Lean, highly effective team capable of rapid iteration.\n3.  **Traction & User Love (if any new data since last meeting):**\n    * Updated beta metrics (active users, deployments, positive quotes from `user_feedback_beta_api_apr2025.md`).\n\n**Anticipate Questions On:**\n- Long-term defensibility against large cloud providers.\n- Path to profitability.\n- Hiring plans and ability to attract talent.\n\n## <MORE_TEXT:HERE> (Specific slides to reuse/update, list of questions to ask them)"
+                    ],
+                    "id": "50",
+                    "title": "investor_meeting_prep_vcfirm_b.md",
+                    "created_timestamp": 1717200000,
+                    "modified_timestamp": 1717200000,
+                    "last_opened_timestamp": 1717200000,
+                    "open_count": 4,
+                    "favorite": false
+                }
+            },
+            {
+                "id": "id:doc:doc::79",
+                "relevance": 9.016696464987609,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 6.128190095722911,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.002976190476190476,
+                        "closeness(title_embedding)": 0.0027472527472527475,
+                        "chunk_sim_scores": {
+                            "0": 0.0028571428265422583,
+                            "1": 0.0029761905316263437
+                        },
+                        "chunk_text_scores": {
+                            "0": 6.197549819946289,
+                            "1": 1.892676830291748
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::79",
+                    "chunks": [
+                        "# Nutrition Research: Creatine Monohydrate for Strength & Performance\n\n**Key Findings from Studies (Summarized):**\n- **Efficacy:** One of the most researched and consistently effective supplements for increasing strength, power output, and muscle mass (when combined with resistance training).\n- **Mechanism:** Increases phosphocreatine stores in muscles, aiding ATP regeneration during short, intense efforts.\n- **Dosage:** Loading phase (optional): ~20g/day for 5-7 days. Maintenance: 3-5g/day.\n- **Timing:** Not critical, can be taken anytime.",
+                        " Some prefer post-workout.\n- **Safety:** Generally safe for healthy individuals. Ensure adequate hydration.\n- **Types:** Creatine Monohydrate is the most studied and cost-effective form. Other forms (HCL, Ethyl Ester) generally lack evidence of superiority.\n\n**My Personal Protocol (When Using):**\n- 5g Creatine Monohydrate daily (no loading phase).\n- Mix with water or protein shake.\n- Cycle on/off? Current research suggests continuous use is fine for many.\n\n## <MORE_TEXT:HERE> (Links to key studies/meta-analyses, notes on non-responders)"
+                    ],
+                    "id": "79",
+                    "title": "nutrition_research_creatine.md",
+                    "created_timestamp": 1704500000,
+                    "modified_timestamp": 1704500000,
+                    "last_opened_timestamp": 1704500000,
+                    "open_count": 4,
+                    "favorite": false
+                }
+            },
+            {
+                "id": "id:doc:doc::24",
+                "relevance": 8.023838983556624,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 7.6566378932507,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.004291845493562232,
+                        "closeness(title_embedding)": 0.0029498525073746312,
+                        "chunk_sim_scores": {
+                            "0": 0.004291845485568047
+                        },
+                        "chunk_text_scores": {
+                            "0": 6.869375228881836
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::24",
+                    "chunks": [
+                        "# Book Notes: 'The Lean Startup' by Eric Ries\n\nKey Concepts: Build-Measure-Learn feedback loop, Minimum Viable Product (MVP), validated learning, pivot vs. persevere.\nApplication to SynapseFlow: Constantly test assumptions with users. Release MVPs of features. Don't be afraid to pivot if data suggests current path isn't working. Focus on actionable metrics, not vanity metrics.\n\n## <MORE_TEXT:HERE>"
+                    ],
+                    "id": "24",
+                    "title": "book_notes_lean_startup.md",
+                    "created_timestamp": 1688000000,
+                    "modified_timestamp": 1688000000,
+                    "last_opened_timestamp": 1701000000,
+                    "open_count": 10,
+                    "favorite": true
+                }
+            },
+            {
+                "id": "id:doc:doc::75",
+                "relevance": 7.7661668792011955,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 5.859811993904247,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.0032679738562091504,
+                        "closeness(title_embedding)": 0.0026666666666666666,
+                        "chunk_sim_scores": {
+                            "0": 0.003267973894253373,
+                            "1": 0.0032051282469183207
+                        },
+                        "chunk_text_scores": {
+                            "0": 2.0795042514801025,
+                            "1": 4.7997941970825195
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::75",
+                    "chunks": [
+                        "# Book Notes: 'Thinking, Fast and Slow' by Daniel Kahneman\n\n**Core Idea:** Two systems of thinking:\n- **System 1 (Fast):** Intuitive, emotional, automatic, effortless. Prone to biases.\n- **System 2 (Slow):** Deliberate, logical, analytical, effortful.\n\n**Key Biases & Heuristics Discussed:**\n- **Anchoring:** Relying too heavily on the first piece of information offered.\n- **Availability Heuristic:** Overestimating the likelihood of events that are easily recalled.\n- **Confirmation Bias:** Seeking out information that confirms pre-existing beliefs.\n- **Loss Aversion:** Feeling the pain of a loss more strongly ",
+                        "than the pleasure of an equivalent gain.\n- **WYSIATI (What You See Is All There Is):** Tendency to focus on available information and neglect missing information.\n\n**Application to Startup/Decision Making:**\n- Be aware of System 1 biases when making quick judgments.\n- Engage System 2 for important decisions (e.g., product strategy, hiring, investor pitches).\n- Seek disconfirming evidence to combat confirmation bias.\n- Frame decisions carefully to account for loss aversion.\n\n## <MORE_TEXT:HERE> (Examples of biases in action, personal reflections)"
+                    ],
+                    "id": "75",
+                    "title": "book_notes_thinking_fast_and_slow.md",
+                    "created_timestamp": 1695500000,
+                    "modified_timestamp": 1695500000,
+                    "last_opened_timestamp": 1705000000,
+                    "open_count": 11,
+                    "favorite": true
+                }
+            },
+            {
+                "id": "id:doc:doc::14",
+                "relevance": 7.5462790007329685,
+                "source": "content",
+                "fields": {
+                    "matchfeatures": {
+                        "bm25(chunks)": 4.448860803273654,
+                        "bm25(title)": 0.0,
+                        "closeness(chunk_embeddings)": 0.00423728813559322,
+                        "closeness(title_embedding)": 0.0029239766081871343,
+                        "chunk_sim_scores": {
+                            "0": 0.004219409078359604,
+                            "1": 0.004149377811700106,
+                            "2": 0.0042372881434857845
+                        },
+                        "chunk_text_scores": {
+                            "0": 1.8855804204940796,
+                            "1": 1.2538412809371948,
+                            "2": 3.7252631187438965
+                        }
+                    },
+                    "sddocname": "doc",
+                    "documentid": "id:doc:doc::14",
+                    "chunks": [
+                        "# MLOps Tool Evaluation - Q3 2024 (For SynapseFlow Internal Tracking)\n\n**Objective:** Select an initial MLOps tool for experiment tracking and model versioning for SynapseFlow's own internal model development (e.g., models for platform analytics, abuse detection).\n\n**Candidates Considered:** MLflow, Weights & Biases (W&B), DVC, CometML.\n\n## MLflow vs. Weights & Biases - Detailed Comparison:\n\n**1. MLflow:**\n* **Pros I Noted:**\n    * Open source, self-hostable (good for cost control initially).\n    * Good integration with Spark and other Apache tools.\n    * Modular: Tracking, Projects, Models, Registry are somewhat distinct.\n    * Python-centric, easy to integrate.\n* **Cons I Noted:",
+                        "**\n    * UI can be a bit clunky compared to W&B for visualizations.\n    * Self-hosting adds operational overhead (though managed options exist).\n    * Collaboration features less polished than W&B out-of-the-box.\n* **SynapseFlow Use Case Fit:** Good for basic tracking, model registry. Might require more custom UI work for advanced dashboards.\n\n**2. Weights & Biases (W&B):**\n* **Pros I Noted:**\n    * Excellent UI/UX, very intuitive for experiment comparison and visualization.\n    * Strong collaboration features (teams, reports).\n    * Seamless integration, very developer-friendly (`wandb.login()`, `wandb.init()`).\n    * Good for hyperparameter sweeps.\n* **Cons I Noted:**\n    * Primarily a SaaS offering;",
+                        " self-hosting is possible but more complex/limited.\n    * Can get expensive at scale or with many users/projects.\n    * More of an 'all-in-one' platform, might be overkill if only needing one component.\n* **SynapseFlow Use Case Fit:** Ideal for rapid iteration and visualization, especially if team collaboration on experiments is key. Cost is a factor to monitor.\n\n## Decision (Q3 2024):\nStarted with **MLflow** for initial internal needs due to open-source nature and control. Re-evaluate W&B if visualization and collaborative features become a major bottleneck or if budget allows.\n\n## <MORE_TEXT:HERE> (Evaluation criteria checklist, notes on DVC/CometML)"
+                    ],
+                    "id": "14",
+                    "title": "mlops_tool_evaluation_q3_2024.md",
+                    "created_timestamp": 1690848000,
+                    "modified_timestamp": 1693440000,
+                    "last_opened_timestamp": 1710000000,
+                    "open_count": 11,
+                    "favorite": false
+                }
+            }
+        ]
+    }
+}
