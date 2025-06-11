@@ -16,9 +16,9 @@ A web application that helps users find cars based on their preferences. The app
 
 To get the application running, you'll need to:
 
-1. Set up the Vespa application under [app](/examples/ecommerce-user-preferences/app)
+1. Set up the Vespa application under [app](app)
 2. Feed the data into Vespa using Logstash and the provided [logstash.conf](logstash.conf)
-3. Set up and run the web application under [webapp](/examples/ecommerce-user-preferences/webapp)
+3. Set up and run the web application under [webapp](webapp)
 
 ### Set up the Vespa application
 
