@@ -43,6 +43,8 @@ jobs:
         /hub.docker.com/r/vespaengine/vespa/tags/
         /openai.com/index/openai-api/
         /jmcauley.ucsd.edu/
+        /app/
+        /webapp/
       swap-urls: |-
         (https\://github.com.*/master/.*)#.*:\1
         (https\://github.com.*/main/.*)#.*:\1
