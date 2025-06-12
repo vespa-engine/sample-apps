@@ -98,43 +98,39 @@ def perform_cross_validation(file_path, output_coef_file):
         )
 
     # --- Output Results ---
-    logging.info("\n" + "-" * 60)
-    logging.info(f"{'Cross-Validation Results (5-Fold)':^60}")
-    logging.info("-" * 60)
-    logging.info(f"{'Metric':<18} | {'Mean':<18} | {'Std Dev':<18}")
-    logging.info("-" * 60)
-    logging.info(
+    print("\n" + "-" * 60)
+    print(f"{'Cross-Validation Results (5-Fold)':^60}")
+    print("-" * 60)
+    print(f"{'Metric':<18} | {'Mean':<18} | {'Std Dev':<18}")
+    print("-" * 60)
+    print(
         f"{'Accuracy':<18} | {np.mean(accuracies):<18.4f} | {np.std(accuracies):<18.4f}"
     )
-    logging.info(
+    print(
         f"{'Precision':<18} | {np.mean(precisions):<18.4f} | {np.std(precisions):<18.4f}"
     )
-    logging.info(
-        f"{'Recall':<18} | {np.mean(recalls):<18.4f} | {np.std(recalls):<18.4f}"
-    )
-    logging.info(
+    print(f"{'Recall':<18} | {np.mean(recalls):<18.4f} | {np.std(recalls):<18.4f}")
+    print(
         f"{'F1-Score':<18} | {np.mean(f1_scores):<18.4f} | {np.std(f1_scores):<18.4f}"
     )
-    logging.info(
+    print(
         f"{'Log Loss':<18} | {np.mean(log_losses):<18.4f} | {np.std(log_losses):<18.4f}"
     )
-    logging.info(
-        f"{'ROC AUC':<18} | {np.mean(roc_aucs):<18.4f} | {np.std(roc_aucs):<18.4f}"
-    )
-    logging.info(
+    print(f"{'ROC AUC':<18} | {np.mean(roc_aucs):<18.4f} | {np.std(roc_aucs):<18.4f}")
+    print(
         f"{'Avg Precision':<18} | {np.mean(avg_precisions):<18.4f} | {np.std(avg_precisions):<18.4f}"
     )
-    logging.info("-" * 60)
+    print("-" * 60)
 
     # --- Model Coefficients ---
     # Retrain on full data to get final coefficients
     model.fit(X, y)
-    logging.info("\nModel Coefficients (trained on full data):")
-    logging.info("-" * 40)
+    print("\nModel Coefficients (trained on full data):")
+    print("-" * 40)
     for feature, coef in zip(features, model.coef_[0]):
-        logging.info(f"{feature:<30}: {coef:.4f}")
-    logging.info(f"{'Intercept':<30}: {model.intercept_[0]:.4f}")
-    logging.info("-" * 40)
+        print(f"{feature:<30}: {coef:.4f}")
+    print(f"{'Intercept':<30}: {model.intercept_[0]:.4f}")
+    print("-" * 40)
 
     # Save coefficients expression to file
     if output_coef_file:
