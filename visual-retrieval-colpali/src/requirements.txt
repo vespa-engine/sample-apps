@@ -459,7 +459,7 @@ threadpoolctl==3.5.0
     # via scikit-learn
 tokenizers==0.20.0
     # via transformers
-torch==2.6.0
+torch==2.7.1
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   accelerate
