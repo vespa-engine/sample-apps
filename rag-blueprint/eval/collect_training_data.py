@@ -25,10 +25,11 @@ def build_query_body(
     If `get_relevant` is True, it filters for relevant document IDs.
     If `get_relevant` is False, it excludes them and gets other documents.
     """
-    id_condition = qb.QueryField("id").in_(*map(str, relevant_doc_ids))
-    if not get_relevant:
-        id_condition = ~id_condition
-
+    recall_str = " ".join(["id:" + str(doc) for doc in relevant_doc_ids])
+    if get_relevant:
+        recall_str = f"+({recall_str})"
+    else:
+        recall_str = f"-({recall_str})"
     return {
         "yql": str(
             qb.select("*")
@@ -55,7 +56,6 @@ def build_query_body(
                         query_text,
                     )
                 )
-                & id_condition
             )
         ),
         "query": query_text,
@@ -63,6 +63,7 @@ def build_query_body(
         "hits": hits_count,
         "timeout": "5s",  # Increased timeout for potentially larger queries
         "input.query(embedding)": f"embed({query_text})",
+        "recall": recall_str,
     }
 
 
