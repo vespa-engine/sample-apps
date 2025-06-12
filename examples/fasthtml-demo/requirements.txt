@@ -114,7 +114,7 @@ pyyaml==6.0.2
     # via
     #   huggingface-hub
     #   uvicorn
-requests==2.32.2
+requests==2.32.4
     # via
     #   docker
     #   huggingface-hub
