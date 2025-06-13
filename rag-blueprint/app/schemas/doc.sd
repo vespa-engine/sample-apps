@@ -64,8 +64,8 @@ schema doc {
         }
     }
 
-    rank-profile default {
-        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) chunk_sim_scores chunk_text_scores
+    rank-profile collect-training-data {
+        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) max_chunk_sim_scores max_chunk_text_scores # avg_top_5_chunk_sim_scores avg_top_5_chunk_text_scores
         inputs {
             query(embedding) tensor<int8>(x[96])
         }
@@ -85,16 +85,75 @@ schema doc {
             expression: 1/ (1 + chunk_dist_scores())
         }
 
+        # function top_5_chunk_text_scores() {
+        #     expression: top(5, chunk_text_scores())
+        # }
+
+        # function top_5_chunk_sim_scores() {
+        #     expression: top(5, chunk_sim_scores())
+        # }
+
+
+        # function avg_top_5_chunk_text_scores() {
+        #     expression: reduce(top_5_chunk_text_scores(), avg, chunk)
+        # }
+        # function avg_top_5_chunk_sim_scores() {
+        #     expression: reduce(top_5_chunk_sim_scores(), avg, chunk)
+        # }
+        
+        function max_chunk_text_scores() {
+            expression: reduce(chunk_text_scores(), max, chunk)
+        }
+
+        function max_chunk_sim_scores() {
+            expression: reduce(chunk_sim_scores(), max, chunk)
+        }
+
         first-phase {
             expression {
-                0.35 * closeness(title_embedding) +
-                0.15 * closeness(chunk_embeddings) +
-                0.35 * bm25(title) +
-                0.15 * bm25(chunks) +
-                sum(chunk_sim_scores()) +
-                sum(chunk_text_scores())
+                closeness(title_embedding) +
+                closeness(chunk_embeddings) +
+                bm25(title) + 
+                bm25(chunks) +
+                max_chunk_sim_scores() +
+                max_chunk_text_scores()
             }
         }
+
+        second-phase {
+            expression: random
+        }
+
+        
     }
+
+    rank-profile learned-linear inherits collect-training-data {
+        match-features: 
+        inputs {
+            query(embedding) tensor<int8>(x[96])
+        }
+        first-phase {
+            expression {
+                # Model Coefficients (trained on full data):
+                # ----------------------------------------
+                # bm25(chunks)                  : -0.0172
+                # bm25(title)                   : 0.5504
+                # closeness(chunk_embeddings)   : -0.0005
+                # closeness(title_embedding)    : -0.0029
+                # max_chunk_sim_scores          : -0.0005
+                # max_chunk_text_scores         : 0.7143
+                # Intercept                     : -3.5974
+                -3.5974 -0.0029 * closeness(title_embedding) -
+                0.0005 * closeness(chunk_embeddings) +
+                0.5504 * bm25(title) -
+                0.0172 * bm25(chunks) -
+                0.0005 * max_chunk_sim_scores() +
+                0.7143 * max_chunk_text_scores()
+            }
+        }
+        
+    }
+
+    
 
 }

@@ -11,5 +11,5 @@ project root. -->
         ({label:"title_label", targetHits:100}nearestNeighbor(title_embedding, embedding)) or
         ({label:"chunks_label", targetHits:100}nearestNeighbor(chunk_embeddings, embedding))
     </field>
-    <field name="presentation.format.tensors">short-value</field>
+    <field name="ranking.profile">learned-linear</field>
 </query-profile>
