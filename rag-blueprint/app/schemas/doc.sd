@@ -45,6 +45,9 @@ schema doc {
     field chunks type array<string> {
         indexing: input text | chunk fixed-length 1024 | summary | index
         index: enable-bm25
+        summary {
+            select-elements-by: top_3_chunk_sim_scores
+        }
     }
 
     field chunk_embeddings type tensor<int8>(chunk{}, x[96]) {
@@ -65,7 +68,7 @@ schema doc {
     }
 
     rank-profile collect-training-data {
-        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) max_chunk_sim_scores max_chunk_text_scores # avg_top_5_chunk_sim_scores avg_top_5_chunk_text_scores
+        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) max_chunk_sim_scores max_chunk_text_scores avg_top_3_chunk_sim_scores avg_top_3_chunk_text_scores
         inputs {
             query(embedding) tensor<int8>(x[96])
         }
@@ -85,21 +88,21 @@ schema doc {
             expression: 1/ (1 + chunk_dist_scores())
         }
 
-        # function top_5_chunk_text_scores() {
-        #     expression: top(5, chunk_text_scores())
-        # }
+        function top_3_chunk_text_scores() {
+            expression: top(3, chunk_text_scores())
+        }
 
-        # function top_5_chunk_sim_scores() {
-        #     expression: top(5, chunk_sim_scores())
-        # }
+        function top_3_chunk_sim_scores() {
+            expression: top(3, chunk_sim_scores())
+        }
 
 
-        # function avg_top_5_chunk_text_scores() {
-        #     expression: reduce(top_5_chunk_text_scores(), avg, chunk)
-        # }
-        # function avg_top_5_chunk_sim_scores() {
-        #     expression: reduce(top_5_chunk_sim_scores(), avg, chunk)
-        # }
+        function avg_top_3_chunk_text_scores() {
+            expression: reduce(top_3_chunk_text_scores(), avg, chunk)
+        }
+        function avg_top_3_chunk_sim_scores() {
+            expression: reduce(top_3_chunk_sim_scores(), avg, chunk)
+        }
         
         function max_chunk_text_scores() {
             expression: reduce(chunk_text_scores(), max, chunk)
