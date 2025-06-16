@@ -154,6 +154,15 @@ schema doc {
                 0.7143 * max_chunk_text_scores()
             }
         }
+
+        summary-features {
+            top_3_chunk_sim_scores
+            top_3_chunk_text_scores
+            avg_top_3_chunk_sim_scores
+            avg_top_3_chunk_text_scores
+            max_chunk_sim_scores
+            max_chunk_text_scores
+        }
         
     }
 
