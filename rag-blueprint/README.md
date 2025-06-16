@@ -16,7 +16,8 @@ This requires at least Vespa 8.519.55.
 
 This README provides the commands necessary to create, deploy, feed, and evaluate this RAG blueprint application.
 
-For an in-depth tutorial with more reasoning and explanation, please see the [RAG Blueprint tutorial](TODO).
+<!-- For an in-depth tutorial with more reasoning and explanation, please see the [RAG Blueprint tutorial](TODO). -->
+
 
 ## Dataset
 
