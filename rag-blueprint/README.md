@@ -34,6 +34,7 @@ By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RA
 * Minimum **8 GB** memory dedicated to Docker (the default is 2 GB on Macs)
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
+* Python 3.8 or later. We recommend using [uv](https://docs.astral.sh/uv/) to manage virtual environment and install python dependencies.
 
 ## Quick start
 
@@ -104,21 +105,49 @@ $ vespa query \
     query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
     searchChain=openai \
     format=sse \
-    hits=5 \
-    traceLevel=1
+    hits=5
 </pre>
 
-## Using a query profile
+## Using query profiles for different use cases
 
-As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you to define a set of query parameters to support different use cases. 
-For this sample app, we have added a query profile named `rag`, see `app/search/query-profiles/rag.xml`.
+As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you to define a set of query parameters to support different use cases.
+For this sample app, we have added 3 query profiles:
+
+1. `rag`, see `app/search/query-profiles/rag.xml`.
+2. `hybrid`, see `app/search/query-profiles/hybrid.xml`.
+3. `deepresearch`, see `app/search/query-profiles/deepresearch.xml`.
+
+Which all have different query parameters set, such as the search chain to use, the ranking profile, and the number of hits to return.
+The command below will use that query profile to set parameters listed in previous section.
+
+### `rag` query profile
+
+Run the command below to use the `rag` query profile.
 
 <pre>
 $ vespa query \
-    --timeout 60 \
     --header="X-LLM-API-KEY:<your-api-key>" \
     query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
     queryProfile=rag
+</pre>
+
+### `hybrid` query profile
+
+Run the command below to use the `hybrid` query profile.
+
+<pre>
+$ vespa query \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    queryProfile=hybrid
+</pre>
+
+### `deepresearch` query profile
+
+Run the command below to use the `deepresearch` query profile.
+<pre>
+$ vespa query \
+    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
+    queryProfile=deepresearch
 </pre>
 
 ## Evaluating and improving ranking
@@ -126,26 +155,103 @@ $ vespa query \
 ### 1. Retrieval (match-phase) evals
 
 We want to make sure we match all relevant docs.
-We can do this easily using pyvespa TODO (wait for VespaMatchEvaluator PR). 
+We can do this quite easily using pyvespa's [VespaMatchEvaluator](https://vespa-engine.github.io/pyvespa/api/vespa/evaluation.html#vespa.evaluation.VespaMatchEvaluator).
 
-### 2. First-phase ranking
+We defined 3 different YQL queries that we will evaluate separately:
 
-The goal of first-phase ranking is to create a good, but cheap proxy for final relevance score.
-A linear combination of text and semantic features is a common starting point, which we will use for this blueprint.
-Below, we show one way of finding this linear expression.
+1. **`semantic`**: This query uses the `nearestNeighbor` operator to find documents based on semantic similarity.
+
+2. **`weakand`**: This query uses the `userQuery` operator to find documents based on text matching with weak AND semantics.
+
+3. **`hybrid`**: This query uses a combination of text and semantic matching to find documents.
+
+To run the match-phase evaluation for all of them, run the command below.
+
+<pre>
+python eval/evaluate_match_phase.py
+</pre>
+
+And expect the following output:
+
+#### Semantic Query Evaluation
+
+```sql
+select * from doc where 
+({targetHits:100}nearestNeighbor(title_embedding, embedding)) or
+({targetHits:100}nearestNeighbor(chunk_embeddings, embedding))
+```
+
+| Metric                    | Value    |
+| ------------------------- | -------- |
+| Match Recall              | 1.0000   |
+| Average Recall per Query  | 1.0000   |
+| Total Relevant Documents  | 51       |
+| Total Matched Relevant    | 51       |
+| Average Matched per Query | 100.0000 |
+| Total Queries             | 20       |
+| Search Time Average (s)   | 0.0090   |
+| Search Time Q50 (s)       | 0.0060   |
+| Search Time Q90 (s)       | 0.0193   |
+| Search Time Q95 (s)       | 0.0220   |
+
+#### WeakAnd Query Evaluation
+
+```sql
+select * from doc where userQuery()
+```
+
+| Metric                    | Value   |
+| ------------------------- | ------- |
+| Match Recall              | 1.0000  |
+| Average Recall per Query  | 1.0000  |
+| Total Relevant Documents  | 51      |
+| Total Matched Relevant    | 51      |
+| Average Matched per Query | 88.7000 |
+| Total Queries             | 20      |
+| Search Time Average (s)   | 0.0071  |
+| Search Time Q50 (s)       | 0.0060  |
+| Search Time Q90 (s)       | 0.0132  |
+| Search Time Q95 (s)       | 0.0171  |
+
+#### Hybrid Query Evaluation
+
+```sql
+select * from doc where 
+({targetHits:100}nearestNeighbor(title_embedding, embedding)) or
+({targetHits:100}nearestNeighbor(chunk_embeddings, embedding)) or
+userQuery()
+```
+
+| Metric                    | Value    |
+| ------------------------- | -------- |
+| Match Recall              | 1.0000   |
+| Average Recall per Query  | 1.0000   |
+| Total Relevant Documents  | 51       |
+| Total Matched Relevant    | 51       |
+| Average Matched per Query | 100.0000 |
+| Total Queries             | 20       |
+| Search Time Average (s)   | 0.0076   |
+| Search Time Q50 (s)       | 0.0055   |
+| Search Time Q90 (s)       | 0.0150   |
+| Search Time Q95 (s)       | 0.0201   |
+
+### Conclusion
+
+We can see that all queries match all relevant documents, which is expected, since we use `targetHits:100` in the `nearestNeighbor` operator, and this is also the default for `weakAnd`(and `userQuery`).
+
+For a larger scale dataset, we could tune these parameters to find a good balance between recall and performance.
+
+### 2. Ranking
+
+With our match-phase evaluation done, we can move on to the ranking phase. 
+We will start by collecting some training data for a handpicked set of features, which we will combine into a (cheap) linear first-phase ranking expression.
 
 #### Collect rank features
 
-In the rank-profile `collect-training-data`, you can see we have createad both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
+In the rank-profile [`collect-training-data`](TODO), you can see we have createad both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
 These will now be calculated and returned as part of the Vespa response when this rank-profile is used.
 
-Too see an example of the response we can get from vespa, issue the command below (or inspect the included `resp.json`)
-<pre>
-vespa query \
-    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
-    queryProfile=hybrid \
-    ranking.profile=collect-training-data > resp.json
-</pre>
+We want to collect features from both the relevant documents, as well as a set of random documents (we sample an equal ratio of random and relevant documents), to ensure we have a good distribution of feature values.
 
 To do this for all our queries, we can run:
 
@@ -178,13 +284,4 @@ Intercept                     : -3.5974
 ----------------------------------------
 ```
 
-We can translate this to our ranking expression, which we add to our `learned-linear` rank-profile:
-
-```txt
--3.5974 -0.0029 * closeness(title_embedding) -
-0.0005 * closeness(chunk_embeddings) +
-0.5504 * bm25(title) -
-0.0172 * bm25(chunks) -
-0.0005 * max_chunk_sim_scores() +
-0.7143 * max_chunk_text_scores()
-```
+We can translate this to our ranking expression, which we add to our `hybrid`  query-profile. We could add them directly to our `learned-linear` rank-profile, but by putting the coefficients in the query-profile, we can override them without having to redeploy the application.
