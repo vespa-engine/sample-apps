@@ -64,6 +64,7 @@ def build_query_body(
         "timeout": "5s",  # Increased timeout for potentially larger queries
         "input.query(embedding)": f"embed({query_text})",
         "recall": recall_str,
+        "presentation.summary": "no-chunks",
     }
 
 
