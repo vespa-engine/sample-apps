@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the
+project root. -->
+<query-profile id="deepresearch" inherits="hybrid">
+  <field name="yql">
+    select *
+    from %{schema}
+    where userInput(@query) or
+    ({label:"title_label", targetHits:10000}nearestNeighbor(title_embedding, embedding)) or
+    ({label:"chunks_label", targetHits:10000}nearestNeighbor(chunk_embeddings, embedding))
+  </field>
+  <field name="hits">100</field>
+  <field name="timeout">5s</field>
+</query-profile>

@@ -2,8 +2,7 @@
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the
 project root. -->
 <query-profile id="rag" inherits="hybrid">
-  <field name="hits">5</field>
+  <field name="hits">50</field>
   <field name="searchChain">openai</field>
   <field name="presentation.format">sse</field>
-  <field name="traceLevel">1</field>
 </query-profile>

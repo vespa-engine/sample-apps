@@ -4,6 +4,13 @@ project root. -->
 <query-profile id="hybrid">
     <field name="schema">doc</field>
     <field name="ranking.features.query(embedding)">embed(@query)</field>
+    <field name="ranking.features.query(intercept)">-3.5974</field>
+    <field name="ranking.features.query(bm25_chunks_param)">-0.0172</field>
+    <field name="ranking.features.query(bm25_title_param)">0.5504</field>
+    <field name="ranking.features.query(closeness_chunk_embeddings_param)">-0.0005</field>
+    <field name="ranking.features.query(closeness_title_embedding_param)">-0.0029</field>
+    <field name="ranking.features.query(max_chunk_sim_scores_param)">-0.0005</field>
+    <field name="ranking.features.query(max_chunk_text_scores_param)">0.7143</field>
     <field name="yql">
         select *
         from %{schema}
@@ -11,5 +18,7 @@ project root. -->
         ({label:"title_label", targetHits:100}nearestNeighbor(title_embedding, embedding)) or
         ({label:"chunks_label", targetHits:100}nearestNeighbor(chunk_embeddings, embedding))
     </field>
+    <field name="hits">10</field>
     <field name="ranking.profile">learned-linear</field>
-</query-profile>
+    <field name="presentation.summary">top_3_chunks</field>
+</query-profile>    
