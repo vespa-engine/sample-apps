@@ -46,18 +46,18 @@ def perform_cross_validation(file_path, output_coef_file):
         raise FileNotFoundError(f"Input file '{file_path}' not found.")
     # Define and drop irrelevant columns
     columns_to_drop = [
-        "docid",
+        "doc_id",
         "query_id",
-        "query_text",
+        "relevance_score",
     ]
     df = df.drop(columns=columns_to_drop)
     # Convert target variable to binary (0/1)
-    df["relevant"] = df["relevant"].astype(int)
+    df["relevance_label"] = df["relevance_label"].astype(int)
 
     # Define features (X) and target (y)
-    X = df.drop(columns=["relevant"])
+    X = df.drop(columns=["relevance_label"])
     features = X.columns.tolist()  # Store feature names for later use
-    y = df["relevant"]
+    y = df["relevance_label"]
 
     # --- Stratified K-Fold Cross-Validation ---
     N_SPLITS = 5
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--input_file",
         type=str,
-        default="collected_training_data/training_features.csv",
+        default="Vespa-training-data_matchfeatures-firstphase_20250619_095907.csv",
         help="Path to the input CSV file.",
     )
     parser.add_argument(
