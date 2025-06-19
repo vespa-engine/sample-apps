@@ -142,7 +142,7 @@ typing-extensions==4.12.2
     # via
     #   huggingface-hub
     #   pyvespa
-urllib3==2.2.2
+urllib3==2.5.0
     # via
     #   docker
     #   requests
