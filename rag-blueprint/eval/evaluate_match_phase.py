@@ -1,3 +1,4 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 from vespa.evaluation import VespaMatchEvaluator
 from vespa.application import Vespa
 import vespa.querybuilder as qb
