@@ -97,7 +97,7 @@ To test generation using the OpenAI client, post a query that runs the `openai` 
 <pre>
 $ vespa query \
     --timeout 60 \
-    --header="X-LLM-API-KEY:<my-api-key>" \
+    --header="X-LLM-API-KEY:<your-api-key>" \
     yql='select *
     from doc
     where userInput(@query) or
@@ -383,7 +383,7 @@ And of course, we can use the `rag` query profile to add the LLM generation of t
 <pre>
 $ vespa query \
  --timeout 60 \
- --header="X-LLM-API-KEY:<my-api-key>" \
+ --header="X-LLM-API-KEY:<your-api-key>" \
  query="what are key points learned for finetuning llms?" \
  queryProfile=rag \
  ranking=second-with-gbdt
