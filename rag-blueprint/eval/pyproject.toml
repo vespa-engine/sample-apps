@@ -4,4 +4,12 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["pandas>=2.3.0", "pyvespa>=0.56.0", "scikit-learn>=1.7.0"]
+dependencies = [
+    "lightgbm>=4.6.0",
+    "pandas>=2.3.0",
+ "pyvespa>=0.56.0",
+ "scikit-learn>=1.7.0",
+]
+
+[tool.uv.sources]
+pyvespa = { git = "https://github.com/vespa-engine/pyvespa", branch = "thomasht86/add-featurecollector" }

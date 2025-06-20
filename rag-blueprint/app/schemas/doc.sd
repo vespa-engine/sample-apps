@@ -16,14 +16,14 @@ schema doc {
             
         }
 
-        field created_timestamp type int {
+        field created_timestamp type long {
             indexing: attribute | summary
         }
-        field modified_timestamp type int {
+        field modified_timestamp type long {
             indexing: attribute | summary
         }
         
-        field last_opened_timestamp type int {
+        field last_opened_timestamp type long {
             indexing: attribute | summary
         }
         field open_count type int {

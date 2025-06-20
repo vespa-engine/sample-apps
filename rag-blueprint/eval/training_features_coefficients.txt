@@ -1,1 +1,0 @@
--3.5974-0.0172*bm25(chunks)+0.5504*bm25(title)-0.0005*closeness(chunk_embeddings)-0.0029*closeness(title_embedding)-0.0005*max_chunk_sim_scores+0.7143*max_chunk_text_scores

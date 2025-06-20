@@ -1,5 +1,14 @@
 rank-profile collect-training-data {
-        match-features: bm25(title) bm25(chunks) closeness(title_embedding) closeness(chunk_embeddings) max_chunk_sim_scores max_chunk_text_scores avg_top_3_chunk_sim_scores avg_top_3_chunk_text_scores
+        match-features {
+            bm25(title)
+            bm25(chunks)
+            closeness(title_embedding)
+            closeness(chunk_embeddings)
+            max_chunk_sim_scores
+            max_chunk_text_scores
+            avg_top_3_chunk_sim_scores
+            avg_top_3_chunk_text_scores
+        }
         inputs {
             query(embedding) tensor<int8>(x[96])
         }
