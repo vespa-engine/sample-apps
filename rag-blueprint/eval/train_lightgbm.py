@@ -1,26 +1,4 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
-
-#!/usr/bin/env python3
-"""
-Comprehensive LightGBM training script for binary classification
-================================================================
-• Works out-of-the-box on the Vespa phase-two dataset (or any CSV
-  with a `relevance_label` 0/1 target).
-• Cleans and analyses the data before modelling:
-    - drops columns that have the same value for every row
-    - optionally removes obvious ID columns (query_id, doc_id …)
-• Uses stratified K-fold cross-validation (default k=5)
-• Prints per-fold & overall metrics (AUC + accuracy)
-• Displays mean feature importance
-* Retrains on full data with optimal #trees and exports model → JSON
-*
-
-----------------------------------------------------------------
-Run:
-    pip install lightgbm pandas scikit-learn
-    python train_lgbm.py --data /path/to/data.csv
-"""
-
 import argparse
 import json
 from datetime import datetime
