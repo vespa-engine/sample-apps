@@ -305,155 +305,68 @@ We can see that we collected 196 features. Let us now train a GBDT model to pred
 We use 5-fold cross-validation and set hyperparameters to prevent growing too large and deep trees, since we only have a small dataset, to avoid overfitting.
 
 <pre>
-python eval/train_lightgbm.py --data output/Vespa-training-data_second-phase_20250619_182246.csv
+python eval/train_lightgbm.py --input_file eval/output/Vespa-training-data_second-phase_20250619_182246.csv
 </pre>
 
 And you will get output like:
 
-```md
-[20:10:20] Loaded 102 rows × 200 columns
-   ✂ Dropping 116 constant columns
-   ✂ Dropping ID columns: ['query_id', 'doc_id', 'relevance_score']
-
-🚀 Starting cross-validation
-
-── Fold 1/5 ──────────────────────────────────
+```txt
+2025-06-20 05:34:53,991 - INFO - Loaded 102 rows × 200 columns
+2025-06-20 05:34:53,995 - INFO - Dropping 116 constant columns
+2025-06-20 05:34:53,995 - INFO - Dropping ID columns: ['query_id', 'doc_id', 'relevance_score']
+2025-06-20 05:34:53,998 - INFO - Performing 5-Fold Stratified Cross-Validation...
+2025-06-20 05:34:53,999 - INFO - Training Fold 1/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
 [38]    train's auc: 0.979268   valid's auc: 0.9
-   Fold-1 AUC: 0.9000 • ACC: 0.7143
-
-── Fold 2/5 ──────────────────────────────────
+2025-06-20 05:34:54,055 - INFO - Fold 1: AUC = 0.9000, ACC = 0.7143
+2025-06-20 05:34:54,056 - INFO - Training Fold 2/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
 [22]    train's auc: 0.991463   valid's auc: 0.945455
-   Fold-2 AUC: 0.9455 • ACC: 0.9048
-
-── Fold 3/5 ──────────────────────────────────
+2025-06-20 05:34:54,100 - INFO - Fold 2: AUC = 0.9455, ACC = 0.9048
+2025-06-20 05:34:54,100 - INFO - Training Fold 3/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
 [20]    train's auc: 0.991071   valid's auc: 0.97
-   Fold-3 AUC: 0.9700 • ACC: 0.8500
-
-── Fold 4/5 ──────────────────────────────────
+2025-06-20 05:34:54,142 - INFO - Fold 3: AUC = 0.9700, ACC = 0.8500
+2025-06-20 05:34:54,143 - INFO - Training Fold 4/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
 [24]    train's auc: 0.996429   valid's auc: 0.93
-   Fold-4 AUC: 0.9300 • ACC: 0.8500
-
-── Fold 5/5 ──────────────────────────────────
+2025-06-20 05:34:54,185 - INFO - Fold 4: AUC = 0.9300, ACC = 0.8500
+2025-06-20 05:34:54,185 - INFO - Training Fold 5/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
 [2]     train's auc: 0.928869   valid's auc: 1
-   Fold-5 AUC: 1.0000 • ACC: 0.9000
+2025-06-20 05:34:54,220 - INFO - Fold 5: AUC = 1.0000, ACC = 0.9000
 
-🏁 Overall CV AUC: 0.8965 • ACC: 0.8431
-
-🔑 Mean feature importance (gain):
-                                      feature       gain
-                              nativeProximity 102.554210
-                  closeness(chunk_embeddings)  91.725585
-                   avg_top_3_chunk_sim_scores  66.728627
-                        max_chunk_text_scores  43.797908
-                                   firstPhase  37.858616
-                             nativeFieldMatch  20.931660
-                  avg_top_3_chunk_text_scores  20.664160
-                                   nativeRank  18.384380
-                         max_chunk_sim_scores  15.105380
-     elementCompleteness(chunks).completeness   7.014036
-elementCompleteness(chunks).queryCompleteness   5.852080
-                 fieldMatch(title).importance   4.318630
-                   closeness(title_embedding)   3.781037
-                                 bm25(chunks)   3.445382
-elementCompleteness(chunks).fieldCompleteness   2.110704
- elementCompleteness(title).queryCompleteness   1.166013
-        fieldTermMatch(title,4).firstPosition   0.000000
-          fieldTermMatch(title,4).occurrences   0.000000
-               fieldTermMatch(title,3).weight   0.000000
-         fieldTermMatch(chunks,4).occurrences   0.000000
-          fieldTermMatch(title,3).occurrences   0.000000
-        fieldTermMatch(title,3).firstPosition   0.000000
-              fieldTermMatch(chunks,4).weight   0.000000
-       fieldTermMatch(chunks,4).firstPosition   0.000000
-              fieldTermMatch(chunks,3).weight   0.000000
-         fieldTermMatch(chunks,3).occurrences   0.000000
-       fieldTermMatch(chunks,3).firstPosition   0.000000
-               fieldTermMatch(title,4).weight   0.000000
-                           modified_freshness   0.000000
-                                  is_favorite   0.000000
-                              matches(chunks)   0.000000
-                               matches(title)   0.000000
-         fieldTermMatch(chunks,2).occurrences   0.000000
-                                   open_count   0.000000
-                               queryTermCount   0.000000
-                         term(2).significance   0.000000
-                         term(3).significance   0.000000
-                         term(4).significance   0.000000
-          textSimilarity(title).fieldCoverage   0.000000
-                  textSimilarity(title).order   0.000000
-              textSimilarity(title).proximity   0.000000
-          textSimilarity(title).queryCoverage   0.000000
-              fieldTermMatch(chunks,2).weight   0.000000
-        fieldMatch(title).unweightedProximity   0.000000
-       fieldTermMatch(chunks,2).firstPosition   0.000000
-         fieldMatch(title).absoluteOccurrence   0.000000
-                       fieldMatch(title).gaps   0.000000
-                  fieldMatch(title).gapLength   0.000000
-          fieldMatch(title).fieldCompleteness   0.000000
-                  fieldMatch(title).earliness   0.000000
-               fieldMatch(title).completeness   0.000000
-          fieldMatch(title).absoluteProximity   0.000000
-                            fieldMatch(title)   0.000000
-         fieldMatch(title).weightedOccurrence   0.000000
-                    elementSimilarity(chunks)   0.000000
- elementCompleteness(title).fieldCompleteness   0.000000
-     elementCompleteness(title).elementWeight   0.000000
-      elementCompleteness(title).completeness   0.000000
-    elementCompleteness(chunks).elementWeight   0.000000
-                                  bm25(title)   0.000000
-                       fieldMatch(title).head   0.000000
-            fieldMatch(title).longestSequence   0.000000
-       fieldMatch(title).longestSequenceRatio   0.000000
-                    fieldMatch(title).matches   0.000000
-                 fieldMatch(title).occurrence   0.000000
-                  fieldMatch(title).orderness   0.000000
-                 fieldMatch(title).outOfOrder   0.000000
-                  fieldMatch(title).proximity   0.000000
-          fieldMatch(title).queryCompleteness   0.000000
-                fieldMatch(title).relatedness   0.000000
-           fieldMatch(title).segmentProximity   0.000000
-                   fieldMatch(title).segments   0.000000
-               fieldMatch(title).significance   0.000000
-      fieldMatch(title).significantOccurrence   0.000000
-                       fieldMatch(title).tail   0.000000
-                     fieldMatch(title).weight   0.000000
- fieldMatch(title).weightedAbsoluteOccurrence   0.000000
-                  textSimilarity(title).score   0.000000
-✅ Feature importance saved to feature_importance.csv
-
-📊 Selected 16 features with non-zero importance:
-nativeProximity
-closeness(chunk_embeddings)
-avg_top_3_chunk_sim_scores
-max_chunk_text_scores
-firstPhase
-nativeFieldMatch
-avg_top_3_chunk_text_scores
-nativeRank
-max_chunk_sim_scores
-elementCompleteness(chunks).completeness
-elementCompleteness(chunks).queryCompleteness
-fieldMatch(title).importance
-closeness(title_embedding)
-bm25(chunks)
-elementCompleteness(chunks).fieldCompleteness
-elementCompleteness(title).queryCompleteness
-
-Final features to use: ['nativeProximity', 'closeness(chunk_embeddings)', 'avg_top_3_chunk_sim_scores', 'max_chunk_text_scores', 'firstPhase', 'nativeFieldMatch', 'avg_top_3_chunk_text_scores', 'nativeRank', 'max_chunk_sim_scores', 'elementCompleteness(chunks).completeness', 'elementCompleteness(chunks).queryCompleteness', 'fieldMatch(title).importance', 'closeness(title_embedding)', 'bm25(chunks)', 'elementCompleteness(chunks).fieldCompleteness', 'elementCompleteness(title).queryCompleteness']
-
-
-📦 Training final model on all data for 21 rounds
-✅ Model exported to /Users/thomas/Repos/sample-apps/rag-blueprint/eval/lightgbm_model.json
+------------------------------------------------------------
+             Cross-Validation Results (5-Fold)             
+------------------------------------------------------------
+Metric             | Mean               | Std Dev           
+------------------------------------------------------------
+Accuracy           | 0.8438             | 0.0689            
+ROC AUC            | 0.9491             | 0.0341            
+------------------------------------------------------------
+Overall CV AUC: 0.8965 • ACC: 0.8431
+------------------------------------------------------------
+2025-06-20 05:34:54,224 - INFO - Feature importance saved to Vespa-training-data_second-phase_20250619_182246_feature_importance.csv
+2025-06-20 05:34:54,224 - INFO - Mean feature importance (gain):
+2025-06-20 05:34:54,224 - INFO -   nativeProximity: 102.5542
+2025-06-20 05:34:54,224 - INFO -   closeness(chunk_embeddings): 91.7256
+2025-06-20 05:34:54,225 - INFO -   avg_top_3_chunk_sim_scores: 66.7286
+2025-06-20 05:34:54,225 - INFO -   max_chunk_text_scores: 43.7979
+2025-06-20 05:34:54,225 - INFO -   firstPhase: 37.8586
+2025-06-20 05:34:54,225 - INFO -   nativeFieldMatch: 20.9317
+2025-06-20 05:34:54,225 - INFO -   avg_top_3_chunk_text_scores: 20.6642
+2025-06-20 05:34:54,225 - INFO -   nativeRank: 18.3844
+2025-06-20 05:34:54,225 - INFO -   max_chunk_sim_scores: 15.1054
+2025-06-20 05:34:54,225 - INFO -   elementCompleteness(chunks).completeness: 7.0140
+2025-06-20 05:34:54,225 - INFO - Selected 16 features with non-zero importance
+2025-06-20 05:34:54,225 - INFO - Training final model on all data for 21 rounds
+2025-06-20 05:34:54,243 - INFO - Model exported to /Users/thomas/Repos/sample-apps/rag-blueprint/eval/Vespa-training-data_second-phase_20250619_182246_lightgbm_model.json
+2025-06-20 05:34:54,243 - INFO - Training completed successfully!
 ```
 
 Great! We now have a trained GBDT model that we will use for our second-phase ranking.
