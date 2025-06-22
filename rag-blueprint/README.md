@@ -9,6 +9,7 @@
 # The RAG Blueprint
 
 Start with this if you want to create a RAG application that
+
 * delivers state-of-the-art quality
 * with any amount of data, query load.
 
@@ -16,7 +17,7 @@ This requires at least Vespa 8.519.55.
 
 This README provides the commands necessary to create, deploy, feed, and evaluate this RAG blueprint application.
 
-<!-- For an in-depth tutorial with more reasoning and explanation, please see the [RAG Blueprint tutorial](TODO). -->
+For an in-depth tutorial with more reasoning and explanation, please see the [RAG Blueprint tutorial](TODO).
 
 ## Dataset
 
@@ -70,7 +71,7 @@ $ vespa feed dataset/docs.jsonl
 </pre>
 
 <pre data-test="exec" data-test-assert-contains="yc_b2b_sales_workshop_notes.md">
-$ vespa query 'query=yc b2b sales'
+$ vespa query 'query=yc b2b sales' presentation.summary="no-chunks"
 </pre>
 
 ## LLM-generation with OpenAI-client
@@ -249,7 +250,7 @@ We will start by collecting some training data for a handpicked set of features,
 
 ### Collect matchfeatures
 
-In the rank-profile [`collect-training-data`](TODO), you can see we have createad both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
+In the rank-profile [`collect-training-data`](app/schemas/doc/collect-training-data.profile), you can see we have created both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
 These will now be calculated and returned as part of the Vespa response when this rank-profile is used.
 
 We want to collect features from both the relevant documents, as well as a set of random documents (we sample an equal ratio of random and relevant documents), to ensure we have a good distribution of feature values.
@@ -288,6 +289,10 @@ Intercept                     : -3.5974
 ```
 
 We can translate this to our ranking expression, which we add to our `hybrid`  query-profile. We could add them directly to our `learned-linear` rank-profile, but by putting the coefficients in the query-profile, we can override them without having to redeploy the application.
+
+Now, let us evaluate the performance of this first-phase ranking expression.
+
+TODO: Add section about evaluating first-phase ranking.
 
 ### 3. Second-phase ranking
 
@@ -369,6 +374,9 @@ Overall CV AUC: 0.8965 • ACC: 0.8431
 2025-06-20 05:34:54,243 - INFO - Training completed successfully!
 ```
 
+We can see that for this small dataset, our most important features are the `nativeProximity`, `closeness(chunk_embeddings)`, `avg_top_3_chunk_sim_scores`, and `max_chunk_text_scores`. 
+
+
 Great! We now have a trained GBDT model that we will use for our second-phase ranking.
 To control the number of documents that will be exposed to second-phase, we can set the `rerank-count` parameter (default is 100).
 
@@ -388,6 +396,8 @@ $ vespa query \
  queryProfile=rag \
  ranking=second-with-gbdt
 </pre>
+
+TODO: Add section about evaluating second-phase ranking.
 
 Congratulations! You have now created a RAG application that can scale to billions of documents and thousands of queries per second, while still delivering state-of-the-art quality.
 What will you build?
