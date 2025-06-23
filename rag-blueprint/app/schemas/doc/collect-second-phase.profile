@@ -2,8 +2,6 @@ rank-profile collect-second-phase inherits collect-training-data {
     match-features {
             bm25(title)
             bm25(chunks)
-            closeness(title_embedding)
-            closeness(chunk_embeddings)
             max_chunk_sim_scores
             max_chunk_text_scores
             avg_top_3_chunk_sim_scores
@@ -29,14 +27,7 @@ rank-profile collect-second-phase inherits collect-training-data {
 
     first-phase {
         expression {
-            # -3.5974-0.0172*bm25(chunks)+0.5504*bm25(title)-0.0005*closeness(chunk_embeddings)-0.0029*closeness(title_embedding)-0.0005*max_chunk_sim_scores+0.7143*max_chunk_text_scores
-            -3.5974 -
-            0.0172 * bm25(chunks) +
-            0.5504 * bm25(title) -
-            0.0005 * closeness(chunk_embeddings) -
-            0.0029 * closeness(title_embedding) -
-            0.0005 * max_chunk_sim_scores() +
-            0.7143 * max_chunk_text_scores()
+            -7.798639+13.383840*avg_top_3_chunk_sim_scores+0.203145*avg_top_3_chunk_text_scores+0.159914*bm25(chunks)+0.191867*bm25(title)+10.067169*max_chunk_sim_scores+0.153392*max_chunk_text_scores
         }
     }
 
