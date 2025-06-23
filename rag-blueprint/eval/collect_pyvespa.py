@@ -9,7 +9,7 @@ from pathlib import Path
 import argparse
 
 
-def feature_collection_query_fn(
+def feature_collection_second_phase_query_fn(
     query_text: str, top_k: int = 10, query_id: str = None
 ) -> Dict[str, Any]:
     """
@@ -47,6 +47,53 @@ def feature_collection_query_fn(
         "query": query_text,
         "ranking": "collect-second-phase",
         "input.query(embedding)": f"embed({query_text})",
+        "input.query(float_embedding)": f"embed({query_text})",
+        "hits": top_k,
+        "timeout": "5s",
+        "presentation.summary": "no-chunks",
+        "presentation.timing": True,
+    }
+
+
+def feature_collection_first_phase_query_fn(
+    query_text: str, top_k: int = 10, query_id: str = None
+) -> Dict[str, Any]:
+    """
+    Convert plain text into a JSON body for Vespa query with 'feature-collection' rank profile.
+    Includes both semantic similarity and BM25 matching with match features.
+    """
+    return {
+        "yql": str(
+            qb.select("*")
+            .from_("doc")
+            .where(
+                (
+                    qb.nearestNeighbor(
+                        field="title_embedding",
+                        query_vector="embedding",
+                        annotations={
+                            "targetHits": 100,
+                            "label": "title_label",
+                        },
+                    )
+                    | qb.nearestNeighbor(
+                        field="chunk_embeddings",
+                        query_vector="embedding",
+                        annotations={
+                            "targetHits": 100,
+                            "label": "chunk_label",
+                        },
+                    )
+                    | qb.userQuery(
+                        query_text,
+                    )
+                )
+            )
+        ),
+        "query": query_text,
+        "ranking": "collect-training-data-new",
+        "input.query(embedding)": f"embed({query_text})",
+        "input.query(float_embedding)": f"embed({query_text})",
         "hits": top_k,
         "timeout": "5s",
         "presentation.summary": "no-chunks",
@@ -73,11 +120,15 @@ def main(args):
 
     logging.info(f"Connecting to Vespa at {args.vespa_url}:{args.vespa_port}")
     app = Vespa(url=args.vespa_url, port=args.vespa_port)
-
+    function_to_use = (
+        feature_collection_second_phase_query_fn
+        if args.second_phase
+        else feature_collection_first_phase_query_fn
+    )
     feature_collector = VespaFeatureCollector(
         queries=ids_to_text,
         relevant_docs=relevant_docs,
-        vespa_query_fn=feature_collection_query_fn,
+        vespa_query_fn=function_to_use,
         app=app,
         name=args.collector_name,
         id_field="id",
@@ -101,6 +152,12 @@ if __name__ == "__main__":
         type=str,
         default="../dataset",
         help="Directory containing the queries JSON file. Assumed relative to script location if not absolute.",
+    )
+    parser.add_argument(
+        "--second_phase",
+        action="store_true",
+        default=False,
+        help="Use second phase of feature collection. Else uses first phase.",
     )
     parser.add_argument(
         "--queries_filename",
