@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the
 project root. -->
+<!--
+match_avg_top_3_chunk_sim_scores   : 13.383840
+match_avg_top_3_chunk_text_scores  : 0.203145
+match_bm25(chunks)                 : 0.159914
+match_bm25(title)                  : 0.191867
+match_max_chunk_sim_scores         : 10.067169
+match_max_chunk_text_scores        : 0.153392
+Intercept                          : -7.798639
+-->
 <query-profile id="hybrid">
     <field name="schema">doc</field>
     <field name="ranking.features.query(embedding)">embed(@query)</field>
-    <field name="ranking.features.query(intercept)">-3.5974</field>
-    <field name="ranking.features.query(bm25_chunks_param)">-0.0172</field>
-    <field name="ranking.features.query(bm25_title_param)">0.5504</field>
-    <field name="ranking.features.query(closeness_chunk_embeddings_param)">-0.0005</field>
-    <field name="ranking.features.query(closeness_title_embedding_param)">-0.0029</field>
-    <field name="ranking.features.query(max_chunk_sim_scores_param)">-0.0005</field>
-    <field name="ranking.features.query(max_chunk_text_scores_param)">0.7143</field>
+    <field name="ranking.features.query(float_embedding)">embed(@query)</field>
+    <field name="ranking.features.query(intercept)">-7.798639</field>
+    <field name="ranking.features.query(avg_top_3_chunk_sim_scores_param)">13.383840</field>
+    <field name="ranking.features.query(avg_top_3_chunk_text_scores_param)">0.203145</field>
+    <field name="ranking.features.query(bm25_chunks_param)">0.159914</field>
+    <field name="ranking.features.query(bm25_title_param)">0.191867</field>
+    <field name="ranking.features.query(max_chunk_sim_scores_param)">10.067169</field>
+    <field name="ranking.features.query(max_chunk_text_scores_param)">0.153392</field>
     <field name="yql">
         select *
         from %{schema}
