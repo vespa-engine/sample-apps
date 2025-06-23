@@ -237,7 +237,7 @@ userQuery()
 | Search Time Q90 (s)       | 0.0150   |
 | Search Time Q95 (s)       | 0.0201   |
 
-### Conclusion
+### Retrieval summary
 
 We can see that all queries match all relevant documents, which is expected, since we use `targetHits:100` in the `nearestNeighbor` operator, and this is also the default for `weakAnd`(and `userQuery`).
 
@@ -253,21 +253,41 @@ We will start by collecting some training data for a handpicked set of features,
 In the rank-profile [`collect-training-data`](app/schemas/doc/collect-training-data.profile), you can see we have created both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
 These will now be calculated and returned as part of the Vespa response when this rank-profile is used.
 
+```txt
+bm25(title)
+bm25(chunks)
+max_chunk_sim_scores
+max_chunk_text_scores
+avg_top_3_chunk_sim_scores
+avg_top_3_chunk_text_scores
+```
+
 We want to collect features from both the relevant documents, as well as a set of random documents (we sample an equal ratio of random and relevant documents), to ensure we have a good distribution of feature values.
 
 To do this for all our queries, we can run:
 
 <pre>
-python eval/collect_pyvespa.py --collect_matchfeatures --collector_name matchfeatures-firstphase
+python eval/collect_pyvespa.py --collect_matchfeatures 
 </pre>
 
-This will collect the 8 features defined in the `collect-training-data` rank-profile, and save them to a file to use as input for training our linear model.
+This will collect these 6 features defined in the `collect-training-data` rank-profile, and save them to a file to use as input for training our linear model.
+
+```txt
+bm25(title)
+bm25(chunks)
+max_chunk_sim_scores
+max_chunk_text_scores
+avg_top_3_chunk_sim_scores
+avg_top_3_chunk_text_scores
+```
 
 This gives us a file with our defined feature values, and a binary relevance label for our relevant documents, as well as an equal number of random documents per query.
 
-#### Learned linear model
+### Learned linear model
 
 To find the expression that best fits our dataset, we train a simple `LogisticRegression`-model, using stratified 5-fold cross-validation.
+
+Note that we need to scale the features to have a mean of 0 and standard deviation of 1 before training, and apply inverse scaling to the coefficients after training, in order to use the raw values from Vespa directly.
 
 <pre>
 python eval/train_logistic_regression.py
@@ -276,29 +296,63 @@ python eval/train_logistic_regression.py
 which gives us this output:
 
 ```txt
-Model Coefficients (trained on full data):
-----------------------------------------
-bm25(chunks)                  : -0.0172
-bm25(title)                   : 0.5504
-closeness(chunk_embeddings)   : -0.0005
-closeness(title_embedding)    : -0.0029
-max_chunk_sim_scores          : -0.0005
-max_chunk_text_scores         : 0.7143
-Intercept                     : -3.5974
-----------------------------------------
+Transformed Coefficients (for original unscaled features):
+--------------------------------------------------
+avg_top_3_chunk_sim_scores   : 13.383840
+avg_top_3_chunk_text_scores  : 0.203145
+bm25(chunks)                 : 0.159914
+bm25(title)                  : 0.191867
+max_chunk_sim_scores         : 10.067169
+max_chunk_text_scores        : 0.153392
+Intercept                    : -7.798639
+--------------------------------------------------
 ```
 
 We can translate this to our ranking expression, which we add to our `hybrid`  query-profile. We could add them directly to our `learned-linear` rank-profile, but by putting the coefficients in the query-profile, we can override them without having to redeploy the application.
 
 Now, let us evaluate the performance of this first-phase ranking expression.
 
-TODO: Add section about evaluating first-phase ranking.
+### Evaluate first-phase ranking
+
+By running the following command
+
+<pre>
+python evaluate_ranking.py
+</pre>
+
+We run the evaluation script on a set of unseen test queries, and get the following output:
+
+```json
+{
+    "accuracy@1": 0.0,
+    "accuracy@3": 0.0,
+    "accuracy@5": 0.05,
+    "accuracy@10": 0.3,
+    "precision@10": 0.034999999999999996,
+    "recall@10": 0.1340909090909091,
+    "precision@20": 0.04250000000000001,
+    "recall@20": 0.3886363636363636,
+    "mrr@10": 0.0476984126984127,
+    "ndcg@10": 0.05997203651967424,
+    "map@100": 0.06688634552753898,
+    "searchtime_avg": 0.022150000000000006,
+    "searchtime_q50": 0.0165,
+    "searchtime_q90": 0.05550000000000001,
+    "searchtime_q95": 0.0604
+}
+```
+
+For the first phase ranking, we care most about recall, as we just want to make sure our candidate documents are ranked high enough to be included in the second-phase ranking. (the default number of documents that will be exposed to second-phase is 10 000, but can be controlled by the `rerank-count` parameter).
+
+We can see that our recall@20 is 0.39, which is not very good, but an OK start, and a lot better than random. We could later aim to improve on this by approximating a better function after we have learned one for second-phase ranking.
+
+We can also see that our search time is quite fast, with an average of 22ms, and a 95th percentile of 60ms, we consider this good for a first-phase ranking.
 
 ### 3. Second-phase ranking
 
 For the second-phase ranking, we can afford to use a more expensive ranking expression, since we will only run it on the top-k documents from the first-phase ranking (defined by rerank-count parameter).
 
-For this, we will request Vespa's default set of rankfeatures, which includes a large set of text features, see [docs](https://docs.vespa.ai/en/reference/rank-features.html) for details.
+For this, we will request Vespa`s default set of rankfeatures, which includes a large set of text features, see [docs](https://docs.vespa.ai/en/reference/rank-features.html) for details.
 
 To do this, we can run the same script as before, but with the added `--collect_rankfeatures` flag.
 
@@ -306,98 +360,154 @@ To do this, we can run the same script as before, but with the added `--collect_
 python eval/collect_pyvespa.py --collect_rankfeatures --collect_matchfeatures --collector_name rankfeatures-secondphase
 </pre>
 
-We can see that we collected 196 features. Let us now train a GBDT model to predict the relevance_label (probability between 0 and 1) for each document, using the features we collected.
+We can see that we collected 194 features. Let us now train a GBDT model to predict the relevance_label (probability between 0 and 1) for each document, using the features we collected.
 We use 5-fold cross-validation and set hyperparameters to prevent growing too large and deep trees, since we only have a small dataset, to avoid overfitting.
 
+For final training, we exclude features that have zero importance during the cross-validation, and train the final model on all queries (not test queries).
+
 <pre>
-python eval/train_lightgbm.py --input_file eval/output/Vespa-training-data_second-phase_20250619_182246.csv
+python eval/train_lightgbm.py --input_file eval/output/Vespa-training-data_match_rank_second_phase_20250623_135819.csv
 </pre>
 
 And you will get output like:
 
 ```txt
-2025-06-20 05:34:53,991 - INFO - Loaded 102 rows × 200 columns
-2025-06-20 05:34:53,995 - INFO - Dropping 116 constant columns
-2025-06-20 05:34:53,995 - INFO - Dropping ID columns: ['query_id', 'doc_id', 'relevance_score']
-2025-06-20 05:34:53,998 - INFO - Performing 5-Fold Stratified Cross-Validation...
-2025-06-20 05:34:53,999 - INFO - Training Fold 1/5
+2025-06-23 14:02:35,681 - INFO - Loaded 102 rows × 198 columns
+2025-06-23 14:02:35,686 - INFO - Dropping 116 constant columns
+2025-06-23 14:02:35,686 - INFO - Dropping ID columns: ['query_id', 'doc_id', 'relevance_score']
+2025-06-23 14:02:35,689 - INFO - Performing 5-Fold Stratified Cross-Validation...
+2025-06-23 14:02:35,691 - INFO - Training Fold 1/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
-[38]    train's auc: 0.979268   valid's auc: 0.9
-2025-06-20 05:34:54,055 - INFO - Fold 1: AUC = 0.9000, ACC = 0.7143
-2025-06-20 05:34:54,056 - INFO - Training Fold 2/5
+[43]    train's auc: 0.999695   valid's auc: 0.981818
+2025-06-23 14:02:35,751 - INFO - Fold 1: AUC = 0.9818, ACC = 0.8571
+2025-06-23 14:02:35,752 - INFO - Training Fold 2/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
-[22]    train's auc: 0.991463   valid's auc: 0.945455
-2025-06-20 05:34:54,100 - INFO - Fold 2: AUC = 0.9455, ACC = 0.9048
-2025-06-20 05:34:54,100 - INFO - Training Fold 3/5
+[1]     train's auc: 0.923077   valid's auc: 1
+2025-06-23 14:02:35,782 - INFO - Fold 2: AUC = 1.0000, ACC = 1.0000
+2025-06-23 14:02:35,783 - INFO - Training Fold 3/5
+Training until validation scores don't improve for 50 rounds
+[100]   train's auc: 1  valid's auc: 0.949495
+Early stopping, best iteration is:
+[92]    train's auc: 1  valid's auc: 0.949495
+2025-06-23 14:02:35,857 - INFO - Fold 3: AUC = 0.9495, ACC = 0.8500
+2025-06-23 14:02:35,857 - INFO - Training Fold 4/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
-[20]    train's auc: 0.991071   valid's auc: 0.97
-2025-06-20 05:34:54,142 - INFO - Fold 3: AUC = 0.9700, ACC = 0.8500
-2025-06-20 05:34:54,143 - INFO - Training Fold 4/5
+[14]    train's auc: 0.994335   valid's auc: 1
+2025-06-23 14:02:35,893 - INFO - Fold 4: AUC = 1.0000, ACC = 1.0000
+2025-06-23 14:02:35,893 - INFO - Training Fold 5/5
 Training until validation scores don't improve for 50 rounds
 Early stopping, best iteration is:
-[24]    train's auc: 0.996429   valid's auc: 0.93
-2025-06-20 05:34:54,185 - INFO - Fold 4: AUC = 0.9300, ACC = 0.8500
-2025-06-20 05:34:54,185 - INFO - Training Fold 5/5
-Training until validation scores don't improve for 50 rounds
-Early stopping, best iteration is:
-[2]     train's auc: 0.928869   valid's auc: 1
-2025-06-20 05:34:54,220 - INFO - Fold 5: AUC = 1.0000, ACC = 0.9000
+[25]    train's auc: 0.997615   valid's auc: 1
+2025-06-23 14:02:35,936 - INFO - Fold 5: AUC = 1.0000, ACC = 0.9000
 
 ------------------------------------------------------------
              Cross-Validation Results (5-Fold)             
 ------------------------------------------------------------
 Metric             | Mean               | Std Dev           
 ------------------------------------------------------------
-Accuracy           | 0.8438             | 0.0689            
-ROC AUC            | 0.9491             | 0.0341            
+Accuracy           | 0.9214             | 0.0664            
+ROC AUC            | 0.9863             | 0.0197            
 ------------------------------------------------------------
-Overall CV AUC: 0.8965 • ACC: 0.8431
+Overall CV AUC: 0.9249 • ACC: 0.9216
 ------------------------------------------------------------
-2025-06-20 05:34:54,224 - INFO - Feature importance saved to Vespa-training-data_second-phase_20250619_182246_feature_importance.csv
-2025-06-20 05:34:54,224 - INFO - Mean feature importance (gain):
-2025-06-20 05:34:54,224 - INFO -   nativeProximity: 102.5542
-2025-06-20 05:34:54,224 - INFO -   closeness(chunk_embeddings): 91.7256
-2025-06-20 05:34:54,225 - INFO -   avg_top_3_chunk_sim_scores: 66.7286
-2025-06-20 05:34:54,225 - INFO -   max_chunk_text_scores: 43.7979
-2025-06-20 05:34:54,225 - INFO -   firstPhase: 37.8586
-2025-06-20 05:34:54,225 - INFO -   nativeFieldMatch: 20.9317
-2025-06-20 05:34:54,225 - INFO -   avg_top_3_chunk_text_scores: 20.6642
-2025-06-20 05:34:54,225 - INFO -   nativeRank: 18.3844
-2025-06-20 05:34:54,225 - INFO -   max_chunk_sim_scores: 15.1054
-2025-06-20 05:34:54,225 - INFO -   elementCompleteness(chunks).completeness: 7.0140
-2025-06-20 05:34:54,225 - INFO - Selected 16 features with non-zero importance
-2025-06-20 05:34:54,225 - INFO - Training final model on all data for 21 rounds
-2025-06-20 05:34:54,243 - INFO - Model exported to /Users/thomas/Repos/sample-apps/rag-blueprint/eval/Vespa-training-data_second-phase_20250619_182246_lightgbm_model.json
-2025-06-20 05:34:54,243 - INFO - Training completed successfully!
+2025-06-23 14:02:35,941 - INFO - Feature importance saved to Vespa-training-data_match_rank_second_phase_20250623_135819_feature_importance.csv
+2025-06-23 14:02:35,941 - INFO - Mean feature importance (gain):
+2025-06-23 14:02:35,942 - INFO -   nativeProximity: 168.8498
+2025-06-23 14:02:35,942 - INFO -   firstPhase: 151.7382
+2025-06-23 14:02:35,942 - INFO -   max_chunk_sim_scores: 69.4377
+2025-06-23 14:02:35,942 - INFO -   avg_top_3_chunk_text_scores: 56.5079
+2025-06-23 14:02:35,942 - INFO -   avg_top_3_chunk_sim_scores: 31.8700
+2025-06-23 14:02:35,942 - INFO -   nativeRank: 20.0716
+2025-06-23 14:02:35,942 - INFO -   nativeFieldMatch: 15.9914
+2025-06-23 14:02:35,942 - INFO -   elementSimilarity(chunks): 9.7003
+2025-06-23 14:02:35,942 - INFO -   bm25(chunks): 3.8777
+2025-06-23 14:02:35,942 - INFO -   max_chunk_text_scores: 3.6406
+2025-06-23 14:02:35,942 - INFO -   fieldTermMatch(chunks,4).firstPosition: 1.2615
+2025-06-23 14:02:35,942 - INFO -   fieldTermMatch(chunks,4).occurrences: 1.0543
+2025-06-23 14:02:35,942 - INFO -   fieldTermMatch(chunks,4).weight: 0.7264
+2025-06-23 14:02:35,942 - INFO -   term(3).significance: 0.5078
+2025-06-23 14:02:35,942 - INFO - Selected 14 features with non-zero importance
+2025-06-23 14:02:35,942 - INFO - Training final model on all data for 35 rounds
+2025-06-23 14:02:35,966 - INFO - Model exported to /Users/thomas/Repos/sample-apps/rag-blueprint/eval/Vespa-training-data_match_rank_second_phase_20250623_135819_lightgbm_model.json
+2025-06-23 14:02:35,966 - INFO - Training completed successfully!
 ```
 
-We can see that for this small dataset, our most important features are the `nativeProximity`, `closeness(chunk_embeddings)`, `avg_top_3_chunk_sim_scores`, and `max_chunk_text_scores`. 
+We can see that for this small dataset, our most important features are:
 
+| Feature                                | Importance |
+| -------------------------------------- | ---------- |
+| nativeProximity                        | 168.8498   |
+| firstPhase                             | 151.7382   |
+| max_chunk_sim_scores                   | 69.4377    |
+| avg_top_3_chunk_text_scores            | 56.5079    |
+| avg_top_3_chunk_sim_scores             | 31.8700    |
+| nativeRank                             | 20.0716    |
+| nativeFieldMatch                       | 15.9914    |
+| elementSimilarity(chunks)              | 9.7003     |
+| bm25(chunks)                           | 3.8777     |
+| max_chunk_text_scores                  | 3.6406     |
+| fieldTermMatch(chunks,4).firstPosition | 1.2615     |
+| fieldTermMatch(chunks,4).occurrences   | 1.0543     |
+| fieldTermMatch(chunks,4).weight        | 0.7264     |
+| term(3).significance                   | 0.5078     |
 
-Great! We now have a trained GBDT model that we will use for our second-phase ranking.
-To control the number of documents that will be exposed to second-phase, we can set the `rerank-count` parameter (default is 100).
+We can see that several of the more expensive text features has high importance. It is also reassuring to see that the `firstPhase` feature, which is the output of our first-phase ranking, has a high importance, meaning that it is a not too bad predictor of relevance for the second-phase ranking by itself.
 
-We create a new rank-profile called `second-with-gbdt`, which uses the GBDT model we trained, and can use the `hybrid` query-profile, but override the ranking profile to use `second-with-gbdt` to test it out.
+We add the newly trained and exported lightgbm model to our Vespa application, and create a new rank-profile called `second-with-gbdt` that will use this model.
+
+Let us see how our performance on the unseen test queries looks like now.
+
+### Evaluate second-phase ranking
+
+By running our evaluation script with the `--second_phase` flag, we can evaluate the second-phase ranking on the unseen test queries, using the `second-with-gbdt`-rank profile, containing the GBDT model we just trained.
 
 <pre>
-vespa query query="what are key points learned for finetuning llms?" queryProfile=hybrid ranking=second-with-gbdt
+python evaluate_ranking.py --second_phase
 </pre>
 
-And of course, we can use the `rag` query profile to add the LLM generation of the response. 
+And the results we get are:
+
+```json
+{
+    "accuracy@1": 0.9,
+    "accuracy@3": 0.95,
+    "accuracy@5": 1.0,
+    "accuracy@10": 1.0,
+    "precision@10": 0.22999999999999998,
+    "recall@10": 0.9276515151515152,
+    "precision@20": 0.1275,
+    "recall@20": 0.990909090909091,
+    "mrr@10": 0.9375,
+    "ndcg@10": 0.8513594617981889,
+    "map@100": 0.7756352485897938,
+    "searchtime_avg": 0.034850000000000006,
+    "searchtime_q50": 0.0405,
+    "searchtime_q90": 0.05040000000000001,
+    "searchtime_q95": 0.054
+}
+```
+
+This is a significant improvement over the first-phase ranking, with an accuracy@10 of 1.0, and a recall@20 of 0.99, meaning that we are able to retrieve almost all relevant documents in the top 20 documents.
+
+Lets add a new query-profile that will inherit the previous `hybrid` query-profile, but will override the ranking profile to use the `second-with-gbdt` rank-profile, and set the default number of hits to 20, which (if our test queries are representative) should give us a recall of 0.99 for the second-phase ranking.
+
+<pre>
+vespa query query="what are key points learned for finetuning llms?" queryProfile=hybrid-with-gbdt
+</pre>
+
+And of course, we can also add a new `rag-with-gbdt`, that uses our new query profile, but overrides with parameters to add the LLM generation of the response.
 
 <pre>
 $ vespa query \
  --timeout 60 \
  --header="X-LLM-API-KEY:<your-api-key>" \
  query="what are key points learned for finetuning llms?" \
- queryProfile=rag \
- ranking=second-with-gbdt
+ queryProfile=rag-with-gbdt
 </pre>
 
-TODO: Add section about evaluating second-phase ranking.
-
 Congratulations! You have now created a RAG application that can scale to billions of documents and thousands of queries per second, while still delivering state-of-the-art quality.
-What will you build?
+
+What will you build? :rocket:
