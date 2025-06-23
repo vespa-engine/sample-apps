@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hosts>
+  <host name='vespa-configserver-0.vespa-internal.default.svc.cluster.local'>
+    <alias>node0</alias>
+  </host>
+  <host name='vespa-configserver-1.vespa-internal.default.svc.cluster.local'>
+    <alias>node1</alias>
+  </host>
+  <host name='vespa-configserver-2.vespa-internal.default.svc.cluster.local'>
+    <alias>node2</alias>
+  </host>
+  <host name='vespa-admin-0.vespa-internal.default.svc.cluster.local'>
+    <alias>node3</alias>
+  </host>
+  <host name='vespa-feed-container-0.vespa-internal.default.svc.cluster.local'>
+    <alias>node4</alias>
+  </host>
+  <host name='vespa-feed-container-1.vespa-internal.default.svc.cluster.local'>
+    <alias>node5</alias>
+  </host>
+  <host name='vespa-query-container-0.vespa-internal.default.svc.cluster.local'>
+    <alias>node6</alias>
+  </host>
+  <host name='vespa-query-container-1.vespa-internal.default.svc.cluster.local'>
+    <alias>node7</alias>
+  </host>
+  <host name='vespa-content-0.vespa-internal.default.svc.cluster.local'>
+    <alias>node8</alias>
+  </host>
+  <host name='vespa-content-1.vespa-internal.default.svc.cluster.local'>
+    <alias>node9</alias>
+  </host>
+</hosts>
