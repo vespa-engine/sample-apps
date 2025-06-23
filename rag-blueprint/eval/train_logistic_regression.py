@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -16,6 +17,7 @@ from sklearn.metrics import (
 )
 import logging
 import os
+import json
 
 # Configure logging
 logging.basicConfig(
@@ -23,29 +25,60 @@ logging.basicConfig(
 )
 
 
-def save_coefficients_expression(model, features, intercept, output_file_path):
-    """Saves the model coefficients as a linear expression in a .txt file."""
+def save_coefficients_expression(model, features, intercept, scaler, output_file_path):
+    """Saves the model coefficients as a linear expression that accounts for standardization."""
     try:
-        expression_parts = [f"{intercept:.4f}"]
-        for feature, coef in zip(features, model.coef_[0]):
-            expression_parts.append(f"{coef:+.4f}*{feature}")
+        # Transform coefficients to work with original (unscaled) features
+        # For standardized features: z = (x - mean) / std
+        # So the original expression: coef * z + intercept
+        # Becomes: (coef / std) * x + (intercept - coef * mean / std)
+
+        transformed_coefs = model.coef_[0] / scaler.scale_
+        transformed_intercept = intercept - np.sum(
+            model.coef_[0] * scaler.mean_ / scaler.scale_
+        )
+
+        # Create expression for original (unscaled) features
+        expression_parts = [f"{transformed_intercept:.6f}"]
+        for feature, coef in zip(features, transformed_coefs):
+            expression_parts.append(f"{coef:+.6f}*{feature}")
 
         expression = "".join(expression_parts)
 
+        # Also save scaling parameters for reference
+        scaling_info = {
+            "feature_means": dict(zip(features, scaler.mean_)),
+            "feature_stds": dict(zip(features, scaler.scale_)),
+            "original_coefficients": dict(zip(features, model.coef_[0])),
+            "original_intercept": float(intercept),
+            "transformed_coefficients": dict(zip(features, transformed_coefs)),
+            "transformed_intercept": float(transformed_intercept),
+        }
+
+        # Save the expression
         with open(output_file_path, "w") as f:
-            f.write(expression)
+            f.write("# Linear expression for original (unscaled) features:\n")
+            f.write(expression + "\n\n")
+            f.write("# Scaling and coefficient information:\n")
+            f.write(json.dumps(scaling_info, indent=2))
+
         logging.info(f"Model coefficients expression saved to {output_file_path}")
+        logging.info(
+            "Expression works with original feature values (no scaling needed)"
+        )
+
     except Exception as e:
         logging.error(f"Error saving coefficients expression: {e}")
 
 
 def perform_cross_validation(file_path, output_coef_file):
-    """Loads data and performs 5-fold stratified cross-validation."""
+    """Loads data, applies standardization, and performs 5-fold stratified cross-validation."""
     try:
         df = pd.read_csv(file_path)
     except FileNotFoundError:
         logging.error(f"Input file '{file_path}' not found.")
         raise FileNotFoundError(f"Input file '{file_path}' not found.")
+
     # Define and drop irrelevant columns
     columns_to_drop = [
         "doc_id",
@@ -61,6 +94,21 @@ def perform_cross_validation(file_path, output_coef_file):
     features = X.columns.tolist()  # Store feature names for later use
     y = df["relevance_label"]
 
+    # Display feature statistics before scaling
+    print("\nFeature Statistics (before scaling):")
+    print("-" * 60)
+    print(f"{'Feature':<35} | {'Mean':<10} | {'Std':<10} | {'Min':<10} | {'Max':<10}")
+    print("-" * 60)
+    for feature in features:
+        stats = X[feature].describe()
+        print(
+            f"{feature:<35} | {stats['mean']:<10.4f} | {stats['std']:<10.4f} | {stats['min']:<10.4f} | {stats['max']:<10.4f}"
+        )
+    print("-" * 60)
+
+    # Initialize StandardScaler
+    scaler = StandardScaler()
+
     # --- Stratified K-Fold Cross-Validation ---
     N_SPLITS = 5
     skf = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=42)
@@ -70,21 +118,25 @@ def perform_cross_validation(file_path, output_coef_file):
     accuracies, precisions, recalls, f1_scores = [], [], [], []
     log_losses, roc_aucs, avg_precisions = [], [], []
 
-    logging.info(f"Performing {N_SPLITS}-Fold Stratified Cross-Validation...\n")
+    logging.info(
+        f"Performing {N_SPLITS}-Fold Stratified Cross-Validation with standardization...\n"
+    )
 
     for fold, (train_index, test_index) in enumerate(skf.split(X, y), 1):
         # Split the data for the current fold
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-        # Train the model
-        model.fit(X_train, y_train)
+        # Fit scaler on training data and transform both train and test
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
 
-        # Make predictions
-        y_pred = model.predict(X_test)
-        y_pred_proba = model.predict_proba(X_test)[
-            :, 1
-        ]  # Probabilities for the positive class
+        # Train the model on scaled data
+        model.fit(X_train_scaled, y_train)
+
+        # Make predictions on scaled test data
+        y_pred = model.predict(X_test_scaled)
+        y_pred_proba = model.predict_proba(X_test_scaled)[:, 1]
 
         # Calculate and store metrics
         accuracies.append(accuracy_score(y_test, y_pred))
@@ -101,7 +153,7 @@ def perform_cross_validation(file_path, output_coef_file):
 
     # --- Output Results ---
     print("\n" + "-" * 60)
-    print(f"{'Cross-Validation Results (5-Fold)':^60}")
+    print(f"{'Cross-Validation Results (5-Fold, Standardized)':^60}")
     print("-" * 60)
     print(f"{'Metric':<18} | {'Mean':<18} | {'Std Dev':<18}")
     print("-" * 60)
@@ -125,31 +177,46 @@ def perform_cross_validation(file_path, output_coef_file):
     print("-" * 60)
 
     # --- Model Coefficients ---
-    # Retrain on full data to get final coefficients
-    model.fit(X, y)
-    print("\nModel Coefficients (trained on full data):")
-    print("-" * 40)
+    # Retrain on full standardized data to get final coefficients
+    X_scaled = scaler.fit_transform(X)
+    model.fit(X_scaled, y)
+
+    print("\nModel Coefficients (on standardized features):")
+    print("-" * 50)
     for feature, coef in zip(features, model.coef_[0]):
-        print(f"{feature:<30}: {coef:.4f}")
-    print(f"{'Intercept':<30}: {model.intercept_[0]:.4f}")
-    print("-" * 40)
+        print(f"{feature:<35}: {coef:.6f}")
+    print(f"{'Intercept':<35}: {model.intercept_[0]:.6f}")
+    print("-" * 50)
+
+    # Show transformed coefficients for original features
+    transformed_coefs = model.coef_[0] / scaler.scale_
+    transformed_intercept = model.intercept_[0] - np.sum(
+        model.coef_[0] * scaler.mean_ / scaler.scale_
+    )
+
+    print("\nTransformed Coefficients (for original unscaled features):")
+    print("-" * 50)
+    for feature, coef in zip(features, transformed_coefs):
+        print(f"{feature:<35}: {coef:.6f}")
+    print(f"{'Intercept':<35}: {transformed_intercept:.6f}")
+    print("-" * 50)
 
     # Save coefficients expression to file
     if output_coef_file:
         save_coefficients_expression(
-            model, features, model.intercept_[0], output_coef_file
+            model, features, model.intercept_[0], scaler, output_coef_file
         )
 
 
 if __name__ == "__main__":
     # Set up argument Parser
     parser = argparse.ArgumentParser(
-        description="Perform 5-fold stratified cross-validation on a logistic regression model and save coefficients."
+        description="Perform 5-fold stratified cross-validation on a logistic regression model with standardization and save coefficients."
     )
     parser.add_argument(
         "--input_file",
         type=str,
-        default="Vespa-training-data_matchfeatures-firstphase_20250619_095907.csv",
+        default="output/Vespa-training-data_matchfeatures-firstphase_20250619_095907.csv",
         help="Path to the input CSV file.",
     )
     parser.add_argument(
@@ -163,7 +230,7 @@ if __name__ == "__main__":
     output_coef_file_path = args.output_coef_file
     if output_coef_file_path is None:
         base_name = os.path.splitext(os.path.basename(args.input_file))[0]
-        output_coef_file_path = f"{base_name}_coefficients.txt"
+        output_coef_file_path = f"{base_name}_logreg_coefficients.txt"
 
     # Run the cross-validation process
     perform_cross_validation(args.input_file, output_coef_file_path)
