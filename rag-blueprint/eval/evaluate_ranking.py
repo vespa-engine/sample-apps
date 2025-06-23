@@ -9,22 +9,22 @@ import logging
 
 SCHEMA_NAME = "doc"
 
-# -8.617450
-# +19.648338*match_avg_top_3_chunk_sim_scores
-# +0.112750*match_avg_top_3_chunk_text_scores
-# +0.095697*match_bm25(chunks)
-# +0.034014*match_bm25(title)
-# +11.116891*match_max_chunk_sim_scores
-# +0.113867*match_max_chunk_text_scores
+# match_avg_top_3_chunk_sim_scores   : 13.383840
+# match_avg_top_3_chunk_text_scores  : 0.203145
+# match_bm25(chunks)                 : 0.159914
+# match_bm25(title)                  : 0.191867
+# match_max_chunk_sim_scores         : 10.067169
+# match_max_chunk_text_scores        : 0.153392
+# Intercept                          : -7.798639
 
 linear_params = {
-    "input.query(intercept)": -8.617450,
-    "input.query(bm25_chunks_param)": 0.095697,
-    "input.query(bm25_title_param)": 0.034014,
-    "input.query(avg_top_3_chunk_sim_scores_param)": 19.648338,
-    "input.query(avg_top_3_chunk_text_scores_param)": 0.112750,
-    "input.query(max_chunk_sim_scores_param)": 11.116891,
-    "input.query(max_chunk_text_scores_param)": 0.113867,
+    "input.query(intercept)": -7.798639,
+    "input.query(bm25_chunks_param)": 0.159914,
+    "input.query(bm25_title_param)": 0.191867,
+    "input.query(avg_top_3_chunk_sim_scores_param)": 13.383840,
+    "input.query(avg_top_3_chunk_text_scores_param)": 0.203145,
+    "input.query(max_chunk_sim_scores_param)": 10.067169,
+    "input.query(max_chunk_text_scores_param)": 0.153392,
 }
 
 
@@ -51,7 +51,7 @@ def rank_first_phase_query_fn(query_text: str, top_k: int) -> dict:
         ),
         "hits": top_k,
         "query": query_text,
-        "ranking": "learned-linear-new",
+        "ranking": "learned-linear",
         "input.query(embedding)": f"embed({query_text})",
         "input.query(float_embedding)": f"embed({query_text})",
         "presentation.summary": "no-chunks",
