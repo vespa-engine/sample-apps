@@ -49,6 +49,9 @@ It is a single binary without any runtime dependencies and is available for Linu
 $ brew install vespa-cli
 </pre>
 
+Install uv to manage virtual environments and install python dependencies:
+<pre>
+
 <pre data-test="exec">
 $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 </pre>
@@ -70,7 +73,7 @@ $ vespa config set application your-tenant-name.ragblueprint
 Or, you can deploy it on a Docker container:
 
 <pre data-test="exec">
-$ docker run --detach --name vespa-rag --hostname vespa-rag \
+$ docker run --detach --name rag-blueprint --hostname rag-blueprint \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19112:19112 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
@@ -131,48 +134,41 @@ $ vespa query \
 ## Using query profiles for different use cases
 
 As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you to define a set of query parameters to support different use cases.
-For this sample app, we have added 3 query profiles:
+For this sample app, we have iteratively developed 6 query profiles:
 
-1. `rag`, see `app/search/query-profiles/rag.xml`.
-2. `hybrid`, see `app/search/query-profiles/hybrid.xml`.
-3. `deepresearch`, see `app/search/query-profiles/deepresearch.xml`.
+1. [`hybrid`](app/search/query-profiles/hybrid.xml)
+2. [`rag`](app/search/query-profiles/rag.xml)
+3. [`deepresearch`](app/search/query-profiles/deepresearch.xml)
+4. [`hybrid-with-gbdt`](app/search/query-profiles/hybrid-with-gbdt.xml)
+5. [`rag-with-gbdt`](app/search/query-profiles/rag-with-gbdt.xml)
+6. [`deepresearch-with-gbdt`](app/search/query-profiles/deepresearch-with-gbdt.xml)
 
-Which all have different query parameters set, such as the search chain to use, the ranking profile, and the number of hits to return.
-The command below will use that query profile to set parameters listed in previous section.
+Each of the query profiles have different query parameters set, such as the search chain to use, the ranking profile, and the number of hits to return.
 
-### `rag` query profile
+### Testing the query profiles
 
-Run the command below to use the `rag` query profile.
+Run the command below to use the `rag-with-gbdt` query profile.
+Note that the `X-LLM-API-KEY` header is required for this query profile.
 
 <pre>
 $ vespa query \
     --header="X-LLM-API-KEY:<your-api-key>" \
     query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
-    queryProfile=rag
+    queryProfile=rag-with-gbdt
 </pre>
 
-### `hybrid` query profile
-
-Run the command below to use the `hybrid` query profile.
-
-<pre>
+Run the command below to use the `deepresearch-with-gbdt` query profile.
+<pre data-test="exec" data-test-assert-contains="Architecture Document">
 $ vespa query \
     query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
-    queryProfile=hybrid
-</pre>
-
-### `deepresearch` query profile
-
-Run the command below to use the `deepresearch` query profile.
-<pre>
-$ vespa query \
-    query="Summarize the key architectural decisions documented for SynapseFlow's v0.2 release." \
-    queryProfile=deepresearch
+    queryProfile=deepresearch-with-gbdt
 </pre>
 
 ## Evaluating and improving ranking
 
-### 1. Retrieval (match-phase) evals
+Now, we will show you how the query profiles (and rank-profiles) were developed, using an evaluation-driven approach.
+
+### 1. Retrieval (match-phase)
 
 We want to make sure we match all relevant docs.
 We can do this quite easily using pyvespa's [VespaMatchEvaluator](https://vespa-engine.github.io/pyvespa/api/vespa/evaluation.html#vespa.evaluation.VespaMatchEvaluator).
@@ -285,7 +281,7 @@ We want to collect features from both the relevant documents, as well as a set o
 To do this for all our queries, we can run:
 
 <pre>
-python eval/collect_pyvespa.py --collect_matchfeatures 
+python eval/collect_pyvespa.py --collect_matchfeatures
 </pre>
 
 This will collect these 6 features defined in the `collect-training-data` rank-profile, and save them to a file to use as input for training our linear model.
@@ -364,7 +360,7 @@ For the first phase ranking, we care most about recall, as we just want to make 
 
 We can see that our recall@20 is 0.39, which is not very good, but an OK start, and a lot better than random. We could later aim to improve on this by approximating a better function after we have learned one for second-phase ranking.
 
-We can also see that our search time is quite fast, with an average of 22ms, and a 95th percentile of 60ms, we consider this good for a first-phase ranking.
+We can also want to ensure that search time is within acceptable limits. With an average of 22ms, we consider this ok.
 
 ### 3. Second-phase ranking
 
