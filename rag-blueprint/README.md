@@ -23,6 +23,8 @@ For an in-depth tutorial with more reasoning and explanation, please see the [RA
 
 For this blueprint, we will use a synthetic dataset of documents belonging to a persona, Alex Chen, who is an AI Engineer at a fictional YC-backed startup called "SynapseFlow". The document dataset contains a mix of Alex's personal notes, technical documentation, workout logs, and other relevant information that reflects his professional and personal interests.
 
+To allow for quick iterations, and facilitate easier learning curve, we have restricted the dataset to 100 documents of varying length.
+
 By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RAG) application to retrieve relevant documents and generate responses and insights from all Alex's documents. With Vespa, this could scale to billions of documents and thousands of queries per second, while still delivering state-of-the-art quality.
 
 ## Prerequisites
@@ -35,7 +37,7 @@ By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RA
 * Minimum **8 GB** memory dedicated to Docker (the default is 2 GB on Macs)
 * [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
   a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
-* Python 3.8 or later. We recommend using [uv](https://docs.astral.sh/uv/) to manage virtual environment and install python dependencies.
+* Python 3.8 or later. We recommend using [uv](https://docs.astral.sh/uv/) to manage virtual environment and install python dependencies. 
 
 ## Quick start
 
@@ -50,6 +52,22 @@ $ brew install vespa-cli
 <pre data-test="exec">
 $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 </pre>
+
+### Deployment to Vespa Cloud
+
+This application is best deployed on Vespa Cloud, where you can use our Secret Store to keep your api-key (needed to use an external LLM through API).
+
+<pre>
+$ vespa config set target cloud
+</pre>
+
+<pre>
+$ vespa config set application your-tenant-name.ragblueprint
+</pre>
+
+### Docker deployment
+
+Or, you can deploy it on a Docker container:
 
 <pre data-test="exec">
 $ docker run --detach --name vespa-rag --hostname vespa-rag \
@@ -508,6 +526,18 @@ $ vespa query \
  queryProfile=rag-with-gbdt
 </pre>
 
+### Further improvements
+
+Finally, we will sketch out some opportunities for further improvements. 
+As you have seen, we started out with only binary relevance labels for a few queries, and trained a model based on the relevant docs and a set of random documents.
+
+This was useful initially, as we had no better way to retrieve the candidate documents.
+Now, that we have a reasonably good second-phase ranking, we could potentially generate a new set of relevance labels for queries that we did not have labels for by having an LLM do relevance judgments of the top k returned hits. This training dataset would likely be even better in separating the top documents.
+
+We also have the `global-phase` ranking, which could be suitable for doing a reranking of the top documents from the second-phase ranking. Common options for global-phase are cross-encoders or another GBDT model, trained for better separating top ranked documents. For RAG applications, we consider this less important than for search applications where the results are mainly consumed by an human, as LLMs don't care that much about the ordering of the results.
+
+### Conclusion
+
 Congratulations! You have now created a RAG application that can scale to billions of documents and thousands of queries per second, while still delivering state-of-the-art quality.
 
-What will you build? :rocket:
+What will you build? 🚀
