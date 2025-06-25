@@ -1,0 +1,40 @@
+# Linear expression for original (unscaled) features:
+-7.798639+13.383840*match_avg_top_3_chunk_sim_scores+0.203145*match_avg_top_3_chunk_text_scores+0.159914*match_bm25(chunks)+0.191867*match_bm25(title)+10.067169*match_max_chunk_sim_scores+0.153392*match_max_chunk_text_scores
+
+# Scaling and coefficient information:
+{
+  "feature_means": {
+    "match_avg_top_3_chunk_sim_scores": 0.22247844398800842,
+    "match_avg_top_3_chunk_text_scores": 5.062831889351015,
+    "match_bm25(chunks)": 6.910163579287564,
+    "match_bm25(title)": 1.3387642302653682,
+    "match_max_chunk_sim_scores": 0.24197060052378505,
+    "match_max_chunk_text_scores": 6.401269528211332
+  },
+  "feature_stds": {
+    "match_avg_top_3_chunk_sim_scores": 0.08566709915214676,
+    "match_avg_top_3_chunk_text_scores": 4.615041205400284,
+    "match_bm25(chunks)": 6.49405880499415,
+    "match_bm25(title)": 2.429153599310823,
+    "match_max_chunk_sim_scores": 0.10119277456222939,
+    "match_max_chunk_text_scores": 6.07420399924999
+  },
+  "original_coefficients": {
+    "match_avg_top_3_chunk_sim_scores": 1.1465547378255794,
+    "match_avg_top_3_chunk_text_scores": 0.9375234853877388,
+    "match_bm25(chunks)": 1.0384939993616278,
+    "match_bm25(title)": 0.4660735156756901,
+    "match_max_chunk_sim_scores": 1.0187247775204404,
+    "match_max_chunk_text_scores": 0.9317318606787395
+  },
+  "original_intercept": 0.9872259300086721,
+  "transformed_coefficients": {
+    "match_avg_top_3_chunk_sim_scores": 13.383839877538884,
+    "match_avg_top_3_chunk_text_scores": 0.20314520362043506,
+    "match_bm25(chunks)": 0.15991447422111282,
+    "match_bm25(title)": 0.19186663033902845,
+    "match_max_chunk_sim_scores": 10.067169142535633,
+    "match_max_chunk_text_scores": 0.1533915984372248
+  },
+  "transformed_intercept": -7.798639240785874
+}

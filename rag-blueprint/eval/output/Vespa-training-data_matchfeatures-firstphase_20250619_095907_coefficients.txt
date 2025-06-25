@@ -1,1 +1,0 @@
--3.3756-0.0018*match_avg_top_3_chunk_sim_scores+0.3926*match_avg_top_3_chunk_text_scores-0.2525*match_bm25(chunks)+0.8569*match_bm25(title)-0.0018*match_closeness(chunk_embeddings)-0.0027*match_closeness(title_embedding)-0.0018*match_max_chunk_sim_scores+0.6240*match_max_chunk_text_scores

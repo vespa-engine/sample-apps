@@ -2,15 +2,15 @@ rank-profile collect-training-data {
         match-features {
             bm25(title)
             bm25(chunks)
-            closeness(title_embedding)
-            closeness(chunk_embeddings)
             max_chunk_sim_scores
             max_chunk_text_scores
             avg_top_3_chunk_sim_scores
             avg_top_3_chunk_text_scores
+
         }
         inputs {
             query(embedding) tensor<int8>(x[96])
+            query(float_embedding) tensor<float>(x[768])
         }
 
         rank chunks {
@@ -20,12 +20,19 @@ rank-profile collect-training-data {
             expression: elementwise(bm25(chunks),chunk,float)
         }
 
-        function chunk_dist_scores() {
-            expression: reduce(hamming(query(embedding), attribute(chunk_embeddings)), sum, x)
+        function chunk_emb_vecs() {
+            expression: unpack_bits(attribute(chunk_embeddings))
         }
 
+        function chunk_dot_prod() {
+            expression: reduce(query(float_embedding) * chunk_emb_vecs(), sum, x)
+        }
+
+        function vector_norms(t) {
+            expression: sqrt(sum(pow(t, 2), x))
+        }
         function chunk_sim_scores() {
-            expression: 1/ (1 + chunk_dist_scores())
+            expression: chunk_dot_prod() / (vector_norms(chunk_emb_vecs()) * vector_norms(query(float_embedding)))
         }
 
         function top_3_chunk_text_scores() {
@@ -35,7 +42,6 @@ rank-profile collect-training-data {
         function top_3_chunk_sim_scores() {
             expression: top(3, chunk_sim_scores())
         }
-
 
         function avg_top_3_chunk_text_scores() {
             expression: reduce(top_3_chunk_text_scores(), avg, chunk)
@@ -54,8 +60,7 @@ rank-profile collect-training-data {
 
         first-phase {
             expression {
-                closeness(title_embedding) +
-                closeness(chunk_embeddings) +
+                # Not used in this profile
                 bm25(title) + 
                 bm25(chunks) +
                 max_chunk_sim_scores() +
@@ -66,6 +71,4 @@ rank-profile collect-training-data {
         second-phase {
             expression: random
         }
-
-        
     }

@@ -1,0 +1,215 @@
+[
+    {
+        "query_id": "test_01",
+        "query_text": "Find the Python script where I implemented the custom attention layer for the 'SynapseCore' module.",
+        "category": "Navigational - Code",
+        "description": "Locating a specific piece of code within his projects.",
+        "relevant_document_ids": [
+            "1",
+            "50",
+            "82"
+        ]
+    },
+    {
+        "query_id": "test_02",
+        "query_text": "What were the key takeaways from the YC workshop on scaling B2B sales?",
+        "category": "Informational - Business Strategy",
+        "description": "Retrieving specific information from workshop notes.",
+        "relevant_document_ids": [
+            "2"
+        ]
+    },
+    {
+        "query_id": "test_03",
+        "query_text": "Show me my strength training progress for deadlifts, squats, and bench press between November 2024 and May 2025. What was my new PR for deadlifts?",
+        "category": "Informational - Personal Tracking",
+        "description": "Extracting specific performance metrics from personal logs.",
+        "relevant_document_ids": [
+            "3",
+            "18",
+            "27",
+            "33",
+            "45",
+            "60",
+            "65",
+            "73",
+            "84",
+            "92",
+            "100"
+        ]
+    },
+    {
+        "query_id": "test_04",
+        "query_text": "Can you give me an overview of the SynapseFlow v0.2 architecture? I'm interested in the key decisions and component diagram.",
+        "category": "Informational - System Architecture",
+        "description": "Getting a high-level understanding of the system's design.",
+        "relevant_document_ids": [
+            "4",
+            "8",
+            "50",
+            "66"
+        ]
+    },
+    {
+        "query_id": "test_05",
+        "query_text": "What were the main pain points identified by beta users of the SynapseFlow API in April 2025, especially regarding error handling?",
+        "category": "Informational - Product Feedback",
+        "description": "Summarizing user feedback on specific product aspects.",
+        "relevant_document_ids": [
+            "6",
+            "31"
+        ]
+    },
+    {
+        "query_id": "test_06",
+        "query_text": "I need to draft a blog post about LLM fine-tuning pitfalls. Can you provide the outline and key topics based on my notes?",
+        "category": "Generative - Content Creation",
+        "description": "Requesting structured content based on existing notes for a new output.",
+        "relevant_document_ids": [
+            "16",
+            "68",
+            "86"
+        ]
+    },
+    {
+        "query_id": "test_07",
+        "query_text": "What was the feedback I received during YC office hours in March 2025 about my communication style, specifically regarding jargon?",
+        "category": "Informational - Personal Development",
+        "description": "Recalling specific feedback for self-improvement.",
+        "relevant_document_ids": [
+            "17",
+            "70"
+        ]
+    },
+    {
+        "query_id": "test_08",
+        "query_text": "What are the main goals and key results for SynapseFlow in Q2 2025, particularly concerning customer acquisition?",
+        "category": "Informational - Business Planning",
+        "description": "Understanding quarterly objectives and key results.",
+        "relevant_document_ids": [
+            "10"
+        ]
+    },
+    {
+        "query_id": "test_09",
+        "query_text": "Remind me about the benefits of using LoRA for fine-tuning large language models. How does it work at a high level?",
+        "category": "Informational - Technical Concept",
+        "description": "Seeking an explanation of a technical concept and its advantages.",
+        "relevant_document_ids": [
+            "16",
+            "68",
+            "82"
+        ]
+    },
+    {
+        "query_id": "test_10",
+        "query_text": "What are my notes on the 'Data Scientist Diane' user persona for SynapseFlow? What are her main pain points and how do we address them?",
+        "category": "Informational - User Research",
+        "description": "Retrieving details about a defined user persona.",
+        "relevant_document_ids": [
+            "88",
+            "100"
+        ]
+    },
+    {
+        "query_id": "test_11",
+        "query_text": "Hey, what was that Python lib for making custom attention layers? I think it was 'SynapseCore' or something like that. Need to find it.",
+        "category": "Navigational - Code",
+        "description": "Casual query with a slight recall issue, common in human interaction.",
+        "relevant_document_ids": [
+            "1",
+            "50",
+            "82"
+        ]
+    },
+    {
+        "query_id": "test_12",
+        "query_text": "YC sales workshop notes – what were the big takeaways for B2B? Especially about who to sell to.",
+        "category": "Informational - Business Strategy",
+        "description": "Slightly informal, conversational tone, asking for key points.",
+        "relevant_document_ids": [
+            "2"
+        ]
+    },
+    {
+        "query_id": "test_13",
+        "query_text": "Dude, remind me of my deadlift PR last April or May? And what was my bench goal for that time?",
+        "category": "Informational - Personal Tracking",
+        "description": "Very informal, specific time frame, and slight memory gaps.",
+        "relevant_document_ids": [
+            "3",
+            "60"
+        ]
+    },
+    {
+        "query_id": "test_14",
+        "query_text": "SynapseFlow v0.2 architecture: what's the deal with K8s and microservices? And can you show me that diagram again?",
+        "category": "Informational - System Architecture",
+        "description": "Informal, seeks clarification on specific tech choices, and asks for visual aid.",
+        "relevant_document_ids": [
+            "4",
+            "8",
+            "66"
+        ]
+    },
+    {
+        "query_id": "test_15",
+        "query_text": "Okay, the beta feedback for the API, specifically the /deploy_model endpoint. What were the negative points? Like, what sucked about the error messages?",
+        "category": "Informational - Product Feedback",
+        "description": "Direct, slightly frustrated tone, focusing on negative feedback and a specific sub-area.",
+        "relevant_document_ids": [
+            "6"
+        ]
+    },
+    {
+        "query_id": "test_16",
+        "query_text": "I'm writing that blog post about fine-tuning LLMs. What are the common eff-ups and how do we avoid them? Give me the main sections.",
+        "category": "Generative - Content Creation",
+        "description": "Informal language ('eff-ups'), asks for structure and solutions.",
+        "relevant_document_ids": [
+            "16",
+            "68",
+            "86"
+        ]
+    },
+    {
+        "query_id": "test_17",
+        "query_text": "What did the YC partner say about my communication style? I remember something about too much techy talk too early.",
+        "category": "Informational - Personal Development",
+        "description": "Recalling a specific point of feedback, acknowledging partial memory.",
+        "relevant_document_ids": [
+            "17",
+            "70"
+        ]
+    },
+    {
+        "query_id": "test_18",
+        "query_text": "What are our Q2 OKRs for SynapseFlow? Like, how many paying customers are we trying to get?",
+        "category": "Informational - Business Planning",
+        "description": "Direct, asks for specific metrics within the OKRs.",
+        "relevant_document_ids": [
+            "10"
+        ]
+    },
+    {
+        "query_id": "test_19",
+        "query_text": "Can you quickly explain LoRA for LLMs? Like, the super simplified version and why it's good.",
+        "category": "Informational - Technical Concept",
+        "description": "Asks for a simplified explanation and the main benefits.",
+        "relevant_document_ids": [
+            "16",
+            "68",
+            "82"
+        ]
+    },
+    {
+        "query_id": "test_20",
+        "query_text": "Who is 'Data Scientist Diane'? What's her deal with MLOps and how does SynapseFlow help her out?",
+        "category": "Informational - User Research",
+        "description": "Informal, conversational, asking for a summary of the persona and product fit.",
+        "relevant_document_ids": [
+            "88",
+            "100"
+        ]
+    }
+]
