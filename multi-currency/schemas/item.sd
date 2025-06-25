@@ -1,0 +1,19 @@
+schema item {
+    document item {
+        field item_name type string {
+            indexing: summary | index
+        }
+        field price type double {
+            indexing: summary | attribute
+        }
+        field currency_ref type reference<currency> {
+            indexing: attribute | summary
+        }
+    }
+    import field currency_ref.factor as currency_factor {}
+
+    document-summary default {
+        summary item_name {}
+        summary currency_factor {}
+    }
+}

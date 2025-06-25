@@ -1,0 +1,8 @@
+schema currency {
+    document currency {
+        # multiplier for converting to USD
+        field factor type double {
+            indexing: attribute | summary
+        }
+    }
+}
