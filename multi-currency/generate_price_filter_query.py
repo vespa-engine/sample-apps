@@ -70,8 +70,7 @@ def main():
         else:
             print(f"Warning: No conversion rate from {source_currency} to {target_currency}. Skipping.", file=sys.stderr)
 
-    where = " or ".join(or_conditions)
-    print(f"select * from item where {where}")
+    print(" or ".join(or_conditions))
 
 if __name__ == "__main__":
     main()

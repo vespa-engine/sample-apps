@@ -1,16 +1,35 @@
 schema item {
     document item {
         field item_name type string {
-            indexing: summary | index
+            indexing: index | summary
+            index: enable-bm25
         }
         field price type double {
-            indexing: summary | attribute
+            indexing: attribute | summary
         }
         field currency_ref type reference<currency> {
             indexing: attribute | summary
         }
     }
     import field currency_ref.factor as currency_factor {}
+
+    fieldset default {
+    	fields: item_name
+    }
+
+    rank-profile default {
+        function usd_price() {
+            expression: attribute(price) * attribute(currency_factor)
+        }
+        first-phase {
+            expression: bm25(item_name) * log(usd_price)
+        }
+        summary-features {
+            attribute(price)
+            usd_price
+            bm25(item_name)
+        }
+    }
 
     document-summary default {
         summary item_name {}
