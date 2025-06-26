@@ -92,7 +92,7 @@ vespa query 'select * from item where (currency_ref matches "id:shopping:currenc
 
 - **Global currency documents**: Currency data is replicated across all content nodes
 - **Cross-document field import**: Items can access currency factors via `currency_ref.factor`
-- **USD price calculation**: Rank profile computes `usd_price: price * currency_factor`
+- **USD price calculation**: Rank profile computes `price_usd: price * currency_factor`
 
 ## Schema Details
 

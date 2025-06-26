@@ -7,6 +7,9 @@ schema item {
         field price type double {
             indexing: attribute | summary
         }
+        field price_usd type double {
+            indexing: attribute | summary
+        }
         field currency_ref type reference<currency> {
             indexing: attribute | summary
         }
@@ -18,15 +21,15 @@ schema item {
     }
 
     rank-profile default {
-        function usd_price() {
+        function price_usd() {
             expression: attribute(price) * attribute(currency_factor)
         }
         first-phase {
-            expression: bm25(item_name) * log(usd_price)
+            expression: bm25(item_name) * log(price_usd)
         }
         summary-features {
             attribute(price)
-            usd_price
+            price_usd
             bm25(item_name)
         }
     }
