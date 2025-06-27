@@ -120,15 +120,19 @@ def generate_items():
     for i in range(1, 1_000_001):
         price_usd = random_price_cents()
         currency = random_currency()
+        price_native = RATE_TABLE[("USD", currency.upper())] * price_usd  # Convert to the target currency
         item = {
             "put": f"id:shopping:item::item-{i}",
             "fields": {
                 "currency_ref": f"id:shopping:currency::{currency.lower()}",
                  #"item_name": ' '.join(random.sample(tokens, random.randint(1, 5))), # Randomly select 1-5 tokens
                 "price_usd": price_usd,
-                "price": RATE_TABLE[("USD", currency.upper())] * price_usd,  # Convert to the target currency
+                "price": price_native,
             }
         }
+        if currency.lower() != "usd":
+            item["fields"][f"price_{currency.lower()}"] = price_native
+
         items.append(json.dumps(item))
     return items
 
@@ -145,7 +149,9 @@ def query_items(yql: str, ranking: str = "unranked", hits: int = 0) -> dict:
     """
     Executes a Vespa query using the CLI and returns the response JSON.
     """
-    stdout = _run_cli(["vespa", "query", f"{yql}", f"ranking={ranking}", f"hits={hits}"])
+    cmd = ["vespa", "query", f"{yql}", f"ranking={ranking}", f"hits={hits}"]
+    print(' '.join(cmd))
+    stdout = _run_cli(cmd)
     return json.loads(stdout)
 
 def parse_vespa_results(result: dict) -> tuple[int, list[dict]]:

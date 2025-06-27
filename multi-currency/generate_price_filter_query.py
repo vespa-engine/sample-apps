@@ -33,7 +33,7 @@ def load_conversion_rates(xml_file: str) -> tuple[dict[tuple[str, str], float], 
 rates, all_currencies = load_conversion_rates("currency.xml")
 
 def price_filter(currency: str, min_price: float, max_price: float) -> str:
-    return f"(currency_ref matches 'id:shopping:currency::{currency.lower()}' and price >= {min_price} and price <= {max_price})"
+    return f"(price_{currency.lower()} >= {min_price} and price_{currency.lower()} <= {max_price})"
 
 def generate_price_filter_query(min_price: float, max_price: float, currency: str) -> str:
     if min_price > max_price:
