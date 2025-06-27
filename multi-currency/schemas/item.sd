@@ -2,16 +2,23 @@ schema item {
     document item {
         field item_name type string {
             indexing: index | summary
+            match: text
             index: enable-bm25
         }
         field price type double {
             indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
         }
         field price_usd type double {
             indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
         }
         field currency_ref type reference<currency> {
             indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
         }
     }
     import field currency_ref.factor as currency_factor {}

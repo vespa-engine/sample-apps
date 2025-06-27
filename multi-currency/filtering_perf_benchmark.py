@@ -141,11 +141,11 @@ def vespa_feed(jsonl_file: Path) -> None:
 # Querying
 # ---------------------------------------------------------------------------
 
-def query_items(yql: str, hits: int = 100) -> dict:
+def query_items(yql: str, ranking: str = "unranked", hits: int = 0) -> dict:
     """
     Executes a Vespa query using the CLI and returns the response JSON.
     """
-    stdout = _run_cli(["vespa", "query", f"{yql}", f"hits={hits}"])
+    stdout = _run_cli(["vespa", "query", f"{yql}", f"ranking={ranking}", f"hits={hits}"])
     return json.loads(stdout)
 
 def parse_vespa_results(result: dict) -> tuple[int, list[dict]]:
@@ -155,21 +155,22 @@ def parse_vespa_results(result: dict) -> tuple[int, list[dict]]:
     return total_hits, top_100_hits
 
 if __name__ == "__main__":
+    from vespa.application import Vespa
+    app = Vespa(url="localhost", port=8080)
+    _ = app.delete_all_docs(content_cluster_name="shopping", schema='currency')
+    _ = app.delete_all_docs(content_cluster_name="shopping", schema='item')
 
-    # from vespa.application import Vespa
-    #
-    # # delete all Vespa documents.
-    # app = Vespa(url="localhost", port=8080)
-    # response = app.delete_all_docs(content_cluster_name="shopping", schema='item')
-    # print(response)
-    #
-    # # generate 1mm sample items with random prices, item_name, and currency.
-    # items = generate_items()
-    # # write to a file
-    # items_file = Path("1mm_items.jsonl")
-    # items_file.write_text("\n".join(items) + "\n")
-    #
-    # vespa_feed(items_file)
+    from currency_xml_to_vespa_docs import convert_currency_xml_to_vespa_jsonl
+    currency_docs = convert_currency_xml_to_vespa_jsonl('currency.xml')
+    currency_docs_file = Path("currency_docs.jsonl")
+    currency_docs_file.write_text("\n".join(currency_docs) + "\n")
+    vespa_feed(currency_docs_file)
+
+    # generate 1mm sample items with random prices, item_name, and currency.
+    items = generate_items()
+    items_file = Path("1mm_items.jsonl")
+    items_file.write_text("\n".join(items) + "\n")
+    vespa_feed(items_file)
 
     from generate_price_filter_query import generate_price_filter_query
 
@@ -189,13 +190,22 @@ if __name__ == "__main__":
         multi_currency_where=f"select * from item where {generate_price_filter_query(min_price, max_price, currency.lower())}"
         single_currency_where=f"select * from item where price_usd >= {price_usd_min} and price_usd <= {price_usd_max}"
 
-        start = time.perf_counter()
-        multi_currency_results = parse_vespa_results(query_items(multi_currency_where))
-        lat_multi.append(time.perf_counter() - start)
+        exec_plan = [
+            ("multi",  multi_currency_where,  lat_multi),
+            ("single", single_currency_where, lat_single),
+        ]
+        random.shuffle(exec_plan)
 
-        start = time.perf_counter()
-        single_currency_results = parse_vespa_results(query_items(single_currency_where))
-        lat_single.append(time.perf_counter() - start)
+        # run queries in randomized order
+        for tag, query_str, lat_list in exec_plan:
+            start = time.perf_counter()
+            results = parse_vespa_results(query_items(query_str))
+            lat_list.append(time.perf_counter() - start)
+
+            if tag == "multi":
+                multi_currency_results = results
+            else:
+                single_currency_results = results
 
         if multi_currency_results[0] != single_currency_results[0]:
             print(f"Total hits mismatch: {multi_currency_results[0]} vs {single_currency_results[0]} currency:{currency}, min_price: {min_price}, max_price: {max_price} price_usd_min: {price_usd_min}, price_usd_max: {price_usd_max} rate: {rate}")
