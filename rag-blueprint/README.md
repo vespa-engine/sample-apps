@@ -51,10 +51,13 @@ $ brew install vespa-cli
 
 Install uv to manage virtual environments and install python dependencies:
 <pre>
+$ curl -LsSf https://astral.sh/uv/install.sh | sh
+</pre>
 
 <pre data-test="exec">
 $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 </pre>
+
 
 ### Deployment to Vespa Cloud
 
