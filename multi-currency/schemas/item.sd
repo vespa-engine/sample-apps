@@ -195,6 +195,8 @@ schema item {
             rank: filter
         }
     }
+    import field currency_ref.code as currency_code {}
+    import field currency_ref.idx as currency_idx {}
     import field currency_ref.factor as currency_factor {}
 
     fieldset default {

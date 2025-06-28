@@ -104,7 +104,3 @@ vespa query 'select * from item where (currency_ref matches "id:shopping:currenc
 - `price`: Double field for price in local currency
 - `currency_ref`: Reference to currency document
 - Imported field: `currency_factor` from referenced currency document
-
-## TODOs
-
-- Show how to hydrate a USD price 

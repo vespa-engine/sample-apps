@@ -19,8 +19,12 @@ import random
 import subprocess
 import time
 from pathlib import Path
-from typing import Dict, List
+
+from vespa.application import Vespa
+from vespa.io import VespaQueryResponse
+
 from generate_price_filter_query import load_conversion_rates
+
 
 RATE_TABLE, _ = load_conversion_rates("currency.xml")
 
@@ -38,7 +42,7 @@ def pct(values: list[float], *percents: int) -> list[float]:
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _run_cli(cmd: List[str], stdin: bytes | None = None) -> str:
+def _run_cli(cmd: list[str], stdin: bytes | None = None) -> str:
     """
     Runs a Vespa CLI command and returns stdout.
     Raises `subprocess.CalledProcessError` on failure.
@@ -47,14 +51,14 @@ def _run_cli(cmd: List[str], stdin: bytes | None = None) -> str:
     return res.stdout
 
 
-def _feed_jsonl(lines: List[str]) -> None:
+def _feed_jsonl(lines: list[str]) -> None:
     """
     Feeds JSONL documents using `vespa feed -`.
     """
     data = ("\n".join(lines) + "\n").encode()
     _run_cli(["vespa", "feed", "-"], stdin=data)
 
-def feed_currency_documents(factors: Dict[str, float], ns: str) -> None:
+def feed_currency_documents(factors: dict[str, float], ns: str) -> None:
     """
     Feeds `currency` documents with conversion factors.
     """
@@ -125,7 +129,6 @@ def generate_items():
             "put": f"id:shopping:item::item-{i}",
             "fields": {
                 "currency_ref": f"id:shopping:currency::{currency.lower()}",
-                 #"item_name": ' '.join(random.sample(tokens, random.randint(1, 5))), # Randomly select 1-5 tokens
                 "price_usd": price_usd,
                 "price": price_native,
             }
@@ -141,42 +144,26 @@ def vespa_feed(jsonl_file: Path) -> None:
     _run_cli(["vespa", "feed", str(jsonl_file)])
 
 
-# ---------------------------------------------------------------------------
-# Querying
-# ---------------------------------------------------------------------------
-
-def query_items(yql: str, ranking: str = "unranked", hits: int = 0) -> dict:
-    """
-    Executes a Vespa query using the CLI and returns the response JSON.
-    """
-    cmd = ["vespa", "query", f"{yql}", f"ranking={ranking}", f"hits={hits}"]
-    print(' '.join(cmd))
-    stdout = _run_cli(cmd)
-    return json.loads(stdout)
-
-def parse_vespa_results(result: dict) -> tuple[int, list[dict]]:
-    root = result.get('root', {})
-    total_hits = root.get('fields', {}).get('totalCount', 0)
-    top_100_hits = root.get('children', [])[:100]      # keep full hit objects
-    return total_hits, top_100_hits
-
 if __name__ == "__main__":
-    from vespa.application import Vespa
-    app = Vespa(url="localhost", port=8080)
-    _ = app.delete_all_docs(content_cluster_name="shopping", schema='currency')
-    _ = app.delete_all_docs(content_cluster_name="shopping", schema='item')
+    reindex = True
+    if reindex:
+        docker_feed = Vespa(url="localhost", port=8080)
+        _ = docker_feed.delete_all_docs(content_cluster_name="shopping", schema='currency')
+        _ = docker_feed.delete_all_docs(content_cluster_name="shopping", schema='item')
 
-    from currency_xml_to_vespa_docs import convert_currency_xml_to_vespa_jsonl
-    currency_docs = convert_currency_xml_to_vespa_jsonl('currency.xml')
-    currency_docs_file = Path("currency_docs.jsonl")
-    currency_docs_file.write_text("\n".join(currency_docs) + "\n")
-    vespa_feed(currency_docs_file)
+        from currency_xml_to_vespa_docs import convert_currency_xml_to_vespa_jsonl
+        currency_docs = convert_currency_xml_to_vespa_jsonl('currency.xml')
+        currency_docs_file = Path("currency_docs.jsonl")
+        currency_docs_file.write_text("\n".join(currency_docs) + "\n")
+        vespa_feed(currency_docs_file)
 
-    # generate 1mm sample items with random prices, item_name, and currency.
-    items = generate_items()
-    items_file = Path("1mm_items.jsonl")
-    items_file.write_text("\n".join(items) + "\n")
-    vespa_feed(items_file)
+        # generate 1mm sample items with random prices, item_name, and currency.
+        items = generate_items()
+        items_file = Path("1mm_items.jsonl")
+        items_file.write_text("\n".join(items) + "\n")
+        vespa_feed(items_file)
+
+    app = Vespa(url="http://localhost", port=8080)
 
     from generate_price_filter_query import generate_price_filter_query
 
@@ -205,18 +192,24 @@ if __name__ == "__main__":
         # run queries in randomized order
         for tag, query_str, lat_list in exec_plan:
             start = time.perf_counter()
-            results = parse_vespa_results(query_items(query_str))
-            lat_list.append(time.perf_counter() - start)
+            r: VespaQueryResponse = app.query({
+                "yql": query_str,
+                "ranking": "unranked",
+                "hits": 0,
+            })
+            latency = time.perf_counter() - start
+            lat_list.append(latency)
+            results: int = r.number_documents_retrieved
 
             if tag == "multi":
                 multi_currency_results = results
             else:
                 single_currency_results = results
 
-        if multi_currency_results[0] != single_currency_results[0]:
-            print(f"Total hits mismatch: {multi_currency_results[0]} vs {single_currency_results[0]} currency:{currency}, min_price: {min_price}, max_price: {max_price} price_usd_min: {price_usd_min}, price_usd_max: {price_usd_max} rate: {rate}")
-        else:
-            print(f"Total hits: {multi_currency_results[0]} currency:{currency}, min_price: {min_price}, max_price: {max_price} price_usd_min: {price_usd_min}, price_usd_max: {price_usd_max} rate: {rate}")
+        #if multi_currency_results != single_currency_results:
+        #    print(f"Latency: multi={lat_multi[-1]} single={lat_single[-1]}. Total hits mismatch: {multi_currency_results} vs {single_currency_results} currency:{currency}, min_price: {min_price}, max_price: {max_price} price_usd_min: {price_usd_min}, price_usd_max: {price_usd_max} rate: {rate}")
+        #else:
+        #    print(f"Latency: multi={lat_multi[-1]} single={lat_single[-1]}. Total hits: {multi_currency_results} currency:{currency}, min_price: {min_price}, max_price: {max_price} price_usd_min: {price_usd_min}, price_usd_max: {price_usd_max} rate: {rate}")
 
     print(f"latency for multi-currency query: {pct(lat_multi, [25, 50, 75, 90, 95, 99])}")
     print(f"latency for price_usd query: {pct(lat_single, [25, 50, 75, 90, 95, 99])}")
