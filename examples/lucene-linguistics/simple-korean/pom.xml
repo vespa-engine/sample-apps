@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ai.vespa</groupId>
+    <artifactId>add-analysis-nori</artifactId>
+    <version>1.0.0</version>
+    <packaging>container-plugin</packaging>
+    <parent>
+        <groupId>com.yahoo.vespa</groupId>
+        <artifactId>cloud-tenant-base</artifactId>
+        <version>[8,9)</version>  <!-- Use the latest Vespa release -->
+        <relativePath/>
+    </parent>
+
+    <dependencies>
+        <dependency>
+           <groupId>org.apache.lucene</groupId>
+           <artifactId>lucene-analysis-nori</artifactId>
+            <version>${lucene.vespa.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>com.yahoo.vespa</groupId>
+           <artifactId>lucene-linguistics</artifactId>
+            <version>${vespaversion}</version>
+        </dependency>
+    </dependencies>
+
+</project>
