@@ -341,29 +341,29 @@ We run the evaluation script on a set of unseen test queries, and get the follow
 
 ```json
 {
-    "accuracy@1": 0.0,
-    "accuracy@3": 0.0,
-    "accuracy@5": 0.05,
-    "accuracy@10": 0.3,
-    "precision@10": 0.034999999999999996,
-    "recall@10": 0.1340909090909091,
-    "precision@20": 0.04250000000000001,
-    "recall@20": 0.3886363636363636,
-    "mrr@10": 0.0476984126984127,
-    "ndcg@10": 0.05997203651967424,
-    "map@100": 0.06688634552753898,
-    "searchtime_avg": 0.022150000000000006,
+    "accuracy@1": 1.0,
+    "accuracy@3": 1.0,
+    "accuracy@5": 1.0,
+    "accuracy@10": 1.0,
+    "precision@10": 0.23500000000000001,
+    "recall@10": 0.9405303030303032,
+    "precision@20": 0.12999999999999998,
+    "recall@20": 0.9954545454545455,
+    "mrr@10": 1.0,
+    "ndcg@10": 0.890200582790945,
+    "map@100": 0.8196683367137911,
+    "searchtime_avg": 0.016950000000000007,
     "searchtime_q50": 0.0165,
-    "searchtime_q90": 0.05550000000000001,
-    "searchtime_q95": 0.0604
+    "searchtime_q90": 0.025100000000000004,
+    "searchtime_q95": 0.026700000000000012
 }
 ```
 
+We can see that our results are already very good. This is of course due to the fact that we have a small,synthetic dataset. In reality, you should align the metric expectations with your dataset and test queries.
+
 For the first phase ranking, we care most about recall, as we just want to make sure our candidate documents are ranked high enough to be included in the second-phase ranking. (the default number of documents that will be exposed to second-phase is 10 000, but can be controlled by the `rerank-count` parameter).
 
-We can see that our recall@20 is 0.39, which is not very good, but an OK start, and a lot better than random. We could later aim to improve on this by approximating a better function after we have learned one for second-phase ranking.
-
-We can also want to ensure that search time is within acceptable limits. With an average of 22ms, we consider this ok.
+We can also see that our search time is quite fast, with an average of 22ms. You should consider whether this is well within your latency budget, as you want some headroom for second-phase ranking.
 
 ### 3. Second-phase ranking
 
@@ -490,24 +490,24 @@ And the results we get are:
 ```json
 {
     "accuracy@1": 0.9,
-    "accuracy@3": 0.95,
+    "accuracy@3": 1.0,
     "accuracy@5": 1.0,
     "accuracy@10": 1.0,
-    "precision@10": 0.22999999999999998,
-    "recall@10": 0.9276515151515152,
-    "precision@20": 0.1275,
-    "recall@20": 0.990909090909091,
-    "mrr@10": 0.9375,
-    "ndcg@10": 0.8513594617981889,
-    "map@100": 0.7756352485897938,
-    "searchtime_avg": 0.034850000000000006,
-    "searchtime_q50": 0.0405,
-    "searchtime_q90": 0.05040000000000001,
-    "searchtime_q95": 0.054
+    "precision@10": 0.23500000000000001,
+    "recall@10": 0.9401515151515152,
+    "precision@20": 0.12999999999999998,
+    "recall@20": 0.9954545454545455,
+    "mrr@10": 0.95,
+    "ndcg@10": 0.8782459504293774,
+    "map@100": 0.8091120429278325,
+    "searchtime_avg": 0.020400000000000005,
+    "searchtime_q50": 0.018000000000000002,
+    "searchtime_q90": 0.0333,
+    "searchtime_q95": 0.03615000000000001
 }
 ```
 
-This is a significant improvement over the first-phase ranking, with an accuracy@10 of 1.0, and a recall@20 of 0.99, meaning that we are able to retrieve almost all relevant documents in the top 20 documents.
+We were not able to improve much on the already very good first phase ranking, but you would expect significant improvements on a large real-world dataset.
 
 Lets add a new query-profile that will inherit the previous `hybrid` query-profile, but will override the ranking profile to use the `second-with-gbdt` rank-profile, and set the default number of hits to 20, which (if our test queries are representative) should give us a recall of 0.99 for the second-phase ranking.
 
