@@ -345,17 +345,17 @@ We run the evaluation script on a set of unseen test queries, and get the follow
     "accuracy@3": 1.0,
     "accuracy@5": 1.0,
     "accuracy@10": 1.0,
-    "precision@10": 0.23500000000000001,
-    "recall@10": 0.9405303030303032,
-    "precision@20": 0.12999999999999998,
-    "recall@20": 0.9954545454545455,
+    "precision@10": 0.235,
+    "recall@10": 0.9405,
+    "precision@20": 0.13,
+    "recall@20": 0.9955,
     "mrr@10": 1.0,
-    "ndcg@10": 0.890200582790945,
-    "map@100": 0.8196683367137911,
-    "searchtime_avg": 0.016950000000000007,
+    "ndcg@10": 0.8902,
+    "map@100": 0.8197,
+    "searchtime_avg": 0.017,
     "searchtime_q50": 0.0165,
-    "searchtime_q90": 0.025100000000000004,
-    "searchtime_q95": 0.026700000000000012
+    "searchtime_q90": 0.0251,
+    "searchtime_q95": 0.0267
 }
 ```
 
