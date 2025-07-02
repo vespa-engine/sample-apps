@@ -363,7 +363,7 @@ We can see that our results are already very good. This is of course due to the 
 
 For the first phase ranking, we care most about recall, as we just want to make sure our candidate documents are ranked high enough to be included in the second-phase ranking. (the default number of documents that will be exposed to second-phase is 10 000, but can be controlled by the `rerank-count` parameter).
 
-We can also see that our search time is quite fast, with an average of 22ms. You should consider whether this is well within your latency budget, as you want some headroom for second-phase ranking.
+We can also see that our search time is quite fast, with an average of 17ms. You should consider whether this is well within your latency budget, as you want some headroom for second-phase ranking.
 
 ### 3. Second-phase ranking
 
