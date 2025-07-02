@@ -54,6 +54,12 @@ Install uv to manage virtual environments and install python dependencies:
 $ curl -LsSf https://astral.sh/uv/install.sh | sh
 </pre>
 
+Activating uv environment and installing dependecies:
+
+<pre>
+$ cd eval && uv sync && cd ..
+</pre>
+
 <pre data-test="exec">
 $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 </pre>
