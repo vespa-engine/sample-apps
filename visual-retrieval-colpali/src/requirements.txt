@@ -276,7 +276,7 @@ peft==0.11.1
     # via
     #   colpali-engine
     #   vidore-benchmark
-pillow==10.4.0
+pillow==11.3.0
     # via
     #   colpali-engine
     #   matplotlib
