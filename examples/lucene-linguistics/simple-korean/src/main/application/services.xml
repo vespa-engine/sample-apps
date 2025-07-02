@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0">
+    <container id="default" version="1.0">
+        <components>
+            <component id="linguistics"
+                       class="com.yahoo.language.lucene.LuceneLinguistics"
+                       bundle="add-analysis-nori">
+                <config name="com.yahoo.language.lucene.lucene-analysis" >
+                    <analysis>
+                        <item key="ko">
+			 <tokenizer>
+                                <name>korean</name>
+			 </tokenizer>
+                        </item>
+                    </analysis>
+                </config>
+            </component>
+        </components>
+        <document-processing/>
+        <document-api/>
+        <search/>
+    </container>
+    <content id="search" version="1.0">
+        <min-redundancy>1</min-redundancy>
+        <documents>
+            <document-processing cluster="default"/>
+            <document mode="index" type="simple" />
+        </documents>
+    </content>
+</services>

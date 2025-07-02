@@ -1,0 +1,29 @@
+schema simple {
+
+  document simple {
+
+    field language type string {
+        indexing: "ko" | set_language
+    }
+
+    field title type string {
+        normalizing: none
+        indexing: summary | index
+    }
+
+  }
+
+  fieldset default {
+    fields: title
+  }
+
+  document-summary dbg {
+    from-disk
+    summary title {}
+    summary titletokens {
+      source: title
+      tokens
+    }
+  }
+
+}
