@@ -267,7 +267,7 @@ We will start by collecting some training data for a handpicked set of features,
 
 ### Collect matchfeatures
 
-In the rank-profile [`collect-training-data`](app/schemas/doc/collect-training-data.profile), you can see we have created both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
+For this, we will use the [`collect-training-data`](app/schemas/doc/collect-training-data.profile). This profile inherits the [`base-features`](app/schemas/doc/base-features.profile), where you can see we have created both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
 These will now be calculated and returned as part of the Vespa response when this rank-profile is used.
 
 ```txt
