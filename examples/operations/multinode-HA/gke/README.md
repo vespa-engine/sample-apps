@@ -21,7 +21,7 @@ Prerequisites:
 
 The guide uses port-forwards to access ports in the application -
 set up these forwards in separate terminal windows.
-See [config/service-feed.yml](config/service-feed.yml) and [config/service-feed.yml](config/service-query.yml)
+See [config/service-feed.yml](config/service-feed.yml) and [config/service-query.yml](config/service-query.yml)
 for setting up LoadBalancers.
 
 Get started:
