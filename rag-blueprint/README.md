@@ -287,7 +287,7 @@ To do this for all our queries, we can run:
 python eval/collect_pyvespa.py --collect_matchfeatures
 </pre>
 
-This will collect these 6 features defined in the `collect-training-data` rank-profile, and save them to a file to use as input for training our linear model.
+This will collect these 6 features defined in the inherited `base-features` rank-profile, and save them to a file to use as input for training our linear model.
 
 ```txt
 bm25(title)
