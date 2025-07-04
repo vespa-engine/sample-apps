@@ -91,7 +91,7 @@ def feature_collection_first_phase_query_fn(
             )
         ),
         "query": query_text,
-        "ranking": "collect-training-data-new",
+        "ranking": "collect-training-data",
         "input.query(embedding)": f"embed({query_text})",
         "input.query(float_embedding)": f"embed({query_text})",
         "hits": top_k,

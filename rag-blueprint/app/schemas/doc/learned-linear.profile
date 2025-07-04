@@ -1,4 +1,4 @@
-rank-profile learned-linear inherits collect-training-data {
+rank-profile learned-linear inherits base-features {
         match-features: 
         inputs {
             query(embedding) tensor<int8>(x[96])
