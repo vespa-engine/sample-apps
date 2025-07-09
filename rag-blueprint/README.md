@@ -20,7 +20,7 @@ Start with this if you want to create a RAG application that
 It requires at least Vespa 8.519.55.
 
 This README provides the commands necessary to create, deploy, feed, and evaluate this RAG blueprint application.
-Refer to the [RAG Blueprint tutorial](https://docs.vespa.ai/en/tutorials/rag-blueprint.html) for more in-depth explanations.
+Refer to the [RAG Blueprint tutorial](https://docs.vespa.ai/en/tutorials/rag-blueprint.html) for more in-depth explanations, or try out the [Python notebook](https://vespa-engine.github.io/pyvespa/examples/rag-blueprint-vespa-cloud.html).
 
 ## Dataset
 
