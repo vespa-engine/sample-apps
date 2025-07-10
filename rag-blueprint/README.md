@@ -32,15 +32,25 @@ By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RA
 
 ## Prerequisites
 
+* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
+  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
+* Python 3.8 or later. We recommend using [uv](https://docs.astral.sh/uv/) to manage virtual environment and install python dependencies. 
+
+and:
+
+* [Vespa Cloud account](https://console.vespa-cloud.com/) 
+
+
+or
 * [Docker](https://www.docker.com/) Desktop installed and running. 10GB available memory for Docker is recommended.
   Refer to [Docker memory](https://docs.vespa.ai/en/operations-selfhosted/docker-containers.html#memory)
   for details and troubleshooting
 * Operating system: Linux, macOS or Windows 10 Pro (Docker requirement)
 * Architecture: x86_64 or arm64
 * Minimum **8 GB** memory dedicated to Docker (the default is 2 GB on Macs)
-* [Homebrew](https://brew.sh/) to install [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download
-  a vespa cli release from [GitHub releases](https://github.com/vespa-engine/vespa/releases).
-* Python 3.8 or later. We recommend using [uv](https://docs.astral.sh/uv/) to manage virtual environment and install python dependencies. 
+
+
+
 
 ## Quick start
 
