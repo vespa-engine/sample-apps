@@ -78,7 +78,7 @@ $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 </pre>
 
 
-### Deployment to Vespa Cloud
+### Configuring Vespa Cloud for deployment
 
 This application is best deployed on Vespa Cloud, where you can use our Secret Store to keep your api-key (needed to use an external LLM through API).
 
@@ -90,7 +90,7 @@ $ vespa config set target cloud
 $ vespa config set application your-tenant-name.ragblueprint
 </pre>
 
-### Docker deployment
+### Configuring Docker for deployment
 
 Or, you can deploy it on a Docker container:
 
@@ -104,6 +104,8 @@ For local deployment using docker image:
 <pre data-test="exec">
 $ vespa config set target local
 </pre>
+
+### Deployment
 
 <pre data-test="exec">
 $ vespa deploy --wait 300 ./app
