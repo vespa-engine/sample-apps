@@ -95,7 +95,7 @@ You'll need to [install Logstash](https://www.elastic.co/downloads/logstash), th
 bin/logstash-plugin install logstash-output-vespa_feed
 ```
 
-2. Adapt [this logstash.conf](https://github.com/vespaai/university/blob/main/101/ch5/logstash.conf) to point to the absolute path of [purchase.csv](ext/purchase.csv).
+2. Adapt [this logstash.conf](https://github.com/vespaai/university/blob/main/101/ch5/dataset/logstash.conf) to point to the absolute path of [purchase.csv](ext/purchase.csv).
 
 3. Run Logstash with the modified `logstash.conf`:
 
