@@ -35,7 +35,7 @@ vespa config set target cloud
 vespa config set application YOUR_TENANT_NAME.YOUR_APPLICATION_NAME
 
 # authenticate Vespa CLI with your Vespa Cloud credentials
-vespa auth cert
+vespa auth login
 
 # go to the application package directory
 # and set up the mTLS certificates
