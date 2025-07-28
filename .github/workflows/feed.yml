@@ -1,5 +1,7 @@
 name: Vespa Sampleapps Search Feed
 on:
+  workflow_dispatch: # Allow manual triggering of this workflow.
+  
   push:
     branches: [ master ]
     paths-ignore:
