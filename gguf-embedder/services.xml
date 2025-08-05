@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<services version="1.0">
+  <admin version="2.0">
+    <adminserver hostalias="node1" />
+  </admin>
+  <container id="default" version="1.0">
+    <component id="gguf" class="ai.vespa.embedding.GgufEmbedder" bundle="model-integration">
+      <config name="ai.vespa.embedding.config.gguf-embedder">
+        <embeddingModel
+          url="https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf" />
+        <maxPromptTokens>512</maxPromptTokens>
+        <parallel>16</parallel>
+        <contextSize>8192</contextSize>
+        <continuousBatching>true</continuousBatching>
+        <physicalMaxBatchSize>8192</physicalMaxBatchSize>
+        <logicalMaxBatchSize>8192</logicalMaxBatchSize>
+      </config>
+    </component>
+    <document-api />
+    <search />
+    <nodes>
+      <jvm options="-Xms4g -Xmx4g" />
+      <node hostalias="node1" />
+    </nodes>
+
+    <!-- Disable operation queue in doc v1 api handler -->
+    <!-- <config name="com.yahoo.document.restapi.document-operation-executor">
+      <maxThrottled>0</maxThrottled>
+      <maxThrottledAge>0</maxThrottledAge>
+      <maxThrottledBytes>0</maxThrottledBytes>
+    </config> -->
+  </container>
+
+  <content id="text" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="doc" mode="index" />
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>

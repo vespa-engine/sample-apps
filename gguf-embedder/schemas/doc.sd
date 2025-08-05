@@ -1,0 +1,36 @@
+# Copyright Vespa.ai. All rights reserved.
+
+schema doc {
+
+    document doc {
+
+        field language type string {
+            indexing: set_language | index | summary
+        }
+
+        field doc_id type string {
+            indexing: summary | index
+        }
+
+        field title type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+
+        field text type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+
+    fieldset default {
+        fields: title, text
+    }
+
+    field embedding type tensor<float>(x[1024]) {
+        indexing: input text | embed gguf | attribute
+        attribute {
+            distance-metric: angular
+        }
+    }
+}
