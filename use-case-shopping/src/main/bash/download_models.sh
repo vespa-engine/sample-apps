@@ -8,7 +8,7 @@ mkdir -p $DIR
 
 echo "Downloading encoder model" 
 curl -L -o $DIR/e5-small-v2-int8.onnx \
-https://github.com/vespa-engine/sample-apps/blob/master/examples/model-exporting/model/e5-small-v2-int8.onnx?raw=true
+https://data.vespa-cloud.com/sample-apps-data/e5-small-v2-int8/e5-small-v2-int8.onnx
 
 echo "Downloading vocab" 
 curl -L -o $DIR/tokenizer.json \
