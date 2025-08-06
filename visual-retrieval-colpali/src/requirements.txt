@@ -478,7 +478,7 @@ tqdm==4.66.5
     #   sentence-transformers
     #   spacy
     #   transformers
-transformers==4.50.0
+transformers==4.53.0
     # via
     #   colpali-engine
     #   peft
