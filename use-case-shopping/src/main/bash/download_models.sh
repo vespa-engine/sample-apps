@@ -12,4 +12,4 @@ https://github.com/vespa-engine/sample-apps/blob/master/examples/model-exporting
 
 echo "Downloading vocab" 
 curl -L -o $DIR/tokenizer.json \
-https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/model-exporting/model/tokenizer.json
+https://data.vespa-cloud.com/sample-apps-data/e5-small-v2-int8/tokenizer.json
