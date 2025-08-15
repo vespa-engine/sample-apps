@@ -62,7 +62,7 @@ public class BPETokenizer extends AbstractComponent {
         tokens.add(encoder.get("<|startoftext|>"));
 
         Matcher matcher = pattern.matcher(clean(text).toLowerCase());
-        while (matcher.find()) {
+        while (matcher.find() && tokens.size() < contextLength) {
             String encodedWord = encodeBytes(matcher.group());
             for (String token : extractTokens(encodedWord)) {
                 tokens.add(encoder.get(token));
@@ -71,8 +71,11 @@ public class BPETokenizer extends AbstractComponent {
         tokens.add(encoder.get("<|endoftext|>"));
 
         if (tokens.size() < contextLength) {
-            IntStream.range(tokens.size(), contextLength).forEach(i -> tokens.add(0));
+            for (int i = tokens.size(); i < contextLength; i++) {
+                tokens.add(0);
+            }
         } else {
+            tokens = tokens.subList(0, contextLength);
             tokens.set(contextLength - 1, encoder.get("<|endoftext|>"));
         }
 
