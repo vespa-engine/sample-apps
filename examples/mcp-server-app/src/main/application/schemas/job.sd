@@ -1,0 +1,94 @@
+schema job {
+    document job {
+        field job_id type string {
+            indexing: summary | attribute
+        }
+
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field company type string {
+            indexing: summary | attribute
+            attribute: fast-search
+
+        }
+
+        field location type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field description type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field skills type array<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field salary_min type int {
+            indexing: summary | attribute
+        }
+
+        field salary_max type int {
+            indexing: summary | attribute
+        }
+
+        field remote_ok type bool {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field posted_date type long {
+            indexing: summary | attribute
+        }
+    }
+
+    fieldset default {
+        fields: title, description
+    }
+        
+    rank-profile job_candidate_match_debug inherits default {
+    inputs {
+        query(candidate_skills) tensor<float>(skill{})
+        query(candidate_location) string
+        query(candidate_remote_ok) bool
+        query(candidate_desired_salary) int
+    }
+
+    function location_score() {
+        expression: if(attribute(location) == query(candidate_location), 2, if(attribute(remote_ok), 1, 0))
+    }
+
+    function salary_score() {
+        expression: if(query(candidate_desired_salary) >= attribute(salary_min) && query(candidate_desired_salary) <= attribute(salary_max), 1, 0)
+    }
+
+    # Debug functions to see individual components
+    function debug_location() {
+        expression: if(attribute(location) == query(candidate_location), 100, if(attribute(remote_ok), 10, 1))
+    }
+    
+    function debug_salary() {
+        expression: if(query(candidate_desired_salary) >= attribute(salary_min) && query(candidate_desired_salary) <= attribute(salary_max), 1000, 1)
+    }
+    
+    first-phase {
+        expression: debug_location() + debug_salary()  # This should give us different scores to see what's working
+    }
+}
+    rank-profile param_test inherits default {
+        inputs {
+            query(candidate_location) string
+            query(candidate_desired_salary) int
+        }
+        
+        first-phase {
+            expression: query(candidate_desired_salary)  # Should return 120000
+        }
+    }
+}

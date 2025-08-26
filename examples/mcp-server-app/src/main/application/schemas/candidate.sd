@@ -1,0 +1,64 @@
+schema candidate {
+    document candidate {
+        field candidate_id type string {
+            indexing: summary | attribute
+        }
+
+        field name type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field candidate_summary type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field skills type array<string> {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field experience_years type int {
+            indexing: summary | attribute
+        }
+
+        field location type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field desired_salary type int {
+            indexing: summary | attribute
+        }
+
+        field open_to_remote type bool {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+    }
+    fieldset default {
+        fields: name, candidate_summary
+    }
+
+    rank-profile candidate_job_match inherits default {
+        inputs {
+            query(job_skills) tensor<float>(skill{})
+            query(job_location) string
+            query(job_remote_ok) bool
+        }
+
+        function skills_score() {
+            expression: sum(query(job_skills) * tensorFromLabels(attribute(skills)))
+        }
+
+        function location_score() {
+            expression: if(attribute(location) == query(job_location) || (attribute(open_to_remote) && query(job_remote_ok)), 1, 0)
+        }
+
+        first-phase {
+            expression: skills_score() * 20 + location_score() * 50
+        }
+    }
+
+}
