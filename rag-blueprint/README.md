@@ -24,11 +24,18 @@ Refer to the [RAG Blueprint tutorial](https://docs.vespa.ai/en/tutorials/rag-blu
 
 ## Dataset
 
-For this blueprint, we will use a synthetic dataset of documents belonging to a persona, Alex Chen, who is an AI Engineer at a fictional YC-backed startup called "SynapseFlow". The document dataset contains a mix of Alex's personal notes, technical documentation, workout logs, and other relevant information that reflects his professional and personal interests.
+For this blueprint, we will use a synthetic dataset of documents belonging to a persona, Alex Chen, 
+who is an AI Engineer at a fictional YC-backed startup called "SynapseFlow". The document dataset 
+contains a mix of Alex's personal notes, technical documentation, workout logs, and other relevant 
+information that reflects his professional and personal interests.
 
-To allow for quick iterations, and facilitate easier learning curve, we have restricted the dataset to 100 documents of varying length.
+To allow for quick iterations, and facilitate easier learning curve, we have restricted the dataset to 
+100 documents of varying length.
 
-By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RAG) application to retrieve relevant documents and generate responses and insights from all Alex's documents. With Vespa, this could scale to billions of documents and thousands of queries per second, while still delivering state-of-the-art quality.
+By feeding this dataset to Vespa, we enable a Retrieval-Augmented Generation (RAG) application to 
+retrieve relevant documents and generate responses and insights from all Alex's documents. 
+With Vespa, this could scale to billions of documents and thousands of queries per second, 
+while still delivering state-of-the-art quality.
 
 ## Prerequisites
 
@@ -80,7 +87,8 @@ $ vespa clone rag-blueprint rag-blueprint && cd rag-blueprint
 
 ### Configuring Vespa Cloud for deployment
 
-This application is best deployed on Vespa Cloud, where you can use our Secret Store to keep your api-key (needed to use an external LLM through API).
+This application is best deployed on Vespa Cloud, where you can use our Secret Store to keep your 
+api-key (needed to use an external LLM through API).
 
 <pre>
 $ vespa config set target cloud
@@ -122,7 +130,9 @@ $ vespa query 'query=yc b2b sales' presentation.summary="no-chunks"
 ## LLM-generation with OpenAI-client
 
 The recommended way of providing an API key is through using the Secret Store in Vespa Cloud.
-To enable this, you need to create a vault (if you don't have one already) and a secret through the Vespa Cloud console. If your vault is named `sample-apps` and contains a secret with the name `openai-api-key`, you would use the following configuration in your `services.xml` to set up the OpenAI client to use that secret:
+To enable this, you need to create a vault (if you don't have one already) and a secret through the 
+Vespa Cloud console. If your vault is named `sample-apps` and contains a secret with the name `openai-api-key`, 
+you would use the following configuration in your `services.xml` to set up the OpenAI client to use that secret:
 
 ```xml
   <secrets>
@@ -136,9 +146,11 @@ To enable this, you need to create a vault (if you don't have one already) and a
   </component>
 ```
 
-Alternatively, for local deployments, you can set the `X-LLM-API-KEY` header in your query to use the OpenAI client for generation.
+Alternatively, for local deployments, you can set the `X-LLM-API-KEY` header in your query to use 
+the OpenAI client for generation.
 
-To test generation using the OpenAI client, post a query that runs the `openai` search chain, with `format=sse`. (Use `format=json` for a streaming json response including both the search hits and the LLM-generated tokens.)
+To test generation using the OpenAI client, post a query that runs the `openai` search chain, with `format=sse`. 
+(Use `format=json` for a streaming json response including both the search hits and the LLM-generated tokens.)
 
 <pre>
 $ vespa query \
@@ -157,7 +169,8 @@ $ vespa query \
 
 ## Using query profiles for different use cases
 
-As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you to define a set of query parameters to support different use cases.
+As an alternative to providing query parameters directly, Vespa supports [query-profiles](https://docs.vespa.ai/en/query-profiles.html?mode=selfhosted#using-a-query-profile), which allow you 
+to define a set of query parameters to support different use cases.
 For this sample app, we have iteratively developed 6 query profiles:
 
 1. [`hybrid`](app/search/query-profiles/hybrid.xml)
@@ -167,7 +180,8 @@ For this sample app, we have iteratively developed 6 query profiles:
 5. [`rag-with-gbdt`](app/search/query-profiles/rag-with-gbdt.xml)
 6. [`deepresearch-with-gbdt`](app/search/query-profiles/deepresearch-with-gbdt.xml)
 
-Each of the query profiles have different query parameters set, such as the search chain to use, the ranking profile, and the number of hits to return.
+Each of the query profiles have different query parameters set, such as the search chain to use, 
+the ranking profile, and the number of hits to return.
 
 ### Testing the query profiles
 
@@ -277,18 +291,23 @@ userQuery()
 
 ### Retrieval summary
 
-We can see that all queries match all relevant documents, which is expected, since we use `targetHits:100` in the `nearestNeighbor` operator, and this is also the default for `weakAnd`(and `userQuery`).
+We can see that all queries match all relevant documents, which is expected, since we use `targetHits:100` 
+in the `nearestNeighbor` operator, and this is also the default for `weakAnd`(and `userQuery`).
 
 For a larger scale dataset, we could tune these parameters to find a good balance between recall and performance.
 
 ### 2. First-phase ranking
 
 With our match-phase evaluation done, we can move on to the ranking phase.
-We will start by collecting some training data for a handpicked set of features, which we will combine into a (cheap) linear first-phase ranking expression.
+We will start by collecting some training data for a handpicked set of features, which we will combine 
+into a (cheap) linear first-phase ranking expression.
 
 ### Collect matchfeatures
 
-For this, we will use the [`collect-training-data`](app/schemas/doc/collect-training-data.profile). This profile inherits the [`base-features`](app/schemas/doc/base-features.profile), where you can see we have created both text-matching features (bm25), semantic similarity (embedding closeness), as well as document-level and chunk-level features. These are not normalized to the same range, which mean that we should learn the relationship (coefficients) between them.
+For this, we will use the [`collect-training-data`](app/schemas/doc/collect-training-data.profile). This profile inherits the [`base-features`](app/schemas/doc/base-features.profile), 
+where you can see we have created both text-matching features (bm25), semantic similarity (embedding closeness), 
+as well as document-level and chunk-level features. These are not normalized to the same range, which mean that 
+we should learn the relationship (coefficients) between them.
 These will now be calculated and returned as part of the Vespa response when this rank-profile is used.
 
 ```txt
@@ -300,7 +319,8 @@ avg_top_3_chunk_sim_scores
 avg_top_3_chunk_text_scores
 ```
 
-We want to collect features from both the relevant documents, as well as a set of random documents (we sample an equal ratio of random and relevant documents), to ensure we have a good distribution of feature values.
+We want to collect features from both the relevant documents, as well as a set of random documents 
+(we sample an equal ratio of random and relevant documents), to ensure we have a good distribution of feature values.
 
 To do this for all our queries, we can run:
 
@@ -308,7 +328,8 @@ To do this for all our queries, we can run:
 python eval/collect_pyvespa.py --collect_matchfeatures
 </pre>
 
-This will collect these 6 features defined in the inherited `base-features` rank-profile, and save them to a file to use as input for training our linear model.
+This will collect these 6 features defined in the inherited `base-features` rank-profile, and save them to a file 
+to use as input for training our linear model.
 
 ```txt
 bm25(title)
@@ -319,13 +340,16 @@ avg_top_3_chunk_sim_scores
 avg_top_3_chunk_text_scores
 ```
 
-This gives us a file with our defined feature values, and a binary relevance label for our relevant documents, as well as an equal number of random documents per query.
+This gives us a file with our defined feature values, and a binary relevance label for our relevant documents, 
+as well as an equal number of random documents per query.
 
 ### Learned linear model
 
-To find the expression that best fits our dataset, we train a simple `LogisticRegression`-model, using stratified 5-fold cross-validation.
+To find the expression that best fits our dataset, we train a simple `LogisticRegression`-model, 
+using stratified 5-fold cross-validation.
 
-Note that we need to scale the features to have a mean of 0 and standard deviation of 1 before training, and apply inverse scaling to the coefficients after training, in order to use the raw values from Vespa directly.
+Note that we need to scale the features to have a mean of 0 and standard deviation of 1 before training, 
+and apply inverse scaling to the coefficients after training, in order to use the raw values from Vespa directly.
 
 <pre>
 python eval/train_logistic_regression.py
@@ -346,7 +370,9 @@ Intercept                    : -7.798639
 --------------------------------------------------
 ```
 
-We can translate this to our ranking expression, which we add to our `hybrid`  query-profile. We could add them directly to our `learned-linear` rank-profile, but by putting the coefficients in the query-profile, we can override them without having to redeploy the application.
+We can translate this to our ranking expression, which we add to our `hybrid`  query-profile. 
+We could add them directly to our `learned-linear` rank-profile, but by putting the coefficients 
+in the query-profile, we can override them without having to redeploy the application.
 
 Now, let us evaluate the performance of this first-phase ranking expression.
 
@@ -380,17 +406,22 @@ We run the evaluation script on a set of unseen test queries, and get the follow
 }
 ```
 
-We can see that our results are already very good. This is of course due to the fact that we have a small,synthetic dataset. In reality, you should align the metric expectations with your dataset and test queries.
+We can see that our results are already very good. This is of course due to the fact that we have a small,
+synthetic dataset. In reality, you should align the metric expectations with your dataset and test queries.
 
-For the first phase ranking, we care most about recall, as we just want to make sure our candidate documents are ranked high enough to be included in the second-phase ranking. (the default number of documents that will be exposed to second-phase is 10 000, but can be controlled by the `rerank-count` parameter).
+For the first phase ranking, we care most about recall, as we just want to make sure our candidate documents 
+are ranked high enough to be included in the second-phase ranking. (the default number of documents that will be exposed to second-phase is 10 000, but can be controlled by the `rerank-count` parameter).
 
-We can also see that our search time is quite fast, with an average of 17ms. You should consider whether this is well within your latency budget, as you want some headroom for second-phase ranking.
+We can also see that our search time is quite fast, with an average of 17ms. You should consider whether 
+this is well within your latency budget, as you want some headroom for second-phase ranking.
 
 ### 3. Second-phase ranking
 
-For the second-phase ranking, we can afford to use a more expensive ranking expression, since we will only run it on the top-k documents from the first-phase ranking (defined by rerank-count parameter).
+For the second-phase ranking, we can afford to use a more expensive ranking expression, since we will only 
+run it on the top-k documents from the first-phase ranking (defined by rerank-count parameter).
 
-For this, we will request Vespa`s default set of rankfeatures, which includes a large set of text features, see [docs](https://docs.vespa.ai/en/reference/rank-features.html) for details.
+For this, we will request Vespa`s default set of rankfeatures, which includes a large set of text features, 
+see [docs](https://docs.vespa.ai/en/reference/rank-features.html) for details.
 
 To do this, we can run the same script as before, but with the added `--collect_rankfeatures` flag.
 
@@ -398,10 +429,13 @@ To do this, we can run the same script as before, but with the added `--collect_
 python eval/collect_pyvespa.py --collect_rankfeatures --collect_matchfeatures --collector_name rankfeatures-secondphase
 </pre>
 
-We can see that we collected 194 features. Let us now train a GBDT model to predict the relevance_label (probability between 0 and 1) for each document, using the features we collected.
-We use 5-fold cross-validation and set hyperparameters to prevent growing too large and deep trees, since we only have a small dataset, to avoid overfitting.
+We can see that we collected 194 features. Let us now train a GBDT model to predict the relevance_label 
+(probability between 0 and 1) for each document, using the features we collected.
+We use 5-fold cross-validation and set hyperparameters to prevent growing too large and deep trees, 
+since we only have a small dataset, to avoid overfitting.
 
-For final training, we exclude features that have zero importance during the cross-validation, and train the final model on all queries (not test queries).
+For final training, we exclude features that have zero importance during the cross-validation, 
+and train the final model on all queries (not test queries).
 
 <pre>
 python eval/train_lightgbm.py --input_file eval/output/Vespa-training-data_match_rank_second_phase_20250623_135819.csv
@@ -492,15 +526,19 @@ We can see that for this small dataset, our most important features are:
 | fieldTermMatch(chunks,4).weight        | 0.7264     |
 | term(3).significance                   | 0.5078     |
 
-We can see that several of the more expensive text features has high importance. It is also reassuring to see that the `firstPhase` feature, which is the output of our first-phase ranking, has a high importance, meaning that it is a not too bad predictor of relevance for the second-phase ranking by itself.
+We can see that several of the more expensive text features has high importance. It is also reassuring to see 
+that the `firstPhase` feature, which is the output of our first-phase ranking, has a high importance, 
+meaning that it is a not too bad predictor of relevance for the second-phase ranking by itself.
 
-We add the newly trained and exported lightgbm model to our Vespa application, and create a new rank-profile called `second-with-gbdt` that will use this model.
+We add the newly trained and exported lightgbm model to our Vespa application, and create a new 
+rank-profile called `second-with-gbdt` that will use this model.
 
 Let us see how our performance on the unseen test queries looks like now.
 
 ### Evaluate second-phase ranking
 
-By running our evaluation script with the `--second_phase` flag, we can evaluate the second-phase ranking on the unseen test queries, using the `second-with-gbdt`-rank profile, containing the GBDT model we just trained.
+By running our evaluation script with the `--second_phase` flag, we can evaluate the second-phase ranking 
+on the unseen test queries, using the `second-with-gbdt`-rank profile, containing the GBDT model we just trained.
 
 <pre>
 python evaluate_ranking.py --second_phase
@@ -528,15 +566,19 @@ And the results we get are:
 }
 ```
 
-We were not able to improve much on the already very good first phase ranking, but you would expect significant improvements on a large real-world dataset.
+We were not able to improve much on the already very good first phase ranking, but you would expect 
+significant improvements on a large real-world dataset.
 
-Lets add a new query-profile that will inherit the previous `hybrid` query-profile, but will override the ranking profile to use the `second-with-gbdt` rank-profile, and set the default number of hits to 20, which (if our test queries are representative) should give us a recall of 0.99 for the second-phase ranking.
+Lets add a new query-profile that will inherit the previous `hybrid` query-profile, but will override 
+the ranking profile to use the `second-with-gbdt` rank-profile, and set the default number of hits to 20, 
+which (if our test queries are representative) should give us a recall of 0.99 for the second-phase ranking.
 
 <pre>
 vespa query query="what are key points learned for finetuning llms?" queryProfile=hybrid-with-gbdt
 </pre>
 
-And of course, we can also add a new `rag-with-gbdt`, that uses our new query profile, but overrides with parameters to add the LLM generation of the response.
+And of course, we can also add a new `rag-with-gbdt`, that uses our new query profile, but overrides with 
+parameters to add the LLM generation of the response.
 
 <pre>
 $ vespa query \
@@ -549,15 +591,23 @@ $ vespa query \
 ### Further improvements
 
 Finally, we will sketch out some opportunities for further improvements. 
-As you have seen, we started out with only binary relevance labels for a few queries, and trained a model based on the relevant docs and a set of random documents.
+As you have seen, we started out with only binary relevance labels for a few queries, and trained a model 
+based on the relevant docs and a set of random documents.
 
 This was useful initially, as we had no better way to retrieve the candidate documents.
-Now, that we have a reasonably good second-phase ranking, we could potentially generate a new set of relevance labels for queries that we did not have labels for by having an LLM do relevance judgments of the top k returned hits. This training dataset would likely be even better in separating the top documents.
+Now, that we have a reasonably good second-phase ranking, we could potentially generate a new set of 
+relevance labels for queries that we did not have labels for by having an LLM do relevance judgments 
+of the top k returned hits. This training dataset would likely be even better in separating the top documents.
 
-We also have the `global-phase` ranking, which could be suitable for doing a reranking of the top documents from the second-phase ranking. Common options for global-phase are cross-encoders or another GBDT model, trained for better separating top ranked documents. For RAG applications, we consider this less important than for search applications where the results are mainly consumed by an human, as LLMs don't care that much about the ordering of the results.
+We also have the `global-phase` ranking, which could be suitable for doing a reranking of the top documents 
+from the second-phase ranking. Common options for global-phase are cross-encoders or another GBDT model, 
+trained for better separating top ranked documents. For RAG applications, we consider this less important 
+than for search applications where the results are mainly consumed by an human, as LLMs don't care that much 
+about the ordering of the results.
 
 ### Conclusion
 
-Congratulations! You have now created a RAG application that can scale to billions of documents and thousands of queries per second, while still delivering state-of-the-art quality.
+Congratulations! You have now created a RAG application that can scale to billions of documents and thousands 
+of queries per second, while still delivering state-of-the-art quality.
 
 What will you build? 🚀
