@@ -11,13 +11,12 @@
 Vespa is the [platform of choice](https://blog.vespa.ai/perplexity-builds-ai-search-at-scale-on-vespa-ai/) for large scale RAG applications like Perplexity.
 It gives you all the features you need but putting them all together can be a challenge.
 
-This open source sample applications contains all the elements you need.
-Start with this if you want to create a RAG application that
+This open source sample applications contains all the elements you need to create a RAG application that
 
 * delivers state-of-the-art quality, and
 * scales to any amount of data, query load, and complexity.
 
-This README provides the commands necessary to create, deploy, feed, and evaluate this RAG blueprint application.
+This README provides the steps to create and run your own application based on the blueprint.
 Refer to the [RAG Blueprint tutorial](https://docs.vespa.ai/en/tutorials/rag-blueprint.html) for more in-depth explanations, or try out the [Python notebook](https://vespa-engine.github.io/pyvespa/examples/rag-blueprint-vespa-cloud.html).
 
 ## Dataset
