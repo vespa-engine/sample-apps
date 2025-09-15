@@ -108,7 +108,7 @@ Also, note that the matched keywords are highlighted in the `paragraphs` field.
 
 ### Semantic vector search on the paragraph level
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from wiki where {targetHits:1}nearestNeighbor(paragraph_embeddings,q)' \
+$ vespa query 'yql=select * from wiki where {targetHits:10}nearestNeighbor(paragraph_embeddings,q) limit 1' \
   'input.query(q)=embed(what does 24 mean in the context of railways)' \
   'ranking=semantic'
 </pre>
@@ -157,7 +157,7 @@ ranking to limit the number of vector computations.
 Filtering is also supported, also disable bolding.
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from wiki where url contains "9985" and userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
+$ vespa query 'yql=select * from wiki where url contains "9985" and userQuery() or ({targetHits:10}nearestNeighbor(paragraph_embeddings,q)) limit 1' \
   'input.query(q)=embed(@query)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
