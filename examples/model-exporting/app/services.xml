@@ -1,21 +1,25 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.311.28">
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the
+project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties"
+    minimum-required-vespa-version="8.311.28">
 
     <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
     <container id="default" version="1.0">
 
         <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
         <component id="e5" type="hugging-face-embedder">
-            <transformer-model path="model/e5-small-v2-int8.onnx"/>
-            <tokenizer-model path="model/tokenizer.json"/>
+            <transformer-model
+                url="https://data.vespa-cloud.com/sample-apps-data/e5-small-v2-int8/e5-small-v2-int8.onnx" />
+            <tokenizer-model
+                url="https://data.vespa-cloud.com/sample-apps-data/e5-small-v2-int8/tokenizer.json" />
             <prepend> <!-- E5 prompt instructions -->
                 <query>query:</query>
                 <document>passage:</document>
             </prepend>
         </component>
-        <document-api/>
-        <search/>
+        <document-api />
+        <search />
         <nodes>
             <node hostalias="node1" />
         </nodes>

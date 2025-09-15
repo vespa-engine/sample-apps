@@ -148,7 +148,7 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
-h2==4.1.0
+h2==4.3.0
     # via httpx
 hpack==4.0.0
     # via h2
@@ -333,7 +333,7 @@ pyparsing==3.1.4
     # via
     #   httplib2
     #   matplotlib
-pypdf==5.0.1
+pypdf==6.0.0
     # via visual-retrieval-colpali (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
@@ -478,7 +478,7 @@ tqdm==4.66.5
     #   sentence-transformers
     #   spacy
     #   transformers
-transformers==4.50.0
+transformers==4.53.0
     # via
     #   colpali-engine
     #   peft

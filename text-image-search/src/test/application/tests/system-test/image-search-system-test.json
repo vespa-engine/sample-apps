@@ -24,9 +24,9 @@
       },
       "response": {
         "body": {
-          "fields":  {
+          "fields": {
             "image_file_name": "2443229844_277cded27d.jpg",
-            "vit_b_32_image":  {}
+            "vit_b_32_image": {}
           }
         }
       }
@@ -36,6 +36,27 @@
       "request": {
         "parameters": {
           "input": "a child playing"
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "children": [
+              {
+                "fields": {
+                  "image_file_name": "2443229844_277cded27d.jpg"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Search with long input",
+      "request": {
+        "parameters": {
+          "input": "a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park a child playing in the park"
         }
       },
       "response": {
