@@ -58,3 +58,8 @@ Do a query:
 $ vespa query 'query=yc b2b sales' presentation.summary="no-chunks"
 </pre>
 
+## Cleanup
+Tear down the running container:
+<pre data-test="after">
+$ docker rm -f rag-blueprint
+</pre>
