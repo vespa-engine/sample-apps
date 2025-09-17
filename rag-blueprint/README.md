@@ -21,7 +21,7 @@ Refer to the [RAG Blueprint tutorial](https://docs.vespa.ai/en/tutorials/rag-blu
 
 ## Create and run your own RAG application
 
-Install the [Vespa-CLI](https://docs.vespa.ai/en/vespa-cli.html) client 
+Install the [Vespa-CLI](https://docs.vespa.ai/en/vespa-cli.html) client
 (available for Linux, macOS and Windows, see the link if you don't have Homebrew).
 
 <pre>

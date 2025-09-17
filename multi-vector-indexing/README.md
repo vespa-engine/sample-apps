@@ -129,7 +129,7 @@ this sample application to shorten down the output.
 Hybrid combining keyword search on the article level with vector search in the paragraph index:
 
 <pre data-test="exec" data-test-assert-contains='24-hour clock'>
-$ vespa query 'yql=select * from wiki where userQuery() or ({targetHits:1}nearestNeighbor(paragraph_embeddings,q))' \
+$ vespa query 'yql=select * from wiki where userQuery() or ({targetHits:10}nearestNeighbor(paragraph_embeddings,q)) limit 1' \
   'input.query(q)=embed(@query)' \
   'query=what does 24 mean in the context of railways' \
   'ranking=hybrid' \
