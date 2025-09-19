@@ -57,6 +57,7 @@ def generate_job(num: int):
     """Generate one job posting"""
     title = random.choice(JOB_TITLES)
     skills = random.sample(SKILLS, random.randint(3, 5))
+    skills = {skill : 1 for skill in skills}
     location = random.choice(LOCATIONS)
     
     # Generate description
@@ -66,7 +67,7 @@ def generate_job(num: int):
         adjective=random.choice(ADJECTIVES),
         project=random.choice(PROJECTS),
         action=random.choice(ACTIONS),
-        skill=random.choice(skills)
+        skill=random.choice(list(skills.keys()))
     )
     
     return {
@@ -86,6 +87,7 @@ def generate_candidate(num: int):
     """Generate one candidate profile"""
     name = fake.name()
     skills = random.sample(SKILLS, random.randint(2, 6))
+    skills = {skill: 1 for skill in skills}
     experience = random.randint(1, 10)
     location = random.choice(LOCATIONS)
     
@@ -95,7 +97,7 @@ def generate_candidate(num: int):
         experience=experience,
         title=random.choice(JOB_TITLES).lower(),
         project=random.choice(PROJECTS),
-        skill=random.choice(skills)
+        skill=random.choice(list(skills.keys()))
     )
     
     return {

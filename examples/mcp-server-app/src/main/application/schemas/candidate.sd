@@ -14,7 +14,7 @@ schema candidate {
             index: enable-bm25
         }
 
-        field skills type array<string> {
+        field skills type tensor<float>() {
             indexing: summary | attribute
             attribute: fast-search
         }
@@ -48,17 +48,19 @@ schema candidate {
             query(job_remote_ok) bool
         }
 
-        function skills_score() {
-            expression: sum(query(job_skills) * tensorFromLabels(attribute(skills)))
+        function skill_overlap() {
+            expression: dotProduct(attribute(skills), query(job_skills))
         }
 
-        function location_score() {
-            expression: if(attribute(location) == query(job_location) || (attribute(open_to_remote) && query(job_remote_ok)), 1, 0)
+        function location_match() {
+            expression: if(attribute(location) == query(job_location), 100, if(attribute(open_to_remote) && query(job_remote_ok), 50, 0))
         }
 
         first-phase {
-            expression: skills_score() * 20 + location_score() * 50
+            expression: skill_overlap() + location_match()
         }
     }
+
+
 
 }
