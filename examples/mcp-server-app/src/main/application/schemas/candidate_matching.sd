@@ -1,0 +1,15 @@
+schema candidate_matching {
+    document candidate_matching {
+        field skills type tensor<float>(skill{}) {
+            indexing: summary | attribute
+            # attribute{
+            #     distance-metric: angular
+            # }
+        }
+
+        field remote_ok type int {
+            indexing: summary| attribute
+            attribute: fast-search
+        }
+    }
+}
