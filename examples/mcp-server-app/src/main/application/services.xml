@@ -15,6 +15,7 @@
     <content id="content" version="1.0">
         <min-redundancy>1</min-redundancy>
         <documents>
+            <document type="candidate_matching" mode="index"/>
             <document type="job" mode="index" />
             <document type="candidate" mode="index"/>
         </documents>

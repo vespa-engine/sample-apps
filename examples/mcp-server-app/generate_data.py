@@ -79,7 +79,7 @@ def generate_job(num: int):
         "skills": skills,
         "salary_min": random.randint(80000, 120000),
         "salary_max": random.randint(120000, 180000),
-        "remote_ok": True if location == "Remote" else random.choice([True, False]),
+        "remote_ok": 1 if location == "Remote" else random.choice([1, 0]),
         "posted_date": int((datetime.now() - timedelta(days=random.randint(1, 30))).timestamp())
     }
 
@@ -108,7 +108,7 @@ def generate_candidate(num: int):
         "experience_years": experience,
         "location": location,
         "desired_salary": random.randint(90000, 150000),
-        "open_to_remote": True if location == "Remote" else random.choice([True, False])
+        "remote_ok": 1 if location == "Remote" else random.choice([1, 0])
     }
 
 def save_vespa_feed(items, doc_type, filename):

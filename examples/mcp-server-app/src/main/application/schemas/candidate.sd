@@ -1,5 +1,5 @@
-schema candidate {
-    document candidate {
+schema candidate inherits candidate_matching{
+    document candidate inherits candidate_matching {
         field candidate_id type string {
             indexing: summary | attribute
         }
@@ -14,11 +14,6 @@ schema candidate {
             index: enable-bm25
         }
 
-        field skills type tensor<float>() {
-            indexing: summary | attribute
-            attribute: fast-search
-        }
-
         field experience_years type int {
             indexing: summary | attribute
         }
@@ -31,11 +26,6 @@ schema candidate {
         field desired_salary type int {
             indexing: summary | attribute
         }
-
-        field open_to_remote type bool {
-            indexing: summary | attribute
-            attribute: fast-search
-        }
     }
     fieldset default {
         fields: name, candidate_summary
@@ -45,22 +35,19 @@ schema candidate {
         inputs {
             query(job_skills) tensor<float>(skill{})
             query(job_location) string
-            query(job_remote_ok) bool
+            query(job_remote_ok) double
         }
 
         function skill_overlap() {
-            expression: dotProduct(attribute(skills), query(job_skills))
+            expression: sum(attribute(skills) * query(job_skills))
         }
 
         function location_match() {
-            expression: if(attribute(location) == query(job_location), 100, if(attribute(open_to_remote) && query(job_remote_ok), 50, 0))
+            expression: if(attribute(location) == query(job_location), 100, if(attribute(remote_ok) && query(job_remote_ok), 50, 0))
         }
 
         first-phase {
             expression: skill_overlap() + location_match()
         }
     }
-
-
-
 }

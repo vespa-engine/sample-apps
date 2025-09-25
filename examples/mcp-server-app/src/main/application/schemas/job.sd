@@ -1,5 +1,5 @@
-schema job {
-    document job {
+schema job inherits candidate_matching{
+    document job inherits candidate_matching {
         field job_id type string {
             indexing: summary | attribute
         }
@@ -25,22 +25,12 @@ schema job {
             index: enable-bm25
         }
 
-        field skills type tensor<float>() {
-            indexing: summary | attribute
-            attribute: fast-search
-        }
-
         field salary_min type int {
             indexing: summary | attribute
         }
 
         field salary_max type int {
             indexing: summary | attribute
-        }
-
-        field remote_ok type bool {
-            indexing: summary | attribute
-            attribute: fast-search
         }
 
         field posted_date type long {
@@ -56,16 +46,16 @@ schema job {
     inputs {
         query(candidate_skills) tensor<float>(skill{})
         query(candidate_location) string
-        query(candidate_desired_salary) int
-        query(candidate_remote_ok) bool
+        query(candidate_desired_salary) double
+        query(candidate_remote_ok) double
     }
     
     function skill_overlap() {
-        expression: dotProduct(attribute(skills), query(candidate_skills))
+        expression: sum(attribute(skills) * query(candidate_skills))
     }
     
     function location_match() {
-        expression: if(attribute(location) == query(candidate_location), 100, if(attribute(remote_ok) && query(candidate_remote_ok), 50, 0))
+        expression: if(attribute(location) == query(candidate_location), 1, if(attribute(remote_ok) && query(candidate_remote_ok), 0.5, 0))
     }
     
     function salary_match() {
@@ -81,7 +71,7 @@ schema job {
     }
     
     first-phase {
-        expression: skill_overlap() + location_match()
+        expression: 20 * skill_overlap() + 25 * location_match()
     }
     }
 }
