@@ -99,6 +99,7 @@ for evaluator_name, query_fn in [
         vespa_query_fn=query_fn,
         app=app,
         name="test-run",
+        id_field="id",
         write_csv=True,
         write_verbose=True,  # optionally write verbose metrics to CSV
     )
