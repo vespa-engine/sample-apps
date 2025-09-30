@@ -173,33 +173,34 @@ url_to_year = {}
 for year_section in soup.find_all("section", attrs={"data-name": "report-year"}):
     year_id = year_section.get("data-filter-section", "")
     year = year_id.replace("year-", "")
-    
+
     # Find the yearly report section
-    report_section = year_section.find("div", attrs={
-        "data-filter-section": "year",
-        "data-name": "report-type"
-    })
+    report_section = year_section.find(
+        "div", attrs={"data-filter-section": "year", "data-name": "report-type"}
+    )
     if not report_section:
         continue
-        
+
     # Get the first link
     report_link = report_section.select_one("ul.link-list a")
     if not report_link:
         continue
-        
+
     report_url = urljoin(url, report_link["href"])
-    
+
     # Visit the report page to find PDF download links
     try:
         report_response = requests.get(report_url)
         report_response.raise_for_status()
         report_soup = BeautifulSoup(report_response.text, "html.parser")
-        
+
         # Find only the first PDF download link with the specific class
-        pdf_link = report_soup.select_one("a.btn.btn-secondary[data-right-icon='download']")
+        pdf_link = report_soup.select_one(
+            "a.btn.btn-secondary[data-right-icon='download']"
+        )
         if not pdf_link or not pdf_link["href"].endswith(".pdf"):
             continue
-            
+
         pdf_url = urljoin(report_url, pdf_link["href"])
         links.append(pdf_url)
         url_to_year[pdf_url] = year
@@ -408,7 +409,7 @@ Only return JSON. Don't return any extra explanation text. """
 prompt_text, pydantic_model = get_retrieval_prompt()
 
 # +
-gemini_model = genai.GenerativeModel("gemini-1.5-flash-8b")
+gemini_model = genai.GenerativeModel("gemini-flash-lite-latest")
 
 
 def generate_queries(image, prompt_text, pydantic_model):
@@ -474,7 +475,7 @@ pdf_pages[46]["queries"]
 
 
 # async def enrich_pdfs():
-#     gemini_model = genai.GenerativeModel("gemini-1.5-flash-8b")
+#     gemini_model = genai.GenerativeModel("gemini-flash-lite-latest")
 #     semaphore = asyncio.Semaphore(max_in_flight)
 #     tasks = []
 #     for pdf in pdf_pages:
