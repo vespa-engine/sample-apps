@@ -10,7 +10,6 @@
     ],
     "category": "Getting Started",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/album-recommendation#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/album-recommendation/application.zip",
     "exampleQuery": {
       "yql": "select * from music where true",
       "ranking": {
@@ -33,7 +32,6 @@
     ],
     "category": "Getting Started",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/news#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/news/application.zip",
     "exampleQuery": {
       "yql": "select * from news where title contains phrase(\"hello\",\"world\")"
     },
@@ -51,7 +49,6 @@
     ],
     "category": "Getting Started",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/text-search#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/text-search/application.zip",
     "exampleQuery": {
       "yql": "select title,url,id from msmarco where userQuery()",
       "query": "what is dad bod"
@@ -69,7 +66,6 @@
     ],
     "category": "E-commerce",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/part-purchases-demo#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/part-purchases-demo/application.zip",
     "exampleQuery": {
       "yql": "select * from purchase where true"
     },
@@ -90,7 +86,6 @@
     ],
     "category": "E-commerce",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/commerce-product-ranking#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/product-ranking/application.zip",
     "exampleQuery": {
       "yql": "select * from product where true"
     },
@@ -114,7 +109,6 @@
     ],
     "category": "Ranking",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/msmarco-ranking#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/msmarco-ranking/application.zip",
     "exampleQuery": {
       "query": "what was the manhattan project",
       "yql": "select * from passage where {targetHits: 100}nearestNeighbor(e5, q)",
@@ -137,7 +131,6 @@
     ],
     "category": "Ranking",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/colbert#readme",
-    "zipPath": "https://data.vespa-cloud.com/console/one-click-sample-apps/colbert/application.zip",
     "exampleQuery": {
       "query": "shipping stuff over the sea",
       "yql": "select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))",
