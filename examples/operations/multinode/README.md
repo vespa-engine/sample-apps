@@ -36,7 +36,7 @@ Note that this guide is configured for minimum memory use for easier testing, ad
     -e VESPA_CONFIGSERVER_JVMARGS="-Xms32M -Xmx128M" \
     -e VESPA_CONFIGPROXY_JVMARGS="-Xms32M -Xmx32M" \
 
-to `docker run` commands. For real production use cases, do not do this.
+to `docker run` commands. For real production use cases, do not reduce the defaults like this.
 Also remove annotated memory-settings in [services.xml](services.xml).
 
 
