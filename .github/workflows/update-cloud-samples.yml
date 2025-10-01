@@ -142,7 +142,7 @@ jobs:
       - name: Push Zip and JSON to S3
         env:
           # Add `--dryrun` if not on "push" event on default branch.
-          AWS_S3_OPTIONS: --color=on --no-progress ${{ github.ref_name == 'master' &&  '' || ' --dryrun' }}
+          AWS_S3_OPTIONS: --color=on --no-progress ${{ github.ref_name != 'master' &&  ' --dryrun' || '' }}
         run: |
           # Not an app, but artifact from the setup job.
           mv ./apps/console-json ./console-json
@@ -152,6 +152,6 @@ jobs:
 
       - name: Invalidate Cloudfront Cache
         env:
-          ECHO: ${{ (github.event_name == 'push' && github.ref_name == 'master') && '' || 'echo' }}
+          ECHO: ${{ github.ref_name != 'master' &&  ' echo' || '' }}
         run: |
           $ECHO aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text
