@@ -21,23 +21,6 @@
     }
   },
   {
-    "name": "news",
-    "shortname": "news",
-    "title": "News and Recommendation Tutorial",
-    "description": "This demonstrates basic search functionality and is a great place to start exploring Vespa features. It creates a recommendation system where the approximate nearest neighbor search in a shared user/item embedding space is used to retrieve recommended content for a user.",
-    "features": [
-      "Recommendation",
-      "Parent/child",
-      "E-commerce"
-    ],
-    "category": "Getting Started",
-    "repository": "https://github.com/vespa-engine/sample-apps/tree/master/news#readme",
-    "exampleQuery": {
-      "yql": "select * from news where title contains phrase(\"hello\",\"world\")"
-    },
-    "cdOnly": true
-  },
-  {
     "name": "text-search",
     "shortname": "text-search",
     "title": "Text Search",
@@ -53,72 +36,6 @@
       "yql": "select title,url,id from msmarco where userQuery()",
       "query": "what is dad bod"
     }
-  },
-  {
-    "name": "part-purchases-demo",
-    "shortname": "part-purchases-demo",
-    "title": "Grouping Results",
-    "description": "In Vespa, faceting (the attribute filtering) is called grouping. logo Grouping Results is a quick intro to implementing faceting/grouping in Vespa.",
-    "features": [
-      "Faceting",
-      "Grouping",
-      "E-commerce"
-    ],
-    "category": "E-commerce",
-    "repository": "https://github.com/vespa-engine/sample-apps/tree/master/part-purchases-demo#readme",
-    "exampleQuery": {
-      "yql": "select * from purchase where true"
-    },
-    "cdOnly": true
-  },
-  {
-    "name": "commerce-product-ranking",
-    "shortname": "product-ranking",
-    "title": "Vespa Product Ranking",
-    "description": "Try Vespa Product Ranking for using learning-to-rank (LTR) techniques (using XGBoost and LightGBM) for improving product search ranking.",
-    "features": [
-      "Gradient Boosted Decision Trees (GBDT)",
-      "Learning-to-rank (LTR)",
-      "XGBoost",
-      "LightGBM",
-      "Product ranking",
-      "E-commerce"
-    ],
-    "category": "E-commerce",
-    "repository": "https://github.com/vespa-engine/sample-apps/tree/master/commerce-product-ranking#readme",
-    "exampleQuery": {
-      "yql": "select * from product where true"
-    },
-    "cdOnly": true
-  },
-  {
-    "name": "msmarco-ranking",
-    "shortname": "msmarco-ranking",
-    "title": "MS Marco Passage Ranking",
-    "description": "MS Marco Passage Ranking demonstrates how to efficiently represent three ways of applying Transformer-based ranking models for text ranking in Vespa: Dense vector search retrieval, re-ranking using a cross-encoder and re-ranking using ColBERT.",
-    "features": [
-      "BM25",
-      "Approximate nearest neighbor search.",
-      "Re-ranking",
-      "ColBERT",
-      "WAND",
-      "ANN",
-      "Vespa embedder.",
-      "Hybrid ranking",
-      "MS Marco"
-    ],
-    "category": "Ranking",
-    "repository": "https://github.com/vespa-engine/sample-apps/tree/master/msmarco-ranking#readme",
-    "exampleQuery": {
-      "query": "what was the manhattan project",
-      "yql": "select * from passage where {targetHits: 100}nearestNeighbor(e5, q)",
-      "input": {
-        "query(q)": "embed(e5, @query)",
-        "query(qt)": "embed(colbert, @query)"
-      },
-      "ranking": "e5-colbert"
-    },
-    "cdOnly": true
   },
   {
     "name": "colbert",
