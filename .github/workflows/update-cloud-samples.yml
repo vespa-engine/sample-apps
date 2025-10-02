@@ -156,4 +156,5 @@ jobs:
         env:
           ECHO: ${{ env.DRY_RUN == 'true' && 'echo' || '' }}
         run: |
-          $ECHO aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text
+          set -x
+          $ECHO aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "/${S3_UPLOAD_PREFIX}/*" --output text
