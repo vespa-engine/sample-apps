@@ -121,6 +121,9 @@ jobs:
       AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
       AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME }}
       S3_UPLOAD_PREFIX: console/one-click-sample-apps
+      # FIXME: Remove the dry_run when we use a separate s3 bucket for 'Vespa Cloud CD' environment.
+      # Ref: https://github.com/vespa-engine/sample-apps/settings/environments/5982781730/edit
+      DRY_RUN: ${{ github.event_name != 'push' || github.ref_name != 'master' }}
 
     steps:
       - name: Download All Packages
@@ -142,16 +145,16 @@ jobs:
       - name: Push Zip and JSON to S3
         env:
           # Add `--dryrun` if not on "push" event on default branch.
-          AWS_S3_OPTIONS: --color=on --no-progress ${{ github.ref_name != 'master' &&  ' --dryrun' || '' }}
+          AWS_S3_OPTIONS: --color=on --no-progress ${{ env.DRY_RUN && ' --dryrun' || '' }}
         run: |
           # Not an app, but artifact from the setup job.
           mv ./apps/console-json ./console-json
 
           aws s3 sync ${{ env.AWS_S3_OPTIONS }} ./apps/ "s3://${AWS_S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}/"
-          aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json "s3://${S3_BUCKET}/${S3_UPLOAD_PREFIX}/"
+          aws s3 cp ${{ env.AWS_S3_OPTIONS }} ./console-json/console-sample-apps.json "s3://${AWS_S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}/"
 
       - name: Invalidate Cloudfront Cache
         env:
-          ECHO: ${{ github.ref_name != 'master' &&  ' echo' || '' }}
+          ECHO: ${{ env.DRY_RUN &&  'echo' || '' }}
         run: |
           $ECHO aws cloudfront create-invalidation --distribution-id "${AWS_CLOUDFRONT_DISTRIBUTION_ID}" --paths "${S3_UPLOAD_PREFIX}/*" --output text
