@@ -7,7 +7,7 @@ from pathlib import Path
 
 SCHEMA_NAME = "doc"
 VESPA_URL = "http://localhost:8080"
-QUERY_FILE = Path(__file__).parent.parent / "dataset" / "queries.json"
+QUERY_FILE = Path(__file__).parent.parent / "queries" / "queries.json"
 
 
 def match_weakand_query_fn(query_text: str, top_k: int) -> dict:

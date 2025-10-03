@@ -191,7 +191,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset_dir",
         type=str,
-        default="../dataset",
+        default="../queries",
         help="Directory containing the queries JSON file. Assumed relative to script location if not absolute.",
     )
     parser.add_argument(
