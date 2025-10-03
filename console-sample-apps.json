@@ -73,14 +73,8 @@
     "category": "Ranking",
     "repository": "https://github.com/vespa-engine/sample-apps/tree/master/rag-blueprint#readme",
     "exampleQuery": {
-      "yql": "select * from doc where userQuery() or ({targetHits: 100}nearestNeighbor(embedding, q))",
-      "query": "what is retrieval augmented generation",
-      "input": {
-        "query(q)": "embed(e5, @query)"
-      },
-      "ranking": {
-        "profile": "hybrid-with-gbdt"
-      }
+      "query": "Summarize the key architectural decisions documented for SynapseFlow's v0.2 release.",
+      "queryProfile": "hybrid-with-gbdt"
     }
   }
 ]
