@@ -43,11 +43,11 @@ schema candidate inherits candidate_matching{
         }
 
         function location_match() {
-            expression: if(attribute(location) == query(job_location), 100, if(attribute(remote_ok) && query(job_remote_ok), 50, 0))
+            expression: if(attribute(location) == query(job_location), 1, if(attribute(remote_ok) && query(job_remote_ok), 0.5, 0))
         }
 
         first-phase {
-            expression: skill_overlap() + location_match()
+            expression: 50 * skill_overlap() + 20 * location_match()
         }
     }
 }

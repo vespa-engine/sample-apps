@@ -58,17 +58,6 @@ schema job inherits candidate_matching{
         expression: if(attribute(location) == query(candidate_location), 1, if(attribute(remote_ok) && query(candidate_remote_ok), 0.5, 0))
     }
     
-    function salary_match() {
-        expression {
-            if(query(candidate_desired_salary) >= attribute(salary_min) && 
-               query(candidate_desired_salary) <= attribute(salary_max), 100,
-               if(query(candidate_desired_salary) < attribute(salary_min),
-                  max(0, 100 - (attribute(salary_min) - query(candidate_desired_salary)) / 1000),
-                  max(0, 100 - (query(candidate_desired_salary) - attribute(salary_max)) / 1000)
-               )
-            )
-        }
-    }
     
     first-phase {
         expression: 20 * skill_overlap() + 25 * location_match()
