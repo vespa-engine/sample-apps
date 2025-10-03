@@ -62,8 +62,21 @@ main() {
 
     echo '  * dist/documents.jsonl'
     {
-      for f in dataset/*.json; do
+      shopt -s nullglob
+      json_files=(dataset/*.json)
+      jsonl_files=(dataset/*.jsonl)
+      
+      if [[ ${#json_files[@]} -eq 0 && ${#jsonl_files[@]} -eq 0 ]]; then
+        echo "Error: No JSON or JSONL files found in dataset directory" >&2
+        exit 5
+      fi
+      
+      for f in "${json_files[@]}"; do
         jq -c . "$f"
+      done
+      
+      for f in "${jsonl_files[@]}"; do
+        cat "$f"
       done
     } > dist/documents.jsonl
 fi
