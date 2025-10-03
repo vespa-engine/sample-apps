@@ -56,5 +56,25 @@
         "query(qt)": "embed(colbert, @query)"
       }
     }
+  },
+  {
+    "name": "rag-blueprint",
+    "cdOnly": true,
+    "shortname": "rag-blueprint",
+    "title": "RAG Blueprint",
+    "description": "A complete RAG (Retrieval-Augmented Generation) application demonstrating hybrid search with semantic and lexical retrieval, cheap first-phase ranking, and LightGBM learning-to-rank models for second-phase ranking.",
+    "features": [
+      "RAG",
+      "Hybrid Search",
+      "Layered Ranking",
+      "Learning to Rank",
+      "LightGBM"
+    ],
+    "category": "Ranking",
+    "repository": "https://github.com/vespa-engine/sample-apps/tree/master/rag-blueprint#readme",
+    "exampleQuery": {
+      "query": "Summarize the key architectural decisions documented for SynapseFlow's v0.2 release.",
+      "queryProfile": "hybrid-with-gbdt"
+    }
   }
 ]
