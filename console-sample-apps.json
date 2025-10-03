@@ -59,7 +59,6 @@
   },
   {
     "name": "rag-blueprint",
-    "cdOnly": true,
     "shortname": "rag-blueprint",
     "title": "RAG Blueprint",
     "description": "A complete RAG (Retrieval-Augmented Generation) application demonstrating hybrid search with semantic and lexical retrieval, cheap first-phase ranking, and LightGBM learning-to-rank models for second-phase ranking.",
