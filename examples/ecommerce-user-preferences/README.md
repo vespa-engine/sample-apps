@@ -56,15 +56,17 @@ vespa deploy --wait 900
 
 ### Feed the data into Vespa
 
-1. [Download Logstash](https://www.elastic.co/downloads/logstash), for example the `tar.gz` and unpack it.
+1. [Download Logstash](https://www.elastic.co/downloads/logstash), for example, the `tar.gz` and unpack it.
 
 2. Update [logstash.conf](logstash.conf):
    - **Use your Vespa endpoint**. You'll see it in the Vespa Cloud UI, or comment it out if you run a local Vespa
    - **Update the certificate files** to files from your local `.vespa` directory
    - **Point Logstash to the sample data** in [dataset](dataset/)
 
-3. Run Logstash:
+3. Install the Logstash `vespa_feed` output plugin -
+   see https://blog.vespa.ai/logstash-vespa-tutorials/#installing-logstash-and-the-vespa-output-plugin
 
+4. Run Logstash:
 ```bash
 /PATH/TO/LOGSTASH/bin/logstash -f /PATH/TO/THIS/REPO/examples/ecommerce-user-preferences/logstash.conf
 ```
