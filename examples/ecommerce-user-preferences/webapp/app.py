@@ -25,14 +25,22 @@ KEY_PATH = os.getenv("VESPA_KEY_PATH")
 IMAGE_CACHE = {
     # Pre-populate with hardcoded fallbacks for common car makes and models
     'toyota_camry': 'https://upload.wikimedia.org/wikipedia/commons/a/ac/2018_Toyota_Camry_%28ASV70R%29_Ascent_sedan_%282018-08-27%29_01.jpg',
-    'honda_accord': 'https://upload.wikimedia.org/wikipedia/commons/7/76/2018_Honda_Accord_front_4.1.18.jpg',
     'tesla_model_3': 'https://upload.wikimedia.org/wikipedia/commons/9/91/2019_Tesla_Model_3_Performance_AWD_Front.jpg',
-    'ford_f-150': 'https://upload.wikimedia.org/wikipedia/commons/a/a8/2018_Ford_F-150_XLT_Crew_Cab.jpg',
-    'chevrolet_cruze': 'https://upload.wikimedia.org/wikipedia/commons/6/6d/2016_Chevrolet_Cruze_front_5.24.18.jpg',
-    'bmw_5_series': 'https://upload.wikimedia.org/wikipedia/commons/9/9b/2018_BMW_530d_M_Sport_Automatic_3.0.jpg',
-    'mercedes_e_class': 'https://upload.wikimedia.org/wikipedia/commons/8/8c/Mercedes-Benz_W213_E_350_by_RudolfSimon_cropped.jpg',
-    'audi_a4': 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Audi_A4_B9_sedans_%28FL%29_IMG_3699.jpg',
     'opel_corsa': 'https://upload.wikimedia.org/wikipedia/commons/6/69/2012_Opel_Corsa_%28CO%29_Enjoy_5-door_hatchback_%282015-11-11%29_01.jpg',
+    'audi_a6': 'https://upload.wikimedia.org/wikipedia/commons/b/be/1998_Audi_A6_%284B%29_2.8_quattro_sedan_%282015-07-03%29.jpg',
+    'audi_a3': 'https://upload.wikimedia.org/wikipedia/commons/a/a9/1997_Audi_A3_1.6_Front.jpg',
+    'audi_q5': 'https://upload.wikimedia.org/wikipedia/commons/e/e4/2009-2010_Audi_Q5_%288R%29_2.0_TDI_quattro_wagon_01.jpg',
+    'audi_a1': 'https://upload.wikimedia.org/wikipedia/commons/8/83/2013_Audi_A1_%288X_MY14%29_1.4_TFSI_Sport_S_line_Sportback_5-door_hatchback_%282015-08-07%29_01.jpg',
+    'hyundai_i10': 'https://upload.wikimedia.org/wikipedia/commons/1/1c/2017_Hyundai_Grand_i10_Sedan.jpg',
+    'ford_fiesta': 'https://upload.wikimedia.org/wikipedia/commons/e/e7/-68_Niclas_Gr%C3%B6nholm_-_Ford_Fiesta_ST_Supercar_-_World_Rallycross_2016_-_Lydden_Hill_%2826707937963%29.jpg',
+    'opel_viva': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/2016_Vauxhall_Viva_SE_1.0.jpg',
+    'volkswagen_beetle': 'https://upload.wikimedia.org/wikipedia/commons/5/59/1949_VW_Beetle.jpg',
+    'volkswagen_id._polo': 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Volkswagen_ID._Polo_IAA_2025_DSC_1387.jpg',
+}
+
+# Wikimedia/Wikipedia now reject requests without an identifying User-Agent.
+WIKIPEDIA_HEADERS = {
+    "User-Agent": "ecommerce-user-preferences/1.0 (contact: devnull@example.com)"
 }
 
 def load_system_prompt():
@@ -75,7 +83,9 @@ def get_wikipedia_image(make, model):
         }
         
         print(f"Searching Wikipedia for: {search_query}")
-        search_response = requests.get(search_url, params=search_params, timeout=5)
+        search_response = requests.get(
+            search_url, params=search_params, headers=WIKIPEDIA_HEADERS, timeout=5
+        )
         search_data = search_response.json()
         
         # If no search results, try a simpler query
@@ -83,7 +93,9 @@ def get_wikipedia_image(make, model):
             print(f"No results for {search_query}, trying just {make}")
             search_query = f"{make} car"
             search_params["srsearch"] = search_query
-            search_response = requests.get(search_url, params=search_params, timeout=5)
+            search_response = requests.get(
+                search_url, params=search_params, headers=WIKIPEDIA_HEADERS, timeout=5
+            )
             search_data = search_response.json()
             
             if not search_data.get("query", {}).get("search"):
@@ -103,7 +115,9 @@ def get_wikipedia_image(make, model):
             "origin": "*"
         }
         
-        image_response = requests.get(search_url, params=image_params, timeout=5)
+        image_response = requests.get(
+            search_url, params=image_params, headers=WIKIPEDIA_HEADERS, timeout=5
+        )
         image_data = image_response.json()
         
         # Check if we have any images
@@ -129,7 +143,12 @@ def get_wikipedia_image(make, model):
                     "origin": "*"
                 }
                 
-                url_response = requests.get(search_url, params=image_url_params, timeout=5)
+                url_response = requests.get(
+                    search_url,
+                    params=image_url_params,
+                    headers=WIKIPEDIA_HEADERS,
+                    timeout=5,
+                )
                 url_data = url_response.json()
                 
                 # Extract the actual image URL
@@ -157,7 +176,12 @@ def get_wikipedia_image(make, model):
                     "origin": "*"
                 }
                 
-                url_response = requests.get(search_url, params=image_url_params, timeout=5)
+                url_response = requests.get(
+                    search_url,
+                    params=image_url_params,
+                    headers=WIKIPEDIA_HEADERS,
+                    timeout=5,
+                )
                 url_data = url_response.json()
                 
                 # Extract the actual image URL
