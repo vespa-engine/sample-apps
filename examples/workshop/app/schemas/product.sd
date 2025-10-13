@@ -1,0 +1,150 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema product {
+
+    document product {
+
+        field productId type int {
+            indexing: summary | attribute | "no" | set_language
+        }
+
+        field sku type string {
+            indexing: summary | attribute
+        }
+
+        field name_index type string {
+            indexing: summary | index
+            match: text
+        }
+        field name_index_n_gram type string {
+            indexing: index
+            match {
+                gram
+                gram-size: 3
+            }
+        }
+        field name_attribute type string {
+            indexing: attribute
+            match: word
+        }
+
+        field description_index type string {
+            indexing: summary | index
+            match: text
+        }
+        field description_index_n_gram type string {
+            indexing: index
+            match {
+                gram
+                gram-size: 3
+            }
+        }
+        field description_attribute type string {
+            indexing: attribute
+            match: word
+        }
+
+        field price type float {
+            indexing: summary | attribute
+        }
+
+        field pricePerUnit type float {
+            indexing: summary | attribute
+        }
+
+        field allergens type array<string> {
+            indexing: summary | attribute
+        }
+
+        field carbonFootprintGram type int {
+            indexing: summary | attribute
+        }
+
+        field unit type string {
+            indexing: summary | attribute
+        }
+
+        field organic type bool {
+            indexing: summary | attribute
+        }
+
+        field gtin type string {
+            indexing: summary | attribute
+        }
+
+    }
+
+    fieldset name_description_index {
+        fields: name_index, description_index
+    }
+
+    fieldset name_description_index_n_gram {
+        fields: name_index_n_gram, description_index_n_gram
+    }
+
+    fieldset name_description_attribute {
+        fields: name_attribute, description_attribute
+    }
+
+    document-summary debug-summary {
+      summary name_index {}
+      summary name_index_tokens {
+        source: name_index
+        tokens
+      }
+      summary name_index_n_gram {}
+      summary name_index_n_gram_tokens {
+        source: name_index_n_gram
+        tokens
+      }
+      summary name_attribute {}
+      summary name_attribute_tokens {
+        source: name_attribute
+        tokens
+      }
+      summary description_index {}
+      summary description_index_tokens {
+        source: description_index
+        tokens
+      }
+      summary description_index_n_gram {}
+      summary description_index_n_gram_tokens {
+        source: description_index_n_gram
+        tokens
+      }
+      summary description_attribute {}
+      summary description_attribute_tokens {
+        source: description_attribute
+        tokens
+      }
+      from-disk
+    }
+
+    rank-profile native_rank inherits default {
+        first-phase {
+            expression: nativeRank(name_index) + nativeRank(description_index) + 100 / attribute(price) + 1000 / attribute(carbonFootprintGram)
+        }
+        summary-features {
+            nativeRank(name_index) nativeRank(description_index) attribute(price) attribute(carbonFootprintGram)
+        }
+    }
+
+    rank-profile native_rank_n_gram inherits default {
+        first-phase {
+            expression: nativeRank(name_index_n_gram) + nativeRank(description_index_n_gram) + 100 / attribute(price) + 1000 / attribute(carbonFootprintGram)
+        }
+        summary-features {
+            nativeRank(name_index_n_gram) nativeRank(description_index_n_gram) attribute(price) attribute(carbonFootprintGram)
+        }
+    }
+
+    rank-profile native_rank_attribute {
+        first-phase {
+            expression: nativeRank(name_attribute) + nativeRank(description_attribute) + 100 / attribute(price) + 1000 / attribute(carbonFootprintGram)
+        }
+        summary-features {
+            nativeRank(name_attribute) nativeRank(description_attribute) attribute(price) attribute(carbonFootprintGram)
+        }
+    }
+
+}
