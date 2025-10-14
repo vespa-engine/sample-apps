@@ -449,14 +449,13 @@ def chat():
     
     try:
         # Get response from OpenAI
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=openai_messages,
-            temperature=0.7,
+        response = client.responses.create(
+            model="gpt-5",
+            input=openai_messages
         )
         
         # Extract assistant's response
-        assistant_response = response.choices[0].message.content
+        assistant_response = response.output_text
         
         # Add assistant response to session history
         session['messages'].append({"role": "assistant", "content": assistant_response})
