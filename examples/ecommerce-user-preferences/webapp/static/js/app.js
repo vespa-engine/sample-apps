@@ -198,7 +198,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageContent = messageNode.querySelector('.message-content');
         
         messageDiv.classList.add(isUser ? 'user' : 'assistant');
-        messageContent.textContent = displayContent;
+        if (!isUser) {
+            // Render assistant messages with Markdown, sanitize first
+            const html = marked.parse(displayContent, { mangle: false, headerIds: false });
+            messageContent.innerHTML = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+        } else {
+            messageContent.textContent = displayContent;
+        }
         
         chatContainer.appendChild(messageNode);
         
