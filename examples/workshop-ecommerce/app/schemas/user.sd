@@ -1,0 +1,58 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema user {
+
+    document user {
+
+        field user_id type int {
+            indexing: summary | attribute
+        }
+        # Will be a weighted set with product_id as key and number of purchases as value.
+        field user_profile type weightedset<int> {
+                indexing: summary | attribute
+                weightedset {
+                        create-if-nonexistent
+                        remove-if-zero
+                    }
+                attribute: fast-search
+
+                weightedset {
+                    create-if-nonexistent
+                }
+        }
+
+        struct purchase {
+            field order_dow type int {}
+            field order_hour_of_day type int {}
+            field order_id type int {}
+            field product_id type int {}
+        }
+        field user_purchases type array<purchase> {
+            indexing: summary
+            struct-field order_dow {
+                indexing: attribute
+                attribute: fast-search                
+            }
+            struct-field order_hour_of_day {
+                indexing: attribute
+                attribute: fast-search                
+            }
+            struct-field order_id {
+                indexing: attribute
+                attribute: fast-search                
+            }
+            struct-field product_id {
+                indexing: attribute
+                attribute: fast-search
+            }
+        }
+
+    }
+
+    rank-profile sparse_dot inherits default {
+        first-phase {
+            expression: rawScore(user_profile)
+        }
+    }
+
+}
