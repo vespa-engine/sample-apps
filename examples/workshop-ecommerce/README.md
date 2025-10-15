@@ -52,6 +52,7 @@ There, you will also need to provide the endpoint URL.
 Follow these steps to deploy an application to the [dev zone](https://cloud.vespa.ai/en/reference/zones.html) in the Vespa Cloud. Find more details and tips in the [developer guide](https://cloud.vespa.ai/en/developer-guide).
 
 **Alternative:** [Run Vespa locally using Docker](https://docs.vespa.ai/en/vespa-quick-start.html)
+Note that if you want to deploy locally, you need to comment out the `<clients>` section in `services.xml` to disable authentication for local deployments.
 
 ---
 

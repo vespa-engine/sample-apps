@@ -48,6 +48,9 @@ project root. -->
         <!--
             <nodes> specifies the nodes that should run this cluster.
         -->
+        <!--
+            Comment out the clients section below to disable authentication for local deployments
+        -->
         <clients>
             <client id="mtls" permissions="read,write">
                 <certificate file="security/clients.pem" />
