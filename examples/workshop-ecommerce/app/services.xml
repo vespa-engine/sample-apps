@@ -48,6 +48,14 @@ project root. -->
         <!--
             <nodes> specifies the nodes that should run this cluster.
         -->
+        <clients>
+            <client id="mtls" permissions="read,write">
+                <certificate file="security/clients.pem" />
+            </client>
+            <client id="read-token-client" permissions="read">
+                <token id="workshop-token" />
+            </client>
+        </clients>
         <nodes>
             <node hostalias="node1" />
         </nodes>
