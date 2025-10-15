@@ -2,6 +2,8 @@
 *.csv
 *.jsonl
 
-# Except these two JSONL files
+*.pem
+# Except these JSONL files
 !orders_train.jsonl
 !products.jsonl
+!users.jsonl
