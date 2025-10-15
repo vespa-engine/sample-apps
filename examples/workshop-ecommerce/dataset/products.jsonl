@@ -1,0 +1,10 @@
+{"put": "id:products:product::1", "fields": {"product_id": 1, "product_name": "Chocolate Sandwich Cookies", "aisle": "cookies cakes", "department": "snacks"}}
+{"put": "id:products:product::2", "fields": {"product_id": 2, "product_name": "All-Seasons Salt", "aisle": "spices seasonings", "department": "pantry"}}
+{"put": "id:products:product::3", "fields": {"product_id": 3, "product_name": "Robust Golden Unsweetened Oolong Tea", "aisle": "tea", "department": "beverages"}}
+{"put": "id:products:product::4", "fields": {"product_id": 4, "product_name": "Smart Ones Classic Favorites Mini Rigatoni With Vodka Cream Sauce", "aisle": "frozen meals", "department": "frozen"}}
+{"put": "id:products:product::5", "fields": {"product_id": 5, "product_name": "Green Chile Anytime Sauce", "aisle": "marinades meat preparation", "department": "pantry"}}
+{"put": "id:products:product::6", "fields": {"product_id": 6, "product_name": "Dry Nose Oil", "aisle": "cold flu allergy", "department": "personal care"}}
+{"put": "id:products:product::7", "fields": {"product_id": 7, "product_name": "Pure Coconut Water With Orange", "aisle": "juice nectars", "department": "beverages"}}
+{"put": "id:products:product::8", "fields": {"product_id": 8, "product_name": "Cut Russet Potatoes Steam N' Mash", "aisle": "frozen produce", "department": "frozen"}}
+{"put": "id:products:product::9", "fields": {"product_id": 9, "product_name": "Light Strawberry Blueberry Yogurt", "aisle": "yogurt", "department": "dairy eggs"}}
+{"put": "id:products:product::10", "fields": {"product_id": 10, "product_name": "Sparkling Orange Juice & Prickly Pear Beverage", "aisle": "water seltzer sparkling water", "department": "beverages"}}

@@ -1,0 +1,62 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema product {
+
+    document product {
+
+        field product_id type int {
+            indexing: summary | attribute
+        }
+
+        field product_name type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field aisle type string {
+            indexing: summary | attribute
+            attribute: fast-search
+            match {
+                exact
+                exact-terminator: "@%"
+            }
+        }
+
+        field department type string {
+            indexing: summary | attribute
+            attribute: fast-search
+            match {
+                exact
+                exact-terminator: "@%"
+            }
+        }
+
+    }
+    fieldset default {
+        fields: product_name
+    }
+    # Originally 384 dimensions float
+    # See https://docs.vespa.ai/en/binarizing-vectors.html
+    field embedding type tensor<float>(x[384]) {
+        indexing: input product_name | embed | attribute
+        attribute {
+            distance-metric: angular
+        }
+    }
+
+    
+    rank-profile product_search inherits default {
+        inputs {
+            query(q_emb) tensor<float>(x[384])
+        }
+
+        first-phase {
+            expression: nativeRank(product_name) + closeness(field, embedding)
+        }
+        summary-features {
+            nativeRank(product_name)
+            closeness(field, embedding)
+        }
+    }
+
+}

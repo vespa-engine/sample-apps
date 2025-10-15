@@ -1,0 +1,37 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema order {
+
+    document order {
+
+        field order_id type int {
+            indexing: summary | attribute
+        }
+
+        field user_id type int {
+            indexing: summary | attribute
+        }
+
+        # day of week
+        field order_dow type int {
+            indexing: summary | attribute
+        }
+
+        # day of week
+        field order_hour_of_day type int {
+            indexing: summary | attribute
+        }
+
+        # day of week
+        field days_since_prior_order type float {
+            indexing: summary | attribute
+        }
+        
+        # products for order - first element of array was orderered first, and so on.
+        field product_ids type array<int> {
+            indexing: summary | attribute
+        }
+
+    }
+
+}
