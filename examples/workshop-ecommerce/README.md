@@ -119,7 +119,11 @@ vespa feed dataset/products_sample.jsonl
 ```
 
 ```bash
-vespa feed dataset/order_sample.jsonl
+vespa feed dataset/orders_sample.jsonl
+```
+
+```bash
+vespa feed dataset/users.jsonl
 ```
 
 or if you have preprocessed the full dataset:
@@ -130,6 +134,10 @@ vespa feed dataset/products.jsonl
 
 ```bash
 vespa feed dataset/orders_train.jsonl
+```
+
+```bash
+vespa feed dataset/users.jsonl
 ```
 
 ---
@@ -381,13 +389,292 @@ vespa query \
 }
 ```
 
+## Example Queries - Users 👤📊
+
+### Fetch user by ID
+
+```bash
+vespa query \
+  "yql=select * from user where user_id=1"
+```
+
+And expect
+
+```json
+{
+    "root": {
+        "id": "toplevel",
+        "relevance": 1.0,
+        "fields": {
+            "totalCount": 1
+        },
+        "coverage": {
+            "coverage": 100,
+            "documents": 10,
+            "full": true,
+            "nodes": 1,
+            "results": 1,
+            "resultsFull": 1
+        },
+        "children": [
+            {
+                "id": "index:product/0/c4ca42382844020f3bf67638",
+                "relevance": 0.0017429193899782135,
+                "source": "product",
+                "fields": {
+                    "user_id": 1,
+                    "user_profile": {
+                        "27845": 1,
+                        "46149": 1,
+                        "13032": 1,
+                        "26088": 1,
+                        "39657": 1,
+                        "25133": 1,
+                        "38928": 1,
+                        "10258": 1,
+                        "49235": 1,
+                        "196": 1,
+                        "26405": 1
+                    },
+                    "user_purchases": [
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 196
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 25133
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 38928
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 26405
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 39657
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 10258
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 13032
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 26088
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 27845
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 49235
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 46149
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+```
+
+### Find users who have purchased specific products using WAND
+
+See https://docs.vespa.ai/en/using-wand-with-vespa.html 
+
+```bash
+vespa query \
+    'yql=select * from user where ({targetHits: 25}wand(user_profile, [[196,1]]))' \
+    'ranking=unranked'
+```
+
+Or to find users who have purchased multiple products:
+
+```bash
+vespa query \
+    'yql=select * from user where ({targetHits: 25}wand(user_profile, [[196,1],[25133,1]]))' \
+    'ranking=unranked'
+```
+
+Or to have users ranked by the sparse dot product of their user profile and a query vector representing products they have purchased:
+
+```bash
+vespa query \
+    'yql=select * from user where ({targetHits: 25}wand(user_profile, [[196,1],[25133,1]]))' \
+    'ranking=sparse_dot'
+```
+
+Notice that relevance is now 2.0:
+
+```json
+{
+    "root": {
+        "id": "toplevel",
+        "relevance": 1.0,
+        "fields": {
+            "totalCount": 1
+        },
+        "coverage": {
+            "coverage": 100,
+            "documents": 10,
+            "full": true,
+            "nodes": 1,
+            "results": 1,
+            "resultsFull": 1
+        },
+        "children": [
+            {
+                "id": "id:users:user::1",
+                "relevance": 2.0,
+                "source": "product",
+                "fields": {
+                    "sddocname": "user",
+                    "documentid": "id:users:user::1",
+                    "user_id": 1,
+                    "user_profile": {
+                        "27845": 1,
+                        "46149": 1,
+                        "13032": 1,
+                        "26088": 1,
+                        "39657": 1,
+                        "25133": 1,
+                        "38928": 1,
+                        "10258": 1,
+                        "49235": 1,
+                        "196": 1,
+                        "26405": 1
+                    },
+                    "user_purchases": [
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 196
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 25133
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 38928
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 26405
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 39657
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 10258
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 13032
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 26088
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 27845
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 49235
+                        },
+                        {
+                            "order_dow": 4,
+                            "order_hour_of_day": 8,
+                            "order_id": 1187899,
+                            "product_id": 46149
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+```
+
+---
+
 ## Example Queries - Orders 🛒🌐
 
 ### Fetch order by ID
 
 ```bash
 vespa query \
-  "yql=select * from product.order where order_id==1187899"
+  "yql=select * from order where order_id=1187899"
+```
+
+### Find orders containing a specific product
+
+```bash
+vespa query \
+  'yql=select * from order where product_ids contains "196"'
+```
+
+### Find orders containing multiple specific products
+
+```bash
+vespa query \
+  'yql=select * from order where product_ids contains "196" AND product_ids contains "25133"'
 ```
 
 And expect
