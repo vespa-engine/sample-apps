@@ -168,6 +168,63 @@ def process_products(output_dir: Path, full: bool = False, limit: int = 10) -> N
     print(f"✓ Wrote {total_products} products to {output_file}")
 
 
+def process_users(output_dir: Path, full: bool = False, limit: int = 10) -> None:
+    """Process user data by aggregating orders and building user profiles."""
+    print("Processing users...")
+
+    df_order = pd.read_csv("dataset/orders.csv")
+
+    # Read order_products from train set to build user profiles
+    df_order_products_train = pd.read_csv("dataset/order_products__train.csv")
+
+    # Merge order_products with orders to get order metadata
+    df_order_products_with_metadata = df_order_products_train.merge(
+        df_order[["order_id", "user_id", "order_dow", "order_hour_of_day"]],
+        on="order_id",
+        how="left",
+    )
+
+    # Group by user_id to create user documents
+    user_groups = df_order_products_with_metadata.groupby("user_id")
+
+    output_file = output_dir / "users.jsonl"
+
+    with open(output_file, "w") as f:
+        for i, (user_id, user_purchases_df) in enumerate(user_groups):
+            # Build user profile (weightedset of product_ids based on frequency)
+            product_counts = user_purchases_df["product_id"].value_counts()
+            user_profile = {
+                int(prod_id): int(count) for prod_id, count in product_counts.items()
+            }
+
+            # Build user_purchases array - flatten each product into a separate purchase
+            purchases_array = []
+            for _, purchase in user_purchases_df.iterrows():
+                purchase_struct = {
+                    "order_dow": int(purchase["order_dow"]),
+                    "order_hour_of_day": int(purchase["order_hour_of_day"]),
+                    "order_id": int(purchase["order_id"]),
+                    "product_id": int(purchase["product_id"]),
+                }
+                purchases_array.append(purchase_struct)
+
+            doc = {
+                "put": f"id:users:user::{int(user_id)}",
+                "fields": {
+                    "user_id": int(user_id),
+                    "user_profile": user_profile,
+                    "user_purchases": purchases_array,
+                },
+            }
+            f.write(json.dumps(doc) + "\n")
+
+            if not full and i >= limit - 1:
+                break
+
+    total_users = len(user_groups) if full else min(limit, len(user_groups))
+    print(f"✓ Wrote {total_users} users to {output_file}")
+
+
 def process_orders(
     output_dir: Path, eval_sets: list[str], full: bool = False, limit: int = 10
 ) -> None:
@@ -338,6 +395,10 @@ Examples:
 
     # Process products
     process_products(args.output_dir, args.full, args.limit)
+    print()
+
+    # Process users
+    process_users(args.output_dir, args.full, args.limit)
     print()
 
     # Determine which eval sets to process
