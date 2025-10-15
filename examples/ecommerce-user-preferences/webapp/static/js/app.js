@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
         addMessage(message, true);
         userInput.value = '';
         
-        // Show loading
-        loadingOverlay.classList.remove('d-none');
+        // Add thinking message
+        const thinkingMessage = addMessage('Thinking...', false);
         
         try {
             const response = await fetch('/api/chat', {
@@ -130,11 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const data = await response.json();
             
-            // Hide loading
-            loadingOverlay.classList.add('d-none');
-            
-            // Add assistant response
-            addMessage(data.response, false);
+            // Replace thinking message with actual response
+            updateMessage(thinkingMessage, data.response);
             
             // Display preferences if available
             if (data.preferences) {
@@ -174,11 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error:', error);
             
-            // Hide loading
-            loadingOverlay.classList.add('d-none');
-            
-            // Add error message
-            addMessage('Sorry, there was an error processing your request. Please try again.', false);
+            // Replace thinking message with error
+            updateMessage(thinkingMessage, 'Sorry, there was an error processing your request. Please try again.');
         }
     }
     
@@ -207,6 +201,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         chatContainer.appendChild(messageNode);
+        
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // Return the message element for future updates
+        return messageDiv;
+    }
+    
+    // Update an existing message
+    function updateMessage(messageElement, content) {
+        if (!messageElement) return;
+        
+        // Strip out the JSON part before displaying
+        let displayContent = content;
+        const jsonIndex = displayContent.indexOf("===JSON");
+        if (jsonIndex !== -1) {
+            displayContent = displayContent.substring(0, jsonIndex).trim();
+        }
+        
+        const messageContent = messageElement.querySelector('.message-content');
+        if (messageContent) {
+            // Render with Markdown, sanitize first
+            const html = marked.parse(displayContent, { mangle: false, headerIds: false });
+            messageContent.innerHTML = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+        }
         
         // Scroll to bottom
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -362,8 +381,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Send preference adjustment message
     async function sendPreferenceAdjustment(message, key, value) {
-        // Show loading
-        loadingOverlay.classList.remove('d-none');
+        // Add thinking message
+        const thinkingMessage = addMessage('Thinking...', false);
         
         try {
             const response = await fetch('/api/chat', {
@@ -389,11 +408,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const data = await response.json();
             
-            // Hide loading
-            loadingOverlay.classList.add('d-none');
-            
-            // Add assistant response
-            addMessage(data.response, false);
+            // Replace thinking message with actual response
+            updateMessage(thinkingMessage, data.response);
             
             // Display preferences if available
             if (data.preferences) {
@@ -409,18 +425,15 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error updating preferences:', error);
             
-            // Hide loading
-            loadingOverlay.classList.add('d-none');
-            
-            // Add error message
-            addMessage('Sorry, there was an error updating your preferences. Please try again.', false);
+            // Replace thinking message with error
+            updateMessage(thinkingMessage, 'Sorry, there was an error updating your preferences. Please try again.');
         }
     }
     
     // Send preference removal message
     async function sendPreferenceRemoval(message, keyToRemove) {
-        // Show loading
-        loadingOverlay.classList.remove('d-none');
+        // Add thinking message
+        const thinkingMessage = addMessage('Thinking...', false);
         
         try {
             const response = await fetch('/api/chat', {
@@ -446,11 +459,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const data = await response.json();
             
-            // Hide loading
-            loadingOverlay.classList.add('d-none');
-            
-            // Add assistant response
-            addMessage(data.response, false);
+            // Replace thinking message with actual response
+            updateMessage(thinkingMessage, data.response);
             
             // Display preferences if available
             if (data.preferences) {
@@ -464,11 +474,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error removing preference:', error);
             
-            // Hide loading
-            loadingOverlay.classList.add('d-none');
-            
-            // Add error message
-            addMessage('Sorry, there was an error removing your preference. Please try again.', false);
+            // Replace thinking message with error
+            updateMessage(thinkingMessage, 'Sorry, there was an error removing your preference. Please try again.');
         }
     }
     

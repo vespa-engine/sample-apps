@@ -450,8 +450,9 @@ def chat():
     try:
         # Get response from OpenAI
         response = client.responses.create(
-            model="gpt-5",
-            input=openai_messages
+            model="gpt-5-mini",
+            input=openai_messages,
+            reasoning={"effort": "low"}
         )
         
         # Extract assistant's response
