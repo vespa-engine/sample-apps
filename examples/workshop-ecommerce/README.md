@@ -16,7 +16,38 @@ We add only a sample of the dataset in the github repository, but you can downlo
 
 We strongly recommend installing [uv](https://docs.astral.sh/uv/) to handle dependencies.
 
-## 🚀 Quick Start using Vespa Cloud
+## 🚀 Quick Start
+
+For those of you that only want to query the pre-provisioned Vespa Cloud instance, follow these steps:
+
+1. Get an endpoint URL from your workshop host.
+2. Get a token from your workshop host. Note that this only has read-permissions, meaning you can not feed or modify the application. If you want to do that, see the "Deploy your own app using Vespa Cloud" section below.
+
+Configure Vespa CLI with:
+
+```bash
+vespa config set target cloud
+vespa config set application vespa-team.workshop
+```
+
+To use the token when querying, set the `VESPA_TOKEN` environment variable:
+
+```bash
+export VESPA_TOKEN="<your-token-here>"
+```
+
+and use like this:
+
+```bash
+vespa query \
+  --header="Authorization: Bearer $VESPA_TOKEN" \
+  'yql=select * from product.product where true limit 1'
+```
+
+You can also set this to use python code in `query_examples.ipynb`.
+There, you will also need to provide the endpoint URL.
+
+## Deploy your own app using Vespa Cloud
 
 Follow these steps to deploy an application to the [dev zone](https://cloud.vespa.ai/en/reference/zones.html) in the Vespa Cloud. Find more details and tips in the [developer guide](https://cloud.vespa.ai/en/developer-guide).
 
@@ -55,7 +86,7 @@ Download the Windows release `.zip` from the [Vespa GitHub releases](https://git
 
 ```bash
 vespa config set target cloud
-vespa config set application tenant-name.myapp
+vespa config set application tenant-name.myapp # Replace tenant-name with your tenant name and myapp with your application name
 ```
 
 Use your tenant name from step 1. This guide uses `myapp` as application name and `default` as instance name.
@@ -141,6 +172,11 @@ vespa feed dataset/users.jsonl
 ```
 
 ---
+
+## Examples of Queries
+
+We also provide a [Jupyter notebook](query_examples.ipynb) with examples of how to run queries using pyvespa.
+
 
 ## 🔍 Example Queries - Products 🍞🥛
 
