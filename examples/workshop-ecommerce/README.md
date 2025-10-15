@@ -120,7 +120,7 @@ cd app
 vespa auth cert
 ```
 
-This creates a self-signed certificate for data plane access (reads and writes). See the [security model](https://cloud.vespa.ai/en/security-model) for details.
+This creates a self-signed certificate for data plane access (reads and writes). 
 
 ---
 
