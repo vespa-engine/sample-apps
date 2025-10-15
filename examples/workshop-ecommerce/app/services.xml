@@ -65,6 +65,7 @@ project root. -->
         <documents>
             <document type="product" mode="index" />
             <document type="order" mode="index" />
+            <document type="user" mode="index" />
         </documents>
         <nodes>
             <node hostalias="node1" distribution-key="0" />
