@@ -778,7 +778,7 @@ And expect
 
 - [Vespa Documentation](https://docs.vespa.ai/)
 - [Vespa Cloud](https://cloud.vespa.ai/)
-- [Vespa Sample Applications](https://wwww.github.com/vespa-engine/sample-apps)
+- [Vespa Sample Applications](https://github.com/vespa-engine/sample-apps)
 - [Pyvespa - Python client for Vespa](https://vespa-engine.github.io/pyvespa/)
 - [Vespa Documentation Search](https://search.vespa.ai)
 - [Tensor playground](https://docs.vespa.ai/playground)
