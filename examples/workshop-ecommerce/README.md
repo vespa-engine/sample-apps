@@ -32,6 +32,7 @@ Configure Vespa CLI with:
 ```bash
 vespa config set target cloud
 vespa config set application vespa-team.workshop
+vespa config set zone prod.aws-eu-west-1a
 ```
 
 To use the token when querying, set the `VESPA_TOKEN` environment variable:
