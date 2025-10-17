@@ -279,11 +279,6 @@ vespa query \
 And expect
 
 ```json
-vespa query \                        
-  "yql=select * from product where userQuery() OR ({targetHits: 10}nearestNeighbor(embedding, q_emb))" \
-  "query=chocolate" \
-  "input.query(q_emb)=embed(@query)" \
-  "ranking.profile=product_search"
 {
     "root": {
         "id": "toplevel",
