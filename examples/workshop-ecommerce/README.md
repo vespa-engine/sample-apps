@@ -64,12 +64,13 @@ zone = prod.aws-eu-west-1a
 
 ```bash
 export VESPA_WORKSHOP_TOKEN="<your-token-here>"
+export VESPA_URL="<your-vespa-url-here>"
 ```
 
 ### 4. Test with a dummy query
 
 ```bash
-vespa query \
+vespa query -t $VESPA_URL \
   --header="Authorization: Bearer $VESPA_WORKSHOP_TOKEN" \
   'yql=select * from product.product where true limit 1'
 ```
