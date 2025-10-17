@@ -1,0 +1,9 @@
+# ignore all csv and jsonl, except orders_train.jsonl and products.jsonl
+*.csv
+*.jsonl
+
+*.pem
+# Except these JSONL files
+!orders_train.jsonl
+!products.jsonl
+!users.jsonl
