@@ -14,9 +14,9 @@ The dataset used in this workshop is this [Instacart dataset](https://www.kaggle
 
 We add only a sample of the dataset in the github repository, but you can download (and preprocess) the full dataset to Vespa-compatible format from these links:
 
-- https://data.vespa-cloud.com/sample-apps-data//workshop-ecommerce/orders_train.jsonl
-- https://data.vespa-cloud.com/sample-apps-data//workshop-ecommerce/products.jsonl
-- https://data.vespa-cloud.com/sample-apps-data//workshop-ecommerce/users.jsonl
+- https://data.vespa-cloud.com/sample-apps-data/workshop-ecommerce/orders_train.jsonl
+- https://data.vespa-cloud.com/sample-apps-data/workshop-ecommerce/products.jsonl
+- https://data.vespa-cloud.com/sample-apps-data/workshop-ecommerce/users.jsonl
 
 The size of the dataset is 49688 products, 131209 orders and 231209 users.
 
