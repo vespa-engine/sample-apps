@@ -20,37 +20,83 @@ We add only a sample of the dataset in the github repository, but you can downlo
 
 The size of the dataset is 49688 products, 131209 orders and 231209 users.
 
+We recommend using the sample data for quick iteration, and feeding the full dataset only after you are happy with your application.
+
+If/when you want to use the full dataset, replace the sample files in the `dataset/` folder with the full dataset files above.
+
 ## 🚀 Quick Start
 
-For those of you that only want to query the pre-provisioned Vespa Cloud instance, follow these steps:
+We have prepared a Vespa Cloud instance for this workshop, so you can get started quickly without having to deploy your own application. This application has been fed with the full dataset, and is ready to query.
+Note that you will not be able to modify or feed additional data to this application.
 
-1. Get an endpoint URL from your workshop host.
-2. Get a token from your workshop host. Note that this only has read-permissions, meaning you can not feed or modify the application. If you want to do that, see the "Deploy your own app using Vespa Cloud" section below.
+For those of you want to build something off the pre-provisioned Vespa Cloud instance, follow these steps:
 
-Configure Vespa CLI with:
+### 1. Configure Vespa CLI
+
+Run:
 
 ```bash
 vespa config set target cloud
-vespa config set application vespa-team.workshop
+vespa config set application vespa-team.workshop.default
 vespa config set zone prod.aws-eu-west-1a
 ```
 
-To use the token when querying, set the `VESPA_TOKEN` environment variable:
+You can verify correct configuration with:
 
 ```bash
-export VESPA_TOKEN="<your-token-here>"
+vespa config get
 ```
 
-and use like this:
+which should output:
+
+```bash
+application = vespa-team.workshop.default
+cluster = <unset>
+color = auto
+debug = false
+instance = default
+quiet = false
+target = cloud
+zone = prod.aws-eu-west-1a
+```
+
+### 2. Set your `VESPA_WORKSHOP_TOKEN` environment variable (provided during the workshop):
+
+```bash
+export VESPA_WORKSHOP_TOKEN="<your-token-here>"
+```
+
+### 4. Test with a dummy query
 
 ```bash
 vespa query \
-  --header="Authorization: Bearer $VESPA_TOKEN" \
+  --header="Authorization: Bearer $VESPA_WORKSHOP_TOKEN" \
   'yql=select * from product.product where true limit 1'
 ```
 
-You can also set this to use python code in `query_examples.ipynb`.
-There, you will also need to provide the endpoint URL.
+### Alternatively, use pyvespa
+
+We recommend using [uv](https://docs.astral.sh/uv/) for python project management.
+After installing uv, create a virtual environment and install pyvespa:
+
+```bash
+uv venv
+```
+
+Activate the virtual environment:
+
+```bash
+source .venv/bin/activate
+```
+
+And sync the dependencies to your virtual environment:
+
+```bash
+uv sync
+```
+
+You can then run the sample python notebook provided in `query_examples.ipynb`.
+There, you will also need to provide the endpoint URL, which will be provided during the workshop.
 
 ## Deploy your own app using Vespa Cloud
 
