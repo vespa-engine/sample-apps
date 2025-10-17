@@ -125,7 +125,8 @@ Note that if you want to deploy locally, you need to comment out the `<clients>`
 ### Prerequisites
 
 - Linux, macOS or Windows 10 Pro on x86_64 or arm64
-- [Homebrew](https://brew.sh/) to install the [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download from [GitHub releases](https://github.com/vespa-engine/vespa/releases)
+- For macOS:
+  - [Homebrew](https://brew.sh/) to install the [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html), or download from [GitHub releases](https://github.com/vespa-engine/vespa/releases)
 
 ---
 
