@@ -17,7 +17,7 @@ The point of this sample app is to provide a simple framework for you to experim
 ## Getting started
 1. Clone this repository and navigate to the `mcp-server-app` directory:
 ```bash
-git clone --depth 1git@github.com:vespa-engine/sample-apps.git
+git clone --depth 1 git@github.com:vespa-engine/sample-apps.git
 cd sample-apps/examples/mcp-server-app
 ```
 2. Start a Vespa container:
@@ -56,12 +56,3 @@ Add
 to your `claude_desktop_config.json` file under the `McpServers` section.
 
 ## Mcp server capabilities
-
-echo "New Vespa container started"
-
-vespa deploy target/application --wait 300
-echo "Vespa app deployed"
-
-vespa feed ./dataset/*.jsonl --progress 2
-
-echo "Vespa data fed"
