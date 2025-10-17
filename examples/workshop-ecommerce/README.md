@@ -86,8 +86,22 @@ uv venv
 
 Activate the virtual environment:
 
+Linux / macOS:
+
 ```bash
 source .venv/bin/activate
+```
+
+Windows (PowerShell):
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Windows (cmd):
+
+```powershell
+.venv\Scripts\activate.bat
 ```
 
 And sync the dependencies to your virtual environment:
