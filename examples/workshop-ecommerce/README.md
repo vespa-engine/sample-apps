@@ -199,11 +199,11 @@ curl -O https://data.vespa-cloud.com/sample-apps-data/workshop/products.json
 ### 9️⃣ Feed Data to Vespa
 
 ```bash
-vespa feed dataset/products_sample.jsonl
+vespa feed dataset/products.jsonl
 ```
 
 ```bash
-vespa feed dataset/orders_sample.jsonl
+vespa feed dataset/orders.jsonl
 ```
 
 ```bash
