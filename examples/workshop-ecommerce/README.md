@@ -833,3 +833,4 @@ And expect
 - [Pyvespa - Python client for Vespa](https://vespa-engine.github.io/pyvespa/)
 - [Vespa Documentation Search](https://search.vespa.ai)
 - [Tensor playground](https://docs.vespa.ai/playground)
+- [Vespa slack community](https://slack.vespa.ai/)
