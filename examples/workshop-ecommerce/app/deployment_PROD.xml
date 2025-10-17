@@ -1,0 +1,5 @@
+<deployment version="1.0">
+  <prod>
+    <region>aws-eu-west-1a</region>
+  </prod>
+</deployment>
