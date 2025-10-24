@@ -6,7 +6,7 @@
 
 
 # Vespa sample applications - Job matching app with MCP server
-This sample application combines a job search and job recommendation application with a built-in MCP server.
+This sample application combines a job search and job recommendation application with a built-in Model Context Protocol (MCP) server.
 The point of this sample app is to provide a simple framework for you to experiment with and learn about Vespa's MCP capabilities.
 
 ## Prerequisites
@@ -36,7 +36,7 @@ podman run --detach --name vespa --hostname vespa-container \
 3. Deploy the application and feed data:
 ```bash
 vespa config set target local
-vespa application --wait 300
+vespa deploy application --wait 300
 vespa feed ./dataset/*.jsonl --progress 2
 ```
 4. Connect to the MCP server
@@ -56,3 +56,29 @@ Add
 to your `claude_desktop_config.json` file under the `McpServers` section.
 
 ## Mcp server capabilities
+### Tools
+- **`executeQuery`**: Build and execute Vespa queries against the Vespa application.
+- **`getSchemas`**: Retrieve the schemas of the Vespa application.
+- **`searchDocumentation`**: Search the [Vespa documentation](https://docs.vespa.ai/) for relevant information based on a user input.
+
+### Resources
+- **`queryExamples`**: Provides query examples to the MCP client for guidance on how to use the `executeQuery` tool.
+
+### Prompts
+- **`listTools`**: Prompt to list the tools and their descriptions of the MCP server.
+
+## App exploration
+Since the point of the sample app is to become familiar with Vespa's MCP server capabilities, here are some tasks and questions to explore:
+- Find a random candidate amongst your documents and try to find the best matching job for this candidate.
+- Of the jobs matching this candidate, where would our candidate have the best chances to land a job? Do any of the jobs have other better candidates?
+- Based on your skills and interests, do any of the jobs match your profile?
+- Ask the LLM other Vespa related questions and have it search the documentation for you.
+- Can the application be improved? Maybe the LLM can help you modify the schemas and datasets? Make sure `generate_data.py` actually generates data that matches the schemas if you modify them.
+
+### Generating data
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python generate_data.py
+```

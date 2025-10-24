@@ -1,6 +1,2 @@
-java/
-resources/
-pom.xml
 .venv
 *.sh
-target/

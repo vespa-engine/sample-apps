@@ -15,22 +15,19 @@ schema job inherits candidate_matching{
 
         }
 
-        field location type string {
-            indexing: summary | attribute
-            attribute: fast-search
-        }
-
         field description type string {
             indexing: summary | index
             index: enable-bm25
         }
 
-        field salary_min type int {
+        field salary_range type predicate {
             indexing: summary | attribute
-        }
-
-        field salary_max type int {
-            indexing: summary | attribute
+            index {
+                arity: 2
+                lower-bound: 0
+                upper-bound: 1000000 # Maximum expected salary (make sure it matches the data)
+                dense-posting-list-threshold: 0.4
+            }
         }
 
         field posted_date type long {
@@ -47,20 +44,31 @@ schema job inherits candidate_matching{
         query(candidate_skills) tensor<float>(skill{})
         query(candidate_location) string
         query(candidate_desired_salary) double
-        query(candidate_remote_ok) double
+        query(candidate_remote_ok) int
     }
     
     function skill_overlap() {
+        # Dot product of skill tensors
+        # Example:
+        # Job: {Python:3, AWS:1}
+        # Candidate: {Java:2, "Node.js:1", "Python:2"}
+        # skill_overlap = sum(Python: 3*2, AWS: 1*0, Java: 0*2, Node.js: 0*1) = 6
         expression: sum(attribute(skills) * query(candidate_skills))
+    }
+
+    function date_freshness() {
+        # Gives a score closer to 1 if the posted date is more recent
+        expression: freshness(posted_date).logscale
     }
     
     function location_match() {
+        # 1 point for matching location and 0.5 if both are okay with remote, else 0
         expression: if(attribute(location) == query(candidate_location), 1, if(attribute(remote_ok) && query(candidate_remote_ok), 0.5, 0))
     }
     
-    
     first-phase {
-        expression: 20 * skill_overlap() + 25 * location_match()
+        # Feel free to adjust weights
+        expression: 50 * skill_overlap() + 20 * location_match() + 10 * date_freshness()
     }
     }
 }

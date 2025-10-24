@@ -53,11 +53,14 @@ ADJECTIVES = ["innovative", "fast-paced", "collaborative", "dynamic"]
 PROJECTS = ["web applications", "mobile apps", "data pipelines", "cloud infrastructure", "APIs"]
 ACTIONS = ["scale our platform", "modernize our systems", "build new features", "optimize performance"]
 
+MINIMUM_POSSIBLE_SALARY = 80_000 # Lowest salary any of the jobs will have
+MAXIMUM_POSSIBLE_SALARY = 120_000 # Highest
+
 def generate_job(num: int):
     """Generate one job posting"""
     title = random.choice(JOB_TITLES)
     skills = random.sample(SKILLS, random.randint(3, 5))
-    skills = {skill : 1 for skill in skills}
+    skills = {skill : random.randint(1, 3) for skill in skills}
     location = random.choice(LOCATIONS)
     
     # Generate description
@@ -69,7 +72,9 @@ def generate_job(num: int):
         action=random.choice(ACTIONS),
         skill=random.choice(list(skills.keys()))
     )
-    
+    min_salary = random.randint(MINIMUM_POSSIBLE_SALARY, MAXIMUM_POSSIBLE_SALARY)
+    max_salary = random.randint(min_salary, MAXIMUM_POSSIBLE_SALARY)
+
     return {
         "job_id": f"J{num}",
         "title": title,
@@ -77,8 +82,7 @@ def generate_job(num: int):
         "location": location,
         "description": description,
         "skills": skills,
-        "salary_min": random.randint(80000, 120000),
-        "salary_max": random.randint(120000, 180000),
+        "salary_range": f"desired_salary in [{min_salary}..{max_salary}]",
         "remote_ok": 1 if location == "Remote" else random.choice([1, 0]),
         "posted_date": int((datetime.now() - timedelta(days=random.randint(1, 30))).timestamp())
     }
@@ -87,7 +91,7 @@ def generate_candidate(num: int):
     """Generate one candidate profile"""
     name = fake.name()
     skills = random.sample(SKILLS, random.randint(2, 6))
-    skills = {skill: 1 for skill in skills}
+    skills = {skill: random.randint(1, 3) for skill in skills}
     experience = random.randint(1, 10)
     location = random.choice(LOCATIONS)
     
