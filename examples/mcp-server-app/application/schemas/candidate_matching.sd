@@ -6,7 +6,7 @@ schema candidate_matching {
 
         field remote_ok type int {
             # 1 = true, 0 = false
-            indexing: summary| attribute
+            indexing: summary | attribute
             attribute: fast-search
         }
 
