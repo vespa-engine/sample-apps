@@ -15,7 +15,6 @@
         
         <documents>
             <document type="candidate" mode="index" />
-            <document type="candidate_matching" mode="index" />
             <document type="job" mode="index" />
         </documents>
         <nodes>
