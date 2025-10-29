@@ -117,7 +117,7 @@ def generate_candidate(num: int):
 
 def save_vespa_feed(items, doc_type, filename):
     """Save as Vespa JSONL feed format"""
-    output_dir = "./dataset"
+    output_dir = "../dataset"
     os.makedirs(output_dir, exist_ok=True)
     filepath = os.path.join(output_dir, filename)
     with open(filepath, 'w') as f:
