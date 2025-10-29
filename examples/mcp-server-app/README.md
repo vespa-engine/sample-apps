@@ -22,23 +22,26 @@ cd sample-apps/examples/mcp-server-app
 ```
 2. Start a Vespa container:
 - With Docker:
-```bash
+<pre data-test="exec">
+docker pull vespaengine/vespa
 docker run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
-```
+<pre/>
 - With Podman:
 ```bash
+podman pull vespaengine/vespa
 podman run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 ```
 3. Deploy the application and feed data:
-```bash
+<pre data-test="exec" data-test-assert-contains="Success">
 vespa config set target local
 vespa deploy application --wait 300
 vespa feed ./dataset/*.jsonl --progress 2
-```
+</pre>
+
 4. Connect to the MCP server
 - Using Claude Desktop:
 Add 
