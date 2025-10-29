@@ -18,36 +18,36 @@ The point of this sample app is to provide a simple framework for you to experim
 ## Getting started
 1. Clone this repository and navigate to the `mcp-server-app` directory:
 <pre data-test="exec">
-git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
-cd sample-apps/examples/mcp-server-app
+$ git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
+$ cd sample-apps/examples/mcp-server-app
 </pre>
 
 2. Start a Vespa container:
 - With Docker:
 <pre data-test="exec">
-docker pull vespaengine/vespa
-docker run --detach --name vespa --hostname vespa-container \
+$ docker pull vespaengine/vespa
+$ docker run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 
 - With Podman:
 <pre>
-podman pull vespaengine/vespa
-podman run --detach --name vespa --hostname vespa-container \
+$ podman pull vespaengine/vespa
+$ podman run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
 
 3. Deploy the application and feed data:
 <pre data-test="exec">
-vespa config set target local
+$ vespa config set target local
 </pre>
 <pre data-test="exec" data-test-assert-contains="Success">
-vespa deploy application --wait 300
+$ vespa deploy app --wait 300
 </pre>
 <pre data-test="exec">
-vespa feed ./dataset/*.jsonl --progress 2
+$ vespa feed ./dataset/*.jsonl --progress 2
 </pre>
 
 4. Connect to the MCP server
@@ -64,9 +64,9 @@ Add
       ]
     }
 ```
-to your `claude_desktop_config.json` file under the `McpServers` section.
+to your `claude_desktop_config.json` file under the `mcpServers` section.
 
-## Mcp server capabilities
+## MCP server capabilities
 ### Tools
 - **`executeQuery`**: Build and execute Vespa queries against the Vespa application.
 - **`getSchemas`**: Retrieve the schemas of the Vespa application.
@@ -88,16 +88,17 @@ Since the point of the sample app is to become familiar with Vespa's MCP server 
 
 ### Generating data
 ```bash
-source .venv/bin/activate
+cd script
 uv sync
+source .venv/bin/activate
 python generate_data.py
 ```
 
 ### Cleanup
-<pre data-test="after">
-docker rm -f vespa
+<pre data-test="exec">
+$ docker rm -f vespa
 </pre>
 or
 <pre>
-podman rm -f vespa
+$ podman rm -f vespa
 </pre>
