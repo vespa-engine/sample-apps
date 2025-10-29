@@ -13,6 +13,7 @@ The point of this sample app is to provide a simple framework for you to experim
 - [Docker](https://docs.docker.com/get-docker/) or [Podman](https://podman.io/getting-started/installation)
 - [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html)
 - An MCP client (e.g. [Claude Desktop](https://claude.ai/download)
+- [UV](https://docs.astral.sh/uv/#installation) (If you want to create more data)
 
 ## Getting started
 1. Clone this repository and navigate to the `mcp-server-app` directory:
@@ -80,8 +81,7 @@ Since the point of the sample app is to become familiar with Vespa's MCP server 
 
 ### Generating data
 ```bash
-python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+uv sync
 python generate_data.py
 ```
