@@ -27,7 +27,7 @@ docker pull vespaengine/vespa
 docker run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
-<pre/>
+</pre>
 - With Podman:
 ```bash
 podman pull vespaengine/vespa
@@ -45,7 +45,7 @@ vespa feed ./dataset/*.jsonl --progress 2
 4. Connect to the MCP server
 - Using Claude Desktop:
 Add 
-```
+```json
 "Vespa-mcp-server": {
       "command": "npx",
       "args": [
