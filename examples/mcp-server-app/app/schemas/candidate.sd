@@ -1,0 +1,55 @@
+schema candidate inherits candidate_matching{
+    document candidate inherits candidate_matching {
+        field candidate_id type string {
+            indexing: summary | attribute
+        }
+
+        field name type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field candidate_summary type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field experience_years type int {
+            indexing: summary | attribute
+        }
+
+        field desired_salary type int {
+            indexing: summary | attribute
+        }
+    }
+    fieldset default {
+        fields: name, candidate_summary
+    }
+
+    rank-profile candidate_job_match inherits default {
+        inputs {
+            query(job_skills) tensor<float>(skill{})
+            query(job_location) string
+            query(job_remote_ok) int
+        }
+
+        function skill_overlap() {
+            # Dot product of skill tensors
+            # Example:
+            # Job: {Python:3, AWS:1}
+            # Candidate: {Java:2, "Node.js:1", "Python:2"}
+            # skill_overlap = sum(Python: 3*2, AWS: 1*0, Java: 0*2, Node.js: 0*1) = 6
+            expression: sum(attribute(skills) * query(job_skills))
+        }
+
+        function location_match() {
+            # 1 point for matching location and 0.5 if both are okay with remote, else 0
+            expression: if(attribute(location) == query(job_location), 1, if(attribute(remote_ok) && query(job_remote_ok), 0.5, 0))
+        }
+
+        first-phase {
+            # Feel free to adjust weights
+            expression: 50 * skill_overlap() + 20 * location_match()
+        }
+    }
+}

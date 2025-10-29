@@ -138,6 +138,10 @@ it is useful when you want to quickly do ranking experiments without rewriting a
 
 For any questions, please register at the Vespa Slack and discuss in the general channel.
 
+### Job matching app with MCP Server
+
+[![logo](/assets/vespa-logomark-tiny.png) mcp-server-app](mcp-server-app) This simple sample app combines a job matching platform with an integrated MCP server.
+
 ----
 
 ### Operations
