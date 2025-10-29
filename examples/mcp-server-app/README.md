@@ -17,10 +17,11 @@ The point of this sample app is to provide a simple framework for you to experim
 
 ## Getting started
 1. Clone this repository and navigate to the `mcp-server-app` directory:
-```bash
-git clone --depth 1 git@github.com:vespa-engine/sample-apps.git
+<pre data-test="exec">
+git clone --depth 1 https://github.com/vespa-engine/sample-apps.git
 cd sample-apps/examples/mcp-server-app
-```
+</pre>
+
 2. Start a Vespa container:
 - With Docker:
 <pre data-test="exec">
@@ -29,17 +30,23 @@ docker run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
 </pre>
+
 - With Podman:
-```bash
+<pre>
 podman pull vespaengine/vespa
 podman run --detach --name vespa --hostname vespa-container \
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \
   vespaengine/vespa
-```
+</pre>
+
 3. Deploy the application and feed data:
-<pre data-test="exec" data-test-assert-contains="Success">
+<pre data-test="exec">
 vespa config set target local
+</pre>
+<pre data-test="exec" data-test-assert-contains="Success">
 vespa deploy application --wait 300
+</pre>
+<pre data-test="exec">
 vespa feed ./dataset/*.jsonl --progress 2
 </pre>
 
@@ -85,3 +92,12 @@ source .venv/bin/activate
 uv sync
 python generate_data.py
 ```
+
+### Cleanup
+<pre data-test="after">
+docker rm -f vespa
+</pre>
+or
+<pre>
+podman rm -f vespa
+</pre>
