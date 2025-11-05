@@ -68,7 +68,11 @@ awesomplete_link = Link(
 awesomplete_js = Script(
     src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.7/awesomplete.min.js"
 )
-sselink = Script(src="https://unpkg.com/htmx-ext-sse@2.2.1/sse.js")
+sselink = Script(
+    src="https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.4",
+    integrity="sha384-A986SAtodyH8eg8x8irJnYUk7i9inVQqYigD6qZ9evobksGNIXfeFvDwLSHcp31N",
+    crossorigin="anonymous",
+)
 
 # Get log level from environment variable, default to INFO
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -112,7 +116,7 @@ This means that newlines will be replaced with <br> tags, bold text will be encl
 Do NOT include backticks (`) in your response. Only simple HTML tags and text.
 """
 gemini_model = genai.GenerativeModel(
-    "gemini-2.0-flash", system_instruction=GEMINI_SYSTEM_PROMPT
+    "gemini-2.5-flash", system_instruction=GEMINI_SYSTEM_PROMPT
 )
 STATIC_DIR = Path("static")
 IMG_DIR = STATIC_DIR / "full_images"
