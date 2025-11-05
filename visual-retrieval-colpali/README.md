@@ -128,15 +128,15 @@ See [Custom python spaces](https://huggingface.co/docs/hub/en/spaces-sdks-python
 
 #### Upload the files
 
-To deploy, run
+To deploy, run from the project root directory:
 
 (Replace `vespa-engine/colpali-vespa-visual-retrieval` with your own huggingface user/repo name, does not need to exist beforehand)
 
 ```bash
-huggingface-cli upload vespa-engine/colpali-vespa-visual-retrieval src . --repo-type=space
+hf upload vespa-engine/colpali-vespa-visual-retrieval src . --repo-type=space --delete "*" --commit-message "Deploy to HF Space"
 ```
 
-Note that we upload only the `src` directory.
+Note that we upload only the `src` directory. The `--delete "*"` flag ensures that any files that exist in the space but not in your local `src` directory will be removed, keeping everything in sync.
 
 ## Development
 
