@@ -755,7 +755,7 @@ def ChatResult(query_id: str, query: str, doc_ids: Optional[list] = None):
         )
 
     return Div(
-        Div("AI-response (Gemini-2.0)", cls="text-xl font-semibold p-5"),
+        Div("AI-response (Gemini-2.5)", cls="text-xl font-semibold p-5"),
         Div(
             Div(
                 messages,
