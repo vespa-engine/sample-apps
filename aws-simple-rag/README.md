@@ -154,7 +154,6 @@ $ vespa deploy --wait 900
 </pre>
 
 The application should now be deployed!
-You can continue to the [querying](#querying) section below to test it.
 
 ### Feeding
 
