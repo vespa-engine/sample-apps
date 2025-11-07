@@ -204,6 +204,9 @@ This application has three versions of an end-to-end RAG application:
   This includes using Vespa Cloud's [Secret Store](https://cloud.vespa.ai/en/security/secret-store.html#secret-management)
   to save the OpenAI API key.
 
+[![logo](/assets/vespa-logomark-tiny.png) RAG in Vespa with AWS Bedrock models](aws-simple-rag)
+is a flavor of the [Retrieval Augmented Generation (RAG) in Vespa](retrieval-augmented-generation) leveraging AWS Bedrock hosted LLM models for inference to implement an end-to-end RAG application in Vespa.
+
 [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Building cost-efficient retrieval-augmented personal AI assistants](https://pyvespa.readthedocs.io/en/latest/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
 uses [streaming mode](https://docs.vespa.ai/en/streaming-search.html)
 for cost-efficient retrieval for applications that store and retrieve personal data.
