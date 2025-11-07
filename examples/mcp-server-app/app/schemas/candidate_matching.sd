@@ -1,0 +1,18 @@
+schema candidate_matching {
+    document candidate_matching {
+        field skills type tensor<float>(skill{}) {
+            indexing: summary | attribute
+        }
+
+        field remote_ok type int {
+            # 1 = true, 0 = false
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+
+        field location type string {
+            indexing: summary | attribute
+            attribute: fast-search
+        }
+    }
+}
