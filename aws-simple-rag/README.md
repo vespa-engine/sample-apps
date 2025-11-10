@@ -40,7 +40,7 @@ Availability of the models may vary per region. The format of the bedrock runtim
 `https://bedrock-runtime.{region}.amazonaws.com`
 
 You may want to collocate your model endpoint with the AWS region where 
-Vespa is deployed. The default Vespa zone where this application will be deployed in `dev` environment in `aws-us-east-1` region.
+Vespa is deployed. The default Vespa zone where this application will be deployed is in `dev` environment in `aws-us-east-1` region.
 
 ### Set-up an AWS Bedrock API Key
 
