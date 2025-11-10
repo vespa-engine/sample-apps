@@ -20,7 +20,7 @@
 
     <!-- Setup the client to Bedrock -->
     <component id="openai" class="ai.vespa.llm.clients.OpenAI">
-      <config name = "ai.vespa.llm.clients.llm-client">
+      <config name="ai.vespa.llm.clients.llm-client">
         <endpoint>https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1</endpoint>
         <apiKeySecretName>bedrock-api-key</apiKeySecretName>
         <model>openai.gpt-oss-20b-1:0</model>
