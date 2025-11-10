@@ -110,7 +110,7 @@ Replace `<my-vault-name>` and `<my-secret-name>` below with your own values:
 
 ```xml
 <secrets>
-    <bedrock-api-key vault=">my-vault-name>" name="<my-secret-name>"/>
+    <bedrock-api-key vault="<my-vault-name>" name="<my-secret-name>"/>
 </secrets>
 ```
 
