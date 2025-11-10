@@ -6,10 +6,10 @@
   <img alt="#Vespa" width="200" src="https://assets.vespa.ai/logos/Vespa-logo-dark-RGB.svg" style="margin-bottom: 25px;">
 </picture>
 
-# Retrieval Augmented Generation (RAG) in Vespa using AWS BedRock models
+# Retrieval Augmented Generation (RAG) in Vespa using AWS Bedrock models
 
 This sample application demonstrates an end-to-end Retrieval Augmented
-Generation application in Vespa, leveraging [AWS BedRock](https://aws.amazon.com/bedrock/) hosted models.
+Generation application in Vespa, leveraging [AWS Bedrock](https://aws.amazon.com/bedrock/) hosted models.
 
 This sample application focuses on the generation part of RAG, and builds upon
 the [MS Marco passage
