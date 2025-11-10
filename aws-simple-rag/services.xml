@@ -11,7 +11,7 @@
                 <query>query:</query>
                 <document>passage:</document>
             </prepend>
-        </component>
+    </component>
     <document-api/>
 
     <secrets>
