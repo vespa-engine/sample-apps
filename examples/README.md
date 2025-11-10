@@ -146,9 +146,6 @@ For any questions, please register at the Vespa Slack and discuss in the general
 
 [![logo](/assets/vespa-logomark-tiny.png) aws-simple-rag](aws-simple-rag) This simple RAG application is a flavor of [Retrieval Augmented Generation (RAG) in Vespa](../retrieval-augmented-generation) where the RAG application runs in Vespa but leveraging LLMs hosted in AWS Bedrock through OpenAI API to generate a final response.
 
-
-
-
 ----
 
 ### Operations
