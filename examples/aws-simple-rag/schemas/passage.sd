@@ -31,13 +31,13 @@ schema passage {
   }
 
   rank-profile hybrid {
-        inputs {
-          query(e) tensor<bfloat16>(x[384])
-        }
-        first-phase {
-            expression: 2 * closeness(field, embedding) + bm25(text) / 11 
-        }
-        match-features: bm25(text) closeness(field, embedding)
+    inputs {
+      query(e) tensor<bfloat16>(x[384])
     }
+    first-phase {
+      expression: 2 * closeness(field, embedding) + bm25(text) / 11 
+    }
+    match-features: bm25(text) closeness(field, embedding)
+  }
 
 }
