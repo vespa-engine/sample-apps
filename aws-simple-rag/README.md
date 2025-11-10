@@ -191,6 +191,7 @@ $ vespa query \
   searchChain=bedrock \
   format=sse \
   traceLevel=1
+  timeout=60s
  </pre> 
 
 Here, we specifically set the search chain to `bedrock`.
@@ -224,6 +225,7 @@ $ vespa query \
   format=sse \
   llm.json_schema="{\"type\":\"object\",\"properties\":{\"answer-short\":{\"type\":\"string\"},\"answer-short-french\":{\"type\":\"string\",\"description\":\"exact translation of short answer in French language\"},\"answer-short-eli5\":{\"type\":\"string\",\"description\":\"explain the answer like I am 5 years old\"}},\"required\":[\"answer-short\",\"answer-short-french\",\"answer-short-eli5\"],\"additionalProperties\":false}" \
   traceLevel=1
+  timeout=60s
 </pre>
 
 The `llm.json_schema` parameter is used to specify the expected output format of the LLM.
