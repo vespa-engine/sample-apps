@@ -44,7 +44,7 @@ Vespa is deployed. The default Vespa zone where this application will be deploye
 
 ### Set-up an AWS Bedrock API Key
 
-Create an [AWS BedRock API key](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html).
+Create an [AWS Bedrock API key](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html).
 
 ### Test your endpoint
 
