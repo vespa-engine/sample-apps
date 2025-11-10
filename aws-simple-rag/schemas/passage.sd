@@ -4,7 +4,7 @@ schema passage {
 
   document passage {
 
-     field id type string {
+    field id type string {
       indexing: summary | attribute
     }
     field text type string {
