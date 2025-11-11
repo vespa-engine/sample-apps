@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.327.49">
+
+  <container id="default" version="1.0">
+     <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
+    <component id="e5_small" type="hugging-face-embedder">
+      <transformer-model url="https://github.com/vespa-engine/sample-apps/raw/master/examples/model-exporting/model/e5-small-v2-int8.onnx"/>
+      <tokenizer-model url="https://raw.githubusercontent.com/vespa-engine/sample-apps/master/examples/model-exporting/model/tokenizer.json"/>
+      <prepend> <!-- E5 prompt instructions -->
+        <query>query:</query>
+        <document>passage:</document>
+      </prepend>
+    </component>
+    <document-api/>
+
+    <secrets>
+      <bedrock-api-key vault="sample-apps" name="aws-bedrock-token" />
+    </secrets>
+
+    <!-- Setup the client to Bedrock -->
+    <component id="openai" class="ai.vespa.llm.clients.OpenAI">
+      <config name="ai.vespa.llm.clients.llm-client">
+        <endpoint>https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1</endpoint>
+        <apiKeySecretName>bedrock-api-key</apiKeySecretName>
+        <model>openai.gpt-oss-20b-1:0</model>
+      </config>
+    </component>
+   
+    <search>
+
+      <chain id="bedrock" inherits="vespa">
+        <searcher id="ai.vespa.search.llm.RAGSearcher">
+          <config name="ai.vespa.search.llm.llm-searcher">
+            <providerId>openai</providerId>
+          </config>
+        </searcher>
+      </chain>
+
+    </search>
+    <nodes>
+      <node hostalias="node0" />
+    </nodes>
+  </container>
+
+  <content id="msmarco" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document mode="index" type="passage"/>
+    </documents>
+    <nodes>
+      <node hostalias="node1" distribution-key="0" />
+    </nodes>
+  </content>
+
+</services>
