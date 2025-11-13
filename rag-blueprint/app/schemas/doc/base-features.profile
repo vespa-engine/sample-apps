@@ -52,9 +52,10 @@ rank-profile base-features {
         }
 
 
-        # Computes the magnitude (Euclidean norm) of all vectors in a tensor
+        # Computes the magnitude (Euclidean norm) of all vectors in a tensor.
         # We will use this to normalize (i.e., bring back to 0-1 range) the chunk dot product,
-        # which will tend to be higher for embeddings with more dimensions
+        # which will tend to be higher for embeddings with more dimensions. This normalized
+        # dot product is the cosine similarity.
         function vector_norms(t) {
             expression: sqrt(sum(pow(t, 2), x))
         }
