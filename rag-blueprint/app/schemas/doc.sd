@@ -73,7 +73,10 @@ schema doc {
         from-disk
         summary chunks_top3 {
             source: chunks
-            select-elements-by: top_3_chunk_sim_scores #this needs to be added a summary-feature to the rank-profile
+            # top_3_chunk_sim_scores needs to be added as a summary-feature to the rank-profile.
+            # It should be a tensor with a single mapped dimension (i.e., the chunk ID),
+            # like it is in base-features.profile
+            select-elements-by: top_3_chunk_sim_scores
         }
     }
 }
