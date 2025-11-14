@@ -21,7 +21,7 @@ dependencies = [
     "shad4fast>=1.2.1",
     "google-generativeai>=0.7.2",
     "spacy",
-    "transformers==4.45",
+    "transformers==4.53.0",
     "pip",
 ]
 
