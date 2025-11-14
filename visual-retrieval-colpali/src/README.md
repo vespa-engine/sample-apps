@@ -10,6 +10,7 @@ app_file: main.py
 pinned: false
 license: apache-2.0
 suggested_hardware: t4-small
+header: mini
 models:
   - vidore/colpaligemma-3b-pt-448-base
   - vidore/colpali-v1.2
