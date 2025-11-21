@@ -1,0 +1,48 @@
+{
+  "name": "Time Ranges Example",
+  "comment": "Test of end to end retrieve and read pipeline",
+  "defaults": {
+    "cluster": "mycc",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+    {
+      "name": "feed a document",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/nstest/item/docid/ABCDE",
+        "body": {
+          "fields": {
+            "title": "Test document ABCDE",
+            "timestamp_utc": 1763627702
+          }
+        }
+      }
+    },
+    {
+      "name": "get document",
+      "request": {
+        "method": "GET",
+        "uri": "/document/v1/nstest/item/docid/ABCDE"
+      },
+      "response": {
+        "body": {
+          "fields": {
+            "title": "Test document ABCDE"
+          }
+        }
+      }
+    },
+    {
+      "name": "Run a query ",
+      "request": {
+        "parameters": {
+          "yql": "select * from item where userQuery();",
+          "query": "ABCDE"
+        }
+      }
+    }
+  ]
+}

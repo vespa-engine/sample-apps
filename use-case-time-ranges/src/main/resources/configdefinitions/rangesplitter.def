@@ -1,0 +1,9 @@
+package=ai.vespa.example.timestamps
+
+# the name of a field where ranges can be split
+# must be an attribute and some integer type
+splitfields[].originalField string
+
+# the corresponding field where range markers are indexed
+# assumed to be of type array<string> with an index, and exact match
+splitfields[].rangeMarkerField string

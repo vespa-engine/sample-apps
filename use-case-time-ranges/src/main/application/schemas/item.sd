@@ -1,0 +1,59 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+schema item {
+
+    document item {
+
+        field title type string {
+            indexing: index | summary
+        }
+
+        field timestamp_utc type long {
+            indexing: summary | attribute
+            attribute: fast-search
+            rank: filter
+        }
+
+        # generated from timestamp_utc for efficient range search:
+        field timestamp_utc_range_index type array<string> {
+            indexing: index
+            match {
+                exact
+                # only used if searching this index in the userQuery():
+                exact-terminator: "@@"
+            }
+            rank: filter
+        }
+
+        # emulate relevance, just a random number per item:
+        field score type double {
+            indexing: attribute
+        }
+
+    }
+
+    fieldset default {
+        fields: title
+    }
+
+    rank-profile default {
+        first-phase {
+            expression {
+                attribute(score) + attribute(timestamp_utc)*0.000000001
+            }
+        }
+    }
+
+    rank-profile wmp {
+        first-phase {
+            expression {
+                attribute(score) + attribute(timestamp_utc)*0.000000001
+            }
+        }
+        match-phase {
+            attribute: timestamp_utc
+            max-hits: 30000
+        }
+    }
+
+}

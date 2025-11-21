@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+    <container id="default" version="1.0">
+        <config name="ai.vespa.example.timestamps.rangesplitter">
+            <splitfields>
+                <item>
+                    <originalField>not:timestamp_utc</originalField>
+                    <rangeMarkerField>timestamp_utc_range_index</rangeMarkerField>
+                </item>
+            </splitfields>
+        </config>
+        <document-api/>
+        <search>
+            <chain id="default" inherits="vespa">
+                <searcher id="ai.vespa.example.timestamps.RangeSplitterSearcher" bundle="time-ranges"/>
+            </chain>
+        </search>
+        <document-processing>
+            <chain id="default">
+                <documentprocessor id="ai.vespa.example.timestamps.RangeSplitterProcessor" bundle="time-ranges"/>
+            </chain>
+        </document-processing>
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
+    </container>
+
+    <content id="mycontent" version="1.0">
+        <redundancy>2</redundancy>
+        <min-redundancy>2</min-redundancy>
+        <documents>
+            <document type="item" mode="index"/>
+        </documents>
+        <engine>
+            <proton>
+                <searchable-copies>2</searchable-copies>
+            </proton>
+        </engine>
+        <nodes>
+            <node hostalias="node1" distribution-key="0"/>
+            <node hostalias="node1" distribution-key="1"/>
+        </nodes>
+    </content>
+
+</services>
