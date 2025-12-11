@@ -66,7 +66,7 @@ def VespaRetriever(state: SubgraphState):
 
     vespa_app = Vespa(url=VESPA_URL, cert=PUBLIC_CERT_PATH, key=PRIVATE_KEY_PATH)
 
-    condition_uq = qb.userQuery(user_query)
+    condition_uq = qb.userInput(user_query)
 
     condition_ann = qb.nearestNeighbor(
         field="embedding",
