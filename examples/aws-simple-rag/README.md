@@ -87,7 +87,7 @@ $ brew install vespa-cli
 
 Download this sample application:
 <pre data-test="exec">
-$ vespa clone aws-simple-rag bedrock-rag && cd bedrock-rag
+$ vespa clone examples/aws-simple-rag bedrock-rag && cd bedrock-rag
 </pre>
 
 
