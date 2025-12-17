@@ -10,24 +10,25 @@ mkdir -p $DEV_DIR
 
 if [ "$DATASET" = "demo" ]
 then
-  curl -L -o $DIR/train.zip  https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_train.zip
-  curl -L -o $DIR/dev.zip    https://recodatasets.z20.web.core.windows.net/newsrec/MINDdemo_dev.zip
+  curl -L -o $DIR/train.zip  https://huggingface.co/datasets/yjw1029/MIND/resolve/main/MINDlarge_train.zip?download=true
+  curl -L -o $DIR/dev.zip    https://huggingface.co/datasets/yjw1029/MIND/resolve/main/MINDlarge_dev.zip?download=true
 
 elif [ "$DATASET" = "small" ]
 then
-  curl -L -o $DIR/train.zip  https://mind201910small.blob.core.windows.net/release/MINDsmall_train.zip
-  curl -L -o $DIR/dev.zip    https://mind201910small.blob.core.windows.net/release/MINDsmall_dev.zip
+  curl -L -o $DIR/train.zip  https://huggingface.co/datasets/yjw1029/MIND/resolve/main/MINDsmall_train.zip?download=true
+  curl -L -o $DIR/dev.zip    https://huggingface.co/datasets/yjw1029/MIND/resolve/main/MINDsmall_dev.zip?download=true
 
 elif [ "$DATASET" = "large" ]
 then
-  curl -L -o $DIR/train.zip  https://mind201910small.blob.core.windows.net/release/MINDlarge_train.zip
-  curl -L -o $DIR/dev.zip    https://mind201910small.blob.core.windows.net/release/MINDlarge_dev.zip
+  curl -L -o $DIR/train.zip  https://huggingface.co/datasets/yjw1029/MIND/resolve/main/MINDlarge_train.zip?download=true
+  curl -L -o $DIR/dev.zip    https://huggingface.co/datasets/yjw1029/MIND/resolve/main/MINDlarge_dev.zip?download=true
 
 else
   echo "No dataset specified. Use demo|small|large."
   exit 1
 fi
 
-unzip -o $DIR/train.zip -d $TRAIN_DIR
-unzip -o $DIR/dev.zip -d $DEV_DIR
+# -j: extract flat (ignore paths in zip) since zips contain a nested folder
+unzip -j -o $DIR/train.zip -d $TRAIN_DIR
+unzip -j -o $DIR/dev.zip -d $DEV_DIR
 
