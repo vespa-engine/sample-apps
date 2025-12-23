@@ -1,0 +1,166 @@
+# Copyright Yahoo. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# See https://docs.vespa.ai/en/schemas.html
+schema doc {
+
+    document doc {
+
+        field id type string {
+            indexing: summary | attribute
+        }
+        field text type string {
+            indexing: index | summary
+            index: enable-bm25
+        }
+    }
+    field embedding_alibaba_gte_modernbert type tensor<int8>(x[96]) {
+        indexing: input text | embed alibaba_gte_modernbert | pack_bits | index | attribute
+        attribute {
+            distance-metric: hamming
+        }
+        index {
+            hnsw {
+                max-links-per-node: 16
+                neighbors-to-explore-at-insert: 200
+            }
+        }
+    }
+
+    fieldset default {
+        fields: text
+    }
+
+    # ColBERT token embeddings - 128-dim bfloat16 vectors
+    field colbert type tensor<bfloat16>(dt{}, x[128]) {
+        indexing: input text | embed moderncolbert | attribute
+        attribute: paged
+    }
+
+    # See https://docs.vespa.ai/en/ranking.html
+    rank-profile default {
+        inputs {
+            query(q) tensor<int8>(x[96])
+            query(qt) tensor<bfloat16>(qt{}, x[128])
+        }
+        function all_sims() {
+            expression {
+                query(qt) * attribute(colbert)
+            }
+        }
+
+        # For each query token, get max sim across all doc tokens, then sum top 3
+        function query_token_max_sims() {
+            expression {
+                reduce(
+                    sum(all_sims(), x),
+                    max, dt
+                )
+            }
+        }
+
+        function top_3_query_token_sims() {
+            expression {
+                reduce(
+                    top(3, query_token_max_sims()),
+                    sum, qt
+                )
+            }
+        }
+
+        function max_sim() {
+            expression {
+                reduce(
+                    reduce(
+                        sum(
+                            all_sims() , x
+                        ),
+                        max, dt
+                    ),
+                    max,
+                    qt
+                )
+            }
+        }
+
+        function scale(val) {
+            expression {
+                2*atan(val)/(3.14159)
+            }
+        }
+        function similarity() {
+            expression {
+                1 - (distance(field, embedding_alibaba_gte_modernbert) / 768)
+            }
+        }
+        function normalized_bm25() {
+            expression {
+                scale(bm25(text))
+            }
+        }
+        first-phase {
+            expression:  normalized_bm25() + similarity()
+        }
+        second-phase {
+            expression: max_sim
+            rerank-count: 1000
+        }
+        match-features: max_sim normalized_bm25 similarity top_3_query_token_sims all_sims
+    }
+
+    rank-profile match-only {
+        inputs {
+            query(q) tensor<int8>(x[96])
+        }  
+        first-phase {
+            expression: random
+        }
+        
+    }
+
+    rank-profile bm25 inherits default {
+        function scale(val) {
+            expression {
+                2*atan(val)/(3.14159)
+            }
+        }
+        function normalized_bm25() {
+            expression {
+                scale(bm25(text))
+            }
+        }
+        first-phase {
+            expression: normalized_bm25()
+        }
+        second-phase {
+            expression: firstPhase
+        }
+    }
+
+     rank-profile semantic {
+        inputs {
+            query(q_alibaba_gte_modernbert_96_int8) tensor<int8>(x[96])
+        }
+        function similarity() {
+            expression {
+                1 - (distance(field, embedding_alibaba_gte_modernbert) / 768)
+            }
+        }
+        first-phase {
+            expression {
+                similarity
+            }
+        }
+        match-features {
+            similarity
+        }
+    }
+
+    rank-profile colbert inherits default {
+        first-phase {
+            expression: max_sim
+        }
+        second-phase {
+            expression: firstPhase
+        }
+    }
+}

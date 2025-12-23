@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+
+    <!-- See https://docs.vespa.ai/en/reference/services-container.html -->
+    <container id="default" version="1.0">
+
+        <!-- GTE-ModernColBERT embedder - See https://docs.vespa.ai/en/embedding.html#colbert-embedder -->
+        <component id="moderncolbert" type="colbert-embedder">
+            <transformer-model url="https://huggingface.co/thomasht86/GTE-ModernColBERT-v1-onnx/resolve/main/gte_moderncolbert.onnx"/>
+            <tokenizer-model url="https://huggingface.co/thomasht86/GTE-ModernColBERT-v1-onnx/resolve/main/tokenizer.json"/>
+            <transformer-output>token_embeddings</transformer-output>
+            <!-- GTE-ModernColBERT uses different token IDs than standard BERT/ColBERT -->
+            <max-tokens>8192</max-tokens>
+            <transformer-start-sequence-token>50281</transformer-start-sequence-token>  <!-- [CLS] -->
+            <transformer-end-sequence-token>50282</transformer-end-sequence-token>      <!-- [SEP] -->
+            <transformer-mask-token>50284</transformer-mask-token>                      <!-- [MASK] -->
+            <transformer-pad-token>50283</transformer-pad-token>                        <!-- [PAD] -->
+            <!-- PyLate trained with [Q] and [D] prefixes (with trailing space) -->
+            <query-token-id>50368</query-token-id>                                      <!-- [Q]  -->
+            <document-token-id>50369</document-token-id>                                <!-- [D]  -->
+        </component>
+        <component id="alibaba_gte_modernbert" type="hugging-face-embedder">
+            <transformer-model url="https://huggingface.co/Alibaba-NLP/gte-modernbert-base/resolve/main/onnx/model.onnx"/>
+            <tokenizer-model url="https://huggingface.co/Alibaba-NLP/gte-modernbert-base/resolve/main/tokenizer.json"/>
+            <max-tokens>8192</max-tokens>
+            <pooling-strategy>cls</pooling-strategy>
+        </component>
+        <document-api/>
+        <search/>
+        <nodes count="1"/>
+        
+    </container>
+
+    <!-- See https://docs.vespa.ai/en/reference/services-content.html -->
+    <content id="text" version="1.0">
+        <min-redundancy>1</min-redundancy>
+        <documents>
+            <document type="doc" mode="index" />
+        </documents>
+        <nodes count="1"/>
+    </content>
+
+</services>
