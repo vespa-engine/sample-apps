@@ -59,12 +59,18 @@ schema product {
   }
 
   rank-profile bm25 {
-    # This best matches the 'best_fields' (default) scoring in 'multi_match' ES queries.
-    function best_bm25() {
-      expression: max(bm25(title), bm25(description))
+   
+    function raw_bm25() {
+      expression: (0.6 * bm25(title)) + (0.4 * bm25(description))
     }
+      function scaled_bm25() {
+        # Squashes the raw BM25 sum into (0, 1).
+        # Adjust the denominator constant if you want a different curve.
+        expression: raw_bm25 / (raw_bm25 + 11)
+      }
+      
     first-phase {
-      expression: best_bm25
+      expression: scaled_bm25
     }
   }
 
@@ -78,9 +84,21 @@ schema product {
   }
 
   rank-profile hybrid inherits bm25, closeness {
+      function weighted_hybrid()
+      {
+        expression: 0.2 * scaled_bm25 + 0.8 * closeness_embedding
+      }
+      function closeness_embedding(){
+        expression: closeness(field, embedding)
+      }
     first-phase {
-      # This matches the addition of scores used in ES hybrid queries containing both 'query' ('multi_query') and 'knn'.
-      expression: best_bm25 + closeness(field, embedding)
+     
+      expression: weighted_hybrid()
+    }
+  match-features {
+    scaled_bm25()
+    closeness_embedding()
+    weighted_hybrid()
     }
   }
 
