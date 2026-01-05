@@ -351,7 +351,7 @@ def AboutThisDemo():
         },
         {
             "text": "Notebook to set up Vespa application and feed dataset",
-            "href": "https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html",
+            "href": "https://vespa-engine.github.io/pyvespa/examples/visual_pdf_rag_with_vespa_colpali_cloud.html",
         },
         {
             "text": "Web App (FastHTML) Code",

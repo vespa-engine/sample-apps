@@ -22,7 +22,7 @@ Also, 👇
 
 <a href="https://imgflip.com/i/98mhch"><img src="https://i.imgflip.com/98mhch.jpg" title="made at imgflip.com" alt="Funny meme about json output in demo"/></a>
 
-As a prerequisite, you should run [this notebook](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html) 
+As a prerequisite, you should run [this notebook](https://vespa-engine.github.io/pyvespa/examples/visual_pdf_rag_with_vespa_colpali_cloud.html) 
 to prepare the data and deploy the Vespa application. 
 
 ## Setting up your .env variables
