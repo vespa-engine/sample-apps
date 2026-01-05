@@ -78,26 +78,26 @@ Let's analyze the structure:
 [![logo](/assets/vespa-logomark-tiny.png) Album Recommendations](album-recommendation/) is the intro application to Vespa.
 Learn how to configure the schema for simple recommendation and search use cases.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Hybrid Search - Quickstart](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa.html) and
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Hybrid Search - Quickstart on Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/getting-started-pyvespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Hybrid Search - Quickstart](https://vespa-engine.github.io/pyvespa/getting-started-pyvespa.html) and
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Hybrid Search - Quickstart on Vespa Cloud](https://vespa-engine.github.io/pyvespa/getting-started-pyvespa-cloud.html)
 create a hybrid text search application combining traditional keyword matching with semantic vector search (dense retrieval).
 They also demonstrate the Vespa native embedder functionality.
 These are intro-level applications for Python users using more advanced Vespa features.
-Use [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Authenticating to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/authenticating-to-vespa-cloud.html) for Vespa Cloud credentials.
+Use [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Authenticating to Vespa Cloud](https://vespa-engine.github.io/pyvespa/authenticating-to-vespa-cloud.html) for Vespa Cloud credentials.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Querying Vespa](https://pyvespa.readthedocs.io/en/latest/query.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Querying Vespa](https://vespa-engine.github.io/pyvespa/query.html)
 is a good start for Python users, exploring how to query Vespa using the Vespa Query Language (YQL).
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Read and write operations](https://pyvespa.readthedocs.io/en/latest/reads-writes.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Read and write operations](https://vespa-engine.github.io/pyvespa/reads-writes.html)
 documents ways to feed, get, update, and delete data;
 Using context manager for efficiently managing resources and feeding streams of data using `feed_iter`,
 which can feed from streams, Iterables, Lists, and files by the use of generators.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Application packages](https://pyvespa.readthedocs.io/en/latest/application-packages.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Application packages](https://vespa-engine.github.io/pyvespa/application-packages.html)
 is a good intro to the concept of application packages in Vespa.
-Try [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Advanced Configuration](https://pyvespa.readthedocs.io/en/latest/advanced-configuration.html) for Vespa Services configuration.
+Try [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Advanced Configuration](https://vespa-engine.github.io/pyvespa/advanced-configuration.html) for Vespa Services configuration.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Examples](https://pyvespa.readthedocs.io/en/latest/examples/pyvespa-examples.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Examples](https://vespa-engine.github.io/pyvespa/examples/pyvespa-examples.html)
 is a repository of small snippets and examples, e.g., really simple vector distance search applications.
 
 The [![logo](/assets/vespa-logomark-tiny.png) News and Recommendation Tutorial](news/)
@@ -120,7 +120,7 @@ and searching efficiently over these representations.
 describes how to unlock the full potential of multimodal AI-powered vector representations using Vespa Cloud.
 
 [![logo](/assets/vespa-logomark-tiny.png) Vespa Multi-Vector Indexing with HNSW](multi-vector-indexing/) and
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Multi-vector indexing with HNSW](https://pyvespa.readthedocs.io/en/latest/examples/multi-vector-indexing.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Multi-vector indexing with HNSW](https://vespa-engine.github.io/pyvespa/examples/multi-vector-indexing.html)
 demonstrate how to index multiple vectors per document field for semantic search for longer documents.
 These are more advanced than the Hybrid Search examples in the Getting Started section.
 
@@ -143,11 +143,11 @@ Frozen data embeddings from foundational models is an emerging industry practice
 for reducing the complexity of maintaining and versioning embeddings.
 The frozen data embeddings are re-used for various tasks, such as classification, search, or recommendations.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Using Cohere Binary Embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/cohere-binary-vectors-in-vespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Using Cohere Binary Embeddings in Vespa](https://vespa-engine.github.io/pyvespa/examples/cohere-binary-vectors-in-vespa-cloud.html)
 demonstrates how to use the Cohere binary vectors with Vespa,
 including a re-ranking phase that uses the float query vector version for improved accuracy.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Billion-scale vector search with Cohere binary embeddings in Vespa](https://pyvespa.readthedocs.io/en/latest/examples/billion-scale-vector-search-with-cohere-embeddings-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Billion-scale vector search with Cohere binary embeddings in Vespa](https://vespa-engine.github.io/pyvespa/examples/billion-scale-vector-search-with-cohere-embeddings-cloud.html)
 uses the [Cohere int8 & binary Embeddings](https://cohere.com/blog/int8-binary-embeddings)
 with a coarse-to-fine search and re-ranking pipeline;
 This reduces costs but offers the same retrieval (nDCG) accuracy.
@@ -157,7 +157,7 @@ with an optional [HNSW index](https://docs.vespa.ai/en/approximate-nn-hnsw.html)
 The `int8` vector representation is stored on disk
 using Vespa’s [paged](https://docs.vespa.ai/en/attributes.html#paged-attributes) option.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Multilingual Hybrid Search with Cohere binary embeddings and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/multilingual-multi-vector-reps-with-cohere-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Multilingual Hybrid Search with Cohere binary embeddings and Vespa](https://vespa-engine.github.io/pyvespa/examples/multilingual-multi-vector-reps-with-cohere-cloud.html)
 demonstrates:
 * Building a multilingual search application over a sample of the German split of Wikipedia using
   [binarized Cohere embeddings](https://huggingface.co/datasets/Cohere/wikipedia-2023-11-embed-multilingual-v3-int8-binary).
@@ -165,24 +165,24 @@ demonstrates:
 * Hybrid search, combining the lexical matching capabilities of Vespa with Cohere binary embeddings.
 * Re-scoring the binarized vectors for improved accuracy.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: BGE-M3 - The Mother of all embedding models](https://pyvespa.readthedocs.io/en/latest/examples/mother-of-all-embedding-models-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: BGE-M3 - The Mother of all embedding models](https://vespa-engine.github.io/pyvespa/examples/mother-of-all-embedding-models-cloud.html)
 demonstrates how to use the [BGE-M3](https://github.com/FlagOpen/FlagEmbedding/blob/master/research/BGE_M3/BGE_M3.pdf) embeddings
 and represent all three embedding representations in Vespa.
 This code is inspired by the [BAAI/bge-m3 README](https://huggingface.co/BAAI/bge-m3).
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Evaluating retrieval with Snowflake arctic embed](https://pyvespa.readthedocs.io/en/latest/examples/evaluating-with-snowflake-arctic-embed.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Evaluating retrieval with Snowflake arctic embed](https://vespa-engine.github.io/pyvespa/examples/evaluating-with-snowflake-arctic-embed.html)
 shows how different rank profiles in Vespa can be set up and evaluated.
 For the rank profiles that use semantic search,
 we will use the small version of [Snowflake’s arctic embed model series](https://huggingface.co/Snowflake/snowflake-arctic-embed-s) for generating embeddings.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Exploring the potential of OpenAI Matryoshka 🪆 embeddings with Vespa](https://pyvespa.readthedocs.io/en/latest/examples/Matryoshka_embeddings_in_Vespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Exploring the potential of OpenAI Matryoshka 🪆 embeddings with Vespa](https://vespa-engine.github.io/pyvespa/examples/Matryoshka_embeddings_in_Vespa-cloud.html)
 demonstrates the effectiveness of using the recently released (as of January 2024) OpenAI `text-embedding-3` embeddings with Vespa.
 Specifically, we are interested in the [Matryoshka Representation Learning](https://aniketrege.github.io/blog/2024/mrl/) technique used in training,
 which lets us _"shorten embeddings (i.e., remove some numbers from the end of the sequence) without the embedding losing its concept-representing properties"_.
 This allows us to trade off a small amount of accuracy in exchange for much smaller embedding sizes,
 so we can store more documents and search them faster.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Using Mixedbread.ai embedding model with support for binary vectors](https://pyvespa.readthedocs.io/en/latest/examples/mixedbread-binary-embeddings-with-sentence-transformers-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Using Mixedbread.ai embedding model with support for binary vectors](https://vespa-engine.github.io/pyvespa/examples/mixedbread-binary-embeddings-with-sentence-transformers-cloud.html)
 shows how to use the [mixedbread-ai/mxbai-embed-large-v1](https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1) model
 with support for binary vectors with Vespa.
 The notebook example also includes a re-ranking phase that uses the float query vector version for improved accuracy.
@@ -204,42 +204,42 @@ This application has three versions of an end-to-end RAG application:
   This includes using Vespa Cloud's [Secret Store](https://cloud.vespa.ai/en/security/secret-store.html#secret-management)
   to save the OpenAI API key.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Building cost-efficient retrieval-augmented personal AI assistants](https://pyvespa.readthedocs.io/en/latest/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Building cost-efficient retrieval-augmented personal AI assistants](https://vespa-engine.github.io/pyvespa/examples/scaling-personal-ai-assistants-with-streaming-mode-cloud.html)
 uses [streaming mode](https://docs.vespa.ai/en/streaming-search.html)
 for cost-efficient retrieval for applications that store and retrieve personal data.
 This notebook connects a custom [LlamaIndex Retriever](https://docs.llamaindex.ai/)
 with a Vespa app using streaming mode to retrieve personal data.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://pyvespa.readthedocs.io/en/latest/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Turbocharge RAG with LangChain and Vespa Streaming Mode for Partitioned Data](https://vespa-engine.github.io/pyvespa/examples/turbocharge-rag-with-langchain-and-vespa-streaming-mode-cloud.html)
 uses [streaming mode](https://docs.vespa.ai/en/streaming-search.html)
 to build cost-efficient RAG applications over naturally sharded data - also available as a blog post:
 [Turbocharge RAG with LangChain and Vespa Streaming Mode for Sharded Data](https://blog.vespa.ai/turbocharge-rag-with-langchain-and-vespa-streaming-mode/).
 This example features using [elementSimilarity](https://docs.vespa.ai/en/reference/rank-features.html#elementSimilarity(name))
 in search results to easily inspect each chunk's closeness to the query embedding.
 
-Also try [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Chat with your pdfs with ColBERT, LangChain, and Vespa](https://pyvespa.readthedocs.io/en/latest/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html) -
+Also try [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Chat with your pdfs with ColBERT, LangChain, and Vespa](https://vespa-engine.github.io/pyvespa/examples/chat_with_your_pdfs_using_colbert_langchain_and_Vespa-cloud.html) -
 this demonstrates how you can now use ColBERT ranking natively in Vespa,
 which handles the ColBERT embedding process with no custom code.
 
 
 
 ## Visual Search
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Visual PDF RAG with Vespa - ColPali demo application](https://pyvespa.readthedocs.io/en/latest/examples/visual_pdf_rag_with_vespa_colpali_cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Visual PDF RAG with Vespa - ColPali demo application](https://vespa-engine.github.io/pyvespa/examples/visual_pdf_rag_with_vespa_colpali_cloud.html)
 is an end-to-end demo application for visual retrieval of PDF pages, including a frontend web application -
 try [vespa-engine-colpali-vespa-visual-retrieval.hf.space](https://vespa-engine-colpali-vespa-visual-retrieval.hf.space/) for a live demo.
 The main goal of the demo is to make it easy to create your own PDF Enterprise Search application using Vespa!
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Vespa 🤝 ColPali: Efficient Document Retrieval with Vision Language Models](https://pyvespa.readthedocs.io/en/latest/examples/colpali-document-retrieval-vision-language-models-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Vespa 🤝 ColPali: Efficient Document Retrieval with Vision Language Models](https://vespa-engine.github.io/pyvespa/examples/colpali-document-retrieval-vision-language-models-cloud.html)
 demonstrates how to retrieve PDF pages using the embeddings generated by the [ColPali](https://huggingface.co/vidore/colpali) model.
 ColPali is a powerful Vision Language Model (VLM) that can generate embeddings for images and text.
 This notebook uses ColPali to generate embeddings for images of PDF _pages_ and store them in Vespa.
 We also store the base64-encoded image of the PDF page and some metadata like _title_ and _url_.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Scaling ColPALI (VLM) Retrieval](https://pyvespa.readthedocs.io/en/latest/examples/simplified-retrieval-with-colpali-vlm_Vespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Scaling ColPALI (VLM) Retrieval](https://vespa-engine.github.io/pyvespa/examples/simplified-retrieval-with-colpali-vlm_Vespa-cloud.html)
 demonstrates how to represent [ColPali](https://huggingface.co/vidore/colpali) in Vespa and to scale to large collections.
 Also see the [Scaling ColPali to billions of PDFs with Vespa](https://blog.vespa.ai/scaling-colpali-to-billions/) blog post.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: ColPali Ranking Experiments on DocVQA](https://pyvespa.readthedocs.io/en/latest/examples/colpali-benchmark-vqa-vlm_Vespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: ColPali Ranking Experiments on DocVQA](https://vespa-engine.github.io/pyvespa/examples/colpali-benchmark-vqa-vlm_Vespa-cloud.html)
 shows how to reproduce the ColPali results on [DocVQA](https://huggingface.co/datasets/vidore/docvqa_test_subsampled) with Vespa.
 The dataset consists of PDF documents with questions and answers.
 We demonstrate how we can binarize the patch embeddings
@@ -247,7 +247,7 @@ and replace the float [MaxSim](https://blog.vespa.ai/scaling-colpali-to-billions
 with a [hamming](https://docs.vespa.ai/en/reference/schema-reference.html#hamming)-based MaxSim
 without much loss in ranking accuracy but with a significant speedup (close to 4x) and reducing the memory (and storage) requirements by 32x.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: PDF-Retrieval using ColQWen2 (ColPali) with Vespa](https://pyvespa.readthedocs.io/en/latest/examples/pdf-retrieval-with-ColQwen2-vlm_Vespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: PDF-Retrieval using ColQWen2 (ColPali) with Vespa](https://vespa-engine.github.io/pyvespa/examples/pdf-retrieval-with-ColQwen2-vlm_Vespa-cloud.html)
 is a continuation of the notebooks related to the ColPali models (above) for complex document retrieval,
 and demonstrates use of the [ColQWen2](https://huggingface.co/vidore/colqwen2-v0.1) model checkpoint.
 
@@ -293,11 +293,11 @@ bi-encoders, cross-encoders, and late-interaction models (ColBERT):
 With Vespa’s phased ranking capabilities,
 doing cross-encoder inference for a subset of documents at a later stage in the ranking pipeline
 can be a good trade-off between ranking performance and latency.
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Using Mixedbread.ai cross-encoder for reranking in Vespa.ai](https://pyvespa.readthedocs.io/en/latest/examples/cross-encoders-for-global-reranking.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Using Mixedbread.ai cross-encoder for reranking in Vespa.ai](https://vespa-engine.github.io/pyvespa/examples/cross-encoders-for-global-reranking.html)
 shows how to use the [Mixedbread.ai](https://www.mixedbread.ai/)
 cross-encoder for [global-phase reranking](https://docs.vespa.ai/en/reference/schema-reference.html#using-a-global-phase-expression) in Vespa.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_Vespa-cloud.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://vespa-engine.github.io/pyvespa/examples/colbert_standalone_Vespa-cloud.html)
 illustrates using the [colbert-ai package](https://github.com/stanford-futuredata/ColBERT) to produce token vectors,
 instead of using the native Vespa [ColBERT embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder).
 The guide illustrates how to feed and query using a single passage representation:
@@ -325,7 +325,7 @@ ColBERT token-level embeddings:
   and the tensor expressions for performing two types of extended ColBERT late-interaction for long-context retrieval.
   This app uses [trec-eval](https://github.com/usnistgov/trec_eval) for evaluation using
   [nDCG](https://en.wikipedia.org/wiki/Discounted_cumulative_gain).
-* [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Standalone ColBERT + Vespa for long-context ranking](https://pyvespa.readthedocs.io/en/latest/examples/colbert_standalone_long_context_Vespa-cloud.html)
+* [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Standalone ColBERT + Vespa for long-context ranking](https://vespa-engine.github.io/pyvespa/examples/colbert_standalone_long_context_Vespa-cloud.html)
   is a guide on how to use the [ColBERT](https://github.com/stanford-futuredata/ColBERT) package to produce token-level vectors,
   as an alternative to using the native Vespa [ColBERT embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder).
   It illustrates how to feed multiple passages per Vespa document (long-context):
@@ -333,7 +333,7 @@ ColBERT token-level embeddings:
   * Use Vespa hex feed format for binary vectors with mixed vespa tensors.
   * How to query Vespa with the ColBERT query tensor representation.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: LightGBM: Training the model with Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: LightGBM: Training the model with Vespa features](https://vespa-engine.github.io/pyvespa/examples/lightgbm-with-categorical.html)
 deploys and uses a LightGBM model in a Vespa application.
 The tutorial runs through how to:
 1. Train a LightGBM classification model with variable names supported by Vespa.
@@ -343,7 +343,7 @@ The tutorial runs through how to:
 5. Feed data to the Vespa application.
 6. Assert that the LightGBM predictions from the deployed model are correct.
 
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: LightGBM: Mapping model features to Vespa features](https://pyvespa.readthedocs.io/en/latest/examples/lightgbm-with-categorical-mapping.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: LightGBM: Mapping model features to Vespa features](https://vespa-engine.github.io/pyvespa/examples/lightgbm-with-categorical-mapping.html)
 shows how to deploy a LightGBM model with feature names that do not match Vespa feature names.
 In addition to the steps in the app above, this tutorial:
 1. Trains a LightGBM classification model with generic feature names that will not be available in the Vespa application.
@@ -352,14 +352,14 @@ In addition to the steps in the app above, this tutorial:
 
 
 ## Performance
-[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Feeding performance](https://pyvespa.readthedocs.io/en/latest/examples/feed_performance.html)
+[![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Feeding performance](https://vespa-engine.github.io/pyvespa/examples/feed_performance.html)
 intends to shine some light on the different modes of feeding documents to Vespa, looking at 4 different methods:
 * Using `VespaSync`
 * Using `VespaAsync`
 * Using `feed_iterable()`
 * Using [Vespa CLI](https://docs.vespa.ai/en/vespa-cli)
 
-Use [![logo](/assets/vespa-logomark-tiny.png) Feeding to Vespa Cloud](https://pyvespa.readthedocs.io/en/latest/examples/feed_performance_cloud.html)
+Use [![logo](/assets/vespa-logomark-tiny.png) Feeding to Vespa Cloud](https://vespa-engine.github.io/pyvespa/examples/feed_performance_cloud.html)
 to test feeding using [Vespa Cloud](https://vespa.ai/free-trial/).
 
 
