@@ -1,0 +1,61 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+# A description of a type of data, how to store and index it, and what to compute over the data elements
+#
+# See:
+#  - https://docs.vespa.ai/en/schemas.html
+schema music {
+
+    document music {
+
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+    }
+
+    # Binary embedding field with hamming distance for semantic search
+    field embedding type tensor<int8>(x[96]) {
+        indexing: input text | embed alibaba_gte_modernbert | pack_bits | index | attribute
+        attribute {
+            distance-metric: hamming
+        }
+        index {
+            hnsw {
+                max-links-per-node: 16
+                neighbors-to-explore-at-insert: 200
+            }
+        }
+    }
+
+    fieldset default {
+        fields: text
+    }
+
+    # Semantic search rank profile demonstrating both closeness calculations
+    # See https://docs.vespa.ai/en/ranking.html
+    rank-profile semantic {
+        inputs {
+            query(q) tensor<int8>(x[96])
+        }
+
+        # Standard closeness (1 / (1 + distance))
+        function closeness_score() {
+            expression: closeness(field, embedding)
+        }
+
+        # Normalized binary closeness: 1 - (hamming_distance / max_hamming_distance)
+        # Max hamming distance for 96-dim int8 vectors = 96 * 8 = 768 bits
+        function similarity() {
+            expression: 1 - (distance(field, embedding) / 768)
+        }
+
+        first-phase {
+            expression: similarity()
+        }
+
+        summary-features: closeness_score similarity
+    }
+
+}

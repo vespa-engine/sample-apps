@@ -1,0 +1,5 @@
+{"put": "id:music:music::doc1", "fields": {"text": "Coldplay is a British rock band known for their melodic pop rock sound and anthemic songs"}}
+{"put": "id:music:music::doc2", "fields": {"text": "Metallica is an American heavy metal band famous for their aggressive thrash metal style"}}
+{"put": "id:music:music::doc3", "fields": {"text": "Diana Krall is a Canadian jazz pianist and singer known for her smooth vocal style"}}
+{"put": "id:music:music::doc4", "fields": {"text": "Billie Eilish is an American pop singer known for her whispered vocals and dark pop sound"}}
+{"put": "id:music:music::doc5", "fields": {"text": "The Beatles were a legendary rock band from Liverpool who revolutionized popular music"}}
