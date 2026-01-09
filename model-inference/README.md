@@ -90,7 +90,7 @@ $ vespa deploy --wait 300
 
 #### Deployment note
 It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
+[Vespa Cloud](https://docs.vespa.ai/en/basics/deploy-an-application-java#deploy-sample-applications-java).
 
 Wait for the application endpoint to become available:
 <pre data-test="exec">

@@ -92,7 +92,7 @@ to change which resources should be available to the instance when deploying to 
 We have found that using one or more GPU nodes massively speeds up feeding
 (especially for NQ and other large datasets), as it embeds documents faster.
 
-To create and deploy the app, first follow either steps 1-4 and 6 in the Vespa Cloud [getting started guide](https://cloud.vespa.ai/en/getting-started),
+To create and deploy the app, first follow either steps 1-4 and 6 in the Vespa Cloud [getting started guide](https://docs.vespa.ai/en/basics/deploy-an-application),
 or steps 1-4 in the [Docker quick start guide](https://docs.vespa.ai/en/vespa-quick-start.html).
 Then deploy the app, specifying the application package like this:
 

@@ -9,7 +9,7 @@
 
 # Vespa sample applications - album recommendation, with Java components
 
-Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started) to deploy this.
+Follow [Vespa getting started](https://docs.vespa.ai/en/basics/deploy-an-application) to deploy this.
 
 ## Introduction
 

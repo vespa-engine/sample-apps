@@ -18,7 +18,7 @@ which takes a string as an input and returns a vector embedding of that string.
 
 ### Cloud deployment
 
-1. Create a new application in Vespa Cloud by following steps 1-4 in the [quick start guide](https://cloud.vespa.ai/en/getting-started)
+1. Create a new application in Vespa Cloud by following steps 1-4 in the [quick start guide](https://docs.vespa.ai/en/basics/deploy-an-application)
 2. Clone this repository: ``vespa clone examples/embedding-service embedding-service && cd embedding-service``
 3. Download the models:
 ```
@@ -51,7 +51,7 @@ curl -o src/main/application/embedder-models/e5-small-v2/tokenizer.json https://
 
 ### Adding more local embedders
 
-More embedders from the [model hub](https://cloud.vespa.ai/en/model-hub) can be added
+More embedders from the [model hub](https://docs.vespa.ai/en/rag/model-hub) can be added
 for local deployments, but this increases compile/deployment time.
 To add a model, download its ``model.onnx`` and ``tokenizer.json`` files and add them
 to a new subdirectory in ``src/main/application/embedder-models``.

@@ -92,7 +92,7 @@ $ vespa deploy --wait 300 --color never
 
 #### Deployment note
 It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
+[Vespa Cloud](https://docs.vespa.ai/en/basics/deploy-an-application-java#deploy-sample-applications-java).
 
 Running [Vespa System Tests](https://docs.vespa.ai/en/reference/testing.html)
 which runs a set of basic tests to verify that the application is working as expected.

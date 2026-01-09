@@ -22,7 +22,7 @@ public class EmbeddingHandler extends ThreadedHttpRequestHandler {
     private ComponentRegistry<Embedder> availableEmbedders;
     private ObjectMapper jsonMapper;
 
-    // Mappings fetched from https://cloud.vespa.ai/en/model-hub#using-e5-models
+    // Mappings fetched from https://docs.vespa.ai/en/rag/model-hub#using-e5-models
     private final Map<String, TensorType> modelTensorTypeMap = Map.of(
             "e5-small-v2", TensorType.fromSpec("tensor<float>(x[384])"),
             "e5-base-v2", TensorType.fromSpec("tensor<float>(x[768])"),

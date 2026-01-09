@@ -1,6 +1,6 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
-# See https://cloud.vespa.ai/en/automated-deployments for details
+# See https://docs.vespa.ai/en/operations/automated-deployments for details
 
 name: Deploy an example application with HTTP Tests to production
 on:
