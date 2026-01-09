@@ -234,8 +234,8 @@ $ vespa deploy --wait 300
 
 #### Deployment note
 It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started-java#deploy-sample-applications-java).
-For Vespa cloud deployments to [perf env](https://cloud.vespa.ai/en/reference/zones.html)
+[Vespa Cloud](https://docs.vespa.ai/en/basics/deploy-an-application-java#deploy-sample-applications-java).
+For Vespa cloud deployments to [perf env](https://docs.vespa.ai/en/operations/zones.html)
 replace the [src/main/application/services.xml](src/main/application/services.xml) with
 [src/main/application/services-cloud.xml](src/main/application/services-cloud.xml) -
 the cloud deployment uses dedicated clusters for `feed` and `query`.

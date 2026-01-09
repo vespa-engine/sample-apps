@@ -11,7 +11,7 @@
 A minimal Vespa Cloud application for deployment into a Production zone - with basic Java-tests.
 
 An application using Java test code must be deployed using the procedure for
-[production deployment with components](https://cloud.vespa.ai/en/production-deployment#production-deployment-with-components) -
+[production deployment with components](https://docs.vespa.ai/en/operations/production-deployment.html#production-deployment-with-components) -
 steps:
 
 ```
@@ -52,5 +52,5 @@ One can also use a local instance:
     mvn test -D test.categories=staging-setup -D vespa.test.config=ext/test-config-local.json
     mvn test -D test.categories=staging       -D vespa.test.config=ext/test-config-local.json
 
-See [Vespa Cloud Automated Deployments](https://cloud.vespa.ai/en/automated-deployments)
+See [Vespa Cloud Automated Deployments](https://docs.vespa.ai/en/operations/automated-deployments)
 for an overview of production deployments.

@@ -36,7 +36,7 @@
       <binding>http://*/embedding</binding>
     </handler>
 
-    <!-- Embedders fetched from https://cloud.vespa.ai/en/model-hub -->
+    <!-- Embedders fetched from https://docs.vespa.ai/en/rag/model-hub -->
 
     <!-- Available for local deployments and in Vespa Cloud
     -->

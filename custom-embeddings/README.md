@@ -84,7 +84,7 @@ $ vespa deploy --wait 300
 
 #### Deployment note
 It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
+[Vespa Cloud](https://docs.vespa.ai/en/basics/deploy-an-application#deploy-sample-applications).
 
 
 ## Indexing sample documents

@@ -2,7 +2,7 @@
 package=ai.vespa.example.reranker
 
 # The *token* endpoint of the application whose results should be reranked
-# See https://cloud.vespa.ai/en/security/guide#application-key to create a token endpoint
+# See https://docs.vespa.ai/en/security/guide#application-key to create a token endpoint
 endpoint string
 
 # The default number of hits to rerank from the underlying endpoint, if not specified in the request.

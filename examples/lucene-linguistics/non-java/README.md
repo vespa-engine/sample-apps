@@ -18,7 +18,7 @@ Requires at least Vespa 8.315.19
 
 ## To try this application
 
-Follow [Vespa getting started](https://cloud.vespa.ai/en/getting-started)
+Follow [Vespa getting started](https://docs.vespa.ai/en/basics/deploy-an-application)
 through the <code>vespa deploy</code> step, cloning `examples/lucene-linguistics/non-java` instead of `album-recommendation`.
 
 Feed 3 sample documents in Norwegian, Swedish, and Finnish: 

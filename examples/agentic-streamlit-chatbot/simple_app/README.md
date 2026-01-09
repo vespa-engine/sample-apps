@@ -18,7 +18,7 @@
 
 - Navigate to the `app` subdirectory
 - Choose a name for your app. For example `ecommercebot`
-- Follow instructions in the [**Getting Started**](https://cloud.vespa.ai/en/getting-started) document. Please note the following as you go through the documentation:
+- Follow instructions in the [**Getting Started**](https://docs.vespa.ai/en/basics/deploy-an-application) document. Please note the following as you go through the documentation:
   - Skip Step 5. as you have already cloned the app directory.
   - You will need your tenant name you created previously.
   - When adding the public certificates with `vespa auth cert`, it will give you the absolute path of the certificate and the private key. Please note them down.

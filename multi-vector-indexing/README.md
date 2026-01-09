@@ -73,14 +73,14 @@ $ vespa deploy --wait 300
 
 #### Deployment note
 It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
+[Vespa Cloud](https://docs.vespa.ai/en/basics/deploy-an-application#deploy-sample-applications).
 
 
 ## Indexing sample Wikipedia articles
 
 Index the Wikipedia articles. This embeds all the paragraphs using the native embedding model, which
-is computationally expensive for CPU. For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu)
-instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled.
+is computationally expensive for CPU. For production use cases, use [Vespa Cloud with GPU](https://docs.vespa.ai/en/reference/applications/services/services#gpu)
+instances and [autoscaling](https://docs.vespa.ai/en/operations/autoscaling) enabled.
 
 <pre data-test="exec">
 $ zstdcat ext/articles.jsonl.zst | vespa feed -

@@ -15,7 +15,7 @@ it is useful when you want to quickly do ranking experiments without rewriting a
 ## Usage
 
 1. Make sure the application to rerank has a 
-[token endpoint](https://cloud.vespa.ai/en/security/guide#application-key).
+[token endpoint](https://docs.vespa.ai/en/security/guide#application-key).
 2. `vespa clone examples/reranker`
 3. Add your endpoint to the reranker config in `src/main/application/services.xml`
    and optionally change reranker parameters (these can also be passed in the request).

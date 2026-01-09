@@ -18,5 +18,5 @@ vespa auth cert -f
 vespa prod deploy
 ```
 
-See [Production Deployment](https://cloud.vespa.ai/en/production-deployment) for details,
-and read more about [Vespa Cloud Automated Deployments](https://cloud.vespa.ai/en/automated-deployments).
+See [Production Deployment](https://docs.vespa.ai/en/operations/production-deployment.html) for details,
+and read more about [Vespa Cloud Automated Deployments](https://docs.vespa.ai/en/operations/automated-deployments).

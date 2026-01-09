@@ -99,10 +99,10 @@ In the following section, we will set the Vespa CLI target to the cloud.
 Make sure you have created a tenant at
 [console.vespa-cloud.com](https://console.vespa-cloud.com/). Make a note of the
 tenant's name; it will be used in the next steps. For more information, see the
-Vespa Cloud [getting started](https://cloud.vespa.ai/en/getting-started) guide.
+Vespa Cloud [getting started](https://docs.vespa.ai/en/basics/deploy-an-application) guide.
 
 Add your AWS Bedrock API key to the Vespa secret store as described in
-[Secret Management](https://cloud.vespa.ai/en/security/secret-store.html#secret-management).
+[Secret Management](https://docs.vespa.ai/en/security/secret-store.html#secret-management).
 Unless you already have one, create a new vault, and add your AWS Bedrock API key as a secret.
 
 The `services.xml` file must refer to the newly added secret in the secret store.

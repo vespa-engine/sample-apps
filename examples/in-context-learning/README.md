@@ -25,7 +25,7 @@ ollama run llama3.1
 ```
 
 Use the [quick start](https://docs.vespa.ai/en/vespa-quick-start.html) or
-[Vespa getting started](https://cloud.vespa.ai/en/getting-started) to deploy this - laptop example:
+[Vespa getting started](https://docs.vespa.ai/en/basics/deploy-an-application) to deploy this - laptop example:
 ```shell
 podman run --detach --name vespa --hostname vespa-container \  
   --publish 127.0.0.1:8080:8080 --publish 127.0.0.1:19071:19071 \

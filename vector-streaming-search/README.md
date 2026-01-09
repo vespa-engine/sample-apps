@@ -78,15 +78,15 @@ $ vespa deploy --wait 300
 
 #### Deployment note
 It is possible to deploy this app to
-[Vespa Cloud](https://cloud.vespa.ai/en/getting-started#deploy-sample-applications).
+[Vespa Cloud](https://docs.vespa.ai/en/basics/deploy-an-application#deploy-sample-applications).
 
 
 ## Feeding sample mail documents
 
 During feeding the `subject` and `content` of a mail document are embedded using the Bert embedding model.
 This is computationally expensive for CPU.
-For production use cases, use [Vespa Cloud with GPU](https://cloud.vespa.ai/en/reference/services#gpu)
-instances and [autoscaling](https://cloud.vespa.ai/en/autoscaling) enabled.
+For production use cases, use [Vespa Cloud with GPU](https://docs.vespa.ai/en/reference/applications/services/services#gpu)
+instances and [autoscaling](https://docs.vespa.ai/en/operations/autoscaling) enabled.
 
 <pre data-test="exec">
 $ vespa feed ext/docs.json
