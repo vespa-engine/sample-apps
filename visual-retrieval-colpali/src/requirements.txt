@@ -97,7 +97,7 @@ fastcore==1.8.15
     #   pyvespa
 fastlite==0.2.1
     # via python-fasthtml
-filelock==3.20.1
+filelock==3.20.3
     # via
     #   datasets
     #   huggingface-hub
