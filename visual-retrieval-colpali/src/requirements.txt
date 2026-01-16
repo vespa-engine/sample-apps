@@ -319,7 +319,7 @@ psutil==6.0.0
     #   peft
 pyarrow==17.0.0
     # via datasets
-pyasn1==0.6.1
+pyasn1==0.6.2
     # via
     #   pyasn1-modules
     #   rsa
