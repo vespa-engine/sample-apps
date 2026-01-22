@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0" minimum-required-vespa-version="8.315.19">
+  <container id="container" version="1.0">
+    <component id="linguistics"
+    class="com.yahoo.language.lucene.LuceneLinguistics"
+    bundle="lucene-linguistics">
+      <config name="com.yahoo.language.lucene.lucene-analysis">
+        <analysis>
+          <item key="en">
+            <tokenizer>
+              <name>pattern</name>
+              <conf>
+                <item key="pattern">\s|\(|\)</item>
+              </conf>
+            </tokenizer>
+            <tokenFilters>
+              <item>
+                <name>lowercase</name>
+              </item>
+            </tokenFilters>
+          </item>
+        </analysis>
+      </config>
+    </component>
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+  <content id="content" version="1.0">
+    <min-redundancy>1</min-redundancy>
+    <documents>
+      <document type="doc" mode="index"/>
+    </documents>
+  </content>
+</services>

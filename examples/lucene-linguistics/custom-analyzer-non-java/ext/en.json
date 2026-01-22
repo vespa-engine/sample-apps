@@ -1,0 +1,7 @@
+{
+	"put": "id:en:doc::1", 
+	"fields": {
+		"text": "c++ developer (*nix OS)",
+		"language": "en"
+	}
+}
