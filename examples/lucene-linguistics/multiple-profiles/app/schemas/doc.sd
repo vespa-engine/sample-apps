@@ -8,7 +8,7 @@ schema doc {
 
         field title type string {
             indexing: summary | index
-            # use this when the profile (analyzer configuration) is the same for indexing and searching
+            # use this when the profile is the same for indexing and searching
             linguistics {
                 profile: lowerFolding
             }
