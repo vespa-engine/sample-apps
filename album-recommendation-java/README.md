@@ -49,8 +49,8 @@ to see the custom metric in
 <a href="http://localhost:19092/metrics/v1/values?consumer=my-metrics" data-proofer-ignore>
 http://localhost:19092/metrics/v1/values?consumer=my-metrics</a>
 
-This code uses a [Counter](https://github.com/vespa-engine/vespa/blob/master/container-core/src/main/java/com/yahoo/metrics/simple/Counter.java) -
-A [Gauge](https://github.com/vespa-engine/vespa/blob/master/container-core/src/main/java/com/yahoo/metrics/simple/Gauge.java)
+This code uses a [Counter](https://github.com/vespa-engine/vespa/blob/master/container-disc/src/main/java/com/yahoo/metrics/simple/Counter.java) -
+A [Gauge](https://github.com/vespa-engine/vespa/blob/master/container-disc/src/main/java/com/yahoo/metrics/simple/Gauge.java)
 example, with a dimension could be like:
 
 ````

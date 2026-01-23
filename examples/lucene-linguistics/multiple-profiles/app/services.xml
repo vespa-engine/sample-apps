@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0" minimum-required-vespa-version="8.315.19">
+  <container id="container" version="1.0">
+    <component id="linguistics"
+    class="com.yahoo.language.lucene.LuceneLinguistics"
+    bundle="lucene-linguistics">
+      <config name="com.yahoo.language.lucene.lucene-analysis">
+      <!-- we store synonyms (and potentially other files) in this directory under the application package -->
+      <configDir>lucene-linguistics</configDir>
+        <analysis>
+          <!-- profile is essentially the name of the analyzer configuration; use it in the schema and at query time -->
+          <item key="profile=lowerFolding;language=en">
+            <tokenizer>
+              <name>standard</name>
+            </tokenizer>
+            <tokenFilters>
+              <item>
+                <name>lowercase</name>
+              </item>
+              <item>
+                <name>asciiFolding</name>
+              </item>
+            </tokenFilters>
+          </item>
+
+          <item key="profile=lowerFoldingStemming;language=en">
+            <tokenizer>
+              <name>standard</name>
+            </tokenizer>
+            <tokenFilters>
+              <item>
+                <name>lowercase</name>
+              </item>
+              <item>
+                <name>asciiFolding</name>
+              </item>
+              <item>
+                <name>kStem</name>
+              </item>
+            </tokenFilters>
+          </item>
+
+          <item key="profile=lowerFoldingStemmingSynonyms;language=en">
+            <tokenizer>
+              <name>standard</name>
+            </tokenizer>
+            <tokenFilters>
+              <item>
+                <name>lowercase</name>
+              </item>
+              <item>
+                <name>asciiFolding</name>
+              </item>
+              <item>
+                <name>kStem</name>
+              </item>
+              <item>
+                <name>synonymGraph</name>
+                <conf>
+                  <item key="synonyms">en/synonyms.txt</item>
+                </conf>
+              </item>
+            </tokenFilters>
+          </item>
+        </analysis>
+      </config>
+    </component>
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+  <content id="content" version="1.0">
+    <min-redundancy>1</min-redundancy>
+    <documents>
+      <document type="doc" mode="index"/>
+    </documents>
+  </content>
+</services>

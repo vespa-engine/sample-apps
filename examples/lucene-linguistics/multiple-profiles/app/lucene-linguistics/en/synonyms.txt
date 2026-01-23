@@ -1,0 +1,2 @@
+# using Solr synonyms format (default for synonymGraph token filter)
+dubious =>special

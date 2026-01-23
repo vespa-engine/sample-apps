@@ -1,0 +1,27 @@
+schema doc {
+
+    document doc {
+        field language type string {
+            indexing: set_language | summary | index
+            match: word
+        }
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+    }
+
+    fieldset default {
+        fields: text
+    }
+    document-summary debug-text-tokens {
+        summary documentid {}
+        summary language {}
+        summary text {}
+        summary text_tokens {
+            source: text
+            tokens
+        }
+        from-disk
+    }
+}

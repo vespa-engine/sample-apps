@@ -1,0 +1,8 @@
+{
+	"put": "id:en:doc::1", 
+	"fields": {
+		"title": "Title with special characters åäö",
+		"description": "No character specials here",
+		"language": "en"
+	}
+}

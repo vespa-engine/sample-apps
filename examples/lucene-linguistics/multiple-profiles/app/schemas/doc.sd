@@ -1,0 +1,47 @@
+schema doc {
+
+    document doc {
+        field language type string {
+            indexing: set_language | summary | index
+            match: word
+        }
+
+        field title type string {
+            indexing: summary | index
+            # use this when the profile is the same for indexing and searching
+            linguistics {
+                profile: lowerFolding
+            }
+            index: enable-bm25
+        }
+
+        field description type string {
+            indexing: summary | index
+            # profile/analyzer can be different for index and search strings
+            # typical use-case: synonym expansion (usually done at search time only)
+            linguistics {
+                profile {
+                    index: lowerFoldingStemming
+                    search: lowerFoldingStemmingSynonyms
+                }
+            }
+            index: enable-bm25
+        }
+    }
+
+    document-summary debug-text-tokens {
+        summary documentid {}
+        summary language {}
+        summary title {}
+        summary description {}
+        summary title_tokens {
+            source: title
+            tokens
+        }
+        summary description_tokens {
+            source: description
+            tokens
+        }
+        from-disk
+    }
+}
