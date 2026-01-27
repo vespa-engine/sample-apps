@@ -80,7 +80,6 @@ This works with `userQuery()` and the `grammar.profile` annotation:
 ```bash
 curl -s -X POST -d '{
   "yql":"select * from sources * where where {defaultIndex:'title', grammar.profile: 'lowerFoldingStemmingSynonyms', grammar:'linguistics'}userInput('dubious')",
-  "model.type.profile": "lowerFoldingStemmingSynonyms",
   "presentation.summary": "debug-text-tokens",
   "model.locale": "en",
   "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
