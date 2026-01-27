@@ -50,7 +50,7 @@ curl -s -X POST -d '{
 
 ### Different profiles for query and index
 
-For the `description` field, we [the schema defines a different profile for search time](app/schemas/doc.sd) which does synonym expansion. So it will match "dubious" with "special":
+For the `description` field, [the schema defines a different profile for search time](app/schemas/doc.sd) which does synonym expansion. So it will match "dubious" from the query string with "special" in the index:
 
 ```bash
 curl -s -X POST -d '{
@@ -75,7 +75,7 @@ curl -s -X POST -d '{
 
 ### Force a different profile for a specific query clause
 
-This works with `userQuery()` and the `grammar.profile` annotation:
+This works with `userInput()` and the `grammar.profile` annotation:
 
 ```bash
 curl -s -X POST -d '{
