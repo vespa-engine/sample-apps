@@ -35,7 +35,9 @@ through the <code>vespa deploy</code> step, cloning `examples/lucene-linguistics
 vespa feed ext/*.json
 ```
 
-## Run test queries
+## Run queries
+
+### Basic example
 
 This will confirm that ASCII folding is working on the `title` field, because it will match `åao` with `åäö`:
 ```bash
@@ -46,7 +48,21 @@ curl -s -X POST -d '{
   "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
 ```
 
-You can also force a different profile for the query via `model.type.profile`. This will match "dubious" with "special" (our test synonym expansion):
+### Different profiles for query and index
+
+For the `description` field, we [the schema defines a different profile for search time](app/schemas/doc.sd) which does synonym expansion. So it will match "dubious" with "special":
+
+```bash
+curl -s -X POST -d '{
+  "yql":"select * from sources * where description contains \"dubious\"",
+  "presentation.summary": "debug-text-tokens",
+  "model.locale": "en",
+  "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
+```
+
+### Force a different profile for the query
+
+`model.type.profile` defines the profile to use for parsing the query string. This will match "dubious" with "special" (our test synonym expansion) even for the `title` field (which is bound to the `lowerFolding` profile which doesn't do synonym expansion):
 
 ```bash
 curl -s -X POST -d '{
@@ -57,12 +73,17 @@ curl -s -X POST -d '{
   "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
 ```
 
-For the `description` field, we already use a different profile for search time which already does synonym expansion (as defined in [the schema](app/schemas/doc.sd)). So it will match "dubious" with "special" out of the box:
+### Force a different profile for a specific query clause
+
+This works with `userQuery()` and the `grammar.profile` annotation:
 
 ```bash
 curl -s -X POST -d '{
-  "yql":"select * from sources * where description contains \"dubious\"",
+  "yql":"select * from sources * where where {defaultIndex:'title', grammar.profile: 'lowerFoldingStemmingSynonyms', grammar:'linguistics'}userInput('dubious')",
+  "model.type.profile": "lowerFoldingStemmingSynonyms",
   "presentation.summary": "debug-text-tokens",
   "model.locale": "en",
   "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
 ```
+
+**NOTE**: The `grammar: 'linguistics'` annotation isn't required in this case, but makes sure that no additional parsing (besides the defined profile) is done. This is useful, for example, with collapsing synonyms (e.g., `wi fi => wifi`). Otherwise, the query becomes `["wi", "fi"]` along the way.
