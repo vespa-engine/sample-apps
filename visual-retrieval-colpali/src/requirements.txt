@@ -361,7 +361,7 @@ python-fasthtml==0.12.33
     #   visual-retrieval-colpali (pyproject.toml)
     #   lucide-fasthtml
     #   shad4fast
-python-multipart==0.0.18
+python-multipart==0.0.22
     # via python-fasthtml
 pytrec-eval-terrier==0.5.6
     # via mteb
