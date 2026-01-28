@@ -60,19 +60,6 @@ curl -s -X POST -d '{
   "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
 ```
 
-### Force a different profile for the query
-
-`model.type.profile` defines the profile to use for parsing the query string. This will match "dubious" with "special" (our test synonym expansion) even for the `title` field (which is bound to the `lowerFolding` profile which doesn't do synonym expansion):
-
-```bash
-curl -s -X POST -d '{
-  "yql":"select * from sources * where title contains \"dubious\"",
-  "model.type.profile": "lowerFoldingStemmingSynonyms",
-  "presentation.summary": "debug-text-tokens",
-  "model.locale": "en",
-  "trace.level":2}' -H "Content-Type: application/json" 'http://localhost:8080/search/' | jq .
-```
-
 ### Force a different profile for a specific query clause
 
 This works with `userInput()` and the `grammar.profile` annotation:
