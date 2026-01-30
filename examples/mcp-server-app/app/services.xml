@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
     <container id="default" version="1.0">
-        <handler id="ai.vespa.mcp.McpJdiscHandler" bundle="mcp-server">
-            <binding>http://*/mcp/*</binding>
-        </handler>
         <document-api/>
-        <search/>
+        <search/> <!-- This automatically includes the basic MCP search spec -->
         <nodes>
             <node hostalias="node1"/>
         </nodes>
