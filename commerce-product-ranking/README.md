@@ -239,7 +239,7 @@ For Vespa cloud deployments we need to pass certificate and the private key.
 
 <pre>
 $ python3 scripts/evaluate.py \
-  --endpoint https://productsearch.samples.aws-us-east-1c.perf.z.vespa-app.cloud \
+  --endpoint https://cd561234.b5678c0d.z.vespa-app.cloud \
   --example_file "https://github.com/amazon-science/esci-data/blob/main/shopping_queries_dataset/shopping_queries_dataset_examples.parquet?raw=true" \
   --ranking semantic-title \
   --cert &lt;path-to-data-plane-cert.pem&gt; \
