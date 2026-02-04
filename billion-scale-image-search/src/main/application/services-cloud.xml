@@ -3,7 +3,7 @@
 
   <container id='default' version='1.0'>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='4'>
+    <nodes deploy:environment='dev' count='4'>
       <resources vcpu="4" memory="8GB" disk="50Gb"/>
     </nodes>
     <nodes deploy:environment='prod' count='[2,8]'>
@@ -42,7 +42,7 @@
 
   <container id='feed' version='1.0'>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='[2,12]'>
+    <nodes deploy:environment='dev' count='[2,12]'>
       <resources vcpu="4" memory="8GB" disk="50Gb"/>
     </nodes>
     <nodes deploy:environment='prod' count='[2,12]'>
@@ -72,7 +72,7 @@
       <document-processing cluster='feed' chain='neighbor-assigner'/>
     </documents>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='1' groups='1'>
+    <nodes deploy:environment='dev' count='1' groups='1'>
       <resources memory='128GB' vcpu='16' disk='600GB' storage-type='local'/>
     </nodes>
     <nodes deploy:environment='prod' count='2' groups='2'>
@@ -99,7 +99,7 @@
     </documents>
 
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='8' groups='1'>
+    <nodes deploy:environment='dev' count='8' groups='1'>
       <resources memory='64Gb' vcpu='8' disk='1875GB' storage-type='local'/>
     </nodes>
 

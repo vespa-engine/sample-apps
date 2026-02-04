@@ -4,7 +4,7 @@
 
   <container id='default' version='1.0'>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='2'/>
+    <nodes deploy:environment='dev' count='2'/>
     <nodes deploy:environment='prod' count='[2,4]'/>
     <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
     <search>
@@ -16,7 +16,7 @@
 
   <container id='feed' version='1.0'>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='4'/>
+    <nodes deploy:environment='dev' count='4'/>
     <nodes deploy:environment='prod' count='[4,8]'/>
     <config name="config.docproc.docproc">
       <numthreads>24</numthreads>
@@ -38,7 +38,7 @@
       <document-processing cluster='feed' chain='neighbor-assigner' />
     </documents>
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='1' groups='1'>
+    <nodes deploy:environment='dev' count='1' groups='1'>
       <resources memory='128GB' vcpu='16' disk='200Gb' storage-type='remote'/>
     </nodes>
     <nodes deploy:environment='prod' count='2' groups='2'>
@@ -65,7 +65,7 @@
     </documents>
 
     <nodes count='1'/>
-    <nodes deploy:environment='perf' count='4' groups='1'>
+    <nodes deploy:environment='dev' count='4' groups='1'>
       <resources memory='32Gb' vcpu='8' disk='300Gb' storage-type='local'/>
     </nodes>
     <nodes deploy:environment='prod' count='8' groups='2'>

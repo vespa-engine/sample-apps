@@ -155,10 +155,10 @@ $ python3 src/main/python/recall.py --endpoint http://localhost:8080/search/ \
   --query_gt_file spacev10m_gt100.i8bin  --clusters 12 --queries 1000
 </pre>
 
-To evaluate recall using a deployment in Vespa Cloud perf zone, the data plane certificate
+To evaluate recall using a deployment in Vespa Cloud dev zone, the data plane certificate
 and key need to be provided:
 <pre>
-$ python3 src/main/python/recall.py --endpoint https://app.tenant.aws-us-east-1c.perf.z.vespa-app.cloud/search/ \
+$ python3 src/main/python/recall.py --endpoint https://cd561234.b5678c0d.z.vespa-app.cloud/search/ \
   --query_file query.i8bin --query_gt_file GT_10M/msspacev-10M \
   --certificate data-plane-public-cert.pem --key data-plane-private-key.pem
 </pre>
