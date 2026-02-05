@@ -93,7 +93,7 @@ $ zstdcat ext/sw-feed.jsonl.zst | vespa feed -
 The evaluation script queries Vespa (requires pandas and requests libraries):
 
 <pre data-test="exec">
-$ pip3 install pandas requests
+$ pip3 install pandas>=3.0.0 requests
 </pre>
 
 ## E5 multilingual embedding model
