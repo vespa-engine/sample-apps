@@ -8,9 +8,9 @@ import argparse
 import pandas
 
 def search(query_group):
+    query_id = query_group.name  # Get group key (pandas 3.0 excludes groupby column from apply)
     for (_, row) in query_group.iterrows():
       query = row['query']
-      query_id = row['query_id']
     query_request = {
         'yql': 'select doc_id from doc where ({"grammar":"tokenize", "targetHits":200}userInput(@query)) or ({targetHits:200}nearestNeighbor(embedding, q))',
         'query': query, 
@@ -72,7 +72,7 @@ def main():
     responses = []  
    
     df_examples = pandas.read_csv(args.query_file, sep='\t', names=["query_id", "query"])
-    df_examples.groupby("query_id").apply(search)
+    df_examples.groupby("query_id").apply(search, include_groups=False)
     df_result = pandas.DataFrame.from_records(responses)
     df_result.to_csv(args.ranking + ".run", index=False, header=False, sep=' ')
 
