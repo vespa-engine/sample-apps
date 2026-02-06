@@ -2,7 +2,11 @@
 <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
     <container id="default" version="1.0">
         <document-api/>
-        <search/> <!-- This automatically includes the basic MCP search spec -->
+        <search/>
+        <component id="com.yahoo.search.mcp.McpSearchSpecProvider" bundle="container-search-and-docproc"/>
+        <handler id="ai.vespa.mcp.McpRequestHandler" bundle="container-disc">
+            <binding>http://*/mcp/*</binding>
+        </handler>
         <nodes>
             <node hostalias="node1"/>
         </nodes>
