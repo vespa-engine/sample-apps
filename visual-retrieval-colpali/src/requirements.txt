@@ -289,7 +289,7 @@ pillow==10.4.0
     #   pdf2image
     #   sentence-transformers
     #   vidore-benchmark
-pip==25.3
+pip==26.0
     # via visual-retrieval-colpali (pyproject.toml)
 polars==1.9.0
     # via mteb
