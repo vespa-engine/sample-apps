@@ -70,7 +70,7 @@ to your `claude_desktop_config.json` file under the `mcpServers` section.
 ### Tools
 - **`executeQuery`**: Build and execute Vespa queries against the Vespa application.
 - **`getSchemas`**: Retrieve the schemas of the Vespa application.
-- **`searchDocumentation`**: Search the [Vespa documentation](https://docs.vespa.ai/) for relevant information based on a user input.
+- **`readQueryExamples`**: Allows the LLM to read the `queryExamples`-resource itself.
 
 ### Resources
 - **`queryExamples`**: Provides query examples to the MCP client for guidance on how to use the `executeQuery` tool.
@@ -83,7 +83,6 @@ Since the point of the sample app is to become familiar with Vespa's MCP server 
 - Find a random candidate amongst your documents and try to find the best matching job for this candidate.
 - Of the jobs matching this candidate, where would our candidate have the best chances to land a job? Do any of the jobs have other better candidates?
 - Based on your skills and interests, do any of the jobs match your profile?
-- Ask the LLM other Vespa related questions and have it search the documentation for you.
 - Can the application be improved? Maybe the LLM can help you modify the schemas and datasets? Make sure `generate_data.py` actually generates data that matches the schemas if you modify them.
 
 ### Generating data
