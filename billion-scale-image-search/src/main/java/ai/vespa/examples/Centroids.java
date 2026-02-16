@@ -124,7 +124,7 @@ public class Centroids extends AbstractComponent {
     private Query buildNNQuery(int k, int extraK, Tensor queryVector, Duration timeout) {
         NearestNeighborItem nn = new NearestNeighborItem("reduced_vector", "q_reduced");
         nn.setAllowApproximate(true);
-        nn.setTargetNumHits(k);
+        nn.setTargetHits(k);
         nn.setHnswExploreAdditionalHits(extraK);
         Query query = new Query();
         query.setTimeout(timeout.toMillis());
