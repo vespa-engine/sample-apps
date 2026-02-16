@@ -25,7 +25,7 @@ public class UserProfileSearcher extends Searcher {
 
             // Create a new search using the user's embedding tensor
             NearestNeighborItem nn = new NearestNeighborItem("embedding", "user_embedding");
-            nn.setTargetNumHits(query.getHits());
+            nn.setTargetHits(query.getHits());
             nn.setAllowApproximate(true);
 
             query.getModel().getQueryTree().setRoot(nn);
