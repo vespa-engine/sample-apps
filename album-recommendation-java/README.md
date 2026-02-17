@@ -9,7 +9,7 @@
 
 # Vespa sample applications - album recommendation, with Java components
 
-Follow [Vespa getting started](https://docs.vespa.ai/en/basics/deploy-an-application) to deploy this.
+Follow [Vespa getting started](https://docs.vespa.ai/en/basics/deploy-an-application-java.html) to deploy this.
 
 ## Introduction
 
@@ -19,26 +19,26 @@ This sample application is the same as album-recommendation,
 but with some Java components, and the maven setup to build them added to it.
 
 The Java components added here are of the most common type, 
-[searchers](https://docs.vespa.ai/en/searcher-development.html),
+[searchers](https://docs.vespa.ai/en/applications/searchers.html),
 which can modify the query and result, issue multiple queries for ech request etc.
 There are also many other component types,
-such as [document processors](https://docs.vespa.ai/en/document-processing.html), 
+such as [document processors](https://docs.vespa.ai/en/applications/document-processors.html), 
 which can modify document data as it is written to Vespa,
-and [handlers](https://docs.vespa.ai/en/jdisc/developing-request-handlers.html),
+and [handlers](https://docs.vespa.ai/en/applications/request-handlers.html),
 which can be used to let Vespa expose custom service APIs.
 
 
 ## Query tracing
-See [MetalSearcher::search()](src/main/java/ai/vespa/example/album/MetalSearcher.java)
+See [MetalSearcher::search()](app/src/main/java/ai/vespa/example/album/MetalSearcher.java)
 for an example of tracing in custom Searcher code.
 
 
 ## Custom metrics
-See [MetalSearcher](src/main/java/ai/vespa/example/album/MetalSearcher.java)
+See [MetalSearcher](app/src/main/java/ai/vespa/example/album/MetalSearcher.java)
 for an examples of a custom metric - a counter for each successful lookup.
-[services.xml](src/main/application/services.xml) has an `admin` section mapping the metric
+[services.xml](app/src/main/application/services.xml) has an `admin` section mapping the metric
 into a `consumer` that can be used in the [metrics APIs](https://docs.vespa.ai/en/operations/metrics.html).
-Also see [MetalSearcherTest](src/test/java/ai/vespa/example/album/MetalSearcherTest.java)
+Also see [MetalSearcherTest](app/src/test/java/ai/vespa/example/album/MetalSearcherTest.java)
 for how to implement unit tests.
 
 Run a query like:
