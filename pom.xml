@@ -11,7 +11,7 @@
         Modules must be included here to have their 'vespa_version' property updated automatically.</description>
 
     <modules>
-        <module>album-recommendation-java</module>
+        <module>album-recommendation-java/app</module>
         <module>billion-scale-image-search</module>
         <module>billion-scale-vector-search</module>
         <module>examples/document-processing</module>
