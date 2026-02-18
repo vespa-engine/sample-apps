@@ -100,19 +100,19 @@ Install dependencies and create the feed data:
 $ pip3 install numpy requests tqdm
 </pre>
 <pre data-test="exec">
-$ python3 src/main/python/create-vespa-feed.py spacev10m_base.i8bin
+$ python3 app/src/main/python/create-vespa-feed.py spacev10m_base.i8bin
 </pre>
 
 
 ## Build and deploy Vespa app
 Build the sample app:
 <pre data-test="exec" data-test-expect="BUILD SUCCESS" data-test-timeout="300">
-$ mvn clean package -U
+$ mvn clean package -U -f app
 </pre>
 
 Deploy the application. This step deploys the application package built in the previous step:
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa deploy --wait 300
+$ vespa deploy --wait 300 ./app
 </pre>
 
 #### Deployment note
@@ -126,7 +126,7 @@ $ vespa status --wait 300
 
 Test basic functionality:
 <pre data-test="exec" data-test-assert-contains="Success">
-$ vespa test src/test/application/tests/system-test/feed-and-search-test.json
+$ vespa test app/src/test/application/tests/system-test/feed-and-search-test.json
 </pre>
 
 The _graph_ vectors must be feed before the _if_ vectors:
@@ -150,7 +150,7 @@ but the link no longer works.
 
 Run first 1K queries and evaluate recall@10. A higher number of clusters gives higher recall:
 <pre data-test="exec">
-$ python3 src/main/python/recall.py --endpoint http://localhost:8080/search/ \
+$ python3 app/src/main/python/recall.py --endpoint http://localhost:8080/search/ \
   --query_file query.i8bin \
   --query_gt_file spacev10m_gt100.i8bin  --clusters 12 --queries 1000
 </pre>
@@ -158,7 +158,7 @@ $ python3 src/main/python/recall.py --endpoint http://localhost:8080/search/ \
 To evaluate recall using a deployment in Vespa Cloud dev zone, the data plane certificate
 and key need to be provided:
 <pre>
-$ python3 src/main/python/recall.py --endpoint https://cd561234.b5678c0d.z.vespa-app.cloud/search/ \
+$ python3 app/src/main/python/recall.py --endpoint https://cd561234.b5678c0d.z.vespa-app.cloud/search/ \
   --query_file query.i8bin --query_gt_file GT_10M/msspacev-10M \
   --certificate data-plane-public-cert.pem --key data-plane-private-key.pem
 </pre>

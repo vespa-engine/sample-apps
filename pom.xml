@@ -13,7 +13,7 @@
     <modules>
         <module>album-recommendation-java/app</module>
         <module>billion-scale-image-search/app</module>
-        <module>billion-scale-vector-search</module>
+        <module>billion-scale-vector-search/app</module>
         <module>examples/document-processing</module>
         <module>examples/embedding-service</module>
         <module>examples/generic-request-processing</module>
