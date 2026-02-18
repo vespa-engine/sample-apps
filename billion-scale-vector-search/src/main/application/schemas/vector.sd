@@ -33,6 +33,10 @@ schema vector {
     }
   }
 
+  document-summary id {
+    summary id {}
+  }
+
   rank-profile graph  {
     num-threads-per-search: 1
     inputs {
