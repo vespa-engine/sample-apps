@@ -27,3 +27,7 @@ java {
 application {
     mainClass = "com.example.VespaClient"
 }
+
+tasks.named<JavaExec>("run") {
+    workingDir = file(System.getProperty("user.dir"))
+}

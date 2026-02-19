@@ -57,8 +57,11 @@ class JsonFileFeeder implements Closeable {
         }
 
         void dumpStatsToLog() {
+            long timeSpentMillis = System.currentTimeMillis() - startTimeMillis;
             log.info("Received in total " + resultsReceived.get() + ", " + errorsReceived.get() + " errors.");
-            log.info("Time spent receiving is " + (System.currentTimeMillis() - startTimeMillis) + " ms.");
+            log.info("Time spent receiving is " + timeSpentMillis + " ms.");
+            double okRate = (double)resultsReceived.get() * 1000.0 / (double)timeSpentMillis;
+            log.info("OK Rate: " + okRate + "/s");
         }
 
     }

@@ -5,8 +5,8 @@ project root. -->
     <container id="default" version="1.0">
         <search />
         <document-api />
-        <nodes>
-            <node hostalias="node1" />
+        <nodes count="2">
+            <resources vcpu="8" memory="16Gb" />
         </nodes>
     </container>
     <content version="1.0" id="content">
