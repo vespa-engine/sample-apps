@@ -1,0 +1,11 @@
+schema article {
+    document article {
+        field title type string {
+            indexing: index | summary
+        }
+
+        field body type string {
+            indexing: index | summary
+        }
+    }
+}
