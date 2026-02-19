@@ -2,7 +2,9 @@
 <services version='1.0' xmlns:deploy="vespa" xmlns:preprocess="properties">
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
   <container id='default' version='1.0'>
-    <nodes count='1'/>
+    <nodes count="1">
+      <resources vcpu="8" memory="16Gb" disk="50Gb"/>
+    </nodes>
     <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
     <search>
       <chain id='default' inherits='vespa'>
@@ -23,7 +25,9 @@
       <document mode='index' type='vector' selection='vector.in_graph==true'/>
       <document-processing cluster='default' chain='neighbor-assigner' />
     </documents>
-    <nodes count='1'/>
+    <nodes count="1">
+      <resources vcpu="8" memory="16Gb" disk="50Gb"/>
+    </nodes>
     <engine>
       <proton>
         <tuning>
@@ -43,7 +47,9 @@
       <document mode='index' type='vector' selection='vector.in_graph==false'/>
       <document-processing cluster='default' chain='neighbor-assigner' />
     </documents>
-    <nodes count='1'/>
+    <nodes count="1">
+      <resources vcpu="8" memory="16Gb" disk="50Gb"/>
+    </nodes>
     <engine>
       <proton>
         <tuning>
