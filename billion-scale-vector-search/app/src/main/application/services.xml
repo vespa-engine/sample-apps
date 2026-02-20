@@ -3,7 +3,7 @@
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.-->
   <container id='default' version='1.0'>
     <nodes count="1">
-      <resources vcpu="16" memory="32Gb" disk="50Gb"/>
+      <resources vcpu="16" memory="32Gb" disk="100Gb"/>
     </nodes>
     <component id='ai.vespa.examples.ClusteringComponent' bundle='billion-scale-vector-search'/>
     <search>
