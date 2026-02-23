@@ -93,14 +93,14 @@ or self-hosted on-premise.
 ## Stateless Components
 The app contains several [container components](https://docs.vespa.ai/en/jdisc/container-components.html):
 
-- [RankingSearcher](src/main/java/ai/vespa/examples/searcher/RankingSearcher.java) implements the last stage ranking using
+- [RankingSearcher](app/src/main/java/ai/vespa/examples/searcher/RankingSearcher.java) implements the last stage ranking using
 full-precision vectors using an ONNX model for accelerated inference.
-- [DedupingSearcher](src/main/java/ai/vespa/examples/searcher/DeDupingSearcher.java) implements run-time de-duping after Ranking, using
+- [DedupingSearcher](app/src/main/java/ai/vespa/examples/searcher/DeDupingSearcher.java) implements run-time de-duping after Ranking, using
 document to document similarity matrix, using an ONNX model for accelerated inference.
-- [DimensionReducer](src/main/java/ai/vespa/examples/DimensionReducer.java) PCA dimension reducing vectors from 768-dims to 128-dims.
-- [AssignCentroidsDocProc](src/main/java/ai/vespa/examples/docproc/AssignCentroidsDocProc.java) searches the HNSW graph content cluster
+- [DimensionReducer](app/src/main/java/ai/vespa/examples/DimensionReducer.java) PCA dimension reducing vectors from 768-dims to 128-dims.
+- [AssignCentroidsDocProc](app/src/main/java/ai/vespa/examples/docproc/AssignCentroidsDocProc.java) searches the HNSW graph content cluster
 during ingestion to find the nearest centroids of the incoming vector.
-- [SPANNSearcher](src/main/java/ai/vespa/examples/searcher/SPANNSearcher.java)
+- [SPANNSearcher](app/src/main/java/ai/vespa/examples/searcher/SPANNSearcher.java)
 
 ## Deploying this app
 These reproducing steps, demonstrates the app using a smaller subset of the LAION-5B vector dataset, suitable
@@ -285,7 +285,7 @@ reduced vector, plus all the metadata. Everything represented in the same
 ## Query the data
 The following provides a few query examples,
 `prompt` is a run-time query parameter which is used by the
-[CLIPEmbeddingSearcher](src/main/java/ai/vespa/examples/searcher/CLIPEmbeddingSearcher.java)
+[CLIPEmbeddingSearcher](app/src/main/java/ai/vespa/examples/searcher/CLIPEmbeddingSearcher.java)
 which will encode the prompt text into a CLIP vector representation using the embedded CLIP model:
 
 <pre data-test="exec" data-test-assert-contains="documentid">
