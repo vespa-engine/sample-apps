@@ -47,10 +47,13 @@ public class VespaClient {
 
     private static final AuthMethod AUTH_METHOD = AuthMethod.MTLS;
 
-    private static final String ENDPOINT    = "changeit";
-    private static final String PUBLIC_CERT = "changeit";
-    private static final String PRIVATE_KEY = "changeit"; 
-    private static final String TOKEN       = "changeit";
+    private static final String ENDPOINT    = ""; 
+    private static final String PUBLIC_CERT = "";
+    private static final String PRIVATE_KEY = "";
+    private static final String TOKEN       = "";
+
+    private static final int LOAD_CONCURRENCY = 400;
+    private static final int LOAD_NUM_QUERIES = 50000;
 
     public static void main(String[] args) throws Exception {
         Options options = new Options();
@@ -184,21 +187,18 @@ public class VespaClient {
     }
 
     static void loadTest() throws Exception {
-        int concurrency = 400; // Scale until system reaches limit
-        int totalQueries = 50000;
-
         var client = createHttpClient();
 
-        ExecutorService executor = Executors.newFixedThreadPool(concurrency);
+        ExecutorService executor = Executors.newFixedThreadPool(LOAD_CONCURRENCY);
         
         AtomicLong resultsReceived = new AtomicLong(0);
         AtomicLong errorsReceived = new AtomicLong(0);
 
-        log.info("Performing " + totalQueries + " queries with concurrency: " + concurrency);
+        log.info("Performing " + LOAD_NUM_QUERIES + " queries with concurrency: " + LOAD_CONCURRENCY);
 
         long startTimeMillis = System.currentTimeMillis();
 
-        for (int i = 0; i < totalQueries; ++i) {
+        for (int i = 0; i < LOAD_NUM_QUERIES; ++i) {
             executor.submit(() -> {
                 try {
                     runSingleQuery(client, "select * from sources * where userQuery()", "guinness world record");
