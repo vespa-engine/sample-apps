@@ -5,14 +5,17 @@ project root. -->
     <container id="default" version="1.0">
         <search />
         <document-api />
-        <nodes count="2">
+        <nodes deploy:environment="dev" count="2">
             <resources vcpu="8" memory="16Gb" />
         </nodes>
     </container>
     <content version="1.0" id="content">
         <min-redundancy>2</min-redundancy>
         <documents>
-            <document type="article" mode="index"/>
+            <document type="passage" mode="index"/>
         </documents>
+        <nodes deploy:environment="dev" count="2">
+        </nodes>
     </content>
+
 </services>
