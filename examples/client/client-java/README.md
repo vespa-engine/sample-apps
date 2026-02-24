@@ -7,11 +7,17 @@ Configure endpoint and identity files in `VespaClient.java`.
 ## Feed
 
 ```bash
-gradle run --args="--feed ../dataset/documents-big.jsonl"
+gradle run --args="--feed ../dataset/docs.jsonl"
 ```
 
-## Query
+## Perform a simple query
 
 ```bash
-gradle run --args="--query"
+gradle run --args="--query \"longest word in spanish\""
+```
+
+## Perform a query load test
+
+```bash
+gradle run --args="--load-test"
 ```
