@@ -1,18 +1,10 @@
 package com.example;
 
-import okhttp3.ConnectionPool;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +27,11 @@ import ai.vespa.feed.client.JsonFeeder;
 import ai.vespa.feed.client.Result;
 import nl.altindag.ssl.SSLFactory;
 import nl.altindag.ssl.pem.util.PemUtils;
+import okhttp3.ConnectionPool;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class VespaClient {
     private final static Logger log = Logger.getLogger(VespaClient.class.getName());
@@ -48,8 +45,11 @@ public class VespaClient {
     private static final AuthMethod AUTH_METHOD = AuthMethod.MTLS;
 
     private static final String ENDPOINT    = ""; 
+    // Auth method mTLS
     private static final String PUBLIC_CERT = "";
     private static final String PRIVATE_KEY = "";
+
+    // Auth method token.
     private static final String TOKEN       = "";
 
     private static final int LOAD_CONCURRENCY = 400;
@@ -88,25 +88,29 @@ public class VespaClient {
         }
     }
 
+    static SSLFactory getSSLFactory() {
+        var keyManager = PemUtils.loadIdentityMaterial(Path.of(PUBLIC_CERT), Path.of(PRIVATE_KEY));
+        var sslFactory = SSLFactory.builder()
+            .withIdentityMaterial(keyManager)
+            .withDefaultTrustMaterial()
+            .build();
+
+        return sslFactory;
+    }
+
     /**
      * Create a {@link OkHttpClient} for querying, with settings based on {@link VespaClient#AUTH_METHOD}.
      */
     static OkHttpClient createHttpClient() {
         var builder = new OkHttpClient.Builder()
-            .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
-            .connectionPool(new ConnectionPool(200, 5, TimeUnit.MINUTES))
+            .connectionPool(new ConnectionPool(LOAD_CONCURRENCY, 5, TimeUnit.MINUTES))
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(2, TimeUnit.SECONDS);
 
         switch (AUTH_METHOD) {
             case MTLS:
                 {
-                    var keyManager = PemUtils.loadIdentityMaterial(Path.of(PUBLIC_CERT), Path.of(PRIVATE_KEY));
-                    var sslFactory = SSLFactory.builder()
-                        .withIdentityMaterial(keyManager)
-                        .withDefaultTrustMaterial()
-                        .build();
-
+                    var sslFactory = getSSLFactory();
                     builder.sslSocketFactory(sslFactory.getSslSocketFactory(), sslFactory.getTrustManager().orElseThrow());
                 }
                 break;
@@ -136,23 +140,10 @@ public class VespaClient {
         FeedClientBuilder builder = FeedClientBuilder.create(URI.create(ENDPOINT));
         switch (AUTH_METHOD) {
             case MTLS:
-                {
-                    var keyManager = PemUtils.loadIdentityMaterial(
-                            Path.of(PUBLIC_CERT),
-                            Path.of(PRIVATE_KEY)
-                            );
-                    var sslFactory = SSLFactory.builder()
-                        .withIdentityMaterial(keyManager)
-                        .withDefaultTrustMaterial()
-                        .build();
-
-                    builder.setSslContext(sslFactory.getSslContext());
-                }
+                builder.setSslContext(getSSLFactory().getSslContext());
                 break;
             case TOKEN:
-                {
-                    builder.addRequestHeader("Authorization", "Bearer " + TOKEN);
-                }
+                builder.addRequestHeader("Authorization", "Bearer " + TOKEN);
                 break;
             case NONE:
                 break;
@@ -266,5 +257,4 @@ public class VespaClient {
             log.severe("Fatal error when trying to feed documents: " + e.getMessage());
         }
     }
-
 }
