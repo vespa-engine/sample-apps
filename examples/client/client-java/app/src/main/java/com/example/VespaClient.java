@@ -26,6 +26,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 
+import ai.vespa.feed.client.FeedClientBuilder;
 import nl.altindag.ssl.SSLFactory;
 import nl.altindag.ssl.pem.util.PemUtils;
 
@@ -33,16 +34,17 @@ public class VespaClient {
     private final static Logger log = Logger.getLogger(VespaClient.class.getName());
 
     private enum AuthMethod {
-        MTLS,   // Recommended for Vespa Cloud
-        TOKEN,  // Token header authentication
+        MTLS,   // mTLS: Recommended for Vespa Cloud
+        TOKEN,  // Token-based authentication
         NONE    // E.g. if self-hosting.
     };
 
-    private static final AuthMethod AUTH_METHOD = AuthMethod.MTLS;
+    private static final AuthMethod AUTH_METHOD = AuthMethod.TOKEN;
 
     private static final String ENDPOINT    = ""; // TODO: change this
     private static final String PUBLIC_CERT = ""; // TODO: change this
     private static final String PRIVATE_KEY = ""; // TODO: change this
+    private static final String TOKEN       = "";
 
     /**
      * Create a {@link OkHttpClient} for querying, with settings based on {@link VespaClient#AUTH_METHOD}.
@@ -72,7 +74,7 @@ public class VespaClient {
                         return chain.proceed(
                             chain.request()
                                  .newBuilder()
-                                 .header("Authorization", "Bearer foo")
+                                 .header("Authorization", "Bearer " + TOKEN)
                                  .build()
                         );
                     });
@@ -89,6 +91,7 @@ public class VespaClient {
      *
      */
     static JsonFileFeeder createFeeder() {
+        FeedClientBuilder builder = FeedClientBuilder.create(URI.create(ENDPOINT));
         switch (AUTH_METHOD) {
             case MTLS:
                 {
@@ -101,14 +104,18 @@ public class VespaClient {
                         .withDefaultTrustMaterial()
                         .build();
 
-                    return new JsonFileFeeder(URI.create(ENDPOINT), sslFactory.getSslContext());
+                    builder.setSslContext(sslFactory.getSslContext());
                 }
+                break;
             case TOKEN:
-                return new JsonFileFeeder(URI.create(ENDPOINT));
+                {
+                    builder.addRequestHeader("Authorization", "Bearer " + TOKEN);
+                }
+                break;
             case NONE:
-            default:
-                return new JsonFileFeeder(URI.create(ENDPOINT));
+                break;
         }
+        return new JsonFileFeeder(builder.build());
     }
 
     static Optional<String> runSingleQuery(OkHttpClient client, String yql, String query) throws IOException {
@@ -175,7 +182,7 @@ public class VespaClient {
     static void feedFromFile(String filePath) {
         try (FileInputStream is = new FileInputStream(filePath)) {
             JsonFileFeeder feeder = createFeeder();
-            feeder.batchFeed(is, "1");
+            feeder.batchFeed(is);
             feeder.close();
         } catch (IOException e) {
             log.severe("Error when trying to feed documents: " + e.getMessage());

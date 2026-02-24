@@ -27,7 +27,6 @@ class JsonFileFeeder implements Closeable {
     private final static Logger log = Logger.getLogger(JsonFileFeeder.class.getName());
 
     private final JsonFeeder jsonFeeder;
-    private final URI endpoint;
 
     static class ResultCallBack implements JsonFeeder.ResultCallback {
 
@@ -66,34 +65,20 @@ class JsonFileFeeder implements Closeable {
 
     }
 
-    JsonFileFeeder(URI endpoint) {
-        this.endpoint = endpoint;
-        FeedClient feedClient = FeedClientBuilder.create(endpoint)
-                .build();
+    JsonFileFeeder(FeedClient feedClient) {
         this.jsonFeeder = JsonFeeder.builder(feedClient)
                 .withTimeout(Duration.ofSeconds(30))
                 .build();
     }
-
-    JsonFileFeeder(URI endpoint, SSLContext sslContext) {
-        this.endpoint = endpoint;
-        FeedClient feedClient = FeedClientBuilder.create(endpoint)
-                .setSslContext(sslContext)
-                .build();
-        this.jsonFeeder = JsonFeeder.builder(feedClient)
-                .withTimeout(Duration.ofSeconds(30))
-                .build();
-    }
-
 
     /**
      * Feed all operations from a stream.
      *
      * @param stream The input stream to read operations from (JSON array containing one or more document operations).
      */
-    void batchFeed(InputStream stream, String batchId) {
+    void batchFeed(InputStream stream) {
         ResultCallBack callback = new ResultCallBack();
-        log.info("Starting feed to " + endpoint + " for batch '" + batchId + "'");
+        log.info("Starting feed");
         CompletableFuture<Void> promise = jsonFeeder.feedMany(stream, callback);
         promise.join(); // wait for feeding to complete
         callback.dumpStatsToLog();
