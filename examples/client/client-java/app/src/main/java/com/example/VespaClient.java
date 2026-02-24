@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +27,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 
+import ai.vespa.feed.client.DocumentId;
+import ai.vespa.feed.client.FeedClient;
 import ai.vespa.feed.client.FeedClientBuilder;
+import ai.vespa.feed.client.FeedException;
+import ai.vespa.feed.client.JsonFeeder;
+import ai.vespa.feed.client.Result;
 import nl.altindag.ssl.SSLFactory;
 import nl.altindag.ssl.pem.util.PemUtils;
 
@@ -39,12 +45,45 @@ public class VespaClient {
         NONE    // E.g. if self-hosting.
     };
 
-    private static final AuthMethod AUTH_METHOD = AuthMethod.TOKEN;
+    private static final AuthMethod AUTH_METHOD = AuthMethod.MTLS;
 
-    private static final String ENDPOINT    = ""; // TODO: change this
-    private static final String PUBLIC_CERT = ""; // TODO: change this
-    private static final String PRIVATE_KEY = ""; // TODO: change this
-    private static final String TOKEN       = "";
+    private static final String ENDPOINT    = "changeit";
+    private static final String PUBLIC_CERT = "changeit";
+    private static final String PRIVATE_KEY = "changeit"; 
+    private static final String TOKEN       = "changeit";
+
+    public static void main(String[] args) throws Exception {
+        Options options = new Options();
+        options.addOption("q", "query", true, "Run one query");
+        options.addOption("l", "load-test", false, "Run many queries");
+        options.addOption("f", "feed", true, "Feed documents");
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter  = HelpFormatter.builder().get();
+
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            if (cmd.hasOption("l")) {
+                loadTest();
+            } else if (cmd.hasOption("f")) {
+                String feedPath = cmd.getOptionValue("f");
+                feedFromFile(feedPath);
+            } else if (cmd.hasOption("q")) {
+                String query = cmd.getOptionValue("q");
+                try {
+                    String result = runSingleQuery(createHttpClient(), "select * from sources * where userQuery()", query).get();
+                    log.info(result);
+                } catch (Exception e) {
+                    log.severe("Query failed with message: " + e.getMessage());
+                }
+            } else {
+                formatter.printHelp("VespaClient", "", options, "Error: No option specified", true);
+            }
+        } catch (ParseException e) {
+            log.severe("Error parsing command line: " + e.getMessage());
+            formatter.printHelp("VespaClient", "", options, "", true);
+        }
+    }
 
     /**
      * Create a {@link OkHttpClient} for querying, with settings based on {@link VespaClient#AUTH_METHOD}.
@@ -88,9 +127,9 @@ public class VespaClient {
     }
 
     /**
-     *
+     * Create a {@link JsonFeeder} with settings based on {@link VespaClient#AUTH_METHOD}.
      */
-    static JsonFileFeeder createFeeder() {
+    static JsonFeeder createFeeder() {
         FeedClientBuilder builder = FeedClientBuilder.create(URI.create(ENDPOINT));
         switch (AUTH_METHOD) {
             case MTLS:
@@ -115,7 +154,10 @@ public class VespaClient {
             case NONE:
                 break;
         }
-        return new JsonFileFeeder(builder.build());
+        FeedClient client = builder.build();
+        return JsonFeeder.builder(client)
+                         .withTimeout(Duration.ofSeconds(30))
+                         .build();
     }
 
     static Optional<String> runSingleQuery(OkHttpClient client, String yql, String query) throws IOException {
@@ -149,8 +191,8 @@ public class VespaClient {
 
         ExecutorService executor = Executors.newFixedThreadPool(concurrency);
         
-        AtomicLong successes = new AtomicLong(0);
-        AtomicLong errors = new AtomicLong(0);
+        AtomicLong resultsReceived = new AtomicLong(0);
+        AtomicLong errorsReceived = new AtomicLong(0);
 
         log.info("Performing " + totalQueries + " queries with concurrency: " + concurrency);
 
@@ -160,65 +202,69 @@ public class VespaClient {
             executor.submit(() -> {
                 try {
                     runSingleQuery(client, "select * from sources * where userQuery()", "guinness world record");
-                    successes.incrementAndGet();
                 } catch (Exception e) {
-                    log.severe("Iteration failed with: " + e.getMessage());
-                    errors.incrementAndGet();
+                    log.severe("Query iteration failed with: " + e.getMessage());
+                    errorsReceived.incrementAndGet();
+                } finally {
+                    resultsReceived.incrementAndGet();
                 }
             });
         }
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.HOURS);
 
-        double secondsSpent = (double) (System.currentTimeMillis() - startTimeMillis) / 1000.0;
+        long timeSpentMillis = System.currentTimeMillis() - startTimeMillis;
+        double qps = (double)(resultsReceived.get() - errorsReceived.get()) / (timeSpentMillis / 1000.0);
         log.info("----- Results -----");
-        log.info("Success: " + successes.get() + ", Errors: " + errors.get());
-        log.info("QPS: " + (successes.get() / secondsSpent));
+        log.info("Received in total " + resultsReceived.get() + " results, " + errorsReceived.get() + " errors.");
+        log.info("Time spent: " + timeSpentMillis + " ms.");
+        log.info("QPS: " + qps);
     }
 
     /**
-     * Feed documents from a .jsonl file given by feedPath.
+     * Feed documents from a .jsonl file given by {@code filePath}.
      */
     static void feedFromFile(String filePath) {
-        try (FileInputStream is = new FileInputStream(filePath)) {
-            JsonFileFeeder feeder = createFeeder();
-            feeder.batchFeed(is);
-            feeder.close();
-        } catch (IOException e) {
-            log.severe("Error when trying to feed documents: " + e.getMessage());
-        }
-    }
+        try (FileInputStream jsonStream = new FileInputStream(filePath)) {
+            JsonFeeder feeder = createFeeder();
+            log.info("Starting feed");
 
-    public static void main(String[] args) throws Exception {
-        Options options = new Options();
-        options.addOption("q", "query", true, "Run one query");
-        options.addOption("l", "load-test", false, "Run many queries");
-        options.addOption("f", "feed", true, "Feed documents");
+            AtomicLong resultsReceived = new AtomicLong(0);
+            AtomicLong errorsReceived = new AtomicLong(0);
 
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter  = HelpFormatter.builder().get();
+            long startTimeMillis = System.currentTimeMillis();
 
-        try {
-            CommandLine cmd = parser.parse(options, args);
-            if (cmd.hasOption("l")) {
-                loadTest();
-            } else if (cmd.hasOption("f")) {
-                String feedPath = cmd.getOptionValue("f");
-                feedFromFile(feedPath);
-            } else if (cmd.hasOption("q")) {
-                String query = cmd.getOptionValue("q");
-                try {
-                    String result = runSingleQuery(createHttpClient(), "select * from sources * where userQuery()", query).get();
-                    log.info(result);
-                } catch (Exception e) {
-                    log.severe("Query failed with message: " + e.getMessage());
+            var promise = feeder.feedMany(jsonStream, new JsonFeeder.ResultCallback() {
+                @Override
+                public void onNextResult(Result result, FeedException error) {
+                    resultsReceived.incrementAndGet();
+                    if (error != null) {
+                        log.warning("Problems with feeding document "
+                            + error.documentId().map(DocumentId::toString).orElse("<unknown>")
+                            + ": " + error
+                        );
+                        errorsReceived.incrementAndGet();
+                    }
                 }
-            } else {
-                formatter.printHelp("VespaClient", "", options, "Error: No option specified", true);
-            }
-        } catch (ParseException e) {
-            log.severe("Error parsing command line: " + e.getMessage());
-            formatter.printHelp("VespaClient", "", options, "", true);
+
+                @Override
+                public void onError(FeedException error) {
+                    log.severe("Feeding failed fatally: " + error.getMessage());
+                }
+            });
+
+            promise.join();
+            feeder.close();
+
+            long timeSpentMillis = (System.currentTimeMillis() - startTimeMillis);
+            double okRatePerSec = (double)(resultsReceived.get() - errorsReceived.get()) / (timeSpentMillis / 1000.0);
+            log.info("----- Results ----");
+            log.info("Received in total " + resultsReceived.get() + " results, " + errorsReceived.get() + " errors.");
+            log.info("Time spent: " + timeSpentMillis + " ms.");
+            log.info("OK-rate: " + okRatePerSec + "/s");
+        } catch (IOException e) {
+            log.severe("Fatal error when trying to feed documents: " + e.getMessage());
         }
     }
+
 }
