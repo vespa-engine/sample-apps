@@ -23,6 +23,7 @@ dependencies = [
     "spacy",
     "transformers==4.45",
     "pip",
+    "h11>=0.16.0",
 ]
 
 # dev-dependencies
