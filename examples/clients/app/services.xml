@@ -5,8 +5,7 @@ project root. -->
     <container id="default" version="1.0">
         <search />
         <document-api />
-        <nodes deploy:environment="dev" count="2">
-            <resources vcpu="8" memory="16Gb" />
+        <nodes count="2">
         </nodes>
     </container>
     <content version="1.0" id="content">
@@ -14,7 +13,7 @@ project root. -->
         <documents>
             <document type="passage" mode="index"/>
         </documents>
-        <nodes deploy:environment="dev" count="2">
+        <nodes count="2">
         </nodes>
     </content>
 
