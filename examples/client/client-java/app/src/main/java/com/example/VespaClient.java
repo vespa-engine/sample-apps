@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -110,7 +111,7 @@ public class VespaClient {
         }
     }
 
-    static void runSingleQuery(OkHttpClient client, String yql, String query) throws IOException {
+    static Optional<String> runSingleQuery(OkHttpClient client, String yql, String query) throws IOException {
         HttpUrl url = HttpUrl.parse(ENDPOINT + "search/")
             .newBuilder()
             .addQueryParameter("yql", yql)
@@ -127,9 +128,10 @@ public class VespaClient {
             }
             if (response.body() != null) {
                 // consume
-                response.body().string();
+                return Optional.of(response.body().string());
             }
         }
+        return Optional.empty();
     }
 
     static void loadTest() throws Exception {
@@ -196,6 +198,14 @@ public class VespaClient {
             } else if (cmd.hasOption("f")) {
                 String feedPath = cmd.getOptionValue("f");
                 feedFromFile(feedPath);
+            } else if (cmd.hasOption("q")) {
+                String query = cmd.getOptionValue("q");
+                try {
+                    String result = runSingleQuery(createHttpClient(), "select * from sources * where userQuery()", query).get();
+                    log.info(result);
+                } catch (Exception e) {
+                    log.severe("Query failed with message: " + e.getMessage());
+                }
             } else {
                 formatter.printHelp("VespaClient", "", options, "Error: No option specified", true);
             }
