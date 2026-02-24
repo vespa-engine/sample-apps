@@ -66,6 +66,15 @@ class JsonFileFeeder implements Closeable {
 
     }
 
+    JsonFileFeeder(URI endpoint) {
+        this.endpoint = endpoint;
+        FeedClient feedClient = FeedClientBuilder.create(endpoint)
+                .build();
+        this.jsonFeeder = JsonFeeder.builder(feedClient)
+                .withTimeout(Duration.ofSeconds(30))
+                .build();
+    }
+
     JsonFileFeeder(URI endpoint, SSLContext sslContext) {
         this.endpoint = endpoint;
         FeedClient feedClient = FeedClientBuilder.create(endpoint)
@@ -75,6 +84,7 @@ class JsonFileFeeder implements Closeable {
                 .withTimeout(Duration.ofSeconds(30))
                 .build();
     }
+
 
     /**
      * Feed all operations from a stream.

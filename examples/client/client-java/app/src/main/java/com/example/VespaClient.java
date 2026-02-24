@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -28,6 +29,7 @@ import nl.altindag.ssl.SSLFactory;
 import nl.altindag.ssl.pem.util.PemUtils;
 
 public class VespaClient {
+    private final static Logger log = Logger.getLogger(VespaClient.class.getName());
 
     private enum AuthMethod {
         MTLS,   // Recommended for Vespa Cloud
@@ -41,6 +43,9 @@ public class VespaClient {
     private static final String PUBLIC_CERT = ""; // TODO: change this
     private static final String PRIVATE_KEY = ""; // TODO: change this
 
+    /**
+     * Create a {@link OkHttpClient} for querying, with settings based on {@link VespaClient#AUTH_METHOD}.
+     */
     static OkHttpClient createHttpClient() {
         var builder = new OkHttpClient.Builder()
             .protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1))
@@ -62,16 +67,47 @@ public class VespaClient {
                 break;
             case TOKEN:
                 {
-                    // TODO
+                    builder.addInterceptor(chain -> {
+                        return chain.proceed(
+                            chain.request()
+                                 .newBuilder()
+                                 .header("Authorization", "Bearer foo")
+                                 .build()
+                        );
+                    });
                 }
                 break;
             case NONE:
-                {
-                }
                 break;
         }
 
         return builder.build();
+    }
+
+    /**
+     *
+     */
+    static JsonFileFeeder createFeeder() {
+        switch (AUTH_METHOD) {
+            case MTLS:
+                {
+                    var keyManager = PemUtils.loadIdentityMaterial(
+                            Path.of(PUBLIC_CERT),
+                            Path.of(PRIVATE_KEY)
+                            );
+                    var sslFactory = SSLFactory.builder()
+                        .withIdentityMaterial(keyManager)
+                        .withDefaultTrustMaterial()
+                        .build();
+
+                    return new JsonFileFeeder(URI.create(ENDPOINT), sslFactory.getSslContext());
+                }
+            case TOKEN:
+                return new JsonFileFeeder(URI.create(ENDPOINT));
+            case NONE:
+            default:
+                return new JsonFileFeeder(URI.create(ENDPOINT));
+        }
     }
 
     static void runSingleQuery(OkHttpClient client, String yql, String query) throws IOException {
@@ -96,7 +132,7 @@ public class VespaClient {
         }
     }
 
-    static void doLoadTest() throws Exception {
+    static void loadTest() throws Exception {
         int concurrency = 400; // Scale until system reaches limit
         int totalQueries = 50000;
 
@@ -107,15 +143,17 @@ public class VespaClient {
         AtomicLong successes = new AtomicLong(0);
         AtomicLong errors = new AtomicLong(0);
 
+        log.info("Performing " + totalQueries + " queries with concurrency: " + concurrency);
+
         long startTimeMillis = System.currentTimeMillis();
 
         for (int i = 0; i < totalQueries; ++i) {
             executor.submit(() -> {
                 try {
-                    runSingleQuery(client, "select * from sources * where userQuery()", "common words here?");
+                    runSingleQuery(client, "select * from sources * where userQuery()", "guinness world record");
                     successes.incrementAndGet();
                 } catch (Exception e) {
-                    System.err.println("Iteration failed with: " + e.getMessage());
+                    log.severe("Iteration failed with: " + e.getMessage());
                     errors.incrementAndGet();
                 }
             });
@@ -124,31 +162,21 @@ public class VespaClient {
         executor.awaitTermination(1, TimeUnit.HOURS);
 
         double secondsSpent = (double) (System.currentTimeMillis() - startTimeMillis) / 1000.0;
-        System.out.println("--- Results ---");
-        System.out.println("Success: " + successes.get() + ", Errors: " + errors.get());
-        System.out.println("QPS: " + (successes.get() / secondsSpent));
+        log.info("----- Results -----");
+        log.info("Success: " + successes.get() + ", Errors: " + errors.get());
+        log.info("QPS: " + (successes.get() / secondsSpent));
     }
 
     /**
      * Feed documents from a .jsonl file given by feedPath.
      */
-    static void doFeed(String feedPath) {
-        try (FileInputStream is = new FileInputStream(feedPath)) {
-            var keyManager = PemUtils.loadIdentityMaterial(
-                Path.of(PUBLIC_CERT),
-                Path.of(PRIVATE_KEY)
-            );
-            var sslFactory = SSLFactory.builder()
-                .withIdentityMaterial(keyManager)
-                .withDefaultTrustMaterial()
-                .build();
-
-            var feeder = new JsonFileFeeder(URI.create(ENDPOINT), sslFactory.getSslContext());
-            feeder.batchFeed(is, "batchId");
-
+    static void feedFromFile(String filePath) {
+        try (FileInputStream is = new FileInputStream(filePath)) {
+            JsonFileFeeder feeder = createFeeder();
+            feeder.batchFeed(is, "1");
             feeder.close();
         } catch (IOException e) {
-            System.err.println("Error when trying to feed documents: " + e.getMessage());
+            log.severe("Error when trying to feed documents: " + e.getMessage());
         }
     }
 
@@ -164,15 +192,15 @@ public class VespaClient {
         try {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("l")) {
-                doLoadTest();
+                loadTest();
             } else if (cmd.hasOption("f")) {
                 String feedPath = cmd.getOptionValue("f");
-                doFeed(feedPath);
+                feedFromFile(feedPath);
             } else {
                 formatter.printHelp("VespaClient", "", options, "Error: No option specified", true);
             }
         } catch (ParseException e) {
-            System.err.println("Error parsing command line: " + e.getMessage());
+            log.severe("Error parsing command line: " + e.getMessage());
             formatter.printHelp("VespaClient", "", options, "", true);
         }
     }
