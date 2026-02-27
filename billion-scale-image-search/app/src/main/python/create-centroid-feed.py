@@ -6,16 +6,19 @@ import json
 import numpy as np
 import numpy.random as r
 import mmh3
+import pyarrow.parquet as pq
 
 file = sys.argv[1]
-vectors = np.load(file)
+parquet_file = pq.ParquetFile(file)
 
-for index in range(0, vectors.shape[0]):
-    if 0 == r.randint(0, 8):
-        vector = vectors[index].astype(np.float32)
-        id = mmh3.hash(vector.tobytes())  # 32 bits signed int
-        doc = {
-            "put": "id:laion:centroid::%i" % id,
-            "fields": {"id": id, "vector": {"values": vector.tolist()}},
-        }
-        print(json.dumps(doc))
+for batch in parquet_file.iter_batches(batch_size=50000, columns=["vector"]):
+    vectors = np.array(batch.column("vector").to_pylist(), dtype=np.float32)
+    for index in range(0, vectors.shape[0]):
+        if 0 == r.randint(0, 8):
+            vector = vectors[index]
+            id = mmh3.hash(vector.tobytes())  # 32 bits signed int
+            doc = {
+                "put": "id:laion:centroid::%i" % id,
+                "fields": {"id": id, "vector": {"values": vector.tolist()}},
+            }
+            print(json.dumps(doc))
