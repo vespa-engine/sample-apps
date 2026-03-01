@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ai.vespa</groupId>
+  <artifactId>lucene-linguistics-custom-analyzer-phonetic</artifactId>
+  <version>0.0.1</version>
+  <packaging>container-plugin</packaging>
+
+  <parent>
+    <groupId>com.yahoo.vespa</groupId>
+    <artifactId>cloud-tenant-base</artifactId>
+    <version>[8,9)</version>
+    <relativePath/>
+  </parent>
+
+  <properties>
+    <bundle-plugin.failOnWarnings>false</bundle-plugin.failOnWarnings>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <test.hide>true</test.hide>
+    <lucene.version>${lucene.vespa.version}</lucene.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.yahoo.vespa</groupId>
+      <artifactId>lucene-linguistics</artifactId>
+      <version>${vespaversion}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analysis-phonetic</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.yahoo.vespa</groupId>
+      <artifactId>linguistics</artifactId>
+      <version>${vespaversion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.yahoo.vespa</groupId>
+      <artifactId>application</artifactId>
+      <version>${vespaversion}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>

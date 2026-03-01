@@ -1,0 +1,25 @@
+schema doc {
+
+    document doc {
+        field my_text type string {
+            indexing: summary | index
+            index: enable-bm25
+            linguistics {
+                profile: soundex
+            }
+        }
+    }
+
+    fieldset default {
+        fields: my_text
+    }
+    document-summary debug-text-tokens {
+        summary documentid {}
+        summary my_text {}
+        summary text_tokens {
+            source: my_text
+            tokens
+        }
+        from-disk
+    }
+}
