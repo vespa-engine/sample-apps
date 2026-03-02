@@ -55,7 +55,7 @@ public class SPANNSearcher extends Searcher {
         }
         query.getModel().getQueryTree().setRoot(dp);
         query.getModel().setSources("if");
-        query.getRanking().setRerankCount(reRankCount);
+        query.getRanking().getSecondPhase().setRerankCount(reRankCount);
         query.getRanking().getMatching().setTermwiselimit(0);
         return mergeResult(execution.search(query), centroidResult);
     }
