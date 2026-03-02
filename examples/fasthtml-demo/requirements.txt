@@ -26,7 +26,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via uvicorn
-cryptography==44.0.1
+cryptography==46.0.5
     # via pyvespa
 docker==7.1.0
     # via pyvespa
