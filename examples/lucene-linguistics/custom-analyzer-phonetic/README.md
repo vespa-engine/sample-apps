@@ -70,12 +70,14 @@ Phonetic analyzers don't come with the default linguistics bundle, so we need to
 
 ## Compile the application package
 
+**NOTE**: This creates the custom linguistics bundle and copies it under `target/application/components`.
 ```bash
 mvn clean package
 ```
 
-## Deploy the application
+## Deploy the application from target/application
 
+**NOTE**: The app package from `target/application` should be the one from `src/main/application` plus the custom linguistics bundle. If you want to deploy the application package from somewhere else, you need to copy the bundle from `target/application/components` into a `components` directory under the root of that application package.
 ```bash
 vespa deploy target/application
 ```
