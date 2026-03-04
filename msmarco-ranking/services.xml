@@ -14,7 +14,7 @@
     <document-api/>
 
      <!-- See https://docs.vespa.ai/en/embedding.html#huggingface-embedder -->
-    <component id="e5" type="hugging-face-embedder">
+    <component id="e5_embedding_model" type="hugging-face-embedder">
             <transformer-model url="https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx"/>
             <tokenizer-model url="https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json"/>
             <prepend>
@@ -24,7 +24,7 @@
     </component>
 
     <!-- See https://docs.vespa.ai/en/embedding.html#colbert-embedder -->
-    <component id="colbert" type="colbert-embedder">
+    <component id="colbert_embedding_model" type="colbert-embedder">
       <transformer-model url="https://huggingface.co/colbert-ir/colbertv2.0/resolve/main/model.onnx"/>
       <tokenizer-model url="https://huggingface.co/colbert-ir/colbertv2.0/raw/main/tokenizer.json"/>
     </component>

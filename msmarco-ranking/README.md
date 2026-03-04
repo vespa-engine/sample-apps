@@ -143,17 +143,17 @@ Note that the `@query` parameter substitution syntax requires Vespa 8.299 or abo
 
 <pre data-test="exec" data-test-assert-contains='Manhattan'>
 vespa query 'query=what was the manhattan project' \
- 'yql=select * from passage where {targetHits: 100}nearestNeighbor(e5, q)'\
- 'input.query(q)=embed(e5, @query)' \
- 'input.query(qt)=embed(colbert, @query)' \
+ 'yql=select * from passage where {targetHits: 100}nearestNeighbor(e5_embedding, q)'\
+ 'input.query(q)=embed(e5_embedding_model, @query)' \
+ 'input.query(qt)=embed(colbert_embedding_model, @query)' \
  'ranking=e5-colbert'
 </pre>
 
 <pre data-test="exec" data-test-assert-contains='Manhattan'>
 vespa query 'query=what was the manhattan project' \
- 'yql=select * from passage where userQuery() or ({targetHits: 100}nearestNeighbor(e5, q))'\
- 'input.query(q)=embed(e5, @query)' \
- 'input.query(qt)=embed(colbert, @query)' \
+ 'yql=select * from passage where userQuery() or ({targetHits: 100}nearestNeighbor(e5_embedding, q))'\
+ 'input.query(q)=embed(e5_embedding_model, @query)' \
+ 'input.query(qt)=embed(colbert_embedding_model, @query)' \
  'input.query(query_token_ids)=embed(tokenizer, @query)' \
  'ranking=e5-colbert-cross-encoder-rrf'
  </pre>
@@ -171,12 +171,15 @@ With the [evaluate_passage_run.py](python/evaluate_passage_run.py)
 we can run retrieval and ranking using the methods demonstrated.
 
 To do so, we need to index the entire dataset as follows:
+
+**Note** The ir_datasets utility will download MS Marco query evaluation data,
+so the first run will take some time to complete (Upwards of several days to complete on a powerful laptop. Consider running the feeding on a dedicated machine or cloud instance).
+
 <pre>
-ir_datasets export msmarco-passage docs --format jsonl |python3 python/to-vespa-feed.py | vespa feed -
+ir_datasets export msmarco-passage docs --format jsonl |python3 python/to-vespa-feed.py |vespa feed -
 </pre>
 
-Note that the ir_datasets utility will download MS Marco query evaluation data,
-so the first run will take some time to complete.
+
 
 **BM25(WAND) Single-phase sparse retrieval**
 <pre>
