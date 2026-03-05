@@ -14,31 +14,31 @@ query_models =  {
     'yql': 'select id from passage where userQuery()',
     'ranking': 'bm25',
     'query': '{query}',
-    'input.query(qt)':'embed(colbert, "{query}")'
+    'input.query(qt)':'embed(colbert_embedding_model, "{query}")'
   },
    'bm25-colbert': {
     'yql': 'select id from passage where userQuery()',
     'ranking': 'bm25-colbert',
-    'input.query(qt)':'embed(colbert, "{query}")',
+    'input.query(qt)':'embed(colbert_embedding_model, "{query}")',
     'query': '{query}',
     'ranking.rerankCount': 100
   },
   "e5": {
-    'yql': 'select id from passage where {targetHits: 10, hnsw.exploreAdditionalHits:100}nearestNeighbor(e5, q)',
-    'input.query(q)': 'embed(e5, "{query}")',
-    'ranking': 'e5',
+    'yql': 'select id from passage where {targetHits: 10, hnsw.exploreAdditionalHits:100}nearestNeighbor(e5_embedding, q)',
+    'input.query(q)': 'embed(e5_embedding_model, "{query}")',
+    'ranking': 'e5-similarity',
   },
   "e5-colbert": {
-    'yql': 'select id from passage where {targetHits: 100, hnsw.exploreAdditionalHits:100}nearestNeighbor(e5, q)',
-    'input.query(q)': 'embed(e5, "{query}")',
-    'input.query(qt)':'embed(colbert, "{query}")',
+    'yql': 'select id from passage where {targetHits: 100, hnsw.exploreAdditionalHits:100}nearestNeighbor(e5_embedding, q)',
+    'input.query(q)': 'embed(e5_embedding_model, "{query}")',
+    'input.query(qt)':'embed(colbert_embedding_model, "{query}")',
     'ranking': 'e5-colbert',
     'ranking.rerankCount': 100
   },
   "e5-colbert-cross-encoder-rrf": {
-    'yql': 'select id from passage where {targetHits: 100,hnsw.exploreAdditionalHits:100}nearestNeighbor(e5, q)',
-    'input.query(q)': 'embed(e5, "{query}")',
-    'input.query(qt)':'embed(colbert, "{query}")',
+    'yql': 'select id from passage where {targetHits: 100,hnsw.exploreAdditionalHits:100}nearestNeighbor(e5_embedding, q)',
+    'input.query(q)': 'embed(e5_embedding_model, "{query}")',
+    'input.query(qt)':'embed(colbert_embedding_model, "{query}")',
     'input.query(query_token_ids)':'embed(tokenizer, "{query}")',
     'ranking': 'e5-colbert-cross-encoder-rrf',
     'ranking.rerankCount': 100, 

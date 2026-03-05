@@ -4,7 +4,7 @@ schema passage {
 
   document passage {
 
-     field id type string {
+    field id type string {
       indexing: summary | attribute
     }
     field text type string {
@@ -22,9 +22,9 @@ schema passage {
     attribute: paged
   }
 
-  field e5 type tensor<bfloat16>(x[384]) {
-    # e5 prefix instruction for document 
-    indexing: input text | embed e5 | attribute | index
+  field e5_embedding type tensor<bfloat16>(x[384]) {
+    # Using the e5 embedding model defined in services.xml
+    indexing: input text | embed e5_embedding_model | attribute | index
     attribute {
       distance-metric: angular
     }
@@ -36,9 +36,9 @@ schema passage {
     }
   }
 
-  field colbert type tensor<int8>(dt{}, x[16]) {
+  field colbert_embeddings type tensor<int8>(dt{}, x[16]) {
     # No index - used for ranking, not retrieval 
-    indexing: input text | embed colbert | attribute
+    indexing: input text | embed colbert_embedding_model | attribute
     attribute: paged
   }
 
@@ -56,35 +56,29 @@ schema passage {
     }
   }
 
-  rank-profile e5 {
+  rank-profile e5-similarity {
     inputs {
       query(q) tensor<float>(x[384])
     }
     first-phase {
-      expression: closeness(field, e5)
+      expression: closeness(field, e5_embedding)
     } 
   }
 
-  rank-profile bm25-colbert inherits e5-colbert {
-    first-phase {
-      expression: bm25(text)
-    }
-  }
-
-  rank-profile e5-colbert inherits e5 {
+  rank-profile e5-colbert inherits e5-similarity {
     inputs {
       query(qt) tensor<float>(qt{},x[128])
       query(q) tensor<float>(x[384])
     }
     function cos_sim() {
-      expression: cos(distance(field, e5))
+      expression: cos(distance(field, e5_embedding))
     }
     function max_sim() {
       expression {
         sum(
           reduce(
             sum(
-              query(qt) * unpack_bits(attribute(colbert)), x
+              query(qt) * unpack_bits(attribute(colbert_embeddings)), x
             ),
             max, dt
           ),
@@ -100,8 +94,14 @@ schema passage {
     match-features: max_sim() cos_sim()
   }
 
+  rank-profile bm25-colbert inherits e5-colbert {
+    # Overrides the first-phase expression fo e5-colbert rank-profile 
+    first-phase {
+      expression: bm25(text)
+    }
+  }
+
   rank-profile e5-colbert-rrf inherits e5-colbert {
-   
     global-phase {
       rerank-count: 200
       expression: reciprocal_rank(cos_sim) + reciprocal_rank(max_sim)
@@ -129,7 +129,7 @@ schema passage {
         sum(
           reduce(
             sum(
-              query(qt) * unpack_bits(attribute(colbert)), x
+              query(qt) * unpack_bits(attribute(colbert_embeddings)), x
             ),
             max, dt
           ),
@@ -138,7 +138,7 @@ schema passage {
        }
     }
     function e5_cos_sim() {
-      expression: cos(distance(field, e5))
+      expression: cos(distance(field, e5_embedding))
     }
     function cross_encoder() {
       expression: onnx(ranker){d0:0,d1:0}
