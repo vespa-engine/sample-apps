@@ -28,8 +28,8 @@ jobs:
     - name: Get Vespa CLI - update to later versions as needed
       run: |
         apt update && apt -y install curl
-        curl -SsLo vespa-cli.tar.gz https://github.com/vespa-engine/vespa/releases/download/v8.448.13/vespa-cli_8.448.13_linux_amd64.tar.gz
-        tar -xvf vespa-cli.tar.gz && ln -fs vespa-cli_8.448.13_linux_amd64/bin/vespa
+        curl -SsLo vespa-cli.tar.gz https://github.com/vespa-engine/vespa/releases/download/v8.653.22/vespa-cli_8.653.22_linux_amd64.tar.gz
+        tar -xvf vespa-cli.tar.gz && ln -fs vespa-cli_8.653.22_linux_amd64/bin/vespa
 
     - name: Deploy to Vespa Cloud
       run: |
