@@ -3,12 +3,18 @@ package com.example;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandler;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
@@ -27,11 +33,7 @@ import ai.vespa.feed.client.JsonFeeder;
 import ai.vespa.feed.client.Result;
 import nl.altindag.ssl.SSLFactory;
 import nl.altindag.ssl.pem.util.PemUtils;
-import okhttp3.ConnectionPool;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
 
 public class VespaClient {
     private final static Logger log = Logger.getLogger(VespaClient.class.getName());
@@ -40,20 +42,26 @@ public class VespaClient {
         MTLS,   // mTLS: Recommended for Vespa Cloud
         TOKEN,  // Token-based authentication
         NONE    // E.g. if self-hosting.
-    };
+    }
 
     private static final AuthMethod AUTH_METHOD = AuthMethod.MTLS;
 
-    private static final String ENDPOINT    = ""; 
-    // Auth method mTLS
-    private static final String PUBLIC_CERT = "";
-    private static final String PRIVATE_KEY = "";
+    private static final String ENDPOINT    = "YOUR_ENDPOINT"; 
+    // Auth method: mTLS
+    private static final String PUBLIC_CERT = "/path/to/public-cert.pem";
+    private static final String PRIVATE_KEY = "/peth/to/private-key.pem";
 
-    // Auth method token.
-    private static final String TOKEN       = "";
+    // Auth method: token.
+    private static final String TOKEN       = "YOUR_TOKEN";
 
-    private static final int LOAD_CONCURRENCY = 400;
-    private static final int LOAD_NUM_QUERIES = 50000;
+    // Number of concurrent in-flight HTTP/2 streams across all connections.
+    private static final int    LOAD_POOL_SIZE   = 800;
+    private static final int    LOAD_NUM_QUERIES = 1000000;
+    // Each HttpClient opens its own connection. Multiple connections spread load
+    // across container nodes via the load balancer.
+    private static final int    NUM_CONNECTIONS  = 16;
+    private static final String LOAD_TEST_YQL   = "select * from sources * where userQuery()";
+    private static final String LOAD_TEST_QUERY = "guinness world record";
 
     public static void main(String[] args) throws Exception {
         Options options = new Options();
@@ -74,8 +82,8 @@ public class VespaClient {
             } else if (cmd.hasOption("q")) {
                 String query = cmd.getOptionValue("q");
                 try {
-                    String result = runSingleQuery(createHttpClient(), "select * from sources * where userQuery()", query).get();
-                    log.info(result);
+                    HttpResponse<String> response = runSingleQuery(createHttpClient(), "select * from sources * where userQuery()", query, HttpResponse.BodyHandlers.ofString()).get();
+                    log.info(response.body());
                 } catch (Exception e) {
                     log.severe("Query failed with message: " + e.getMessage());
                 }
@@ -98,39 +106,16 @@ public class VespaClient {
         return sslFactory;
     }
 
-    /**
-     * Create a {@link OkHttpClient} for querying, with settings based on {@link VespaClient#AUTH_METHOD}.
-     */
-    static OkHttpClient createHttpClient() {
-        var builder = new OkHttpClient.Builder()
-            .connectionPool(new ConnectionPool(LOAD_CONCURRENCY, 5, TimeUnit.MINUTES))
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(2, TimeUnit.SECONDS);
+    static HttpClient createHttpClient() {
+        var clientBuilder = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_2)
+            .connectTimeout(Duration.ofSeconds(5));
 
-        switch (AUTH_METHOD) {
-            case MTLS:
-                {
-                    var sslFactory = getSSLFactory();
-                    builder.sslSocketFactory(sslFactory.getSslSocketFactory(), sslFactory.getTrustManager().orElseThrow());
-                }
-                break;
-            case TOKEN:
-                {
-                    builder.addInterceptor(chain -> {
-                        return chain.proceed(
-                            chain.request()
-                                 .newBuilder()
-                                 .header("Authorization", "Bearer " + TOKEN)
-                                 .build()
-                        );
-                    });
-                }
-                break;
-            case NONE:
-                break;
+        if (AUTH_METHOD == AuthMethod.MTLS) {
+            clientBuilder.sslContext(getSSLFactory().getSslContext());
         }
 
-        return builder.build();
+        return clientBuilder.build();
     }
 
     /**
@@ -154,55 +139,54 @@ public class VespaClient {
                          .build();
     }
 
-    static Optional<String> runSingleQuery(OkHttpClient client, String yql, String query) throws IOException {
-        HttpUrl url = HttpUrl.parse(ENDPOINT + "search/")
-            .newBuilder()
-            .addQueryParameter("yql", yql)
-            .addQueryParameter("query", query)
-            .build();
+    static <T> CompletableFuture<HttpResponse<T>> runSingleQuery(HttpClient client, String yql, String query, BodyHandler<T> handler) {
+        String base = ENDPOINT.endsWith("/") ? ENDPOINT : ENDPOINT + "/";
+        URI uri = URI.create(String.format("%ssearch/?yql=%s&query=%s",
+            base,
+            URLEncoder.encode(yql, StandardCharsets.UTF_8),
+            URLEncoder.encode(query, StandardCharsets.UTF_8)));
 
-        Request request = new Request.Builder()
-            .url(url)
-            .build();
+        var reqBuilder = HttpRequest.newBuilder()
+            .uri(uri)
+            .GET()
+            .timeout(Duration.ofSeconds(5));
 
-        try (Response response = client.newCall(request).execute()) {
-            if (response.code() != 200) {
-                throw  new IOException("Error code " + response.code());
-            }
-            if (response.body() != null) {
-                // consume
-                return Optional.of(response.body().string());
-            }
+        if (AUTH_METHOD == AuthMethod.TOKEN) {
+            reqBuilder.header("Authorization", "Bearer " + TOKEN);
         }
-        return Optional.empty();
+
+        return client.sendAsync(reqBuilder.build(), handler);
     }
 
     static void loadTest() throws Exception {
-        var client = createHttpClient();
+        List<HttpClient> clients = new ArrayList<>(NUM_CONNECTIONS);
+        for (int i = 0; i < NUM_CONNECTIONS; i++) {
+            clients.add(createHttpClient());
+        }
 
-        ExecutorService executor = Executors.newFixedThreadPool(LOAD_CONCURRENCY);
-        
-        AtomicLong resultsReceived = new AtomicLong(0);
-        AtomicLong errorsReceived = new AtomicLong(0);
+        log.info("Warmup: 100 synchronous queries");
+        for (int i = 0; i < 100; ++i) {
+            try {
+                runSingleQuery(clients.get(i % NUM_CONNECTIONS), LOAD_TEST_YQL, LOAD_TEST_QUERY, HttpResponse.BodyHandlers.discarding()).get();
+            } catch (Exception e) {
+                log.severe("Warmup query failed: " + e.getMessage());
+            }
+        }
 
-        log.info("Performing " + LOAD_NUM_QUERIES + " queries with concurrency: " + LOAD_CONCURRENCY);
+        log.info("Performing " + LOAD_NUM_QUERIES + " queries with " + LOAD_POOL_SIZE + " concurrent requests across " + NUM_CONNECTIONS + " connections");
+
+        var remaining = new AtomicLong(LOAD_NUM_QUERIES);
+        var resultsReceived = new AtomicLong(0);
+        var errorsReceived = new AtomicLong(0);
+        var latch = new CountDownLatch(LOAD_POOL_SIZE);
 
         long startTimeMillis = System.currentTimeMillis();
 
-        for (int i = 0; i < LOAD_NUM_QUERIES; ++i) {
-            executor.submit(() -> {
-                try {
-                    runSingleQuery(client, "select * from sources * where userQuery()", "guinness world record");
-                } catch (Exception e) {
-                    log.severe("Query iteration failed with: " + e.getMessage());
-                    errorsReceived.incrementAndGet();
-                } finally {
-                    resultsReceived.incrementAndGet();
-                }
-            });
+        for (int i = 0; i < LOAD_POOL_SIZE; i++) {
+            sendNext(clients.get(i % NUM_CONNECTIONS), remaining, resultsReceived, errorsReceived, latch);
         }
-        executor.shutdown();
-        executor.awaitTermination(1, TimeUnit.HOURS);
+
+        latch.await();
 
         long timeSpentMillis = System.currentTimeMillis() - startTimeMillis;
         double qps = (double)(resultsReceived.get() - errorsReceived.get()) / (timeSpentMillis / 1000.0);
@@ -212,12 +196,31 @@ public class VespaClient {
         log.info("QPS: " + qps);
     }
 
+    static void sendNext(HttpClient client, AtomicLong remaining,
+                         AtomicLong resultsReceived, AtomicLong errorsReceived,
+                         CountDownLatch latch) {
+        if (remaining.decrementAndGet() < 0) {
+            latch.countDown();
+            return;
+        }
+        runSingleQuery(client, "select * from sources * where userQuery()",
+                       "guinness world record", HttpResponse.BodyHandlers.discarding())
+            .whenComplete((resp, ex) -> {
+                if (ex != null) {
+                    log.severe("Query failed: " + ex.getMessage());
+                    errorsReceived.incrementAndGet();
+                }
+                resultsReceived.incrementAndGet();
+                sendNext(client, remaining, resultsReceived, errorsReceived, latch);
+            });
+    }
+
     /**
      * Feed documents from a .jsonl file given by {@code filePath}.
      */
     static void feedFromFile(String filePath) {
-        try (FileInputStream jsonStream = new FileInputStream(filePath)) {
-            JsonFeeder feeder = createFeeder();
+        try (FileInputStream jsonStream = new FileInputStream(filePath);
+             JsonFeeder feeder = createFeeder()) {
             log.info("Starting feed");
 
             AtomicLong resultsReceived = new AtomicLong(0);
@@ -245,7 +248,6 @@ public class VespaClient {
             });
 
             promise.join();
-            feeder.close();
 
             long timeSpentMillis = (System.currentTimeMillis() - startTimeMillis);
             double okRatePerSec = (double)(resultsReceived.get() - errorsReceived.get()) / (timeSpentMillis / 1000.0);
