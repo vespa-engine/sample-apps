@@ -2,19 +2,15 @@ package com.example;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.channels.AsynchronousCloseException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandler;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
@@ -24,6 +20,16 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
+
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.RetryableRequestException;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import ai.vespa.feed.client.DocumentId;
 import ai.vespa.feed.client.FeedClient;
@@ -50,14 +56,14 @@ public class VespaClient {
     // Auth method: mTLS
     private static final String PUBLIC_CERT = "/path/to/public-cert.pem";
     private static final String PRIVATE_KEY = "/peth/to/private-key.pem";
-
     // Auth method: token.
     private static final String TOKEN       = "YOUR_TOKEN";
 
     // Number of concurrent in-flight HTTP/2 streams across all connections.
-    private static final int    CONCURRENT_REQUESTS = 800;
+    private static final int    CONCURRENT_REQUESTS = 512;
     private static final int    TOTAL_QUERIES       = 1000000;
-    // Each HttpClient opens its own connection. 
+    // Max connections to open per destination. Excess requests are queued on existing
+    // connections rather than opening new ones, preventing connection explosion under load.
     // Multiple connections spread load across container nodes via the load balancer.
     private static final int    NUM_CONNECTIONS     = 16;
     private static final String QUERY_YQL           = "select * from sources * where userQuery()";
@@ -85,11 +91,23 @@ public class VespaClient {
                 feedFromFile(feedPath);
             } else if (cmd.hasOption("q")) {
                 String query = cmd.getOptionValue("q");
+                var client = createHttpClient();
                 try {
-                    HttpResponse<String> response = runSingleQuery(createHttpClient(), "select * from sources * where userQuery()", query, HttpResponse.BodyHandlers.ofString()).get();
-                    log.info(response.body());
+                    String base = ENDPOINT.endsWith("/") ? ENDPOINT : ENDPOINT + "/";
+                    String uri = String.format("%ssearch/?yql=%s&query=%s",
+                        base,
+                        URLEncoder.encode(QUERY_YQL, StandardCharsets.UTF_8),
+                        URLEncoder.encode(query, StandardCharsets.UTF_8));
+                    var request = client.newRequest(uri).timeout(5, TimeUnit.SECONDS);
+                    if (AUTH_METHOD == AuthMethod.TOKEN) {
+                        request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + TOKEN));
+                    }
+                    ContentResponse response = request.send();
+                    log.info(response.getContentAsString());
                 } catch (Exception e) {
                     log.severe("Query failed with message: " + e.getMessage());
+                } finally {
+                    client.stop();
                 }
             } else {
                 formatter.printHelp("VespaClient", "", options, "Error: No option specified", true);
@@ -114,18 +132,25 @@ public class VespaClient {
     }
 
     /**
-     * Creates an {@link HttpClient} configured for HTTP/2 and the selected {@link AuthMethod}.
+     * Creates a Jetty {@link HttpClient} configured for HTTP/2 and the selected {@link AuthMethod}.
+     * Caps connections at {@link #NUM_CONNECTIONS} per destination and queues excess requests
+     * rather than opening new connections, preventing connection explosion under high concurrency.
      */
-    static HttpClient createHttpClient() {
-        var clientBuilder = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .connectTimeout(Duration.ofSeconds(5));
-
+    static HttpClient createHttpClient() throws Exception {
+        var ssl = new SslContextFactory.Client();
         if (AUTH_METHOD == AuthMethod.MTLS) {
-            clientBuilder.sslContext(getSSLFactory().getSslContext());
+            ssl.setSslContext(getSSLFactory().getSslContext());
         }
 
-        return clientBuilder.build();
+        var connector = new ClientConnector();
+        connector.setSslContextFactory(ssl);
+
+        var client = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client(connector)));
+        client.setMaxConnectionsPerDestination(NUM_CONNECTIONS);
+        client.setMaxRequestsQueuedPerDestination(CONCURRENT_REQUESTS);
+        client.start();
+
+        return client;
     }
 
     /**
@@ -150,30 +175,33 @@ public class VespaClient {
     }
 
     /**
-     * Sends a single search query asynchronously and returns the response as a {@link CompletableFuture}.
+     * Sends a single search query asynchronously.
      *
-     * @param client  the HTTP client to use
-     * @param yql     the YQL query string
-     * @param query   the user query input passed to {@code userQuery()}
-     * @param handler the body handler controlling how the response body is consumed
+     * @param client the HTTP client to use
+     * @param yql    the YQL query string
+     * @param query  the user query input passed to {@code userQuery()}
      */
-    static <T> CompletableFuture<HttpResponse<T>> runSingleQuery(HttpClient client, String yql, String query, BodyHandler<T> handler) {
+    static CompletableFuture<Void> runSingleQuery(HttpClient client, String yql, String query) {
         String base = ENDPOINT.endsWith("/") ? ENDPOINT : ENDPOINT + "/";
-        URI uri = URI.create(String.format("%ssearch/?yql=%s&query=%s",
+        String uri = String.format("%ssearch/?yql=%s&query=%s",
             base,
             URLEncoder.encode(yql, StandardCharsets.UTF_8),
-            URLEncoder.encode(query, StandardCharsets.UTF_8)));
+            URLEncoder.encode(query, StandardCharsets.UTF_8));
 
-        var reqBuilder = HttpRequest.newBuilder()
-            .uri(uri)
-            .GET()
-            .timeout(Duration.ofSeconds(5));
+        var request = client.newRequest(uri)
+            .method(HttpMethod.GET)
+            .timeout(30, TimeUnit.SECONDS);
 
         if (AUTH_METHOD == AuthMethod.TOKEN) {
-            reqBuilder.header("Authorization", "Bearer " + TOKEN);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + TOKEN));
         }
 
-        return client.sendAsync(reqBuilder.build(), handler);
+        var cf = new CompletableFuture<Void>();
+        request.send(result -> {
+            if (result.isFailed()) cf.completeExceptionally(result.getFailure());
+            else cf.complete(null);
+        });
+        return cf;
     }
 
     /**
@@ -181,41 +209,46 @@ public class VespaClient {
      * Tune {@link #CONCURRENT_REQUESTS}, {@link #TOTAL_QUERIES}, and {@link #NUM_CONNECTIONS} to adjust load.
      */
     static void loadTest() throws Exception {
-        List<HttpClient> clients = new ArrayList<>(NUM_CONNECTIONS);
-        for (int i = 0; i < NUM_CONNECTIONS; i++) {
-            clients.add(createHttpClient());
-        }
-
-        log.info("Warmup: 100 synchronous queries");
-        for (int i = 0; i < 100; ++i) {
-            try {
-                runSingleQuery(clients.get(i % NUM_CONNECTIONS), QUERY_YQL, QUERY_INPUT, HttpResponse.BodyHandlers.discarding()).get();
-            } catch (Exception e) {
-                log.severe("Warmup query failed: " + e.getMessage());
+        var client = createHttpClient();
+        try {
+            // Warmup: fire CONCURRENT_REQUESTS queries in parallel to pre-establish all connections
+            // at full concurrency before the timed test begins. This prevents the connection-open
+            // race where many requests arrive before any connection is ready.
+            log.info("Warmup: " + CONCURRENT_REQUESTS + " concurrent queries to pre-establish connections");
+            var warmupLatch = new CountDownLatch(CONCURRENT_REQUESTS);
+            for (int i = 0; i < CONCURRENT_REQUESTS; i++) {
+                runWithRetry(client, QUERY_YQL, QUERY_INPUT, 3)
+                    .whenComplete((v, ex) -> {
+                        if (ex != null) log.severe("Warmup query failed: " + ex.getMessage());
+                        warmupLatch.countDown();
+                    });
             }
+            warmupLatch.await();
+
+            log.info("Performing " + TOTAL_QUERIES + " queries with " + CONCURRENT_REQUESTS + " concurrent requests across " + NUM_CONNECTIONS + " connections");
+
+            var remaining = new AtomicLong(TOTAL_QUERIES);
+            var resultsReceived = new AtomicLong(0);
+            var errorsReceived = new AtomicLong(0);
+            var latch = new CountDownLatch(CONCURRENT_REQUESTS);
+
+            long startTimeMillis = System.currentTimeMillis();
+
+            for (int i = 0; i < CONCURRENT_REQUESTS; i++) {
+                sendNext(client, remaining, resultsReceived, errorsReceived, latch);
+            }
+
+            latch.await();
+
+            long timeSpentMillis = System.currentTimeMillis() - startTimeMillis;
+            double qps = (double)(resultsReceived.get() - errorsReceived.get()) / (timeSpentMillis / 1000.0);
+            log.info("----- Results -----");
+            log.info("Received in total " + resultsReceived.get() + " results, " + errorsReceived.get() + " errors.");
+            log.info("Time spent: " + timeSpentMillis + " ms.");
+            log.info("QPS: " + qps);
+        } finally {
+            client.stop();
         }
-
-        log.info("Performing " + TOTAL_QUERIES + " queries with " + CONCURRENT_REQUESTS + " concurrent requests across " + NUM_CONNECTIONS + " connections");
-
-        var remaining = new AtomicLong(TOTAL_QUERIES);
-        var resultsReceived = new AtomicLong(0);
-        var errorsReceived = new AtomicLong(0);
-        var latch = new CountDownLatch(CONCURRENT_REQUESTS);
-
-        long startTimeMillis = System.currentTimeMillis();
-
-        for (int i = 0; i < CONCURRENT_REQUESTS; i++) {
-            sendNext(clients.get(i % NUM_CONNECTIONS), remaining, resultsReceived, errorsReceived, latch);
-        }
-
-        latch.await();
-
-        long timeSpentMillis = System.currentTimeMillis() - startTimeMillis;
-        double qps = (double)(resultsReceived.get() - errorsReceived.get()) / (timeSpentMillis / 1000.0);
-        log.info("----- Results -----");
-        log.info("Received in total " + resultsReceived.get() + " results, " + errorsReceived.get() + " errors.");
-        log.info("Time spent: " + timeSpentMillis + " ms.");
-        log.info("QPS: " + qps);
     }
 
     /**
@@ -230,14 +263,30 @@ public class VespaClient {
             latch.countDown();
             return;
         }
-        runSingleQuery(client, QUERY_YQL, QUERY_INPUT, HttpResponse.BodyHandlers.discarding())
-            .whenComplete((resp, ex) -> {
+        runWithRetry(client, QUERY_YQL, QUERY_INPUT, 3)
+            .whenComplete((v, ex) -> {
                 if (ex != null) {
-                    log.severe("Query failed: " + ex.getMessage());
                     errorsReceived.incrementAndGet();
+                    log.severe("Query failed: " + ex.getMessage() + " (" + ex.getClass().getSimpleName() + ")");
                 }
                 resultsReceived.incrementAndGet();
                 sendNext(client, remaining, resultsReceived, errorsReceived, latch);
+            });
+    }
+
+    /**
+     * Sends a query, transparently retrying up to {@code retriesLeft} times on
+     * {@link RetryableRequestException} — typically caused by server-side connection
+     * recycling (GOAWAY) when Jetty's internal retry queue is exhausted.
+     */
+    static CompletableFuture<Void> runWithRetry(HttpClient client, String yql, String query, int retriesLeft) {
+        return runSingleQuery(client, yql, query)
+            .exceptionallyCompose(ex -> {
+                if ((ex instanceof RetryableRequestException || ex instanceof AsynchronousCloseException) && retriesLeft > 0) {
+                    log.warning("Retrying transient error (" + retriesLeft + " attempts left): " + ex.getMessage());
+                    return runWithRetry(client, yql, query, retriesLeft - 1);
+                }
+                return CompletableFuture.failedFuture(ex);
             });
     }
 
