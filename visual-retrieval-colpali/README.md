@@ -54,10 +54,10 @@ Skip to [Installing dependencies using `uv`](#installing-dependencies-using-uv) 
 
 ### Installing dependencies using `pip`
 
-You can install the dependencies with `pip`:
+> **Note:** `src/legacy-requirements.txt` is a legacy file and may be out of date. We recommend using `uv` (see below) to install dependencies from `pyproject.toml` instead.
 
 ```bash
-pip install -r src/requirements.txt
+pip install -r src/legacy-requirements.txt
 ```
 
 ### Installing dependencies using `uv`
@@ -101,13 +101,13 @@ This will start a local server, and you can access the application at `http://lo
 
 ### Compiling dependencies
 
-Before a deploy, make sure to run this to compile the `uv` lock file to `requirements.txt` if you have made changes to the dependencies:
+Before a deploy, make sure to run this to compile the dependencies to `requirements.txt` if you have made changes to the dependencies:
 
 ```bash
-uv pip compile pyproject.toml -o src/requirements.txt
+uv pip compile pyproject.toml -o src/legacy-requirements.txt
 ```
 
-This will make sure that the dependencies in your `pyproject.toml` are compiled to the `requirements.txt` file, which is used by the huggingface space.
+This will make sure that the dependencies in your `pyproject.toml` are compiled to the `legacy-requirements.txt` file, which is used by the huggingface space.
 
 ### Deploying to huggingface
 
