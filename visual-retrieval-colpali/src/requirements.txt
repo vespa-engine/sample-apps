@@ -62,7 +62,7 @@ confection==0.1.5
     #   weasel
 contourpy==1.3.0
     # via matplotlib
-cryptography==44.0.1
+cryptography==46.0.5
     # via pyvespa
 cycler==0.12.1
     # via matplotlib
