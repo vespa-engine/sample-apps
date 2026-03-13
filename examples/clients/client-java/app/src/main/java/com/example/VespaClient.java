@@ -1,3 +1,6 @@
+/*
+ * Copyright Vespa.ai. All rights reserved.
+ */
 package com.example;
 
 import java.io.FileInputStream;
@@ -52,10 +55,10 @@ public class VespaClient {
 
     private static final AuthMethod AUTH_METHOD = AuthMethod.MTLS;
 
-    private static final String ENDPOINT    = "YOUR_ENDPOINT"; 
+    private static final String ENDPOINT    = "YOUR_ENDPOINT";
     // Auth method: mTLS
     private static final String PUBLIC_CERT = "/path/to/public-cert.pem";
-    private static final String PRIVATE_KEY = "/peth/to/private-key.pem";
+    private static final String PRIVATE_KEY = "/path/to/private-key.pem";
     // Auth method: token.
     private static final String TOKEN       = "YOUR_TOKEN";
 

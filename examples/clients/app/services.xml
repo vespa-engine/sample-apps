@@ -5,16 +5,14 @@ project root. -->
     <container id="default" version="1.0">
         <search />
         <document-api />
-        <nodes count="2">
-        </nodes>
+        <nodes count="2"/>
     </container>
     <content version="1.0" id="content">
         <min-redundancy>2</min-redundancy>
         <documents>
             <document type="passage" mode="index"/>
         </documents>
-        <nodes count="2">
-        </nodes>
+        <nodes count="2"/>
     </content>
 
 </services>
