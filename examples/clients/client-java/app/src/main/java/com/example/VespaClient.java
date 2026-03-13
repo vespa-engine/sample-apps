@@ -55,14 +55,18 @@ public class VespaClient {
     private static final String TOKEN       = "YOUR_TOKEN";
 
     // Number of concurrent in-flight HTTP/2 streams across all connections.
-    private static final int    LOAD_POOL_SIZE   = 800;
-    private static final int    LOAD_NUM_QUERIES = 1000000;
-    // Each HttpClient opens its own connection. Multiple connections spread load
-    // across container nodes via the load balancer.
-    private static final int    NUM_CONNECTIONS  = 16;
-    private static final String LOAD_TEST_YQL   = "select * from sources * where userQuery()";
-    private static final String LOAD_TEST_QUERY = "guinness world record";
+    private static final int    CONCURRENT_REQUESTS = 800;
+    private static final int    TOTAL_QUERIES       = 1000000;
+    // Each HttpClient opens its own connection. 
+    // Multiple connections spread load across container nodes via the load balancer.
+    private static final int    NUM_CONNECTIONS     = 16;
+    private static final String QUERY_YQL           = "select * from sources * where userQuery()";
+    private static final String QUERY_INPUT         = "guinness world record";
 
+    /**
+     * Parses command-line arguments and dispatches to the appropriate operation:
+     * single query ({@code -q}), load test ({@code -l}), or document feed ({@code -f}).
+     */
     public static void main(String[] args) throws Exception {
         Options options = new Options();
         options.addOption("q", "query", true, "Run one query");
@@ -96,6 +100,9 @@ public class VespaClient {
         }
     }
 
+    /**
+     * Builds an {@link SSLFactory} loaded with the mTLS client certificate and private key.
+     */
     static SSLFactory getSSLFactory() {
         var keyManager = PemUtils.loadIdentityMaterial(Path.of(PUBLIC_CERT), Path.of(PRIVATE_KEY));
         var sslFactory = SSLFactory.builder()
@@ -106,6 +113,9 @@ public class VespaClient {
         return sslFactory;
     }
 
+    /**
+     * Creates an {@link HttpClient} configured for HTTP/2 and the selected {@link AuthMethod}.
+     */
     static HttpClient createHttpClient() {
         var clientBuilder = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_2)
@@ -119,7 +129,7 @@ public class VespaClient {
     }
 
     /**
-     * Create a {@link JsonFeeder} with settings based on {@link VespaClient#AUTH_METHOD}.
+     * Creates a {@link JsonFeeder} configured for the selected {@link AuthMethod}.
      */
     static JsonFeeder createFeeder() {
         FeedClientBuilder builder = FeedClientBuilder.create(URI.create(ENDPOINT));
@@ -139,6 +149,14 @@ public class VespaClient {
                          .build();
     }
 
+    /**
+     * Sends a single search query asynchronously and returns the response as a {@link CompletableFuture}.
+     *
+     * @param client  the HTTP client to use
+     * @param yql     the YQL query string
+     * @param query   the user query input passed to {@code userQuery()}
+     * @param handler the body handler controlling how the response body is consumed
+     */
     static <T> CompletableFuture<HttpResponse<T>> runSingleQuery(HttpClient client, String yql, String query, BodyHandler<T> handler) {
         String base = ENDPOINT.endsWith("/") ? ENDPOINT : ENDPOINT + "/";
         URI uri = URI.create(String.format("%ssearch/?yql=%s&query=%s",
@@ -158,6 +176,10 @@ public class VespaClient {
         return client.sendAsync(reqBuilder.build(), handler);
     }
 
+    /**
+     * Runs a load test against the search endpoint, reporting QPS on completion.
+     * Tune {@link #CONCURRENT_REQUESTS}, {@link #TOTAL_QUERIES}, and {@link #NUM_CONNECTIONS} to adjust load.
+     */
     static void loadTest() throws Exception {
         List<HttpClient> clients = new ArrayList<>(NUM_CONNECTIONS);
         for (int i = 0; i < NUM_CONNECTIONS; i++) {
@@ -167,22 +189,22 @@ public class VespaClient {
         log.info("Warmup: 100 synchronous queries");
         for (int i = 0; i < 100; ++i) {
             try {
-                runSingleQuery(clients.get(i % NUM_CONNECTIONS), LOAD_TEST_YQL, LOAD_TEST_QUERY, HttpResponse.BodyHandlers.discarding()).get();
+                runSingleQuery(clients.get(i % NUM_CONNECTIONS), QUERY_YQL, QUERY_INPUT, HttpResponse.BodyHandlers.discarding()).get();
             } catch (Exception e) {
                 log.severe("Warmup query failed: " + e.getMessage());
             }
         }
 
-        log.info("Performing " + LOAD_NUM_QUERIES + " queries with " + LOAD_POOL_SIZE + " concurrent requests across " + NUM_CONNECTIONS + " connections");
+        log.info("Performing " + TOTAL_QUERIES + " queries with " + CONCURRENT_REQUESTS + " concurrent requests across " + NUM_CONNECTIONS + " connections");
 
-        var remaining = new AtomicLong(LOAD_NUM_QUERIES);
+        var remaining = new AtomicLong(TOTAL_QUERIES);
         var resultsReceived = new AtomicLong(0);
         var errorsReceived = new AtomicLong(0);
-        var latch = new CountDownLatch(LOAD_POOL_SIZE);
+        var latch = new CountDownLatch(CONCURRENT_REQUESTS);
 
         long startTimeMillis = System.currentTimeMillis();
 
-        for (int i = 0; i < LOAD_POOL_SIZE; i++) {
+        for (int i = 0; i < CONCURRENT_REQUESTS; i++) {
             sendNext(clients.get(i % NUM_CONNECTIONS), remaining, resultsReceived, errorsReceived, latch);
         }
 
@@ -196,6 +218,11 @@ public class VespaClient {
         log.info("QPS: " + qps);
     }
 
+    /**
+     * Fires the next query asynchronously and chains itself as the completion callback,
+     * keeping exactly {@link #CONCURRENT_REQUESTS} requests in flight without blocking any threads.
+     * Signals {@code latch} when this slot's share of queries is exhausted.
+     */
     static void sendNext(HttpClient client, AtomicLong remaining,
                          AtomicLong resultsReceived, AtomicLong errorsReceived,
                          CountDownLatch latch) {
@@ -203,8 +230,7 @@ public class VespaClient {
             latch.countDown();
             return;
         }
-        runSingleQuery(client, "select * from sources * where userQuery()",
-                       "guinness world record", HttpResponse.BodyHandlers.discarding())
+        runSingleQuery(client, QUERY_YQL, QUERY_INPUT, HttpResponse.BodyHandlers.discarding())
             .whenComplete((resp, ex) -> {
                 if (ex != null) {
                     log.severe("Query failed: " + ex.getMessage());
@@ -216,7 +242,8 @@ public class VespaClient {
     }
 
     /**
-     * Feed documents from a .jsonl file given by {@code filePath}.
+     * Feeds documents from a JSON Lines file at {@code filePath} using the Vespa feed client,
+     * reporting feed rate on completion.
      */
     static void feedFromFile(String filePath) {
         try (FileInputStream jsonStream = new FileInputStream(filePath);
