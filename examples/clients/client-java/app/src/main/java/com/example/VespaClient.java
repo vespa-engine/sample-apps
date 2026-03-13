@@ -62,10 +62,9 @@ public class VespaClient {
     // Number of concurrent in-flight HTTP/2 streams across all connections.
     private static final int    CONCURRENT_REQUESTS = 512;
     private static final int    TOTAL_QUERIES       = 1000000;
-    // Max connections to open per destination. Excess requests are queued on existing
+    // Max connections to keep open at the same time. Excess requests are queued on existing
     // connections rather than opening new ones, preventing connection explosion under load.
-    // Multiple connections spread load across container nodes via the load balancer.
-    private static final int    NUM_CONNECTIONS     = 16;
+    private static final int    NUM_CONNECTIONS     = 8;
     private static final String QUERY_YQL           = "select * from sources * where userQuery()";
     private static final String QUERY_INPUT         = "guinness world record";
 
@@ -211,12 +210,11 @@ public class VespaClient {
     static void loadTest() throws Exception {
         var client = createHttpClient();
         try {
-            // Warmup: fire CONCURRENT_REQUESTS queries in parallel to pre-establish all connections
-            // at full concurrency before the timed test begins. This prevents the connection-open
-            // race where many requests arrive before any connection is ready.
-            log.info("Warmup: " + CONCURRENT_REQUESTS + " concurrent queries to pre-establish connections");
-            var warmupLatch = new CountDownLatch(CONCURRENT_REQUESTS);
-            for (int i = 0; i < CONCURRENT_REQUESTS; i++) {
+            // Warmup: one request per connection to ensure all NUM_CONNECTIONS TLS handshakes
+            // complete before the timed test begins, giving a clean steady-state QPS measurement.
+            log.info("Warmup: establishing " + NUM_CONNECTIONS + " connections");
+            var warmupLatch = new CountDownLatch(NUM_CONNECTIONS);
+            for (int i = 0; i < NUM_CONNECTIONS; i++) {
                 runWithRetry(client, QUERY_YQL, QUERY_INPUT, 3)
                     .whenComplete((v, ex) -> {
                         if (ex != null) log.severe("Warmup query failed: " + ex.getMessage());
