@@ -1,0 +1,22 @@
+schema passage {
+    document passage {
+        field id type string {
+            indexing: summary | attribute
+        }
+
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+    }
+
+    fieldset default {
+        fields: text
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: bm25(text)
+        }
+    }
+}
