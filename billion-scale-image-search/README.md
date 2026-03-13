@@ -163,19 +163,21 @@ $ vespa clone billion-scale-image-search myapp && cd myapp
 
 ## Download Vector + Metadata
 
-These instructions use the first split file (0000) of a total of 2314 files in the LAION2B-en split.
-Download the vector data file:
+These instructions use a 100M-vector subset of the LAION-5B CLIP ViT-L/14 embeddings,
+hosted on ClickHouse's S3 bucket as parquet files. Each parquet file contains 10M rows with
+both the 768-dim CLIP vectors and all metadata columns (url, caption, NSFW, similarity, etc.).
+
+> **Note:** The parquet files are hosted by ClickHouse as part of their
+> [example datasets](https://clickhouse.com/docs/getting-started/example-datasets/laion-5b-dataset).
+> This is a third-party resource not maintained by Vespa - availability and terms of use
+> are subject to change. The underlying LAION-5B data is released under
+> [CC-BY-4.0](https://laion.ai/blog/laion-5b/) for research purposes.
+
+Download the first part (of 10 total):
 
 <pre data-test="exec">
-$ curl --http1.1 -L -o img_emb_0000.npy \
-  https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/img_emb/img_emb_0000.npy
-</pre>
-
-Download the metadata file:
-
-<pre data-test="exec">
-$ curl -L -o metadata_0000.parquet \
-  https://the-eye.eu/public/AI/cah/laion5b/embeddings/laion2B-en/laion2B-en-metadata/metadata_0000.parquet
+$ curl -L -o laion5b_100m_part_1_of_10.parquet \
+  https://clickhouse-datasets.s3.amazonaws.com/laion-5b/laion5b_100m_part_1_of_10.parquet
 </pre>
 
 Install python dependencies to process the files:
@@ -189,17 +191,19 @@ centroids. Performing an incremental clustering can improve vector search recall
 indexing fewer centroids. For simplicity, this tutorial uses random sampling.
 
 <pre data-test="exec">
-$ python3 app/src/main/python/create-centroid-feed.py img_emb_0000.npy > centroids.jsonl
+$ python3 app/src/main/python/create-centroid-feed.py laion5b_100m_part_1_of_10.parquet > centroids.jsonl
 </pre>
 
-Generate the image feed, this merges the embedding data with the metadata and creates a Vespa
-jsonl feed file, with one json operation per line.
-
+Generate the image feed, this reads both embedding data and metadata from the parquet file
+and creates a Vespa jsonl feed file, with one json operation per line.
+c
 <pre data-test="exec">
-$ python3 app/src/main/python/create-joined-feed.py metadata_0000.parquet img_emb_0000.npy > feed.jsonl
+$ python3 app/src/main/python/create-joined-feed.py laion5b_100m_part_1_of_10.parquet > feed.jsonl
 </pre>
 
-To process the entire dataset, we recommend starting several processes, each operating on separate split files
+To process the entire dataset (100M vectors), download all 10 parts
+(`laion5b_100m_part_1_of_10.parquet` through `laion5b_100m_part_10_of_10.parquet`)
+and start several processes, each operating on separate part files,
 as the processing implementation is single-threaded.
 
 
