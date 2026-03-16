@@ -97,17 +97,6 @@ In this application, a handler is used to implement an embedding service,
 which takes a string as an input and returns a vector embedding of that string.
 
 
-### FastHTML Vespa frontend
-[![logo](/assets/vespa-logomark-tiny.png) FastHTML Vespa frontend](fasthtml-demo)
-is a simple frontend for the Vespa search engine.
-It is built using [FastHTML](https://www.fastht.ml/) and written in pure Python. Features:
-* Simple search interface, with links to search results.
-* Accordion with full JSON-response from Vespa.
-* SQLite DB for storing queries.
-* Admin authentication for viewing and downloading queries.
-* Deployment options - Docker + Huggingface spaces.
-
-
 ### ONNX Model export and deployment example
 Use [![logo](/assets/vespa-logomark-tiny.png) model-deployment](model-deployment) to generate a model in ONNX format in the models directory,
 by running the ONNXModelExport notebook.
