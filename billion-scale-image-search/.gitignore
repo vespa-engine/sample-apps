@@ -9,5 +9,4 @@ data-plane-public-cert.pem
 data-plane-private-key.pem
 centroids.jsonl
 feed.jsonl
-img_emb_0000.npy
-metadata_0000.parquet
+laion5b_100m_part_*.parquet
