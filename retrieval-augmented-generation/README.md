@@ -79,7 +79,7 @@ Replace `<my-vault-name>` and `<my-secret-name>` below with your own values:
 
 ```xml
 <secrets>
-    <openai-api-key vault=">my-vault-name>" name="<my-secret-name>"/>
+    <openai-api-key vault="<my-vault-name>" name="<my-secret-name>"/>
 </secrets>
 ```
 
@@ -97,27 +97,7 @@ $ vespa auth login
 $ vespa auth cert
 </pre>
 
-Grant application access to the secret.
-Applications must be created first so one can use the Vespa Cloud Console to grant access.
-The easiest way is to deploy, which will auto-create the application.
-The first deployment will fail:
-
-<pre>
-$ vespa deploy --wait 900
-</pre>
-
-```
-[09:47:43] warning Deployment failed: Invalid application: Vault 'my_vault' does not exist,
-or application does not have access to it
-```
-
-At this point, open the console
-(the link is like https://console.vespa-cloud.com/tenant/mytenant/account/secrets)
-and grant access:
-
-![edit application access dialog](ext/edit-app-access.png)
-
-Deploy the application again. This can take some time for all nodes to be provisioned:
+Now deploy the application to Vespa Cloud. This might take some time:
 <pre>
 $ vespa deploy --wait 900
 </pre>
