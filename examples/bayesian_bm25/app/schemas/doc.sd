@@ -173,4 +173,87 @@ schema doc {
             matchCount(body)
         }
     }
+
+    # ---------------------------------------------------------------------------
+    # Variant 4: Log-odds posterior (no base-rate calibration)
+    #
+    # from the paper: https://doi.org/10.5281/zenodo.18512411
+    #
+    # Reformulates the Bayesian update in log-odds space. Sequential Bayesian
+    # updates are additive in log-odds (paper Section 4), so each evidence term
+    # contributes independently — no explicit prior weighting (0.7/0.3) or
+    # clamping (0.1/0.9) is needed.
+    #
+    # The tf_prior and fieldnorm_prior inherited from bayesian_bm25 are bounded
+    # to [0.2, 0.9] and [0.3, 0.9] respectively, so log(p/(1-p)) is ok.
+    #
+    # Same inputs as bayesian_bm25.
+    # ---------------------------------------------------------------------------
+    rank-profile bayesian_bm25_logodds inherits bayesian_bm25 {
+
+        # logit(L) collapses to the linear pre-activation by logit-sigmoid duality
+        function logit_likelihood() {
+            expression: query(alpha) * (raw_bm25() - query(beta))
+        }
+
+        function logit_tf_prior() {
+            expression: log(tf_prior() / (1 - tf_prior()))
+        }
+
+        function logit_fieldnorm_prior() {
+            expression: log(fieldnorm_prior() / (1 - fieldnorm_prior()))
+        }
+
+        first-phase {
+            expression: sigmoid(logit_likelihood() + logit_tf_prior() + logit_fieldnorm_prior())
+        }
+
+        summary-features {
+            raw_bm25
+            logit_likelihood
+            avg_tf
+            tf_prior
+            fieldnorm_prior
+            logit_tf_prior
+            logit_fieldnorm_prior
+            fieldLength(body)
+        }
+    }
+
+    # ---------------------------------------------------------------------------
+    # Variant 5: Log-odds posterior with base-rate calibration
+    #
+    # Adds the corpus-level base rate as one more additive log-odds term.
+    #
+    # Additional parameter:
+    #   base_rate -- fraction of documents relevant to a random query.
+    #                Same as in Variant 3.
+    # ---------------------------------------------------------------------------
+    rank-profile bayesian_bm25_logodds_calibrated inherits bayesian_bm25_logodds {
+        inputs {
+            query(base_rate) double: 0.05
+        }
+
+        first-phase {
+            expression {
+                sigmoid(
+                    logit_likelihood()
+                    + logit_tf_prior()
+                    + logit_fieldnorm_prior()
+                    + log(query(base_rate) / (1 - query(base_rate)))
+                )
+            }
+        }
+
+        summary-features {
+            raw_bm25
+            logit_likelihood
+            avg_tf
+            tf_prior
+            fieldnorm_prior
+            logit_tf_prior
+            logit_fieldnorm_prior
+            fieldLength(body)
+        }
+    }
 }

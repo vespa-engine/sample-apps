@@ -16,11 +16,13 @@ The schema uses Vespa ranking features such as [bm25(field)](https://docs.vespa.
 - a composite prior based on term frequency and field length normalization
 - corpus-level base rate update
 
-The app defines three rank profiles in [app/schemas/doc.sd](app/schemas/doc.sd):
+The app defines five rank profiles in [app/schemas/doc.sd](app/schemas/doc.sd):
 
-- `bayesian_bm25_simple` for sigmoid-only score mapping
-- `bayesian_bm25` for posterior probability with a composite prior
-- `bayesian_bm25_calibrated` for posterior probability with an additional base-rate correction
+1. `bayesian_bm25_simple` for sigmoid-only score mapping
+2. `bayesian_bm25` for posterior probability with a composite prior
+3. `bayesian_bm25_calibrated` for posterior probability with an additional base-rate correction
+4. `bayesian_bm25_logodds` similar to 2) but adds up the likelihood, TF and field norm priors in log-odds space. See [this comment](https://github.com/vespa-engine/sample-apps/pull/1869#issuecomment-4071713549) for more details.
+5. `bayesian_bm25_logodds_calibrated` for the log-odds posterior with base-rate calibration
 
 The main posterior expression looks like this:
 
@@ -105,6 +107,31 @@ Content-Type: application/json
 {
   "yql": "select * from doc where body contains \"machine\" and body contains \"learning\"",
   "ranking.profile": "bayesian_bm25_calibrated",
+  "ranking.features.query(base_rate)": 0.05
+}
+```
+
+To run the log-odds variant:
+
+```http
+POST /search/
+Content-Type: application/json
+
+{
+  "yql": "select * from doc where body contains \"machine\" and body contains \"learning\"",
+  "ranking.profile": "bayesian_bm25_logodds"
+}
+```
+
+To run the log-odds variant with base-rate calibration:
+
+```http
+POST /search/
+Content-Type: application/json
+
+{
+  "yql": "select * from doc where body contains \"machine\" and body contains \"learning\"",
+  "ranking.profile": "bayesian_bm25_logodds_calibrated",
   "ranking.features.query(base_rate)": 0.05
 }
 ```
