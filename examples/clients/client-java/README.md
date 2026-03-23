@@ -2,7 +2,7 @@
 
 Make sure the top-level Vespa application is deployed.
 
-Configure endpoint and identity files in `VespaClient.java`.
+Configure endpoint and identity files in [VespaClient.java](app/src/main/java/com/example/VespaClient.java).
 
 ## Feed
 
