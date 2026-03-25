@@ -10,10 +10,10 @@
 
 A couple of example of how to get started with the `lucene-linguistics`:
 
-- `non-java`: an absolute minimum to get started;
-- `minimal`: minimal Java based project using Lucene Linguistics;
-- `advanced-configuration`: demonstrates the configurability;
-- `going-crazy`: demonstrates the advanced setup;
+- [basic](basic/README.md): an absolute minimum to get started;
+- [minimal](minimal/README.md): minimal Java based project using Lucene Linguistics;
+- [advanced-configuration](advanced-configuration/README.md): demonstrates the configurability;
+- [going-crazy](going-crazy/README.md): demonstrates the advanced setup;
 
 ## Getting started
 

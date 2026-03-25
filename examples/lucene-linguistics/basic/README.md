@@ -10,12 +10,12 @@
 
 This app demonstrates using [Lucene Linguistics](https://docs.vespa.ai/en/linguistics/lucene-linguistics.html).
 
-<p data-test="run-macro init-deploy examples/lucene-linguistics/non-java">
+<p data-test="run-macro init-deploy examples/lucene-linguistics/basic">
 Requires at least Vespa 8.315.19
 </p>
 
 Follow [app deploy guide](https://docs.vespa.ai/en/basics/deploy-an-application)
-through the <code>vespa deploy</code> step, cloning `examples/lucene-linguistics/non-java` instead of `album-recommendation`.
+through the <code>vespa deploy</code> step, cloning `examples/lucene-linguistics/basic` instead of `album-recommendation`.
 
 
 ## Feed test data
