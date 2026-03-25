@@ -15,16 +15,15 @@ include:
   - .github/
 
 defaults:
-  -
-    scope:
-      path  : ""
+  - scope:
+      path: ""
     values:
-      index : true
+      index: true
 
 search:
   namespace: "vespaapps"
   doc_type: "doc"
-  do_feed  : true
+  do_feed: true
   do_index_removal_before_feed: false
   feed_endpoints:
     # This config needs to be the same in all files starting with "_" in:
@@ -56,6 +55,6 @@ search:
       indexes:
         - vespaapps_index.json
     # vespacloud-docsearch.cloud-enclave | prod.gcp-us-central1-f
-    - url: https://ab1f72fd.b68a8c0d.z.vespa-app.cloud/
-      indexes:
-        - vespaapps_index.json
+    # - url: https://ab1f72fd.b68a8c0d.z.vespa-app.cloud/
+    #   indexes:
+    #     - vespaapps_index.json
