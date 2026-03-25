@@ -3,7 +3,7 @@
 search:
   namespace: "vespaapps-p"
   doc_type: "term"
-  do_feed  : true
+  do_feed: true
   do_index_removal_before_feed: false
   feed_endpoints:
     # This config needs to be the same in all files starting with "_" in:
@@ -35,6 +35,6 @@ search:
       indexes:
         - suggestions_index.json
     # vespacloud-docsearch.cloud-enclave | prod.gcp-us-central1-f
-    - url: https://ab1f72fd.b68a8c0d.z.vespa-app.cloud/
-      indexes:
-        - suggestions_index.json
+    # - url: https://ab1f72fd.b68a8c0d.z.vespa-app.cloud/
+    #   indexes:
+    #     - suggestions_index.json
