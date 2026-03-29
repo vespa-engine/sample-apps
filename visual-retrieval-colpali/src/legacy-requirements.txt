@@ -337,7 +337,7 @@ pydantic==2.9.2
     #   weasel
 pydantic-core==2.23.4
     # via pydantic
-pygments==2.18.0
+pygments==2.20.0
     # via rich
 pyparsing==3.1.4
     # via
