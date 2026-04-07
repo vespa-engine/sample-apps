@@ -15,8 +15,8 @@ import com.yahoo.processing.execution.Execution;
 import com.yahoo.processing.response.ArrayDataList;
 import com.yahoo.processing.response.Data;
 import com.yahoo.processing.response.DataList;
-import com.yahoo.yolean.chain.After;
-import com.yahoo.yolean.chain.Provides;
+import com.yahoo.component.chain.dependencies.After;
+import com.yahoo.component.chain.dependencies.Provides;
 
 import java.util.ArrayList;
 import java.util.List;
