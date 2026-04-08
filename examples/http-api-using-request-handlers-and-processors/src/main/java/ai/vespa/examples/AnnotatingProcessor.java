@@ -9,8 +9,8 @@ import com.yahoo.processing.execution.Execution;
 import com.yahoo.processing.request.CompoundName;
 import com.yahoo.processing.request.ErrorMessage;
 import com.yahoo.processing.response.DataList;
-import com.yahoo.yolean.chain.Before;
-import com.yahoo.yolean.chain.Provides;
+import com.yahoo.component.chain.dependencies.Before;
+import com.yahoo.component.chain.dependencies.Provides;
 
 import java.util.ArrayList;
 import java.util.List;

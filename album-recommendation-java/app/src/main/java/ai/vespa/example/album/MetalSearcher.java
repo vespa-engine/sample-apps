@@ -12,7 +12,7 @@ import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
 import com.yahoo.search.query.QueryTree;
 import com.yahoo.search.searchchain.Execution;
-import com.yahoo.yolean.chain.After;
+import com.yahoo.component.chain.dependencies.After;
 
 import java.util.ArrayList;
 import java.util.List;

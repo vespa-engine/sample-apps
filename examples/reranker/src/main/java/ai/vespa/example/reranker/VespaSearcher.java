@@ -8,7 +8,7 @@ import com.yahoo.search.Searcher;
 import com.yahoo.search.result.ErrorMessage;
 import com.yahoo.search.searchchain.Execution;
 import com.yahoo.yolean.Exceptions;
-import com.yahoo.yolean.chain.After;
+import com.yahoo.component.chain.dependencies.After;
 
 import java.io.IOException;
 import java.util.Map;
