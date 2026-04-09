@@ -60,8 +60,3 @@ jobs:
       run: |
         ./feed_to_vespa.py _suggestions_config.yml
 
-    - name: Feed part-purchases-demo
-      run: |
-        while IFS=, read -r app endpoint; do
-          vespa feed -a "$app" -t "$endpoint" examples/part-purchases-demo/ext/feed.jsonl
-        done < <(./scripts/print-app-endpoints.py _config.yml)
