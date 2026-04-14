@@ -44,7 +44,7 @@ public class TextEmbeddingSearcher extends Searcher {
         NearestNeighborItem nn = new NearestNeighborItem("vit_b_32_image", "vit_b_32_text");
         nn.setAllowApproximate(true);
         nn.setTargetHits(10);
-        nn.setHnswExploreAdditionalHits(100);
+        nn.setMinTargetHits(100);
         query.getModel().getQueryTree().setRoot(nn);
 
         // Set ranking profile
