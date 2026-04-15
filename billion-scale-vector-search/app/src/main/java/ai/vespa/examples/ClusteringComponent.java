@@ -145,8 +145,7 @@ public class ClusteringComponent extends AbstractComponent {
     private Query buildNNQuery(int k, int extraK, Tensor queryVector, Duration timeout) {
         NearestNeighborItem nn = new NearestNeighborItem("vector", "q");
         nn.setAllowApproximate(true);
-        nn.setTargetHits(k);
-        nn.setHnswExploreAdditionalHits(extraK);
+        nn.setTargetHits(extraK);
         Query query = new Query();
         query.setTimeout(timeout.toMillis());
         query.setHits(k);
