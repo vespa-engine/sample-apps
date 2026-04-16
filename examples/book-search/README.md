@@ -40,3 +40,10 @@ Then run the tests:
 ```sh
 mvn test
 ```
+
+> [!NOTE]
+> When using Podman instead of Docker, you have to set
+> ```bash
+> export DOCKER_HOST="unix://"$(podman machine inspect --format {{.ConnectionInfo.PodmanSocket.Path}})
+> export TESTCONTAINERS_RYUK_DISABLED=true
+> ```
