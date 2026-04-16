@@ -2,7 +2,7 @@
 
 # Book Search — Vespa Testcontainers demo
 
-A simple book search application demonstrating how to use [vespa-testcontainers](https://github.com/vespa-engine/vespa-testcontainers) for integration testing.
+A simple book search application demonstrating how to use [vespa-testcontainers](https://github.com/vespaai/vespa-testcontainers) for integration testing.
 
 ## Running the app locally
 
