@@ -18,6 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Simple client for feeding and querying the book search application.
+ */
 public class BookClient {
 
     private static final String NAMESPACE = "library";
@@ -30,6 +33,7 @@ public class BookClient {
         this.vespaUrl = vespaUrl;
     }
 
+    /** Feeds documents from the given path, returning the number of successfully fed documents and errors. */
     public FeedResult feed(Path documentsPath) throws IOException {
         try (InputStream in    = Files.newInputStream(documentsPath);
              JsonFeeder feeder = newFeeder()) {
@@ -51,6 +55,7 @@ public class BookClient {
         }
     }
 
+    /** Updates the 'loaned_out' field of the given document. */
     public void setLoanedOut(String docId, boolean loanedOut) throws IOException {
         String update = "{\"update\":\"id:" + NAMESPACE + ":" + SCHEMA + "::" + docId + "\","
                       + "\"fields\":{\"loaned_out\":{\"assign\":" + loanedOut + "}}}";
@@ -67,10 +72,12 @@ public class BookClient {
         }
     }
 
+    /** Executes the given YQL query, returning the raw JSON response as a string. */
     public String query(String yql) throws IOException, InterruptedException {
         return query(yql, null);
     }
 
+    /** Executes the given YQL query with an optional user query, returning the raw JSON response as a string. */
     public String query(String yql, String userQuery) throws IOException, InterruptedException {
         StringBuilder url = new StringBuilder(vespaUrl)
                 .append("/search/?yql=").append(URLEncoder.encode(yql, StandardCharsets.UTF_8));
@@ -83,6 +90,8 @@ public class BookClient {
     }
 
     public record FeedResult(long fed, long errors) {}
+
+    // --- Helpers ---
 
     private JsonFeeder newFeeder() {
         return JsonFeeder.builder(FeedClientBuilder.create(URI.create(vespaUrl)).build()).build();
