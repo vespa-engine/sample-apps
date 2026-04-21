@@ -351,7 +351,7 @@ python-dateutil==2.9.0.post0
     #   pandas
     #   python-fasthtml
     #   pyvespa
-python-dotenv==1.0.1
+python-dotenv==1.2.2
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   uvicorn
