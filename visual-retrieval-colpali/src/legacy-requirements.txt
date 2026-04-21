@@ -206,7 +206,7 @@ loguru==0.7.2
     # via vidore-benchmark
 lucide-fasthtml==0.0.9
     # via shad4fast
-lxml==5.3.0
+lxml==6.1.0
     # via
     #   lucide-fasthtml
     #   pyvespa
