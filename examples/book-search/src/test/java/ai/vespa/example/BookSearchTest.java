@@ -10,15 +10,12 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class BookSearchTest {
-    private static final int    POLL_TIMEOUT_MS = 5_000;
     private static final ObjectMapper mapper = new ObjectMapper();
     private static VespaContainer vespa;
     private static BookClient bookClient;
@@ -32,8 +29,8 @@ class BookSearchTest {
 
         BookClient.FeedResult result = bookClient.feed(Path.of("data/documents.jsonl"));
         assertEquals(0, result.errors(), "Feed must complete without errors");
-        awaitCondition("20 documents indexed",
-                () -> hitCount(bookClient.query("select * from book where true")) == 20);
+        assertEquals(20, hitCount(bookClient.query("select * from book where true")),
+                "All 20 documents must be indexed");
     }
 
     @Test
@@ -72,14 +69,16 @@ class BookSearchTest {
         String docId = "the-lord-of-the-rings";
 
         bookClient.setLoanedOut(docId, true);
-        awaitCondition("'The Lord of the Rings' loaned_out=true",
-                () -> titlesFrom(bookClient.query("select * from book where loaned_out = true"))
-                        .contains("The Lord of the Rings"));
+        assertTrue(titlesFrom(bookClient.query(
+                        "select * from book where loaned_out = true and title contains \"The Lord of the Rings\""))
+                        .contains("The Lord of the Rings"),
+                "Book should appear as loaned out after setLoanedOut(true)");
 
         bookClient.setLoanedOut(docId, false);
-        awaitCondition("'The Lord of the Rings' loaned_out=false",
-                () -> titlesFrom(bookClient.query("select * from book where loaned_out = false"))
-                        .contains("The Lord of the Rings"));
+        assertTrue(titlesFrom(bookClient.query(
+                        "select * from book where loaned_out = false and title contains \"The Lord of the Rings\""))
+                        .contains("The Lord of the Rings"),
+                "Book should be available again after setLoanedOut(false)");
     }
 
     @AfterAll
@@ -88,14 +87,6 @@ class BookSearchTest {
     }
 
     // --- Helpers ---
-
-    private static void awaitCondition(String description, Callable<Boolean> condition) throws Exception {
-        for (int i = 0; i < POLL_TIMEOUT_MS / 100; i++) {
-            if (condition.call()) return;
-            Thread.sleep(100);
-        }
-        fail("Condition not met within " + POLL_TIMEOUT_MS + "ms: " + description);
-    }
 
     private static long hitCount(String json) throws Exception {
         return mapper.readTree(json).path("root").path("fields").path("totalCount").asLong();
