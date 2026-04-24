@@ -2,7 +2,7 @@
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
 <services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.311.28">
 
-  <container id="default" version="1.0">
+  <container id="container-default" version="1.0">
 
     <nodes deploy:environment="dev" count="1">
       <resources vcpu="1.0" memory="8Gb" architecture="arm64" storage-type="local" disk="59Gb"/>
@@ -34,12 +34,12 @@
 
   </container>
 
-  <content id="msmarco" version="1.0">
+  <content id="content-msmarco" version="1.0">
     <min-redundancy>1</min-redundancy>
     <documents>
       <document mode="index" type="passage"/>
     </documents>
-    <nodes count="1">
+    <nodes deploy:environment="dev" count="1">
       <resources vcpu="1.0" memory="8Gb" architecture="arm64" storage-type="local" disk="59Gb"/>
     </nodes> 
     <engine>
