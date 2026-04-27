@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn
+          pip install --upgrade -qqq pytest notebook nbconvert runnb pandas torch numpy scikit-learn onnxscript
 
       - name: Run Notebooks
         working-directory: examples/model-deployment
