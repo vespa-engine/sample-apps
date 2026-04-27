@@ -43,6 +43,8 @@ jobs:
         /hub.docker.com/r/vespaengine/vespa/tags/
         /openai.com/index/openai-api/
         /jmcauley.ucsd.edu/
+        /join\.slack\.com/
+        /slack\.vespa\.ai/
         /app/
         /webapp/
       swap-urls: |-
