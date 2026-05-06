@@ -1,0 +1,167 @@
+schema doc {
+
+    document doc {
+        field id type string {
+            indexing: summary | attribute
+        }
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+    }
+
+    # Doc embedding produced server-side at indexing time by the
+    # passage_embedder component (declared in services.xml). This is the
+    # 768-d CLS-pooled BERT representation that the Hypencoder q-net is
+    # applied to at query time.
+    field embedding type tensor<float>(x[768]) {
+        indexing: input text | embed passage_embedder | attribute
+        attribute: paged
+    }
+
+    # ===============================================================
+    # cosine_baseline - cosine similarity rank profile.
+    # Same docs, same stored 768-d embedding, plain cosine similarity
+    # against a query vector. Use this as the comparison point when
+    # measuring what Hypencoder costs vs an inner-product baseline.
+    #
+    # The query vector is produced server-side via embed() against
+    # the passage_embedder declared in services.xml - the client just
+    # sends the query text. Symmetric with how hypencoder_onnx encodes
+    # its query input server-side too.
+    #
+    # Note: this profile reuses the Hypencoder passage encoder for the
+    # query side as well.
+    # ===============================================================
+    rank-profile cosine_baseline {
+        inputs {
+            query(q_vec) tensor<float>(x[768])
+        }
+        first-phase {
+            expression: cosine_similarity(attribute(embedding), query(q_vec), x)
+        }
+    }
+
+    # ===============================================================
+    # hypencoder_onnx - Hypencoder rank-all profile.
+    # Server-side query encoding: client sends only token IDs and the
+    # attention mask (a few hundred bytes). Vespa's ONNX runtime runs
+    # the BERT + hyperhead once per query, then the q-net rank
+    # expression scores every matched doc.
+    # ===============================================================
+    rank-profile hypencoder_onnx {
+        inputs {
+            query(input_ids) tensor<float>(batch[1],s[64])
+            query(attention_mask) tensor<float>(batch[1],s[64])
+        }
+
+        # ONNX query encoder. This is the Hypencoder query-side model:
+        # BERT-base + hyperhead layers that produce the q-net weights as
+        # five named outputs (W0, b0, W1, b1, Wout). Vespa runs the model
+        # once per query (inputs are query-only, so the result is cached
+        # across all docs scored by a content node).
+        #
+        # Declared inside the rank profile (rather than at schema level)
+        # so its query-only inputs don't leak into cosine_baseline as
+        # implicit scalars - which would otherwise produce a deploy
+        # warning. The two rerank profiles below pick the model up via
+        # rank-profile inheritance.
+        #
+        # The dimension layout in the rank expressions: the doc
+        # embedding's axis is x[768]; q-net layer outputs are h0[768] /
+        # h1[768]. Tensor cell order is alphabetical, so for an (in, out)
+        # weight matrix produced inside the wrapper we transpose to
+        # (out, in) before exporting - see model2onnx.py.
+        onnx-model query_encoder {
+            file: models/query_encoder.onnx
+            input "input_ids": query(input_ids)
+            input "attention_mask": query(attention_mask)
+        }
+
+        function x0() { expression: attribute(embedding) }
+
+        # ONNX outputs come back with auto-named dims (d0, d1). Rename to
+        # (h0, x) and (h1, x) so the q-net math matches the conventions in
+        # the paper.
+        function W0()   { expression: rename(onnx(query_encoder).W0,   (d0, d1), (h0, x)) }
+        function b0()   { expression: rename(onnx(query_encoder).b0,    d0,       h0) }
+        function W1()   { expression: rename(onnx(query_encoder).W1,   (d0, d1), (h1, x)) }
+        function b1()   { expression: rename(onnx(query_encoder).b1,    d0,       h1) }
+        function Wout() { expression: rename(onnx(query_encoder).Wout,  d0,       x) }
+
+        # 2-layer q-net: two residual blocks with parameter-free LayerNorm,
+        # then a 768->1 final linear (no bias, no activation).
+        function pre0()  { expression: sum(x0() * W0(), x) + b0() }
+        function relu0() { expression: max(pre0(), 0.0) }
+        function ln0() {
+            expression {
+                (relu0() - sum(relu0()) / 768.0) /
+                    sqrt(sum(pow(relu0() - sum(relu0()) / 768.0, 2.0)) / 768.0 + 1.0E-5)
+            }
+        }
+        function res0()  { expression: rename(ln0(), h0, x) + x0() }
+
+        function pre1()  { expression: sum(res0() * W1(), x) + b1() }
+        function relu1() { expression: max(pre1(), 0.0) }
+        function ln1() {
+            expression {
+                (relu1() - sum(relu1()) / 768.0) /
+                    sqrt(sum(pow(relu1() - sum(relu1()) / 768.0, 2.0)) / 768.0 + 1.0E-5)
+            }
+        }
+
+        function final_in() { expression: rename(ln1(), h1, x) }
+        function hypencoder_score() { expression: sum(final_in() * Wout(), x) }
+
+        # To partition matched docs across N threads, set this to N
+        # AND set <persearch>N</persearch> in services.xml (commented-out
+        # block there). Rank-profile setting alone is silently capped at
+        # the proton numthreadspersearch (default 1).
+        # num-threads-per-search: 4
+
+        first-phase { expression: hypencoder_score }
+        summary-features { hypencoder_score }
+    }
+
+    # ===============================================================
+    # hypencoder_rerank - production-shaped two-phase profile.
+    # First phase: cosine similarity against all matched docs (cheap),
+    # could also be done with an ANN query over HNSW index.
+    # Second phase: full q-net only on the top `rerank-count` candidates.
+    # The ONNX query encoder still runs only once per query because
+    # it's purely based on query inputs, so Vespa caches it across docs.
+    # ===============================================================
+    rank-profile hypencoder_rerank inherits hypencoder_onnx {
+        inputs {
+            query(q_vec) tensor<float>(x[768])
+            query(input_ids) tensor<float>(batch[1],s[64])
+            query(attention_mask) tensor<float>(batch[1],s[64])
+        }
+
+        first-phase {
+            expression: cosine_similarity(attribute(embedding), query(q_vec), x)
+        }
+        second-phase {
+            expression: hypencoder_score
+            rerank-count: 100
+        }
+        summary-features { hypencoder_score }
+    }
+
+    # ===============================================================
+    # hypencoder_lexical_rerank - lexical first-phase variant.
+    # First phase: BM25 over the text field
+    # Second phase: same q-net as hypencoder_rerank.
+    # Pair with `where userQuery()` (or weakAnd) in the YQL.
+    # ===============================================================
+    rank-profile hypencoder_lexical_rerank inherits hypencoder_onnx {
+        first-phase {
+            expression: bm25(text)
+        }
+        second-phase {
+            expression: hypencoder_score
+            rerank-count: 100
+        }
+        summary-features { hypencoder_score }
+    }
+}
