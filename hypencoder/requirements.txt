@@ -1,0 +1,26 @@
+# Python dependencies for model2onnx.py and encode_query.py.
+#
+# Install with:    pip install -r requirements.txt
+# Or with uv:      uv pip install -r requirements.txt
+
+# Core ML stack. transformers must stay <5 - the Hypencoder checkpoints'
+# saved config triggers a meta-device path in transformers >=5 that
+# .from_pretrained() rejects. 4.45+ is fine.
+torch>=2.5
+transformers>=4.45,<5
+
+# ONNX export + runtime (used both for export and for the optional INT8
+# quantization step in model2onnx.py).
+onnx>=1.16
+onnxruntime>=1.20
+
+# Required by model2onnx.py (it imports HypencoderDualEncoder and
+# scaled_dot_product_attention from hypencoder_cb). Not on PyPI; a plain
+# `pip install git+...` doesn't work because upstream ships subpackages
+# as PEP 420 implicit namespace packages but its setup.py only declares
+# the top-level package, so a non-editable install copies only the empty
+# top-level __init__.py. Install editable from a local clone:
+#
+#     git clone https://github.com/jfkback/hypencoder-paper.git
+#     git -C hypencoder-paper checkout 951ee82ddf2f
+#     pip install -e ./hypencoder-paper

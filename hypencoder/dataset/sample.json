@@ -1,0 +1,12 @@
+[
+  { "put": "id:doc:doc::1", "fields": { "id": "1", "text": "India has 28 states and 8 union territories." } },
+  { "put": "id:doc:doc::2", "fields": { "id": "2", "text": "Concussion symptoms can appear immediately or up to 72 hours after the injury." } },
+  { "put": "id:doc:doc::3", "fields": { "id": "3", "text": "The Eiffel Tower in Paris was completed in 1889 and stands 330 meters tall." } },
+  { "put": "id:doc:doc::4", "fields": { "id": "4", "text": "Mount Everest, located in the Himalayas, is the tallest mountain on Earth at 8,849 meters." } },
+  { "put": "id:doc:doc::5", "fields": { "id": "5", "text": "Photosynthesis converts carbon dioxide and water into glucose using sunlight." } },
+  { "put": "id:doc:doc::6", "fields": { "id": "6", "text": "Albert Einstein published his theory of special relativity in 1905." } },
+  { "put": "id:doc:doc::7", "fields": { "id": "7", "text": "The boiling point of water at sea level is 100 degrees Celsius." } },
+  { "put": "id:doc:doc::8", "fields": { "id": "8", "text": "Shakespeare wrote 39 plays including Hamlet, Macbeth, and A Midsummer Night's Dream." } },
+  { "put": "id:doc:doc::9", "fields": { "id": "9", "text": "The speed of light in vacuum is approximately 299,792 kilometers per second." } },
+  { "put": "id:doc:doc::10", "fields": { "id": "10", "text": "The Mona Lisa, painted by Leonardo da Vinci, is displayed at the Louvre in Paris." } }
+]
