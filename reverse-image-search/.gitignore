@@ -1,0 +1,8 @@
+application.zip
+security
+.idea/
+data/
+__pycache__/
+*.pyc
+.venv/
+venv/
