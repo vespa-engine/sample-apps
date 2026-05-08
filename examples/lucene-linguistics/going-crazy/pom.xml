@@ -45,6 +45,27 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analysis-opennlp</artifactId>
       <version>${lucene.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.opennlp</groupId>
+          <artifactId>opennlp-tools</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Override opennlp-tools to address CVE-2026-42440 (DoS via unbounded array
+         allocation in AbstractModelReader). Fixed in 2.5.9. lucene-analysis-opennlp
+         9.12.3 transitively pulls 1.9.4; Lucene 10.x uses opennlp 2.5.x against the
+         same public API surface (see org.apache.lucene.analysis.opennlp). -->
+    <dependency>
+      <groupId>org.apache.opennlp</groupId>
+      <artifactId>opennlp-tools</artifactId>
+      <version>2.5.9</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
