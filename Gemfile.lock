@@ -108,12 +108,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  html-proofer
-  jekyll (>= 4.2.1)
+  html-proofer (>= 5.0.8)
+  jekyll (>= 4.3.3)
   rake
 
 RUBY VERSION
    ruby 2.6.8p205
 
 BUNDLED WITH
-   2.2.29
+   2.4.22
