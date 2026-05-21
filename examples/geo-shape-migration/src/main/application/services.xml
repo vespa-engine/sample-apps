@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0">
+
+    <container id="default" version="1.0">
+        <document-api/>
+        <search>
+            <chain id="default" inherits="vespa">
+                <searcher id="ai.vespa.example.geo.PolygonSearcher"
+                          bundle="geo-shape-migration"/>
+            </chain>
+        </search>
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
+    </container>
+
+    <content id="ads" version="1.0">
+        <min-redundancy>1</min-redundancy>
+        <documents>
+            <document type="ad" mode="index"/>
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0"/>
+        </nodes>
+    </content>
+
+</services>

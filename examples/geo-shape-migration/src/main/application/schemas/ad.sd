@@ -1,0 +1,68 @@
+schema ad {
+
+    document ad {
+
+        field title type string {
+            indexing: summary | index
+        }
+
+        # Center of the ad's service area. Used by geoLocation() / geoBoundingBox().
+        field center type position {
+            indexing: attribute | summary
+        }
+
+        # Optional taxonomy/path filter, OR-combined with the service-area check below.
+        # Equivalent to Elasticsearch "terms": { "location_path": [...] }.
+        field location_path type array<string> {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        # ----- Service-area envelope, decomposed into 4 scalar attributes. -----
+        # Vespa has no geo_shape / "envelope contains point" operator, but four
+        # AND'ed range conditions are folded by the RangeQueryOptimizer into a
+        # single MultiRangeItem lookup against the fast-search btree indexes,
+        # which is the idiomatic Vespa equivalent.
+        field sw_lat type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+        field ne_lat type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+        field sw_lon type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+        field ne_lon type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+    }
+
+    fieldset default {
+        fields: title
+    }
+
+    rank-profile default {
+        first-phase {
+            expression: nativeRank(title)
+        }
+    }
+
+    # Combines title relevance with proximity to the query point, when one is given.
+    rank-profile with_distance inherits default {
+        first-phase {
+            expression: nativeRank(title) + closeness(center)
+        }
+        summary-features {
+            distance(center).km
+        }
+    }
+}
