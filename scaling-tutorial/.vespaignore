@@ -1,0 +1,6 @@
+# This file excludes unnecessary files from the application package. See
+# https://docs.vespa.ai/en/reference/vespaignore.html for more information.
+.DS_Store
+.gitignore
+README.md
+ext/

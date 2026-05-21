@@ -4,5 +4,16 @@
     "local>vespa-engine/renovate-config"
   ],
   "prHourlyLimit": 20,
-  "prConcurrentLimit": 20
+  "prConcurrentLimit": 20,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
+  ]
 }

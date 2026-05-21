@@ -297,6 +297,13 @@ can be a good trade-off between ranking performance and latency.
 shows how to use the [Mixedbread.ai](https://www.mixedbread.ai/)
 cross-encoder for [global-phase reranking](https://docs.vespa.ai/en/reference/schema-reference.html#using-a-global-phase-expression) in Vespa.
 
+[![logo](/assets/vespa-logomark-tiny.png) Hypencoder: query-dependent neural ranking](hypencoder/)
+shows how to run [Hypencoder](https://arxiv.org/abs/2502.05364) in Vespa.
+Hypencoder is a neural ranking method where the query creates a small scoring network,
+and that network scores each document embedding.
+The sample exports the model to ONNX, uses the [hugging-face-embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder)
+for document embeddings, and implements the query-specific scoring network with Vespa tensor expressions.
+
 [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Standalone ColBERT with Vespa for end-to-end retrieval and ranking](https://vespa-engine.github.io/pyvespa/examples/colbert_standalone_Vespa-cloud.html)
 illustrates using the [colbert-ai package](https://github.com/stanford-futuredata/ColBERT) to produce token vectors,
 instead of using the native Vespa [ColBERT embedder](https://docs.vespa.ai/en/embedding.html#colbert-embedder).

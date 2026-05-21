@@ -1,0 +1,207 @@
+schema image {
+
+    document image {
+
+        field id type string {
+            indexing: summary | attribute
+            attribute: fast-search
+            rank: filter
+        }
+
+        field filename type string {
+            indexing: summary | attribute
+        }
+
+        field path type string {
+            indexing: summary | attribute
+        }
+
+        field split type string {
+            indexing: summary | attribute
+            attribute: fast-search
+            rank: filter
+        }
+
+        field label type int {
+            indexing: summary | attribute
+        }
+
+        field width type int {
+            indexing: summary | attribute
+        }
+
+        field height type int {
+            indexing: summary | attribute
+        }
+
+        field full_image type raw {
+            indexing: summary
+        }
+
+        # bfloat16 embedding stored on disk via `paged`. Used only for second-
+        # phase rerank against candidates retrieved by the binary HNSW, so each
+        # query pages in ~rerank-count vectors from disk — cheap at low QPS.
+        # ~16× less memory than an HNSW-indexed in-memory bfloat16 attribute;
+        # the trade is that float-only retrieval (full scan) is no longer
+        # served at interactive speed, hence no `closeness_float` profile.
+        field embedding type tensor<bfloat16>(x[768]) {
+            indexing: attribute
+            attribute {
+                distance-metric: prenormalized-angular
+                paged
+            }
+        }
+    }
+
+    # Derived binary embedding — Vespa computes this at indexing time from the
+    # already-fed `embedding` field. 768 signed bits packed into 96 int8 slots.
+    # HNSW + hamming makes first-phase retrieval ~16x cheaper than float.
+    field embedding_binary type tensor<int8>(x[96]) {
+        indexing: input embedding | binarize | pack_bits | attribute | index
+        attribute {
+            distance-metric: hamming
+        }
+        index {
+            hnsw {
+                max-links-per-node: 24
+                neighbors-to-explore-at-insert: 200
+            }
+        }
+    }
+
+    # ---------------------------------------------------------------------
+    # Rank profiles. All emit match-features so the UI / eval can see both
+    # the binary (Hamming) closeness AND the float (cosine) closeness for
+    # every hit, regardless of which one drove ranking. That kills the
+    # "0.000 score" surprise for binary-only ranking — the binary closeness
+    # 1/(1+Hamming) for 768 bits is genuinely small (~0.01–0.05 for good
+    # matches), so the UI also derives a more interpretable bit-agreement
+    # ratio = 1 - hamming/768.
+    # ---------------------------------------------------------------------
+
+    # Hybrid: cheap Hamming HNSW first-phase, float cosine rerank on top 100.
+    # Recommended hybrid — fast retrieval, near-float recall.
+    #
+    # Note on `cos_emb`: when retrieval uses nearestNeighbor on
+    # `embedding_binary`, Vespa does NOT pre-compute distance(field, embedding)
+    # for the candidate set, so `closeness(field, embedding)` in this context
+    # returns 0 (it reads from a never-populated cache). We compute the cosine
+    # manually as a dot product — both query and attribute are L2-normalized,
+    # so `sum(q · embedding) ∈ [-1, 1]` directly is the cosine — and convert
+    # to a [0, 1] closeness with `(1 + cos) / 2`. Same trick gives us a
+    # meaningful float score in match-features.
+    rank-profile closeness {
+        inputs {
+            query(q)     tensor<float>(x[768])
+            query(q_bin) tensor<int8>(x[96])
+        }
+
+        function cos_emb() {
+            expression: sum(query(q) * attribute(embedding))
+        }
+        function closeness_emb() {
+            expression: 0.5 * (1 + cos_emb)
+        }
+
+        first-phase {
+            expression: closeness(field, embedding_binary)
+        }
+
+        second-phase {
+            rerank-count: 100
+            expression: closeness_emb
+        }
+
+        match-features {
+            closeness(field, embedding_binary)
+            distance(field, embedding_binary)
+            closeness_emb
+        }
+    }
+
+    # Stricter rerank — same first phase, deeper float rerank pool. Used to
+    # see how recall changes as we let float touch more candidates.
+    rank-profile closeness_hybrid_strict inherits closeness {
+        second-phase {
+            rerank-count: 1000
+            expression: closeness_emb
+        }
+    }
+
+    # Binary-only — first-phase Hamming HNSW, no float rerank. Cheapest and
+    # smallest memory footprint; the article's "what you lose" baseline.
+    # Surfaces the *manually computed* float closeness too so the UI/eval
+    # can see how badly each binary-ranked hit fares under float similarity.
+    rank-profile closeness_binary {
+        inputs {
+            query(q)     tensor<float>(x[768])
+            query(q_bin) tensor<int8>(x[96])
+        }
+
+        function cos_emb() {
+            expression: sum(query(q) * attribute(embedding))
+        }
+        function closeness_emb() {
+            expression: 0.5 * (1 + cos_emb)
+        }
+
+        first-phase {
+            expression: closeness(field, embedding_binary)
+        }
+
+        match-features {
+            closeness(field, embedding_binary)
+            distance(field, embedding_binary)
+            closeness_emb
+        }
+    }
+
+    # Weighted blend — first-phase Hamming HNSW, second-phase weights the
+    # manually computed float closeness against the (real) binary closeness.
+    # `query(alpha)` defaults to 0.5 if not provided.
+    rank-profile closeness_weighted inherits closeness {
+        inputs {
+            query(q)     tensor<float>(x[768])
+            query(q_bin) tensor<int8>(x[96])
+            query(alpha) double
+        }
+
+        second-phase {
+            rerank-count: 100
+            expression: query(alpha) * closeness_emb + (1 - query(alpha)) * closeness(field, embedding_binary)
+        }
+    }
+
+    rank-profile unranked inherits closeness {
+        first-phase {
+            expression: 1
+        }
+    }
+
+    rank-profile random inherits closeness {
+        first-phase {
+            expression: random
+        }
+    }
+
+    document-summary id-only {
+        summary id {}
+        summary path {}
+        summary filename {}
+        summary split {}
+        summary label {}
+        summary width {}
+        summary height {}
+    }
+
+    document-summary with-image {
+        summary id {}
+        summary path {}
+        summary filename {}
+        summary split {}
+        summary label {}
+        summary width {}
+        summary height {}
+        summary full_image {}
+    }
+}
