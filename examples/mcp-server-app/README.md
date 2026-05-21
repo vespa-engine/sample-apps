@@ -12,7 +12,7 @@ The point of this sample app is to provide a simple framework for you to experim
 ## Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) or [Podman](https://podman.io/getting-started/installation)
 - [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html)
-- An MCP client (e.g. [Claude Desktop](https://claude.ai/download)
+- An MCP client (e.g. [Claude Desktop](https://claude.ai/download) or [Claude Code](https://code.claude.com/docs/en/overview))
 - [UV](https://docs.astral.sh/uv/#installation) (If you want to create more data)
 
 ## Getting started
@@ -65,6 +65,10 @@ Add
     }
 ```
 to your `claude_desktop_config.json` file under the `mcpServers` section.
+- Using Claude Code:
+```bash
+claude mcp add vespa --transport http http://localhost:8080/mcp/
+```
 
 ## MCP server capabilities
 ### Tools
