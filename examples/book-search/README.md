@@ -33,7 +33,7 @@ The tests use `VespaContainer` to spin up an isolated Vespa instance automatical
 First, install `vespa-testcontainers` to your local Maven repository:
 ```sh
 cd /path/to/vespa-testcontainers
-./gradlew publishToMavenLocal
+mvn clean install
 ```
 
 Then run the tests:
