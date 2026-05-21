@@ -17,14 +17,17 @@ is small on purpose so you can verify the expected hits by eye.
 ## Layout
 
 ```
-src/main/application/schemas/ad.sd        schema: center position + envelope + polygon rank-profile
-src/main/application/services.xml         wires the PolygonSearcher into the chain
-src/main/java/.../PolygonSearcher.java    point-in-polygon as a container Searcher (fallback)
-src/test/application/tests/system-test/   HTTP-based system tests covering all patterns
-feed/ads.json                             five-doc ad dataset
-feed/polygon-test-points.json             five points from polygons.geojson (1, 5 inside; 2, 3, 4 outside)
-queries/*.json                            executable query bodies — `vespa query --file …`
-polygons.geojson                          non-convex 7-vertex polygon + 5 test points
+src/main/application/schemas/ad.sd          schema: center position + envelope + polygon_filter / searcher_geo / with_distance
+src/main/application/services.xml           wires the PolygonSearcher into the chain
+src/main/application/validation-overrides.xml   acks the double→float type change on the bbox fields
+src/main/java/.../PolygonSearcher.java      point-in-polygon as a container Searcher (fallback path)
+src/test/application/tests/system-test/     HTTP-based system tests covering all patterns
+feed/ads.json                               five-doc ad dataset
+feed/polygon-test-points.json               five points from polygons.geojson (1, 5 inside; 2, 3, 4 outside)
+queries/*.json                              executable query bodies — `vespa query --file …`
+bench/gen_synthetic_ads.py                  generator for an N-doc Berlin corpus (used for benchmarking)
+bench/bench_polygon.py                      head-to-head benchmark of the two polygon paths
+polygons.geojson                            non-convex 7-vertex polygon + 5 test points
 ```
 
 ## Run
@@ -312,35 +315,52 @@ The `polygon_filter` rank-profile implements ray-casting in tensor
 math, so it handles **any simple polygon — convex or non-convex** — and
 accepts arbitrary vertex winding.
 
-**How it works**. The client passes the polygon as a tensor with one
-entry per edge, where each entry holds the start and end coordinates of
-that edge:
+**How it works**. The client passes the polygon as **four separate
+indexed-dim tensors**, one per edge endpoint coordinate. Indexed
+dimensions let Vespa's tensor engine use contiguous-array
+(SIMD-friendly) kernels; an earlier mapped-dim variant was ~7×
+slower at scale (see
+[Tensor-expression optimization journey](#tensor-expression-optimization-journey)
+below).
 
 ```
-tensor<float>(edge{}, term{})   # term in {slat, slon, elat, elon}
+inputs {
+    query(slat) tensor<float>(edge[32])
+    query(slon) tensor<float>(edge[32])
+    query(elat) tensor<float>(edge[32])
+    query(elon) tensor<float>(edge[32])
+}
 ```
+
+The bound `[32]` covers any realistic polygon; trailing unused cells
+default to `0.0`, which the cross-product test correctly treats as
+non-crossing.
 
 For each edge, count whether a horizontal eastward ray from the query
 point crosses it. The point is inside iff the total count is odd. The
 "intersection east of point" test is rewritten as
-`numerator * denominator > 0` to avoid division (and the NaN that would
-come from horizontal edges).
+`numerator * denominator > 0` to avoid division (and the NaN that
+would come from horizontal edges).
 
 In `ad.sd` (`polygon_filter` rank-profile, abridged):
 
 ```
-function lat_brackets() {
-    # 1 per edge if one endpoint is above the query lat and the other below.
-    expression: map((query(polygon){term:slat} - attribute(lat))
-                  * (query(polygon){term:elat} - attribute(lat)),
-                    f(x)(if(x < 0, 1, 0)))
+function dlat() { expression: query(elat) - query(slat) }
+function v1() {
+    # Strictly-negative when the edge straddles the query lat.
+    expression: (query(slat) - attribute(lat)) * (query(elat) - attribute(lat))
 }
-function east_of_point() {
-    # 1 per edge if the ray-edge intersection is east of the query lon.
-    expression: map( … numerator * denominator …, f(x)(if(x > 0, 1, 0)))
+function v2() {
+    # Strictly-positive when the ray-edge intersection is east of the query lon.
+    expression {
+        ((query(elon) - query(slon)) * (attribute(lat) - query(slat))
+          + (query(slon) - attribute(lon)) * dlat)
+        * dlat
+    }
 }
 function crossings() {
-    expression: reduce(lat_brackets * east_of_point, sum, edge)
+    # Single join fuses the two indicators (a<0 AND b>0) into one pass.
+    expression: reduce(join(v1, v2, f(a, b)(if(a < 0 && b > 0, 1, 0))), sum, edge)
 }
 function inside_polygon() {
     expression: if(fmod(crossings, 2) > 0.5, 1.0, 0.0)
@@ -356,26 +376,25 @@ Outside points get score `-1.0`, which is below `rank-score-drop-limit:
 
 **Query**. Keep the `geoBoundingBox(center, …)` pre-filter so the rank
 expression only fires on docs already inside the polygon's bbox; pass
-the polygon vertices and select the rank-profile. The multi-mapped
-tensor input uses the **nested-map JSON form**:
+the polygon vertices and select the rank-profile. Each input is a
+plain JSON array (indexed-dim tensor literal):
 
 ```json
 {
   "yql": "select title, lat, lon from ad where geoBoundingBox(center, 52.49, 13.30, 52.55, 13.45)",
   "ranking": "polygon_filter",
   "input": {
-    "query(polygon)": {
-      "0": { "slat": 52.49, "slon": 13.30, "elat": 52.49, "elon": 13.45 },
-      "1": { "slat": 52.49, "slon": 13.45, "elat": 52.55, "elon": 13.45 },
-      "2": { "slat": 52.55, "slon": 13.45, "elat": 52.55, "elon": 13.30 },
-      "3": { "slat": 52.55, "slon": 13.30, "elat": 52.49, "elon": 13.30 }
-    }
+    "query(slat)": [52.49, 52.49, 52.55, 52.55],
+    "query(slon)": [13.30, 13.45, 13.45, 13.30],
+    "query(elat)": [52.49, 52.55, 52.55, 52.49],
+    "query(elon)": [13.45, 13.45, 13.30, 13.30]
   }
 }
 ```
 
-(Vespa rejects the flat form `{"0:slat": …}` for tensors with two
-mapped dimensions — use the nested form.)
+The client zips adjacent polygon vertices into start/end pairs. Arrays
+can be shorter than the schema bound (32) — Vespa zero-pads the
+trailing cells.
 
 The `geojson polygon (rank-profile ray-cast …)` step in
 `geo-shape-test.json` exercises this path against the 7-vertex
