@@ -1,0 +1,4 @@
+{
+  "yql": "select title, sw_lat, ne_lat, sw_lon, ne_lon from ad where sw_lat <= 52.52 and ne_lat >= 52.52 and sw_lon <= 13.405 and ne_lon >= 13.405",
+  "hits": 10
+}

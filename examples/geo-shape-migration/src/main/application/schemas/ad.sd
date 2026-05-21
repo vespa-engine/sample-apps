@@ -11,6 +11,16 @@ schema ad {
             indexing: attribute | summary
         }
 
+        # Same point as `center`, but exposed as plain scalar attributes so it
+        # can be referenced from ranking expressions (the polygon_filter
+        # rank-profile reads attribute(lat) and attribute(lon) directly).
+        field lat type float {
+            indexing: attribute | summary
+        }
+        field lon type float {
+            indexing: attribute | summary
+        }
+
         # Optional taxonomy/path filter, OR-combined with the service-area check below.
         # Equivalent to Elasticsearch "terms": { "location_path": [...] }.
         field location_path type array<string> {
@@ -63,6 +73,79 @@ schema ad {
         }
         summary-features {
             distance(center).km
+        }
+    }
+
+    # Content-node polygon filter — alternative to the container-side
+    # PolygonSearcher. Works for any simple polygon (convex or non-convex),
+    # accepts arbitrary vertex winding, and drops outside-polygon docs on the
+    # content nodes via `rank-score-drop-limit`, so filtering happens before
+    # pagination — no container post-filter needed.
+    #
+    # The query passes the polygon as a tensor of edges, one cell per edge
+    # endpoint coordinate:
+    #
+    #     tensor<float>(edge{}, term{})  with term in {slat, slon, elat, elon}
+    #
+    # The algorithm is ray-casting (PNPoly): for each edge, count how many
+    # times a horizontal eastward ray from the query point crosses that
+    # edge. The point is inside iff the total number of crossings is odd.
+    #
+    # To avoid division (and the resulting divide-by-zero / NaN handling on
+    # horizontal edges), the "intersection east of query point" test is
+    # rewritten as `numerator * denominator > 0`, where:
+    #
+    #   numerator   = (elon - slon) * (lat - slat) + (slon - lon) * (elat - slat)
+    #   denominator = (elat - slat)
+    #
+    # This holds because `sign(A / B) == sign(A * B)` for B != 0, and the
+    # `lat_brackets` test below already excludes horizontal edges where
+    # the denominator would be zero.
+    rank-profile polygon_filter inherits default {
+        inputs {
+            query(polygon) tensor<float>(edge{}, term{})
+        }
+
+        # 1.0 if edge has one endpoint above and one below the query lat
+        # (strictly), 0.0 otherwise. The per-cell indicator is computed
+        # inside a lambda so the tensor type carries through.
+        function lat_brackets() {
+            expression {
+                map((query(polygon){term:slat} - attribute(lat))
+                  * (query(polygon){term:elat} - attribute(lat)),
+                    f(x)(if(x < 0, 1, 0)))
+            }
+        }
+
+        # 1.0 if the edge's intersection with the horizontal ray is east of
+        # the query lon. Computed without division.
+        function east_of_point() {
+            expression {
+                map(((query(polygon){term:elon} - query(polygon){term:slon})
+                       * (attribute(lat) - query(polygon){term:slat})
+                   + (query(polygon){term:slon} - attribute(lon))
+                       * (query(polygon){term:elat} - query(polygon){term:slat}))
+                  * (query(polygon){term:elat} - query(polygon){term:slat}),
+                    f(x)(if(x > 0, 1, 0)))
+            }
+        }
+
+        function crossings() {
+            expression: reduce(lat_brackets * east_of_point, sum, edge)
+        }
+
+        # Inside iff crossings is odd.
+        function inside_polygon() {
+            expression: if(fmod(crossings, 2) > 0.5, 1.0, 0.0)
+        }
+
+        first-phase {
+            expression: if(inside_polygon > 0.5, nativeRank(title) + 1.0, -1.0)
+            rank-score-drop-limit: 0.0
+        }
+        match-features {
+            crossings
+            inside_polygon
         }
     }
 }

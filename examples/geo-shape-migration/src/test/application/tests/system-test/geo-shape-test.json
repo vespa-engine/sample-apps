@@ -1,0 +1,406 @@
+{
+  "name": "Geo shape migration — system tests",
+  "defaults": {
+    "cluster": "default",
+    "parameters": {
+      "timeout": "5s"
+    }
+  },
+  "steps": [
+
+    { "name": "cleanup: delete any docs left over from previous runs",
+      "request": {
+        "method": "DELETE",
+        "uri": "/document/v1/ads/ad/docid",
+        "parameters": {
+          "selection": "true",
+          "cluster": "ads"
+        }
+      }
+    },
+
+    { "name": "feed: berlin-mitte",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/berlin-mitte",
+        "body": {
+          "fields": {
+            "title": "Plumber in Berlin Mitte",
+            "center": { "lat": 52.5200, "lng": 13.4050 },
+            "lat": 52.5200, "lon": 13.4050,
+            "location_path": ["3331", "berlin/mitte"],
+            "sw_lat": 52.4900, "ne_lat": 52.5500,
+            "sw_lon": 13.3500, "ne_lon": 13.4500
+          }
+        }
+      }
+    },
+    { "name": "feed: berlin-wide",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/berlin-wide",
+        "body": {
+          "fields": {
+            "title": "City-wide electrician — covers all of Berlin",
+            "center": { "lat": 52.5200, "lng": 13.4050 },
+            "lat": 52.5200, "lon": 13.4050,
+            "location_path": ["3331"],
+            "sw_lat": 52.3380, "ne_lat": 52.6755,
+            "sw_lon": 13.0884, "ne_lon": 13.7611
+          }
+        }
+      }
+    },
+    { "name": "feed: potsdam-local",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/potsdam-local",
+        "body": {
+          "fields": {
+            "title": "Local handyman in Potsdam — small service area",
+            "center": { "lat": 52.3906, "lng": 13.0645 },
+            "lat": 52.3906, "lon": 13.0645,
+            "location_path": ["3334", "potsdam"],
+            "sw_lat": 52.3700, "ne_lat": 52.4100,
+            "sw_lon": 13.0300, "ne_lon": 13.1000
+          }
+        }
+      }
+    },
+    { "name": "feed: brandenburg-region",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/brandenburg-region",
+        "body": {
+          "fields": {
+            "title": "Roofer covering Brandenburg region",
+            "center": { "lat": 52.4125, "lng": 12.5316 },
+            "lat": 52.4125, "lon": 12.5316,
+            "location_path": ["3334"],
+            "sw_lat": 52.0000, "ne_lat": 52.8000,
+            "sw_lon": 12.0000, "ne_lon": 13.5000
+          }
+        }
+      }
+    },
+    { "name": "feed: munich-only",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/munich-only",
+        "body": {
+          "fields": {
+            "title": "Munich-only mover",
+            "center": { "lat": 48.1351, "lng": 11.5820 },
+            "lat": 48.1351, "lon": 11.5820,
+            "location_path": ["9162"],
+            "sw_lat": 48.0500, "ne_lat": 48.2500,
+            "sw_lon": 11.4000, "ne_lon": 11.8000
+          }
+        }
+      }
+    },
+
+    {
+      "name": "envelope contains Berlin center (52.52, 13.405) — 3 hits: mitte + wide + brandenburg (whose bbox extends into Berlin)",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title from ad where sw_lat <= 52.52 and ne_lat >= 52.52 and sw_lon <= 13.405 and ne_lon >= 13.405",
+          "hits": 10
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 3 }
+          }
+        }
+      }
+    },
+
+    {
+      "name": "envelope contains point outside any service area — 0 hits",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title from ad where sw_lat <= 50.0 and ne_lat >= 50.0 and sw_lon <= 10.0 and ne_lon >= 10.0",
+          "hits": 10
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 0 }
+          }
+        }
+      }
+    },
+
+    {
+      "name": "envelope-OR-path: at (52.5400284, 13.2653357) OR path 3331/3334 — 4 hits, munich excluded",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title from ad where location_path contains '3331' or location_path contains '3334' or (sw_lat <= 52.5400284 and ne_lat >= 52.5400284 and sw_lon <= 13.2653357 and ne_lon >= 13.2653357)",
+          "hits": 10
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 4 }
+          }
+        }
+      }
+    },
+
+    {
+      "name": "polygon (Java Searcher): CCW square around Berlin Mitte — 2 hits (mitte + wide)",
+      "comment": "When using polygon=, the YQL select must include lat and lon — the Searcher reads them to run the ray-cast.",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title, lat, lon, center from ad where geoBoundingBox(center, 52.49, 13.30, 52.55, 13.45)",
+          "polygon": "52.49,13.30,52.49,13.45,52.55,13.45,52.55,13.30",
+          "hits": 10
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 2 }
+          }
+        }
+      }
+    },
+
+    {
+      "name": "polygon (rank-profile tensor): same CCW square — 2 hits (mitte + wide)",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title, lat, lon from ad where geoBoundingBox(center, 52.49, 13.30, 52.55, 13.45)",
+          "ranking": "polygon_filter",
+          "hits": 10,
+          "input": {
+            "query(polygon)": {
+              "0": { "slat": 52.49, "slon": 13.30, "elat": 52.49, "elon": 13.45 },
+              "1": { "slat": 52.49, "slon": 13.45, "elat": 52.55, "elon": 13.45 },
+              "2": { "slat": 52.55, "slon": 13.45, "elat": 52.55, "elon": 13.30 },
+              "3": { "slat": 52.55, "slon": 13.30, "elat": 52.49, "elon": 13.30 }
+            }
+          }
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 2 }
+          }
+        }
+      }
+    },
+
+    {
+      "name": "polygon (rank-profile tensor): triangle around Potsdam — only potsdam-local",
+      "comment": "Triangle (CCW) around Potsdam: vertices at (52.35,13.00), (52.42,13.10), (52.35,13.10). bbox pre-filter narrows to Potsdam; only potsdam-local's center sits inside the triangle.",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title, lat, lon from ad where geoBoundingBox(center, 52.35, 13.00, 52.42, 13.10)",
+          "ranking": "polygon_filter",
+          "hits": 10,
+          "input": {
+            "query(polygon)": {
+              "0": { "slat": 52.35, "slon": 13.00, "elat": 52.35, "elon": 13.10 },
+              "1": { "slat": 52.35, "slon": 13.10, "elat": 52.42, "elon": 13.10 },
+              "2": { "slat": 52.42, "slon": 13.10, "elat": 52.35, "elon": 13.00 }
+            }
+          }
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 1 },
+            "children": [
+              { "fields": { "title": "Local handyman in Potsdam — small service area" } }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "name": "polygon (rank-profile tensor): polygon far from any doc — 0 hits",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title, lat, lon from ad where geoBoundingBox(center, 40.00, 0.00, 41.00, 1.00)",
+          "ranking": "polygon_filter",
+          "hits": 10,
+          "input": {
+            "query(polygon)": {
+              "0": { "slat": 40.00, "slon": 0.00, "elat": 40.00, "elon": 1.00 },
+              "1": { "slat": 40.00, "slon": 1.00, "elat": 41.00, "elon": 1.00 },
+              "2": { "slat": 41.00, "slon": 1.00, "elat": 41.00, "elon": 0.00 },
+              "3": { "slat": 41.00, "slon": 0.00, "elat": 40.00, "elon": 0.00 }
+            }
+          }
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 0 }
+          }
+        }
+      }
+    },
+
+    { "name": "geojson: feed point 1 (inside) — Berlin Mitte (52.5222393, 13.3887456)",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/pt-1",
+        "body": {
+          "fields": {
+            "title": "Point 1 (inside)",
+            "center": { "lat": 52.5222393, "lng": 13.3887456 },
+            "lat": 52.5222393, "lon": 13.3887456,
+            "sw_lat": 52.5222393, "ne_lat": 52.5222393,
+            "sw_lon": 13.3887456, "ne_lon": 13.3887456
+          }
+        }
+      }
+    },
+    { "name": "geojson: feed point 2 (outside) — (52.52181, 13.3750749)",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/pt-2",
+        "body": {
+          "fields": {
+            "title": "Point 2 (outside)",
+            "center": { "lat": 52.52181, "lng": 13.3750749 },
+            "lat": 52.52181, "lon": 13.3750749,
+            "sw_lat": 52.52181, "ne_lat": 52.52181,
+            "sw_lon": 13.3750749, "ne_lon": 13.3750749
+          }
+        }
+      }
+    },
+    { "name": "geojson: feed point 3 (outside) — (52.5322734, 13.3842475)",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/pt-3",
+        "body": {
+          "fields": {
+            "title": "Point 3 (outside)",
+            "center": { "lat": 52.5322734, "lng": 13.3842475 },
+            "lat": 52.5322734, "lon": 13.3842475,
+            "sw_lat": 52.5322734, "ne_lat": 52.5322734,
+            "sw_lon": 13.3842475, "ne_lon": 13.3842475
+          }
+        }
+      }
+    },
+    { "name": "geojson: feed point 4 (outside) — (52.528303, 13.3666079)",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/pt-4",
+        "body": {
+          "fields": {
+            "title": "Point 4 (outside)",
+            "center": { "lat": 52.528303, "lng": 13.3666079 },
+            "lat": 52.528303, "lon": 13.3666079,
+            "sw_lat": 52.528303, "ne_lat": 52.528303,
+            "sw_lon": 13.3666079, "ne_lon": 13.3666079
+          }
+        }
+      }
+    },
+    { "name": "geojson: feed point 5 (inside) — (52.534795, 13.3786028)",
+      "request": {
+        "method": "POST",
+        "uri": "/document/v1/ads/ad/docid/pt-5",
+        "body": {
+          "fields": {
+            "title": "Point 5 (inside)",
+            "center": { "lat": 52.534795, "lng": 13.3786028 },
+            "lat": 52.534795, "lon": 13.3786028,
+            "sw_lat": 52.534795, "ne_lat": 52.534795,
+            "sw_lon": 13.3786028, "ne_lon": 13.3786028
+          }
+        }
+      }
+    },
+
+    {
+      "name": "geojson polygon (Java Searcher, non-convex 7-vertex Berlin polygon): points 1 and 5 inside; 2, 3, 4 outside",
+      "comment": "Polygon from polygons.geojson. Non-convex shape with clear inward bites. Ray-casting in the container Searcher handles this.",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title, lat, lon, center from ad where title contains 'Point' and geoBoundingBox(center, 52.5134064, 13.3633786, 52.5354536, 13.3974337)",
+          "polygon": "52.5354536,13.3799819,52.5316201,13.3633786,52.5291134,13.3763462,52.5134064,13.3933131,52.5346427,13.3974337,52.5250581,13.3871323,52.5325048,13.3796184",
+          "hits": 10
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 2 },
+            "children": [
+              { "fields": { "title": "Point 1 (inside)" } },
+              { "fields": { "title": "Point 5 (inside)" } }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "name": "geojson polygon (rank-profile ray-cast, same non-convex polygon): points 1 and 5 inside; 2, 3, 4 outside",
+      "comment": "Same polygon as the Java Searcher test above, evaluated entirely on content nodes via the polygon_filter rank-profile (ray-casting in tensor math, drops outside docs via rank-score-drop-limit).",
+      "request": {
+        "method": "POST",
+        "uri": "/search/",
+        "body": {
+          "yql": "select title, lat, lon from ad where title contains 'Point' and geoBoundingBox(center, 52.5134064, 13.3633786, 52.5354536, 13.3974337)",
+          "ranking": "polygon_filter",
+          "hits": 10,
+          "input": {
+            "query(polygon)": {
+              "0": { "slat": 52.5354536, "slon": 13.3799819, "elat": 52.5316201, "elon": 13.3633786 },
+              "1": { "slat": 52.5316201, "slon": 13.3633786, "elat": 52.5291134, "elon": 13.3763462 },
+              "2": { "slat": 52.5291134, "slon": 13.3763462, "elat": 52.5134064, "elon": 13.3933131 },
+              "3": { "slat": 52.5134064, "slon": 13.3933131, "elat": 52.5346427, "elon": 13.3974337 },
+              "4": { "slat": 52.5346427, "slon": 13.3974337, "elat": 52.5250581, "elon": 13.3871323 },
+              "5": { "slat": 52.5250581, "slon": 13.3871323, "elat": 52.5325048, "elon": 13.3796184 },
+              "6": { "slat": 52.5325048, "slon": 13.3796184, "elat": 52.5354536, "elon": 13.3799819 }
+            }
+          }
+        }
+      },
+      "response": {
+        "body": {
+          "root": {
+            "fields": { "totalCount": 2 },
+            "children": [
+              { "fields": { "title": "Point 1 (inside)" } },
+              { "fields": { "title": "Point 5 (inside)" } }
+            ]
+          }
+        }
+      }
+    }
+
+  ]
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "put": "id:ads:ad::pt-1",
+    "fields": {
+      "title": "Point 1 (inside)",
+      "center": { "lat": 52.5222393, "lng": 13.3887456 },
+      "lat": 52.5222393, "lon": 13.3887456,
+      "sw_lat": 52.5222393, "ne_lat": 52.5222393,
+      "sw_lon": 13.3887456, "ne_lon": 13.3887456
+    }
+  },
+  {
+    "put": "id:ads:ad::pt-2",
+    "fields": {
+      "title": "Point 2 (outside)",
+      "center": { "lat": 52.52181, "lng": 13.3750749 },
+      "lat": 52.52181, "lon": 13.3750749,
+      "sw_lat": 52.52181, "ne_lat": 52.52181,
+      "sw_lon": 13.3750749, "ne_lon": 13.3750749
+    }
+  },
+  {
+    "put": "id:ads:ad::pt-3",
+    "fields": {
+      "title": "Point 3 (outside)",
+      "center": { "lat": 52.5322734, "lng": 13.3842475 },
+      "lat": 52.5322734, "lon": 13.3842475,
+      "sw_lat": 52.5322734, "ne_lat": 52.5322734,
+      "sw_lon": 13.3842475, "ne_lon": 13.3842475
+    }
+  },
+  {
+    "put": "id:ads:ad::pt-4",
+    "fields": {
+      "title": "Point 4 (outside)",
+      "center": { "lat": 52.528303, "lng": 13.3666079 },
+      "lat": 52.528303, "lon": 13.3666079,
+      "sw_lat": 52.528303, "ne_lat": 52.528303,
+      "sw_lon": 13.3666079, "ne_lon": 13.3666079
+    }
+  },
+  {
+    "put": "id:ads:ad::pt-5",
+    "fields": {
+      "title": "Point 5 (inside)",
+      "center": { "lat": 52.534795, "lng": 13.3786028 },
+      "lat": 52.534795, "lon": 13.3786028,
+      "sw_lat": 52.534795, "ne_lat": 52.534795,
+      "sw_lon": 13.3786028, "ne_lon": 13.3786028
+    }
+  }
+]

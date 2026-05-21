@@ -1,0 +1,4 @@
+{
+  "yql": "select title, location_path from ad where location_path contains '3331' or location_path contains '3334' or (sw_lat <= 52.5400284 and ne_lat >= 52.5400284 and sw_lon <= 13.2653357 and ne_lon >= 13.2653357)",
+  "hits": 10
+}

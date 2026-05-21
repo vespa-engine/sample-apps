@@ -1,7 +1,6 @@
 // Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package ai.vespa.example.geo;
 
-import com.yahoo.data.access.Inspector;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
@@ -32,7 +31,8 @@ import java.util.List;
 public class PolygonSearcher extends Searcher {
 
     private static final String POLYGON_PARAM = "polygon";
-    private static final String POSITION_FIELD = "center";
+    private static final String LAT_FIELD = "lat";
+    private static final String LON_FIELD = "lon";
 
     @Override
     public Result search(Query query, Execution execution) {
@@ -47,6 +47,10 @@ public class PolygonSearcher extends Searcher {
             return execution.search(query);
         }
 
+        // The YQL `select` clause restricts which fields the backend returns,
+        // so callers using polygon= must include `lat` and `lon` in their
+        // select list (or use `select *`). The geometry test below relies on
+        // both being present.
         Result result = execution.search(query);
         execution.fill(result);
         int before = (int) result.hits().getConcreteSize();
@@ -74,10 +78,10 @@ public class PolygonSearcher extends Searcher {
     }
 
     private double[] readPosition(Hit hit) {
-        // Vespa 8 renders position fields as {"lat": <double>, "lng": <double>}.
-        Object field = hit.getField(POSITION_FIELD);
-        if (field instanceof Inspector ins) {
-            return new double[] { ins.field("lat").asDouble(), ins.field("lng").asDouble() };
+        Object lat = hit.getField(LAT_FIELD);
+        Object lon = hit.getField(LON_FIELD);
+        if (lat instanceof Number latN && lon instanceof Number lonN) {
+            return new double[] { latN.doubleValue(), lonN.doubleValue() };
         }
         return null;
     }

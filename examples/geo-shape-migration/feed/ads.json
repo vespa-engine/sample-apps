@@ -4,6 +4,7 @@
     "fields": {
       "title": "Plumber in Berlin Mitte",
       "center":   { "lat": 52.5200, "lng": 13.4050 },
+      "lat": 52.5200, "lon": 13.4050,
       "location_path": ["3331", "berlin/mitte"],
       "sw_lat": 52.4900, "ne_lat": 52.5500,
       "sw_lon": 13.3500, "ne_lon": 13.4500
@@ -14,6 +15,7 @@
     "fields": {
       "title": "City-wide electrician — covers all of Berlin",
       "center":   { "lat": 52.5200, "lng": 13.4050 },
+      "lat": 52.5200, "lon": 13.4050,
       "location_path": ["3331"],
       "sw_lat": 52.3380, "ne_lat": 52.6755,
       "sw_lon": 13.0884, "ne_lon": 13.7611
@@ -24,6 +26,7 @@
     "fields": {
       "title": "Local handyman in Potsdam — small service area",
       "center":   { "lat": 52.3906, "lng": 13.0645 },
+      "lat": 52.3906, "lon": 13.0645,
       "location_path": ["3334", "potsdam"],
       "sw_lat": 52.3700, "ne_lat": 52.4100,
       "sw_lon": 13.0300, "ne_lon": 13.1000
@@ -34,6 +37,7 @@
     "fields": {
       "title": "Roofer covering Brandenburg region",
       "center":   { "lat": 52.4125, "lng": 12.5316 },
+      "lat": 52.4125, "lon": 12.5316,
       "location_path": ["3334"],
       "sw_lat": 52.0000, "ne_lat": 52.8000,
       "sw_lon": 12.0000, "ne_lon": 13.5000
@@ -44,6 +48,7 @@
     "fields": {
       "title": "Munich-only mover",
       "center":   { "lat": 48.1351, "lng": 11.5820 },
+      "lat": 48.1351, "lon": 11.5820,
       "location_path": ["9162"],
       "sw_lat": 48.0500, "ne_lat": 48.2500,
       "sw_lon": 11.4000, "ne_lon": 11.8000
