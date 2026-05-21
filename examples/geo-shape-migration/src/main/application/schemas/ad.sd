@@ -34,25 +34,29 @@ schema ad {
         # AND'ed range conditions are folded by the RangeQueryOptimizer into a
         # single MultiRangeItem lookup against the fast-search btree indexes,
         # which is the idiomatic Vespa equivalent.
+        #
+        # No `rank: filter` here: walking the Vespa source (AttributeFields.java
+        # -> configconverter.cpp -> attributeiterators.cpp) shows that for a
+        # single-value high-cardinality double attribute the only runtime
+        # difference is skipping one `_matchPosition->setElementWeight(1)` call
+        # per matched doc, and the posting-list -> bitvector replacement that
+        # `enable-only-bit-vector` enables never fires (no value has enough
+        # docs to cross the threshold). See README §1 for the full walk.
         field sw_lat type double {
             indexing: attribute | summary
             attribute: fast-search
-            rank: filter
         }
         field ne_lat type double {
             indexing: attribute | summary
             attribute: fast-search
-            rank: filter
         }
         field sw_lon type double {
             indexing: attribute | summary
             attribute: fast-search
-            rank: filter
         }
         field ne_lon type double {
             indexing: attribute | summary
             attribute: fast-search
-            rank: filter
         }
     }
 

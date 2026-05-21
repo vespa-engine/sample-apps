@@ -113,11 +113,14 @@ conditions.
 In `ad.sd`:
 
 ```
-field sw_lat type double { indexing: attribute | summary; attribute: fast-search; rank: filter }
-field ne_lat type double { indexing: attribute | summary; attribute: fast-search; rank: filter }
-field sw_lon type double { indexing: attribute | summary; attribute: fast-search; rank: filter }
-field ne_lon type double { indexing: attribute | summary; attribute: fast-search; rank: filter }
+field sw_lat type double { indexing: attribute | summary; attribute: fast-search }
+field ne_lat type double { indexing: attribute | summary; attribute: fast-search }
+field sw_lon type double { indexing: attribute | summary; attribute: fast-search }
+field ne_lon type double { indexing: attribute | summary; attribute: fast-search }
 ```
+
+(No `rank: filter` here — see [below](#fast-search-and-rank-filter-on-the-bbox-fields--what-each-actually-does)
+for why it would be a no-op on a high-cardinality `double` attribute.)
 
 YQL for "does the document's envelope contain (52.52, 13.405)?":
 
@@ -204,17 +207,21 @@ does almost nothing in practice**. Walking the actual Vespa source:
    single value will ever have a posting list large enough to trigger
    the bitvector replacement, so this optimization never fires here.
 
-**For our bbox fields**, then, `rank: filter` is essentially
-decorative — it documents intent and matches Vespa convention, but
-removing it would not change query plans, memory footprint, or
+**For our bbox fields**, then, `rank: filter` would be decorative — it
+documents intent but does not change query plans, memory footprint, or
 measurable performance for the `select … where sw_lat <= X and
-ne_lat >= X …` path. Keep it where it costs nothing and signals
-"filter-only field"; don't expect it to do work it isn't doing.
+ne_lat >= X …` path. This app **omits** it on the four bbox fields for
+that reason: less ceremony, identical behaviour.
 
-Where `rank: filter` *does* earn its keep:
-- **Categorical attributes with repeating values** (e.g.
-  `location_path`, country codes, ACL bits): the posting-list →
-  bitvector replacement saves real memory.
+`rank: filter` is kept on `location_path` because that's exactly the
+case where it *does* earn its keep — a multi-value `array<string>`
+attribute with repeating values, where the posting-list → bitvector
+replacement actually fires and saves memory.
+
+Other cases where `rank: filter` is load-bearing:
+- **Categorical attributes with repeating values** (country codes,
+  ACL bits, status flags): same bitvector replacement story as
+  `location_path`.
 - **Weighted-set attributes**: the skipped `setElementWeight` actually
   drops a meaningful per-element weight signal.
 - **Index fields** (not attributes): skips position data and the
@@ -335,20 +342,121 @@ non-convex Berlin polygon in `polygons.geojson`.
 
 ## When to use which polygon path
 
-Both 2a and 2b handle arbitrary simple polygons. Choose based on the
-cost model:
+Both 2a and 2b handle arbitrary simple polygons. The choice is about
+the cost model — and the cost models are genuinely different.
 
-| Scenario                                  | Pattern                       |
-| ----------------------------------------- | ----------------------------- |
-| Page-size correctness matters             | 2b — `polygon_filter` profile |
-| Polygons are small (< ~100 edges)         | 2b                            |
-| Polygon evaluated per query, not per hit  | 2b                            |
-| You already have container post-filters   | 2a — `PolygonSearcher`        |
-| Polygon has thousands of edges            | 2a (avoid per-doc tensor cost)|
+### Measured numbers (50k synthetic Berlin docs, 7-vertex polygon)
 
-2b is the default choice in this app; 2a is kept as a Java-side
-fallback for very large polygons or when other container Searchers
-need to compose with the geometry filter.
+Reproduce with:
+
+```
+python3 bench/gen_synthetic_ads.py 50000 > /tmp/synthetic-ads.json
+vespa feed /tmp/synthetic-ads.json
+python3 bench/bench_polygon.py
+```
+
+Numbers below are mean of 20 runs on an M-series Mac with a single-node
+local Vespa container. Wall-clock includes HTTP; `backend_query` is the
+content-node match+rank time, `backend_total` is `searchtime` from
+`presentation.timing=true` (covers match + summary fetch + container
+Searcher work).
+
+Note on Vespa defaults: `maxHits = 400`. The "fair" Searcher rows below
+override both `hits` and `maxHits` so the Searcher sees the same
+candidate set the rank-profile evaluates on.
+
+**Narrow query** (bbox == polygon's own bbox, ~600 docs pass the bbox
+pre-filter):
+
+| Path                                            | totalCount | backend_query | backend_total | wall   |
+| ----------------------------------------------- | ---------- | ------------- | ------------- | ------ |
+| rank-profile (content-node ray-cast)            | 173        | 3.6 ms        | 4.2 ms        | 6.7 ms |
+| Java Searcher, hits=10 (top-N only)             | 4          | 0.5 ms        | 1.0 ms        | 2.3 ms |
+| Java Searcher, hits=400 (Vespa default cap)     | 111        | 0.4 ms        | 1.8 ms        | 3.7 ms |
+| Java Searcher, hits=1000 — **fair, sees all**   | 173        | 0.9 ms        | 2.6 ms        | 4.8 ms |
+
+**Wide query** (bbox == all of Berlin, ~50k docs pass the bbox
+pre-filter):
+
+| Path                                            | totalCount | backend_query | backend_total | wall    |
+| ----------------------------------------------- | ---------- | ------------- | ------------- | ------- |
+| rank-profile (content-node ray-cast)            | 174        | 187 ms        | 188 ms        | 191 ms  |
+| Java Searcher, hits=10 (top-N only)             | 2          | 1.8 ms        | 2.1 ms        | 3.8 ms  |
+| Java Searcher, hits=400 (Vespa default cap)     | 4          | 1.8 ms        | 2.85 ms       | 4.5 ms  |
+| Java Searcher, hits=60000 — **fair, sees all**  | 173        | 22 ms         | 263 ms        | 267 ms  |
+
+### Napkin math (fair-comparison rows only)
+
+**Rank-profile per-doc cost.** Wide-bbox query: ~187 ms over 50k
+candidates ≈ **~3.7 µs per matched doc** for the 7-edge polygon ≈
+~530 ns per edge. That's about two orders of magnitude above raw FP
+throughput — the gap is tensor machinery (mapped-dim cell lookups,
+broadcasting, `map` lambda dispatch). The rank-profile reads
+`attribute(lat)` / `attribute(lon)` directly in the match phase and
+**never fetches a summary** for outside-polygon docs.
+
+**Java Searcher per-doc cost (fair).** The Searcher *must* call
+`execution.fill(result)` to read `lat`/`lon`, so its cost includes
+fetching the summary for every hit it sees:
+
+- hits=60000 backend_total: ~263 ms ≈ **~5.3 µs per candidate**
+- of which ~22 ms (≈0.4 µs/cand) is backend_query (match + heap
+  collect of 60k hits)
+- the remaining ~241 ms (≈4.8 µs/cand) is summary fetch + Java
+  ray-cast + Hit object dereference
+
+The actual Java ray-cast is sub-microsecond per hit; the dominant cost
+is the **content→container summary fetch round-trip**, which the
+rank-profile avoids entirely for outside-polygon docs.
+
+### What the fair comparison actually shows
+
+When forced to evaluate on the same K candidates:
+
+| K       | rank-profile backend_total | Searcher backend_total | winner             |
+| ------- | -------------------------- | ---------------------- | ------------------ |
+| 600     | 4.2 ms                     | 2.6 ms                 | Searcher (~1.6× faster) |
+| 50,000  | 188 ms                     | 263 ms                 | rank-profile (~1.4× faster) |
+
+Crossover sits in the low thousands of candidates. Below that, the
+Searcher's tight Java loop beats the tensor abstraction's per-cell
+overhead. Above it, the Searcher's summary fetch cost overtakes the
+in-place attribute read the rank-profile gets for free.
+
+### Cost is not the same as correctness
+
+Look back at the *unfair* Searcher rows (hits=10, hits=400) for the
+wide query. They return `totalCount=4` or `totalCount=2` — not because
+only 2–4 docs are inside the polygon (174 are), but because the backend
+pre-ranks by `nativeRank(title)` (irrelevant to geometry), keeps the
+top 400, and only those 400 are presented to the Searcher's
+post-filter. The other ~170 inside-polygon docs are invisible to it.
+
+So the production-relevant comparison is three-way:
+
+| Question                                                | Best path                         |
+| ------------------------------------------------------- | --------------------------------- |
+| Cheapest if you only need the top-N relevant            | Java Searcher (cost bounded by hits) |
+| Cheapest *correct* (matches totalCount, paginates ok)   | rank-profile (above ~1k candidates)  |
+| Cheapest *correct* at small K (< ~1k candidates)        | Searcher with hits ≥ K (`maxHits` override) |
+| Cheapest with very large polygons (>1k edges)           | Java Searcher (cost bounded by hits) |
+
+### Summary
+
+| Scenario                                            | Pattern                       |
+| --------------------------------------------------- | ----------------------------- |
+| Page-size correctness / accurate totalCount         | 2b — `polygon_filter` profile |
+| Wide bbox ( ≳ 1k candidates ) + correctness         | 2b                            |
+| Narrow bbox ( ≲ 1k candidates ) + correctness       | 2a — Searcher with `hits ≥ K` |
+| Top-N relevant only, totalCount irrelevant          | 2a — Searcher with small hits |
+| Polygon has thousands of edges                      | 2a (cost bounded by hits)     |
+
+2b is the default choice in this app: it returns correct counts
+without needing a `maxHits` override and scales sub-linearly in
+practice with bbox cardinality. 2a is kept as a Java-side fallback
+for very large polygons, narrow-bbox + correctness use cases (where
+its tight Java loop beats the tensor overhead), and cases where
+other container Searchers need to compose with the geometry filter.
 
 ---
 
