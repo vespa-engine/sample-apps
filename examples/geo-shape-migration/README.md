@@ -113,11 +113,24 @@ conditions.
 In `ad.sd`:
 
 ```
-field sw_lat type double { indexing: attribute | summary; attribute: fast-search }
-field ne_lat type double { indexing: attribute | summary; attribute: fast-search }
-field sw_lon type double { indexing: attribute | summary; attribute: fast-search }
-field ne_lon type double { indexing: attribute | summary; attribute: fast-search }
+field sw_lat type float { indexing: attribute | summary; attribute: fast-search }
+field ne_lat type float { indexing: attribute | summary; attribute: fast-search }
+field sw_lon type float { indexing: attribute | summary; attribute: fast-search }
+field ne_lon type float { indexing: attribute | summary; attribute: fast-search }
 ```
+
+**Type is `float`, not `double`.** At Berlin's latitude (≈52°) float's
+quantum is **~0.7 m on lat, ~0.4 m on lon** — three orders of
+magnitude finer than the underlying service-area data (km-scale
+fuzz) and the query point (GPS ~5 m, usually rounded further by the
+front-end). Halves the attribute footprint and the fast-search btree.
+At 60M docs that's ~960 MB saved across the four fields with no
+observable precision loss for envelope-contains-point. (`double`
+would be appropriate if we were doing coord-system projection or
+sub-meter precision arithmetic on stored values — we aren't.)
+
+Note: changing an existing field's type requires a
+`validation-overrides.xml` ack — see `src/main/application/validation-overrides.xml`.
 
 (No `rank: filter` here — see [below](#fast-search-and-rank-filter-on-the-bbox-fields--what-each-actually-does)
 for why it would be a no-op on a high-cardinality `double` attribute.)
@@ -245,14 +258,44 @@ polygon (convex or non-convex):
    YQL. The content nodes evaluate this against the position attribute's
    Z-order curve, scaling to billions of documents.
 2. **Container post-filter (in `PolygonSearcher`)**: the Searcher reads
-   each hit's `center` from the summary and runs a ray-casting check.
-   Hits outside the polygon are removed.
+   each hit's lat/lon from a `matchfeatures` payload that ships with
+   the initial content-node response, runs a ray-casting check, and
+   removes hits outside the polygon. **No `execution.fill(result)` is
+   ever called from this Searcher** — only the surviving hits get
+   their summary filled (by the rendering layer) for the fields the
+   caller asked for in the YQL `select` clause.
 
 Activate by adding `"polygon": "lat1,lon1,lat2,lon2,..."` to any query
-body; the trailing duplicate vertex (closed ring) is optional. See the
-`polygon (Java Searcher)` step in `geo-shape-test.json` for the full
-pattern, `PolygonSearcher.java` for the implementation, and
-`PolygonSearcherTest.java` for unit tests on the geometry helpers.
+body; the trailing duplicate vertex (closed ring) is optional. The
+Searcher overrides the rank-profile to `searcher_geo` (which declares
+`lat_mf` / `lon_mf` as match-features); see `ad.sd` for the profile
+and `PolygonSearcher.java` for the read code.
+
+#### Why this matters: skipping the docsum round-trip
+
+Match-features were originally designed to expose ranking-feature
+values for inspection / further ranking, but they have a second
+property: they ride along with the initial content-node response, so
+a container Searcher that only needs numeric values per hit can run
+**before** any summary fetch and operate on the matchfeatures payload
+alone. This is the trick described in
+[Vinted Engineering's "Teaching the Old Dog a New Trick"][vinted];
+it requires Vespa 8.596.7+, where Vespa correctly skips the docsum
+fetch when the Searcher hasn't asked for one.
+
+In numbers: at 50k bbox candidates, the naïve fill-based Searcher
+spent ~240 ms fetching summaries before it could read each hit's
+lat/lon. With match-features, that 240 ms vanishes; the Searcher gets
+its data alongside the docids and only the (much smaller) post-filter
+set gets summaries filled. See the [benchmark section
+below](#measured-numbers-50k-synthetic-berlin-docs-7-vertex-polygon)
+for the full numbers — the takeaway is that this collapsed a ~3×
+gap with the rank-profile path down to ~1×.
+
+`PolygonSearcherTest.java` unit-tests the geometry helpers; the
+`geo-shape-test.json` system tests cover both query paths end-to-end.
+
+[vinted]: https://vinted.engineering/2025/11/06/vespa-match-features/
 
 ### 2b. Polygon search — content-node rank expression (fast path)
 
@@ -370,58 +413,162 @@ pre-filter):
 
 | Path                                            | totalCount | backend_query | backend_total | wall   |
 | ----------------------------------------------- | ---------- | ------------- | ------------- | ------ |
-| rank-profile (content-node ray-cast)            | 173        | 3.6 ms        | 4.2 ms        | 6.7 ms |
-| Java Searcher, hits=10 (top-N only)             | 4          | 0.5 ms        | 1.0 ms        | 2.3 ms |
-| Java Searcher, hits=400 (Vespa default cap)     | 111        | 0.4 ms        | 1.8 ms        | 3.7 ms |
-| Java Searcher, hits=1000 — **fair, sees all**   | 173        | 0.9 ms        | 2.6 ms        | 4.8 ms |
+| rank-profile (content-node ray-cast)            | 173        | 1.2 ms        | 1.9 ms        | 4.8 ms |
+| Java Searcher, hits=10 (top-N only)             | 4          | 0.5 ms        | 1.0 ms        | 2.5 ms |
+| Java Searcher, hits=400 (Vespa default cap)     | 111        | 1.1 ms        | 1.7 ms        | 3.8 ms |
+| Java Searcher, hits=1000 — **fair, sees all**   | 173        | 1.1 ms        | 1.6 ms        | 4.3 ms |
 
 **Wide query** (bbox == all of Berlin, ~50k docs pass the bbox
 pre-filter):
 
 | Path                                            | totalCount | backend_query | backend_total | wall    |
 | ----------------------------------------------- | ---------- | ------------- | ------------- | ------- |
-| rank-profile (content-node ray-cast)            | 174        | 187 ms        | 188 ms        | 191 ms  |
-| Java Searcher, hits=10 (top-N only)             | 2          | 1.8 ms        | 2.1 ms        | 3.8 ms  |
-| Java Searcher, hits=400 (Vespa default cap)     | 4          | 1.8 ms        | 2.85 ms       | 4.5 ms  |
-| Java Searcher, hits=60000 — **fair, sees all**  | 173        | 22 ms         | 263 ms        | 267 ms  |
+| rank-profile (content-node ray-cast)            | 174        | 13 ms         | 14 ms         | 17 ms   |
+| Java Searcher, hits=10 (top-N only)             | 2          | 1.8 ms        | 2.1 ms        | 3.7 ms  |
+| Java Searcher, hits=400 (Vespa default cap)     | 4          | 2.0 ms        | 2.4 ms        | 4.1 ms  |
+| Java Searcher, hits=60000 — **fair, sees all**  | 173        | 193 ms        | 194 ms        | 198 ms  |
+
+These numbers reflect the *optimized* `polygon_filter` profile, which
+uses indexed-dim edge tensors and a single fused `join`. An earlier
+version using mapped-dim tensors clocked ~190 ms backend_total on the
+wide query — ~13× slower than the indexed-dim version. See
+[Tensor-expression optimization journey](#tensor-expression-optimization-journey)
+below for the before/after and what changed.
+
+> The Java Searcher reads `lat` / `lon` from a `matchfeatures` payload
+> that ships with the initial content-node response, so `fill()` is
+> never called on the bbox-matched set — only on the much smaller
+> post-filter survivor set. Prior to that change the same `hits=60000`
+> row spent ~240 ms fetching summaries; see [§2a](#2a-polygon-search--bbox-pre-filter--container-post-filter-general-fallback)
+> for the background.
+
+### Tensor-expression optimization journey
+
+The initial `polygon_filter` used a 2D mapped-dim tensor for the
+polygon:
+
+```
+inputs {
+    query(polygon) tensor<float>(edge{}, term{})
+}
+```
+
+…with `term ∈ {slat, slon, elat, elon}` sliced out per edge as
+`query(polygon){term:slat}` and so on, and two separate `map(…,
+f(x)(if(x<0,1,0)))` passes to compute the lat-brackets / east-of-point
+indicators before multiplying and reducing.
+
+That version measured ~3.7 µs per matched doc (~530 ns per polygon
+edge). Profiling the wide-bbox query with `vespa query --profile` /
+`vespa inspect profile` showed first-phase at 203 ms over 50k
+candidates — dominating end-to-end latency.
+
+Three changes, applied together:
+
+1. **Switch the `edge` dimension from mapped (`edge{}`) to indexed
+   (`edge[32]`).** Mapped dimensions store cells in a hashmap and
+   iterate via per-cell hash lookups. Indexed dimensions store cells
+   in a contiguous array, which Vespa's tensor engine can stream
+   through with vectorised (SIMD-friendly) kernels. The `term`
+   dimension is gone — coordinates are passed as four separate
+   tensors instead. Bound is 32 (covers any realistic polygon);
+   trailing unused cells default to 0, which the cross-product test
+   correctly treats as non-crossing.
+
+2. **Fuse the two indicator `map`s into a single `join`.** The old
+   code built two intermediate edge-tensors of 0/1 indicators, then
+   multiplied them; the new code uses a 2-argument lambda inside one
+   `join` to produce the indicator product in a single pointwise
+   pass.
+
+3. **Share `(elat - slat)` via a `dlat()` function** (the compiler
+   may CSE this anyway; making it explicit is free if it does and a
+   win if it doesn't).
+
+Profile breakdown (`vespa inspect profile` on the wide query, 50k
+bbox candidates):
+
+| Phase           | mapped + 2× map (before) | indexed + join (after) | speedup     |
+| --------------- | ------------------------ | ---------------------- | ----------- |
+| matching        | 9.7 ms                   | 9.0 ms                 | (identical) |
+| **first phase** | **203 ms**               | **30 ms**              | **6.9×**    |
+| backend total   | 219 ms                   | 44 ms                  | 5.0×        |
+
+Per-cell first-phase math:
+
+- before: 203 ms / (50k docs × 7 edges) ≈ **580 ns / edge**
+- after:  29.6 ms / (50k docs × 32 cells) ≈ **18 ns / edge-cell**
+
+Even with 25 padded zero-cells per doc (32 cells worth of work for a
+7-edge polygon), the per-cell cost is ~30× lower. The SIMD kernels
+chew through the padding for almost free.
+
+#### Profiling Vespa backends
+
+Capture a profile and inspect it with:
+
+```
+vespa query --profile --file queries/polygon-rankprofile.json
+vespa inspect profile
+```
+
+This drops `vespa_query_profile_result.json` in the working
+directory and prints a table breaking the request into `matching`,
+`first phase`, `second phase`, plus per-thread events. It's the
+right tool for asking *"where is this query spending time on the
+content nodes?"* — note that it does not see the container side
+(so the Java Searcher's ray-cast doesn't show up here).
 
 ### Napkin math (fair-comparison rows only)
 
-**Rank-profile per-doc cost.** Wide-bbox query: ~187 ms over 50k
-candidates ≈ **~3.7 µs per matched doc** for the 7-edge polygon ≈
-~530 ns per edge. That's about two orders of magnitude above raw FP
-throughput — the gap is tensor machinery (mapped-dim cell lookups,
-broadcasting, `map` lambda dispatch). The rank-profile reads
-`attribute(lat)` / `attribute(lon)` directly in the match phase and
-**never fetches a summary** for outside-polygon docs.
+**Rank-profile per-doc cost.** Wide-bbox query: ~13 ms first-phase
+over 50k candidates ≈ **~260 ns per matched doc** for the 7-edge
+polygon, evaluated as 32 cells. The indexed-tensor join+reduce is
+heavily SIMD-vectorised, so the actual arithmetic dominates over
+framework overhead. The rank-profile reads `attribute(lat)` /
+`attribute(lon)` directly in the match phase and drops
+outside-polygon docs via `rank-score-drop-limit` before they reach
+the container.
 
-**Java Searcher per-doc cost (fair).** The Searcher *must* call
-`execution.fill(result)` to read `lat`/`lon`, so its cost includes
-fetching the summary for every hit it sees:
+**Java Searcher per-doc cost (fair).** With match-features the
+Searcher's cost decomposes differently. backend_query now includes
+**match-feature computation** for every matched doc (the
+`searcher_geo` rank-profile evaluates `lat_mf` and `lon_mf` per hit):
 
-- hits=60000 backend_total: ~263 ms ≈ **~5.3 µs per candidate**
-- of which ~22 ms (≈0.4 µs/cand) is backend_query (match + heap
-  collect of 60k hits)
-- the remaining ~241 ms (≈4.8 µs/cand) is summary fetch + Java
-  ray-cast + Hit object dereference
+- hits=60000 backend_total: ~189 ms ≈ **~3.8 µs per candidate**
+- backend_query ≈ 188 ms (match + heap collect of 60k + match-feature
+  evaluation per matched doc)
+- ~1 ms for `fill()` on the ~170 surviving hits
+- summary fetch on the other ~49,830 outside-polygon hits: **skipped
+  entirely** — they were filtered out by the Searcher before fill()
+  was reached
 
-The actual Java ray-cast is sub-microsecond per hit; the dominant cost
-is the **content→container summary fetch round-trip**, which the
-rank-profile avoids entirely for outside-polygon docs.
+So when the workloads are matched fairly, both paths cost roughly the
+same per matched doc. The match-features round-trip carries
+attribute data alongside docids; the rank-profile carries no data
+out and finishes the filter in match phase.
 
 ### What the fair comparison actually shows
 
 When forced to evaluate on the same K candidates:
 
-| K       | rank-profile backend_total | Searcher backend_total | winner             |
-| ------- | -------------------------- | ---------------------- | ------------------ |
-| 600     | 4.2 ms                     | 2.6 ms                 | Searcher (~1.6× faster) |
-| 50,000  | 188 ms                     | 263 ms                 | rank-profile (~1.4× faster) |
+| K       | rank-profile backend_total | Searcher backend_total | winner                       |
+| ------- | -------------------------- | ---------------------- | ---------------------------- |
+| 600     | 1.9 ms                     | 1.6 ms                 | Searcher (~1.2× faster, ~tied) |
+| 50,000  | 14 ms                      | 194 ms                 | **rank-profile (~14× faster)** |
 
-Crossover sits in the low thousands of candidates. Below that, the
-Searcher's tight Java loop beats the tensor abstraction's per-cell
-overhead. Above it, the Searcher's summary fetch cost overtakes the
-in-place attribute read the rank-profile gets for free.
+With the optimized indexed-dim rank-profile, the wide-K picture has
+flipped: rank-profile is now far faster than the match-features
+Searcher. The Searcher still has to ship matchfeatures for every
+matched doc to the container and do its filtering in Java, paying
+~3.9 µs/cand. The rank-profile completes in the match phase with
+SIMD'd tensor kernels at ~260 ns/cand — roughly 15× lower per-doc
+cost.
+
+The earlier ~74 ms match-features optimization (vs the
+summary-fetching baseline) is dwarfed by this 150 ms+ gain from the
+tensor-expression rewrite. **The biggest performance lever was
+choosing the right tensor type, not skipping the docsum fetch.**
 
 ### Cost is not the same as correctness
 
@@ -446,17 +593,15 @@ So the production-relevant comparison is three-way:
 | Scenario                                            | Pattern                       |
 | --------------------------------------------------- | ----------------------------- |
 | Page-size correctness / accurate totalCount         | 2b — `polygon_filter` profile |
-| Wide bbox ( ≳ 1k candidates ) + correctness         | 2b                            |
-| Narrow bbox ( ≲ 1k candidates ) + correctness       | 2a — Searcher with `hits ≥ K` |
+| Wide bbox ( ≳ a few k candidates ) + correctness    | **2b** (~14× faster than 2a)  |
+| Narrow bbox ( ≲ 1k candidates ) + correctness       | 2a or 2b (within ~20%)        |
 | Top-N relevant only, totalCount irrelevant          | 2a — Searcher with small hits |
-| Polygon has thousands of edges                      | 2a (cost bounded by hits)     |
+| Polygon has thousands of edges                      | 2a (bound `polygon_filter` to edge[N], or hits)  |
 
-2b is the default choice in this app: it returns correct counts
-without needing a `maxHits` override and scales sub-linearly in
-practice with bbox cardinality. 2a is kept as a Java-side fallback
-for very large polygons, narrow-bbox + correctness use cases (where
-its tight Java loop beats the tensor overhead), and cases where
-other container Searchers need to compose with the geometry filter.
+2b is the clear default for correctness-critical use cases at any
+non-trivial candidate count. 2a remains useful when the cost is
+bounded by `hits` (small page sizes, top-N retrieval) and the result
+shrinkage from post-filtering is acceptable.
 
 ---
 

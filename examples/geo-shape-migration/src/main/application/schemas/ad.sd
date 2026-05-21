@@ -35,26 +35,26 @@ schema ad {
         # single MultiRangeItem lookup against the fast-search btree indexes,
         # which is the idiomatic Vespa equivalent.
         #
-        # No `rank: filter` here: walking the Vespa source (AttributeFields.java
-        # -> configconverter.cpp -> attributeiterators.cpp) shows that for a
-        # single-value high-cardinality double attribute the only runtime
-        # difference is skipping one `_matchPosition->setElementWeight(1)` call
-        # per matched doc, and the posting-list -> bitvector replacement that
-        # `enable-only-bit-vector` enables never fires (no value has enough
-        # docs to cross the threshold). See README §1 for the full walk.
-        field sw_lat type double {
+        # `float` (not `double`): at Berlin's latitude (52°), float's quantum
+        # is ~0.7 m on lat and ~0.4 m on lon — three orders of magnitude finer
+        # than the underlying service-area data (km-scale fuzz) and the query
+        # point (GPS at ~5 m, usually rounded by the front-end). Halves the
+        # attribute footprint and the fast-search btree; at 60M docs that's
+        # ~960 MB saved across the four fields with no measurable precision
+        # loss for envelope-contains-point queries.
+        field sw_lat type float {
             indexing: attribute | summary
             attribute: fast-search
         }
-        field ne_lat type double {
+        field ne_lat type float {
             indexing: attribute | summary
             attribute: fast-search
         }
-        field sw_lon type double {
+        field sw_lon type float {
             indexing: attribute | summary
             attribute: fast-search
         }
-        field ne_lon type double {
+        field ne_lon type float {
             indexing: attribute | summary
             attribute: fast-search
         }
@@ -67,6 +67,28 @@ schema ad {
     rank-profile default {
         first-phase {
             expression: nativeRank(title)
+        }
+    }
+
+    # Used by PolygonSearcher to read each hit's lat/lon as a match-feature,
+    # eliminating the summary fetch round-trip. Match-features ship back with
+    # the initial content-node response, so the Searcher can apply the
+    # ray-cast filter before any docsum is fetched — only the surviving hits
+    # get their summary filled by the rendering layer.
+    #
+    # See https://vinted.engineering/2025/11/06/vespa-match-features/ for the
+    # background — Vespa 8.596.7+ skips docsum fetching when only matchfeatures
+    # are needed by the Searcher.
+    rank-profile searcher_geo inherits default {
+        function lat_mf() { 
+            expression: attribute(lat) 
+            }
+        function lon_mf() { 
+            expression: attribute(lon) 
+            }
+        match-features {
+            lat_mf
+            lon_mf
         }
     }
 
@@ -86,69 +108,64 @@ schema ad {
     # content nodes via `rank-score-drop-limit`, so filtering happens before
     # pagination — no container post-filter needed.
     #
-    # The query passes the polygon as a tensor of edges, one cell per edge
-    # endpoint coordinate:
+    # Polygon is passed as four indexed-dim tensors (one per edge endpoint
+    # coordinate). Indexed dims let Vespa use contiguous-array (SIMD-friendly)
+    # kernels for the joins/reduces; the mapped-dim equivalent is ~7× slower
+    # at scale due to hash-based per-cell access. See README §Polygon
+    # benchmarks for the head-to-head numbers + profile breakdown.
     #
-    #     tensor<float>(edge{}, term{})  with term in {slat, slon, elat, elon}
+    # The polygon has up to 32 edges (the indexed bound). Unused trailing
+    # cells default to 0.0, which the `crossings_per_edge` test treats as
+    # non-crossing (one endpoint above, one below the query lat is false
+    # when both are 0).
     #
-    # The algorithm is ray-casting (PNPoly): for each edge, count how many
-    # times a horizontal eastward ray from the query point crosses that
-    # edge. The point is inside iff the total number of crossings is odd.
-    #
-    # To avoid division (and the resulting divide-by-zero / NaN handling on
-    # horizontal edges), the "intersection east of query point" test is
-    # rewritten as `numerator * denominator > 0`, where:
-    #
+    # Algorithm: ray-casting (PNPoly). For each edge, the point crosses
+    # iff:
+    #   v1 = (slat - lat) * (elat - lat) < 0   (edge straddles the ray's lat)
+    #   v2 = numerator * denominator > 0       (intersection east of query lon)
+    # where
     #   numerator   = (elon - slon) * (lat - slat) + (slon - lon) * (elat - slat)
     #   denominator = (elat - slat)
+    # We use `numerator * denominator > 0` instead of `lon < numerator/denom`
+    # because `sign(A/B) == sign(A*B)` for B != 0; that avoids divide-by-zero
+    # on horizontal edges (where `v1` would be 0 anyway, so they're already
+    # excluded from contributing).
     #
-    # This holds because `sign(A / B) == sign(A * B)` for B != 0, and the
-    # `lat_brackets` test below already excludes horizontal edges where
-    # the denominator would be zero.
+    # The point is inside iff the total number of crossings is odd
+    # (`fmod(crossings, 2) > 0.5`).
     rank-profile polygon_filter inherits default {
         inputs {
-            query(polygon) tensor<float>(edge{}, term{})
+            query(slat) tensor<float>(edge[32])
+            query(slon) tensor<float>(edge[32])
+            query(elat) tensor<float>(edge[32])
+            query(elon) tensor<float>(edge[32])
         }
-
-        # 1.0 if edge has one endpoint above and one below the query lat
-        # (strictly), 0.0 otherwise. The per-cell indicator is computed
-        # inside a lambda so the tensor type carries through.
-        function lat_brackets() {
+        function dlat() { 
+            expression: query(elat) - query(slat) 
+            }
+        function v1() {
+            # Strictly-negative when the edge straddles the query lat.
+            expression: (query(slat) - attribute(lat)) * (query(elat) - attribute(lat))
+        }
+        function v2() {
+            # Strictly-positive when the ray-edge intersection is east of the query lon.
             expression {
-                map((query(polygon){term:slat} - attribute(lat))
-                  * (query(polygon){term:elat} - attribute(lat)),
-                    f(x)(if(x < 0, 1, 0)))
+                ((query(elon) - query(slon)) * (attribute(lat) - query(slat))
+                  + (query(slon) - attribute(lon)) * dlat)
+                * dlat
             }
         }
-
-        # 1.0 if the edge's intersection with the horizontal ray is east of
-        # the query lon. Computed without division.
-        function east_of_point() {
-            expression {
-                map(((query(polygon){term:elon} - query(polygon){term:slon})
-                       * (attribute(lat) - query(polygon){term:slat})
-                   + (query(polygon){term:slon} - attribute(lon))
-                       * (query(polygon){term:elat} - query(polygon){term:slat}))
-                  * (query(polygon){term:elat} - query(polygon){term:slat}),
-                    f(x)(if(x > 0, 1, 0)))
-            }
-        }
-
         function crossings() {
-            expression: reduce(lat_brackets * east_of_point, sum, edge)
+            expression: reduce(join(v1, v2, f(a, b)(if(a < 0 && b > 0, 1, 0))), sum, edge)
         }
-
-        # Inside iff crossings is odd.
         function inside_polygon() {
             expression: if(fmod(crossings, 2) > 0.5, 1.0, 0.0)
         }
-
         first-phase {
             expression: if(inside_polygon > 0.5, nativeRank(title) + 1.0, -1.0)
             rank-score-drop-limit: 0.0
         }
         match-features {
-            crossings
             inside_polygon
         }
     }

@@ -4,6 +4,7 @@ package ai.vespa.example.geo;
 import com.yahoo.search.Query;
 import com.yahoo.search.Result;
 import com.yahoo.search.Searcher;
+import com.yahoo.search.result.FeatureData;
 import com.yahoo.search.result.Hit;
 import com.yahoo.search.searchchain.Execution;
 
@@ -17,22 +18,29 @@ import java.util.List;
  *
  * Triggered by a query parameter "polygon" with comma-separated lat,lon pairs
  * (open or closed ring). After the backend returns hits, drops any whose
- * "center" position lies outside the polygon, using a ray-casting test.
+ * lat/lon attributes place it outside the polygon, using a ray-casting test.
  *
- * Production guidance: combine this with a content-side pre-filter so the
- * Searcher only sees a narrow candidate set. The recommended pre-filter is to
- * AND a {@code geoBoundingBox(center, sw_lat, sw_lon, ne_lat, ne_lon)} clause
- * into the YQL itself, computed by the client from the polygon's axis-aligned
- * bounding box. {@code geoBoundingBox} is evaluated against the position
- * attribute's Z-order curve, which scales to billions of documents, so the
- * cost of the Java polygon check stays proportional to the result page size
- * rather than the corpus.
+ * The Searcher overrides the query's rank-profile to "searcher_geo", which
+ * declares lat and lon as match-features. Match-features ship back with the
+ * initial content-node response, so we read coordinates without triggering a
+ * docsum fetch. fill() is never called from this Searcher — only the
+ * surviving hits get filled (by the rendering layer) for whatever fields the
+ * caller asked for in the YQL select clause.
+ *
+ * This requires Vespa 8.596.7+ (the version that skips docsum fetching when
+ * only matchfeatures are used by the Searcher). See the inspiration:
+ * https://vinted.engineering/2025/11/06/vespa-match-features/
+ *
+ * Combine this with a content-side pre-filter (geoBoundingBox(center, ...))
+ * so the Searcher only sees candidates already inside the polygon's bbox.
  */
 public class PolygonSearcher extends Searcher {
 
     private static final String POLYGON_PARAM = "polygon";
-    private static final String LAT_FIELD = "lat";
-    private static final String LON_FIELD = "lon";
+    private static final String MATCHFEATURES_FIELD = "matchfeatures";
+    private static final String LAT_FEATURE = "lat_mf";
+    private static final String LON_FEATURE = "lon_mf";
+    private static final String SEARCHER_RANK_PROFILE = "searcher_geo";
 
     @Override
     public Result search(Query query, Execution execution) {
@@ -47,12 +55,11 @@ public class PolygonSearcher extends Searcher {
             return execution.search(query);
         }
 
-        // The YQL `select` clause restricts which fields the backend returns,
-        // so callers using polygon= must include `lat` and `lon` in their
-        // select list (or use `select *`). The geometry test below relies on
-        // both being present.
+        // Force the rank-profile that exposes lat/lon as match-features so we
+        // can filter on coordinates without fetching summaries.
+        query.getRanking().setProfile(SEARCHER_RANK_PROFILE);
+
         Result result = execution.search(query);
-        execution.fill(result);
         int before = (int) result.hits().getConcreteSize();
         filterByPolygon(result, polygon);
         int after = (int) result.hits().getConcreteSize();
@@ -77,11 +84,16 @@ public class PolygonSearcher extends Searcher {
         result.setTotalHitCount(result.hits().getConcreteSize());
     }
 
+    /** Read lat/lon from the matchfeatures field that ships with the hit
+     *  (no summary fetch needed). Vespa wraps matchfeatures as a FeatureData
+     *  with a typed scalar accessor. */
     private double[] readPosition(Hit hit) {
-        Object lat = hit.getField(LAT_FIELD);
-        Object lon = hit.getField(LON_FIELD);
-        if (lat instanceof Number latN && lon instanceof Number lonN) {
-            return new double[] { latN.doubleValue(), lonN.doubleValue() };
+        if (hit.getField(MATCHFEATURES_FIELD) instanceof FeatureData mf) {
+            Double lat = mf.getDouble(LAT_FEATURE);
+            Double lon = mf.getDouble(LON_FEATURE);
+            if (lat != null && lon != null) {
+                return new double[] { lat, lon };
+            }
         }
         return null;
     }

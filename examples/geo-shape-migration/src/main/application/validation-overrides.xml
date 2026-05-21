@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<validation-overrides>
+    <!-- Authorizes narrowing the four bbox attributes from `double` to
+         `float`. At Berlin's latitude this is a ~0.7 m quantum, well below
+         service-area data fidelity. See README §1 for the precision math. -->
+    <allow until="2026-06-19">field-type-change</allow>
+</validation-overrides>
