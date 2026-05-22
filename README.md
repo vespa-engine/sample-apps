@@ -192,6 +192,17 @@ with a 32x decrease in storage footprint.
 
 
 ## Retrieval Augmented Generation (RAG) and Generative AI
+[![logo](/assets/vespa-logomark-tiny.png) RAG Blueprint](rag-blueprint/)
+is a reference application bringing together the features needed for production-grade RAG at scale.
+See the [RAG Blueprint tutorial](https://docs.vespa.ai/en/learn/tutorials/rag-blueprint.html) for an in-depth walkthrough,
+or the [Python notebook](https://vespa-engine.github.io/pyvespa/examples/rag-blueprint-vespa-cloud.html).
+
+[![logo](/assets/vespa-logomark-tiny.png) Document enrichment with LLMs](field-generator/)
+demonstrates field generation during feeding using the
+[generate indexing expression](https://docs.vespa.ai/en/reference/indexing-language-reference.html#generate),
+with a [local LLM](https://docs.vespa.ai/en/llms-local.html) on a GPU node by default.
+See the [document enrichment with LLMs](https://docs.vespa.ai/en/llms-document-enrichment.html) documentation for details.
+
 [![logo](/assets/vespa-logomark-tiny.png) Retrieval Augmented Generation (RAG) in Vespa](retrieval-augmented-generation)
 is an end-to-end RAG application where all the steps are run within Vespa.
 This application focuses on the generation part of RAG,
@@ -224,6 +235,10 @@ which handles the ColBERT embedding process with no custom code.
 
 
 ## Visual Search
+[![logo](/assets/vespa-logomark-tiny.png) Visual Retrieval with ColPali](visual-retrieval-colpali/)
+is a self-contained web app (Python + [FastHTML](https://fastht.ml/)) that pairs a frontend with a
+Vespa backend for visual PDF retrieval using ColPali — the runnable companion to the pyvespa notebook below.
+
 [![logo](/assets/vespa-logomark-tiny.png) Pyvespa: Visual PDF RAG with Vespa - ColPali demo application](https://vespa-engine.github.io/pyvespa/examples/visual_pdf_rag_with_vespa_colpali_cloud.html)
 is an end-to-end demo application for visual retrieval of PDF pages, including a frontend web application -
 try [vespa-engine-colpali-vespa-visual-retrieval.hf.space](https://vespa-engine-colpali-vespa-visual-retrieval.hf.space/) for a live demo.
@@ -448,9 +463,10 @@ Refer to the [Developer Guide](https://docs.vespa.ai/en/developer-guide.html) fo
 
 [![Vespa Sampleapps Search Feed](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/feed.yml)
 
-[![sample-apps link checker](https://api.screwdriver.cd/v4/pipelines/7038/link-checker-sample-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
+[![Link checker](https://github.com/vespa-engine/sample-apps/actions/workflows/link-checker.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/link-checker.yml)
 
-[![sample-apps build](https://api.screwdriver.cd/v4/pipelines/7038/build-apps/badge)](https://cd.screwdriver.cd/pipelines/7038/)
+[![Build sample apps](https://github.com/vespa-engine/sample-apps/actions/workflows/build.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/build.yml)
 
-[![sample-apps verify-guides](https://api.screwdriver.cd/v4/pipelines/7038/verify-guides/badge)](https://cd.screwdriver.cd/pipelines/7038/)
-[![sample-apps verify-guides-big](https://api.screwdriver.cd/v4/pipelines/7038/verify-guides-big/badge)](https://cd.screwdriver.cd/pipelines/7038/)
+[![Verify guides](https://github.com/vespa-engine/sample-apps/actions/workflows/verify-guides-main.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/verify-guides-main.yml)
+[![Verify guides (billion-scale-image-search)](https://github.com/vespa-engine/sample-apps/actions/workflows/verify-guides-billion-image.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/verify-guides-billion-image.yml)
+[![Verify guides (field-generator)](https://github.com/vespa-engine/sample-apps/actions/workflows/verify-guides-field-generator.yml/badge.svg)](https://github.com/vespa-engine/sample-apps/actions/workflows/verify-guides-field-generator.yml)
