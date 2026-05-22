@@ -6,7 +6,7 @@
 # Core ML stack. transformers must stay <5 - the Hypencoder checkpoints'
 # saved config triggers a meta-device path in transformers >=5 that
 # .from_pretrained() rejects. 4.45+ is fine.
-torch>=2.5
+torch>=2.11.0
 transformers>=4.45,<5
 
 # ONNX export + runtime (used both for export and for the optional INT8
