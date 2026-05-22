@@ -181,7 +181,7 @@ huggingface-hub==0.36.0
     #   transformers
 hyperframe==6.1.0
     # via h2
-idna==3.10
+idna==3.15
     # via
     #   anyio
     #   httpx
