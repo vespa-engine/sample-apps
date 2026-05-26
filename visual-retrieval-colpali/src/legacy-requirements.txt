@@ -181,7 +181,7 @@ huggingface-hub==0.36.0
     #   transformers
 hyperframe==6.1.0
     # via h2
-idna==3.10
+idna==3.15
     # via
     #   anyio
     #   httpx
@@ -194,7 +194,7 @@ jinja2==3.1.6
     #   pyvespa
     #   spacy
     #   torch
-joblib==1.4.2
+joblib==1.5.0
     # via scikit-learn
 kiwisolver==1.4.7
     # via matplotlib
@@ -361,7 +361,7 @@ python-fasthtml==0.12.33
     #   visual-retrieval-colpali (pyproject.toml)
     #   lucide-fasthtml
     #   shad4fast
-python-multipart==0.0.26
+python-multipart==0.0.27
     # via python-fasthtml
 pytrec-eval-terrier==0.5.6
     # via mteb
@@ -467,7 +467,7 @@ threadpoolctl==3.5.0
     # via scikit-learn
 tokenizers==0.20.3
     # via transformers
-torch==2.8.0
+torch==2.11.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   accelerate
@@ -520,7 +520,7 @@ tzdata==2024.2
     # via pandas
 uritemplate==4.1.1
     # via google-api-python-client
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   docker
     #   requests
