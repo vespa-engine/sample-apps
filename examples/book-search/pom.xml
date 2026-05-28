@@ -9,27 +9,29 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>5.11.4</junit.version>
+        <vespa_version>8.695.32</vespa_version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>ai.vespa</groupId>
             <artifactId>vespa-testcontainers</artifactId>
-            <version>8-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.11.4</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.yahoo.vespa</groupId>
             <artifactId>vespa-feed-client</artifactId>
-            <version>8.670.29</version>
+            <version>${vespa_version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
