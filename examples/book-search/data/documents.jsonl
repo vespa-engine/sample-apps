@@ -1,0 +1,20 @@
+{"put": "id:library:book::the-lord-of-the-rings", "fields": {"title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "year": 1954, "themes": ["fantasy", "adventure"], "loaned_out": false}}
+{"put": "id:library:book::nineteen-eighty-four", "fields": {"title": "Nineteen Eighty-Four", "author": "George Orwell", "year": 1949, "themes": ["dystopia", "political"], "loaned_out": false}}
+{"put": "id:library:book::to-kill-a-mockingbird", "fields": {"title": "To Kill a Mockingbird", "author": "Harper Lee", "year": 1960, "themes": ["classic", "social"], "loaned_out": false}}
+{"put": "id:library:book::the-great-gatsby", "fields": {"title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "year": 1925, "themes": ["classic", "tragedy"], "loaned_out": false}}
+{"put": "id:library:book::brave-new-world", "fields": {"title": "Brave New World", "author": "Aldous Huxley", "year": 1932, "themes": ["dystopia", "sci-fi"], "loaned_out": false}}
+{"put": "id:library:book::the-hitchhikers-guide", "fields": {"title": "The Hitchhiker's Guide to the Galaxy", "author": "Douglas Adams", "year": 1979, "themes": ["sci-fi", "comedy"], "loaned_out": false}}
+{"put": "id:library:book::dune", "fields": {"title": "Dune", "author": "Frank Herbert", "year": 1965, "themes": ["sci-fi", "adventure"], "loaned_out": false}}
+{"put": "id:library:book::the-catcher-in-the-rye", "fields": {"title": "The Catcher in the Rye", "author": "J.D. Salinger", "year": 1951, "themes": ["classic", "coming-of-age"], "loaned_out": false}}
+{"put": "id:library:book::harry-potter-philosophers-stone", "fields": {"title": "Harry Potter and the Philosopher's Stone", "author": "J.K. Rowling", "year": 1997, "themes": ["fantasy", "young-adult"], "loaned_out": false}}
+{"put": "id:library:book::crime-and-punishment", "fields": {"title": "Crime and Punishment", "author": "Fyodor Dostoevsky", "year": 1866, "themes": ["classic", "psychological"], "loaned_out": false}}
+{"put": "id:library:book::fahrenheit-451", "fields": {"title": "Fahrenheit 451", "author": "Ray Bradbury", "year": 1953, "themes": ["dystopia", "sci-fi"], "loaned_out": false}}
+{"put": "id:library:book::the-name-of-the-wind", "fields": {"title": "The Name of the Wind", "author": "Patrick Rothfuss", "year": 2007, "themes": ["fantasy", "adventure"], "loaned_out": false}}
+{"put": "id:library:book::a-study-in-scarlet", "fields": {"title": "A Study in Scarlet", "author": "Arthur Conan Doyle", "year": 1887, "themes": ["mystery", "detective"], "loaned_out": false}}
+{"put": "id:library:book::moby-dick", "fields": {"title": "Moby-Dick", "author": "Herman Melville", "year": 1851, "themes": ["classic", "adventure"], "loaned_out": false}}
+{"put": "id:library:book::neuromancer", "fields": {"title": "Neuromancer", "author": "William Gibson", "year": 1984, "themes": ["sci-fi", "cyberpunk"], "loaned_out": false}}
+{"put": "id:library:book::foundation", "fields": {"title": "Foundation", "author": "Isaac Asimov", "year": 1951, "themes": ["sci-fi"], "loaned_out": false}}
+{"put": "id:library:book::the-handmaids-tale", "fields": {"title": "The Handmaid's Tale", "author": "Margaret Atwood", "year": 1985, "themes": ["dystopia", "political"], "loaned_out": false}}
+{"put": "id:library:book::stardust", "fields": {"title": "Stardust", "author": "Neil Gaiman", "year": 1999, "themes": ["fantasy", "adventure"], "loaned_out": false}}
+{"put": "id:library:book::the-alchemist", "fields": {"title": "The Alchemist", "author": "Paulo Coelho", "year": 1988, "themes": ["adventure", "philosophy"], "loaned_out": false}}
+{"put": "id:library:book::the-old-man-and-the-sea", "fields": {"title": "The Old Man and the Sea", "author": "Ernest Hemingway", "year": 1952, "themes": ["classic", "adventure"], "loaned_out": false}}
