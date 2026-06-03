@@ -22,10 +22,22 @@ java {
 // Separate classpath for the Vespa config code generator (configgen).
 val configgen by configurations.creating
 
+// Runtime dependencies that should be embedded inside the bundle and added to
+// Bundle-ClassPath (the Vespa container does not provide them). compileOnly,
+// testCompileOnly, and testRuntimeOnly all extend from `embed` so the same
+// artifacts are visible to javac for both main and test sources, and on the
+// test JVM runtime classpath.
+val embed by configurations.creating
+listOf("compileOnly", "testCompileOnly", "testRuntimeOnly").forEach { name ->
+    configurations[name].extendsFrom(embed)
+}
+
 dependencies {
     // Vespa container API — provided by the runtime, not bundled.
     compileOnly("com.yahoo.vespa:container:$vespaVersion")
     compileOnly("com.yahoo.vespa:container-dev:$vespaVersion")
+
+    embed("com.google.guava:guava:33.4.0-jre")
 
     testImplementation("com.yahoo.vespa:container-test:$vespaVersion")
     testImplementation("com.yahoo.vespa:application:$vespaVersion")
@@ -73,10 +85,19 @@ tasks.named("compileJava") {
 // Import-Package header with version ranges matching the OSGi metadata in the
 // referenced bundles. The directives below pin the version ranges used by the
 // Vespa bundle plugin for com.yahoo.* and com.google.inject packages.
+//
+// Runtime dependencies declared in the `embed` configuration are copied under
+// dependencies/ inside the jar and added to Bundle-ClassPath. Packages from
+// those embedded jars are treated as bundle-private by bnd and therefore
+// excluded from Import-Package.
 tasks.jar {
     archiveBaseName.set("album-recommendation-java")
     archiveVersion.set("")
     archiveClassifier.set("deploy")
+
+    // Lazy input wiring: tracks the `embed` configuration (and any producer
+    // tasks behind it) without resolving it at configuration time.
+    inputs.files(embed)
 
     bundle {
         bnd(
@@ -89,7 +110,32 @@ tasks.jar {
               com.yahoo.*;version="[1.0.0,2)",\
               com.google.inject;version="[1.4,2)",\
               *
-            -removeheaders: Bundle-Vendor,Bundle-ClassPath,Private-Package,Tool,Bnd-LastModified,Created-By,Require-Capability,Provide-Capability
+            -removeheaders: Bundle-Vendor,Private-Package,Tool,Bnd-LastModified,Created-By,Require-Capability,Provide-Capability
+            """.trimIndent()
+        )
+    }
+
+    // Resolve `embed` at execution time and append `-includeresource` and
+    // `Bundle-ClassPath` to the bnd instructions before bnd's own doLast
+    // task action runs. Files are sorted by name for reproducible manifests,
+    // and basename collisions are rejected eagerly.
+    doFirst {
+        val embedFiles = embed.files.sortedBy { it.name }
+        val collisions = embedFiles.groupBy { it.name }.filterValues { it.size > 1 }
+        if (collisions.isNotEmpty()) {
+            throw GradleException(
+                "Embedded artifacts share simple jar names — would collide under dependencies/: ${collisions.keys}"
+            )
+        }
+        val includeResource = embedFiles.joinToString(",") { f ->
+            "dependencies/${f.name}=${f.absolutePath}"
+        }
+        val bundleClassPath = (listOf(".") + embedFiles.map { f -> "dependencies/${f.name}" })
+            .joinToString(",")
+        extensions.getByType(aQute.bnd.gradle.BundleTaskExtension::class.java).bnd(
+            """
+            -includeresource: $includeResource
+            Bundle-ClassPath: $bundleClassPath
             """.trimIndent()
         )
     }
