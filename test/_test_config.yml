@@ -22,6 +22,14 @@ urls:
     - model-inference/README.md
     - examples/part-purchases-demo/README.md
     - examples/vespa-chinese-linguistics/README.md
+    - examples/linguistics-asia/01-opennlp-cjk/README.md
+    - examples/linguistics-asia/02-lucene-per-variant/README.md
+    - examples/linguistics-asia/03-lucene-icu/README.md
+    - examples/linguistics-asia/04-jieba/README.md
+    - examples/linguistics-asia/05-gram-fallback/README.md
+    - examples/linguistics-asia/06-opennlp-icu/README.md
+    - examples/linguistics-asia/07-opennlp-opencc/README.md
+    - examples/linguistics-asia/08-lucene-phrase-dict/README.md
     - incremental-search/search-as-you-type/README.md
     - incremental-search/search-suggestions/README.md
     - examples/operations/multinode-HA/README.md

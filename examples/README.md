@@ -29,6 +29,17 @@ demonstrates integrating custom linguistic processing,
 in this case a Chinese tokenizer [Jieba](https://github.com/fxsjy/jieba).
 
 
+### Vespa linguistics for Asian-language markets
+[![logo](/assets/vespa-logomark-tiny.png) linguistics-asia](linguistics-asia) compares
+the available ways to wire Chinese text processing into Vespa — OpenNLP CJK, Lucene
+analyzer chains (per-variant and cross-variant via ICU), Jieba bundle reuse, gram
+fallback, custom OpenNLP-extends Linguistics (ICU4J / OpenCC4j), and a custom
+Lucene `TokenFilterFactory` for phrase dictionaries (CKIP / HanLP / IK).
+Eight runnable sub-applications over one shared dataset and query set so the
+trade-offs are observable, not theoretical. Each sub-example has a trilingual
+README (English / 简体中文 / 繁體中文).
+
+
 ### Vespa custom HTTP api using request handlers and processors
 [![logo](/assets/vespa-logomark-tiny.png) http-api-using-request-handlers-and-processors](http-api-using-request-handlers-and-processors)
 demonstrates how to build custom HTTP apis, building REST interfaces with custom handlers and renderers.

@@ -1,0 +1,20 @@
+{"put": "id:linguistics-asia:product::cn-001", "fields": {"id": "cn-001", "language": "zh-CN", "title": "苹果 iPhone 手机壳", "body": "防摔硅胶手机壳，适用于 iPhone 15 系列，多色可选。"}}
+{"put": "id:linguistics-asia:product::tw-001", "fields": {"id": "tw-001", "language": "zh-TW", "title": "蘋果 iPhone 手機殼", "body": "防摔矽膠手機殼，適用於 iPhone 15 系列，多色可選。"}}
+{"put": "id:linguistics-asia:product::cn-002", "fields": {"id": "cn-002", "language": "zh-CN", "title": "无线蓝牙耳机", "body": "主动降噪无线蓝牙耳机，续航 30 小时，支持快充。"}}
+{"put": "id:linguistics-asia:product::tw-002", "fields": {"id": "tw-002", "language": "zh-TW", "title": "無線藍牙耳機", "body": "主動降噪無線藍牙耳機，續航 30 小時，支援快充。"}}
+{"put": "id:linguistics-asia:product::cn-003", "fields": {"id": "cn-003", "language": "zh-CN", "title": "智能手表", "body": "心率监测智能手表，支持微信通知和运动追踪。"}}
+{"put": "id:linguistics-asia:product::tw-003", "fields": {"id": "tw-003", "language": "zh-TW", "title": "智慧型手錶", "body": "心率監測智慧型手錶，支援 LINE 通知與運動追蹤。"}}
+{"put": "id:linguistics-asia:product::cn-004", "fields": {"id": "cn-004", "language": "zh-CN", "title": "笔记本电脑", "body": "轻薄笔记本电脑，14 英寸高清屏幕，适合商务办公。"}}
+{"put": "id:linguistics-asia:product::tw-004", "fields": {"id": "tw-004", "language": "zh-TW", "title": "筆記型電腦", "body": "輕薄筆記型電腦，14 吋高清螢幕，適合商務辦公。"}}
+{"put": "id:linguistics-asia:product::cn-005", "fields": {"id": "cn-005", "language": "zh-CN", "title": "电动牙刷", "body": "声波震动电动牙刷，三种清洁模式，IPX7 防水。"}}
+{"put": "id:linguistics-asia:product::tw-005", "fields": {"id": "tw-005", "language": "zh-TW", "title": "電動牙刷", "body": "聲波震動電動牙刷，三種清潔模式，IPX7 防水。"}}
+{"put": "id:linguistics-asia:product::cn-006", "fields": {"id": "cn-006", "language": "zh-CN", "title": "保温杯", "body": "316 不锈钢保温杯，500 毫升，保温 12 小时。"}}
+{"put": "id:linguistics-asia:product::tw-006", "fields": {"id": "tw-006", "language": "zh-TW", "title": "保溫杯", "body": "316 不鏽鋼保溫杯，500 毫升，保溫 12 小時。"}}
+{"put": "id:linguistics-asia:product::cn-007", "fields": {"id": "cn-007", "language": "zh-CN", "title": "运动跑鞋", "body": "透气网面运动跑鞋，缓震鞋底，适合长距离跑步。"}}
+{"put": "id:linguistics-asia:product::tw-007", "fields": {"id": "tw-007", "language": "zh-TW", "title": "運動跑鞋", "body": "透氣網面運動跑鞋，緩震鞋底，適合長距離跑步。"}}
+{"put": "id:linguistics-asia:product::cn-008", "fields": {"id": "cn-008", "language": "zh-CN", "title": "电饭煲", "body": "智能电饭煲，多功能预约定时，5 升大容量。"}}
+{"put": "id:linguistics-asia:product::tw-008", "fields": {"id": "tw-008", "language": "zh-TW", "title": "電子鍋", "body": "智慧電子鍋，多功能預約定時，5 公升大容量。"}}
+{"put": "id:linguistics-asia:product::cn-009", "fields": {"id": "cn-009", "language": "zh-CN", "title": "空气净化器", "body": "HEPA 滤芯空气净化器，适用面积 60 平方米。"}}
+{"put": "id:linguistics-asia:product::tw-009", "fields": {"id": "tw-009", "language": "zh-TW", "title": "空氣清淨機", "body": "HEPA 濾芯空氣清淨機，適用面積 60 平方公尺。"}}
+{"put": "id:linguistics-asia:product::cn-010", "fields": {"id": "cn-010", "language": "zh-CN", "title": "电视机", "body": "65 寸 4K 智能电视机，支持语音遥控和投屏。"}}
+{"put": "id:linguistics-asia:product::tw-010", "fields": {"id": "tw-010", "language": "zh-TW", "title": "電視機", "body": "65 吋 4K 智慧電視機，支援語音遙控與投影。"}}

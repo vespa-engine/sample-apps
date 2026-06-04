@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+  <container id="default" version="1.0">
+    <component id="com.qihoo.language.JiebaLinguistics"
+               bundle="vespa-chinese-linguistics">
+      <config name="com.qihoo.language.config.jieba">
+        <!-- Optional. Leave commented to use Jieba's default dictionary.
+        <dictionary>jieba/user.dict</dictionary>
+        <stopwords>jieba/stopwords</stopwords>
+        -->
+      </config>
+    </component>
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+  <content id="content" version="1.0">
+    <min-redundancy>1</min-redundancy>
+    <documents>
+      <document type="product" mode="index"/>
+    </documents>
+  </content>
+</services>

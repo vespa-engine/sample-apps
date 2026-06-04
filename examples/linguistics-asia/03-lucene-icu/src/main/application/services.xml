@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+  <container id="default" version="1.0">
+    <component id="linguistics"
+               class="com.yahoo.language.lucene.LuceneLinguistics"
+               bundle="linguistics-asia-lucene-cross">
+      <config name="com.yahoo.language.lucene.lucene-analysis">
+        <configDir>linguistics</configDir>
+        <analysis>
+
+          <!-- Same chain for both variants:
+               ICU CJK word tokenization
+               -> ICU Traditional->Simplified transliteration
+               -> Synonym filter for regional vocabulary differences
+               -> Lowercase. -->
+
+          <item key="zh-CN">
+            <tokenizer><name>icu</name></tokenizer>
+            <tokenFilters>
+              <item>
+                <name>icuTransform</name>
+                <conf>
+                  <item key="id">Traditional-Simplified</item>
+                </conf>
+              </item>
+              <item>
+                <name>synonymGraph</name>
+                <conf>
+                  <item key="synonyms">synonyms.txt</item>
+                  <item key="expand">true</item>
+                  <item key="tokenizerFactory">org.apache.lucene.analysis.icu.segmentation.ICUTokenizerFactory</item>
+                </conf>
+              </item>
+              <item><name>flattenGraph</name></item>
+              <item><name>lowercase</name></item>
+            </tokenFilters>
+          </item>
+
+          <item key="zh-TW">
+            <tokenizer><name>icu</name></tokenizer>
+            <tokenFilters>
+              <item>
+                <name>icuTransform</name>
+                <conf>
+                  <item key="id">Traditional-Simplified</item>
+                </conf>
+              </item>
+              <item>
+                <name>synonymGraph</name>
+                <conf>
+                  <item key="synonyms">synonyms.txt</item>
+                  <item key="expand">true</item>
+                  <item key="tokenizerFactory">org.apache.lucene.analysis.icu.segmentation.ICUTokenizerFactory</item>
+                </conf>
+              </item>
+              <item><name>flattenGraph</name></item>
+              <item><name>lowercase</name></item>
+            </tokenFilters>
+          </item>
+
+        </analysis>
+      </config>
+    </component>
+
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+
+  <content id="content" version="1.0">
+    <min-redundancy>1</min-redundancy>
+    <documents>
+      <document type="product" mode="index"/>
+    </documents>
+  </content>
+</services>
