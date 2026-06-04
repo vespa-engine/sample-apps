@@ -6,7 +6,7 @@
 In some cases we want to search with incomplete queries while the queries are being written,
 but using traditional document ranking is often not favorable as searching trough substrings is needed.
 
-The applications beelow are different examples of how you can use vespa for incremental search
+The applications below are different examples of how you can use vespa for incremental search
 by searching through substrings.
 
 Good resources to read before implementing autocomplete are:
