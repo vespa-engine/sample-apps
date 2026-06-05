@@ -62,17 +62,11 @@ schema doc {
     #
     # TF prior uses foreach to average per-term occurrences, avoiding the bias
     # of aggregate matchCount which inflates the prior for longer queries.
-    #
-    # Additional parameter:
-    #   avg_field_len -- average field length in words. Vespa computes this
-    #                    internally for BM25 but does not expose it as a rank
-    #                    feature, so it must be supplied. Default 35.0 - this sample corpus
     # ---------------------------------------------------------------------------
     rank-profile bayesian_bm25 {
         inputs {
             query(alpha)         double: 1.0
             query(beta)          double: 3.0
-            query(avg_field_len) double: 35.0
         }
 
         function raw_bm25() {
@@ -96,7 +90,7 @@ schema doc {
         # Eq. 26: P_norm(n) = 0.3 + 0.6 * (1 - min(1, |n - 0.5| * 2))
         #         where n = fieldLength / avgFieldLen
         function fieldnorm_prior() {
-            expression: 0.3 + 0.6 * (1 - min(1, fabs(fieldLength(body) / query(avg_field_len) - 0.5) * 2))
+            expression: 0.3 + 0.6 * (1 - min(1, fabs(fieldLength(body) / averageFieldLength(body) - 0.5) * 2))
         }
 
         # Eq. 27: P_prior = clamp(0.7 * P_tf + 0.3 * P_norm, 0.1, 0.9)
@@ -127,6 +121,7 @@ schema doc {
             posterior
             fieldLength(body)
             matchCount(body)
+            averageFieldLength(body)
         }
     }
 
@@ -170,6 +165,7 @@ schema doc {
             posterior
             calibrated_posterior
             fieldLength(body)
+            averageFieldLength(body)
             matchCount(body)
         }
     }
@@ -217,6 +213,7 @@ schema doc {
             logit_tf_prior
             logit_fieldnorm_prior
             fieldLength(body)
+            averageFieldLength(body)
         }
     }
 
@@ -254,6 +251,7 @@ schema doc {
             logit_tf_prior
             logit_fieldnorm_prior
             fieldLength(body)
+            averageFieldLength(body)
         }
     }
 }

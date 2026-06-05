@@ -147,7 +147,6 @@ Content-Type: application/json
   "ranking.profile": "bayesian_bm25_calibrated",
   "ranking.features.query(alpha)": 1.5,
   "ranking.features.query(beta)": 2.0,
-  "ranking.features.query(avg_field_len)": 35.0,
   "ranking.features.query(base_rate)": 0.02
 }
 ```
@@ -156,7 +155,6 @@ Content-Type: application/json
 
 - Provide a script to compute the base rate. This could simply run queries (like in paper at algorithm 4.4.7) or could be computed before every query from a [Searcher](https://docs.vespa.ai/en/applications/searchers.html) probably overkill. Having actual labels to do it would be even better (and more complicated).
 - The TF prior should be computed as the average prior for each term in the query, instead of computing a single prior for average TFs. More complex to define in Vespa. Current implementation is OK, unless we have many terms.
-- Vespa should expose average field length as a rank feature and we should reuse that.
 - Ideally, we should have a way (scripts) to tune the hardcoded values when we compute priors.
 - Using the [weakAnd](https://docs.vespa.ai/en/ranking/wand.html#weakand) in Vespa ignores the TF/length priors while pruning. This shouldn't make a big difference for most queries - increase `targetHits` to overfetch if tail end quality is a problem.
 - When using BBM25 in hybrid search, remember that most vector scores aren't probabilities, even if they are in [0,1]. Comparing this to other methods ([atan](https://docs.vespa.ai/en/learn/tutorials/hybrid-search.html#hybrid-ranking), [linear, RRF](https://docs.vespa.ai/en/ranking/phased-ranking.html#cross-hit-normalization-including-reciprocal-rank-fusion) - comparison between them can be found [in this blog post](https://blog.vespa.ai/embedding-tradeoffs-quantified)) will be interesting.
