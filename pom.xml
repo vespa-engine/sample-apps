@@ -19,6 +19,11 @@
         <module>examples/generic-request-processing</module>
         <module>examples/http-api-using-request-handlers-and-processors</module>
         <module>examples/joins</module>
+        <module>examples/linguistics-asia/02-lucene-per-variant</module>
+        <module>examples/linguistics-asia/03-lucene-icu</module>
+        <module>examples/linguistics-asia/06-opennlp-icu</module>
+        <module>examples/linguistics-asia/07-opennlp-opencc</module>
+        <module>examples/linguistics-asia/08-lucene-phrase-dict</module>
         <module>examples/lucene-linguistics/advanced-configuration</module>
         <module>examples/lucene-linguistics/going-crazy</module>
         <module>examples/lucene-linguistics/minimal</module>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+  <container id="default" version="1.0">
+    <component id="linguistics"
+               class="com.yahoo.language.lucene.LuceneLinguistics"
+               bundle="linguistics-asia-phrase-dict">
+      <config name="com.yahoo.language.lucene.lucene-analysis">
+        <configDir>linguistics</configDir>
+        <analysis>
+
+          <!-- ICU CJK tokenizer
+               -> ICU Traditional->Simplified transliteration
+               -> custom phraseDict filter aggregates known phrases back into single tokens
+                  (repairs ICU over-segmentation of compounds like 空气净化器)
+               -> lowercase.
+
+               Pair with a synonym filter (see 03-lucene-icu) if you also need regional vocabulary
+               bridging between e.g. 笔记本电脑 (zh-CN) and 笔记型电脑 (zh-TW). -->
+
+          <item key="zh-CN">
+            <tokenizer><name>icu</name></tokenizer>
+            <tokenFilters>
+              <item>
+                <name>icuTransform</name>
+                <conf>
+                  <item key="id">Traditional-Simplified</item>
+                </conf>
+              </item>
+              <item>
+                <name>phraseDict</name>
+                <conf>
+                  <item key="dictionary">dictionary.txt</item>
+                </conf>
+              </item>
+              <item><name>lowercase</name></item>
+            </tokenFilters>
+          </item>
+
+          <item key="zh-TW">
+            <tokenizer><name>icu</name></tokenizer>
+            <tokenFilters>
+              <item>
+                <name>icuTransform</name>
+                <conf>
+                  <item key="id">Traditional-Simplified</item>
+                </conf>
+              </item>
+              <item>
+                <name>phraseDict</name>
+                <conf>
+                  <item key="dictionary">dictionary.txt</item>
+                </conf>
+              </item>
+              <item><name>lowercase</name></item>
+            </tokenFilters>
+          </item>
+
+        </analysis>
+      </config>
+    </component>
+
+    <document-processing/>
+    <document-api/>
+    <search/>
+  </container>
+
+  <content id="content" version="1.0">
+    <min-redundancy>1</min-redundancy>
+    <documents>
+      <document type="product" mode="index"/>
+    </documents>
+  </content>
+</services>

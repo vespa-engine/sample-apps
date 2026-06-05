@@ -1,0 +1,60 @@
+schema product {
+
+  document product {
+
+    field id type string {
+      indexing: summary | attribute
+    }
+
+    field language type string {
+      indexing: summary | attribute | set_language
+      match: word
+    }
+
+    field title type string {
+      indexing: index | summary
+      index: enable-bm25
+      match {
+        gram
+        gram-size: 2
+      }
+    }
+
+    field body type string {
+      indexing: index | summary
+      index: enable-bm25
+      match {
+        gram
+        gram-size: 2
+      }
+    }
+
+  }
+
+  fieldset default {
+    fields: title, body
+  }
+
+  document-summary debug-tokens {
+    summary id {}
+    summary language {}
+    summary title {}
+    summary body {}
+    summary title_tokens {
+      source: title
+      tokens
+    }
+    summary body_tokens {
+      source: body
+      tokens
+    }
+    from-disk
+  }
+
+  rank-profile default {
+    first-phase {
+      expression: bm25(title) + bm25(body)
+    }
+  }
+
+}

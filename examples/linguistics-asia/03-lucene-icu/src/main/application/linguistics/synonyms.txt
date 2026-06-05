@@ -1,0 +1,17 @@
+# Regional vocabulary synonyms — both sides are Simplified (transliteration runs first).
+# Format: Lucene SolrSynonymParser, comma-separated equivalent groups.
+#
+# Single-character pairs always work cleanly: ICU outputs each char as one
+# token, so synonym entries match identically on both index and query.
+锅,煲
+表,錶
+
+# Multi-character regional vocabulary. These rely on
+# tokenizerFactory=org.apache.lucene.analysis.icu.segmentation.ICUTokenizerFactory
+# so synonym entries are tokenized with the same ICU rules as the analysis
+# chain. If a phrase does not bridge as expected, inspect token boundaries
+# with `vespa-index-inspect dumpwords` and `trace.level=2`, then adjust.
+空气净化器,空气清净机
+笔记本电脑,笔记型电脑
+智能手表,智慧型手表
+电饭煲,电子锅

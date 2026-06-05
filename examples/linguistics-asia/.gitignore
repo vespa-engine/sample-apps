@@ -1,0 +1,2 @@
+# Built Jieba bundle (user copies in during 04-jieba deploy; not tracked in source).
+04-jieba/app/components/*.jar

@@ -1,0 +1,20 @@
+# Phrase dictionary for the PhraseDictTokenFilter.
+# One phrase per line. Comments start with '#'.
+#
+# Entries should be in the form they appear in the analyzer stream
+# at the point this filter runs. In our chain that is post-icuTransform,
+# so entries are written in Simplified Chinese.
+#
+# Replace this list with output from Academia Sinica CKIP, HanLP,
+# IK, Jieba user-dict, or your own brand / catalogue dictionary.
+
+空气净化器
+空气清净机
+笔记本电脑
+笔记型电脑
+智能手表
+智慧型手表
+电饭煲
+电子锅
+保温杯
+运动跑鞋
