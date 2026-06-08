@@ -12,7 +12,7 @@
 
 Vespa 處理中文有幾種方式 —— 簡體、繁體，以及你在 zh-CN、zh-TW、zh-HK 市場常見的混合情況。本目錄把這些選項並排比較。提供**八個可執行的子應用**——每種接入形態一個——共用同一份資料集與同一組對比查詢，讓取捨可以被觀察，而不是只停留在文件上。
 
-每個子例都附三語 README（English、简体中文、繁體中文）。共享資料集與查詢放在 [`ext/`](ext/)。
+每個子例都附三語 README（English、简体中文、繁體中文）。共享資料集與查詢放在 [`ext/documents.jsonl`](ext/documents.jsonl) 與 [`ext/queries.md`](ext/queries.md)。
 
 ## 為什麼斷詞決定了中文檢索
 

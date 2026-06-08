@@ -12,7 +12,7 @@ English | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
 
 Vespa offers several ways to handle Chinese text — Simplified, Traditional, and the mix you typically see across zh-CN, zh-TW, and zh-HK markets. This directory compares those options side by side. It ships **eight runnable sub-applications** — one per integration shape — over the same dataset and the same five compare-queries, so the trade-offs are observable, not just theoretical.
 
-Each sub-example has its own three-language README (English, 简体中文, 繁體中文). The shared dataset and queries live in [`ext/`](ext/).
+Each sub-example has its own three-language README (English, 简体中文, 繁體中文). The shared dataset and queries live in [`ext/documents.jsonl`](ext/documents.jsonl) and [`ext/queries.md`](ext/queries.md).
 
 ## Why tokenization choice dominates Chinese search
 

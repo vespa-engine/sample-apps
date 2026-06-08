@@ -12,7 +12,7 @@
 
 Vespa 处理中文有好几种方式 —— 简体、繁体，以及你在 zh-CN、zh-TW、zh-HK 市场常见的混合情况。本目录把这些选项并排比较。提供**八个可运行的子应用**——每种接入形态一个——共用同一份资料集与同一组对比查询，让取舍是看得见的，不是停留在文档里的。
 
-每个子例都附带三语 README（English、简体中文、繁體中文）。共享数据集与查询位于 [`ext/`](ext/)。
+每个子例都附带三语 README（English、简体中文、繁體中文）。共享数据集与查询位于 [`ext/documents.jsonl`](ext/documents.jsonl) 与 [`ext/queries.md`](ext/queries.md)。
 
 ## 为什么分词决定了中文检索
 
