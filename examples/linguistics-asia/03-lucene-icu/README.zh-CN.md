@@ -47,7 +47,7 @@
 
 ## 编译并部署到 Vespa Cloud
 
-到 <https://cloud.vespa-cloud.com/> 注册免费试用，然后：
+到 <https://cloud.vespa.ai/> 注册免费试用，然后：
 
 ```sh
 mvn clean package

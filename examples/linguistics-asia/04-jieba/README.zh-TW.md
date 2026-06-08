@@ -36,7 +36,7 @@ cp ../vespa-chinese-linguistics/target/vespa-chinese-linguistics-1.0.0-deploy.ja
 
 ## 部署到 Vespa Cloud
 
-到 <https://cloud.vespa-cloud.com/> 申請免費試用，然後：
+到 <https://cloud.vespa.ai/> 申請免費試用，然後：
 
 ```sh
 vespa config set target cloud

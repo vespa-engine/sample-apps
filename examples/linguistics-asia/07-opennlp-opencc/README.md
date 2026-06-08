@@ -80,7 +80,7 @@ Or maintain a per-language map — call `t2s` for unknown Traditional and `hk2s`
 
 ## Build, test, deploy to Vespa Cloud
 
-Sign up at <https://cloud.vespa-cloud.com/>, then:
+Sign up at <https://cloud.vespa.ai/>, then:
 
 ```sh
 mvn test

@@ -32,7 +32,7 @@ field title type string {
 
 ## Deploy to Vespa Cloud
 
-Sign up at <https://cloud.vespa-cloud.com/>, then:
+Sign up at <https://cloud.vespa.ai/>, then:
 
 ```sh
 vespa config set target cloud

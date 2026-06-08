@@ -24,7 +24,7 @@ If any of those bite you, jump to [02-lucene-per-variant](../02-lucene-per-varia
 
 ## Deploy to Vespa Cloud
 
-Sign up for a free Vespa Cloud trial at <https://cloud.vespa-cloud.com/>, then:
+Sign up for a free Vespa Cloud trial at <https://cloud.vespa.ai/>, then:
 
 ```sh
 vespa config set target cloud

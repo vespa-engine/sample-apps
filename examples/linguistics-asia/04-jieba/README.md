@@ -36,7 +36,7 @@ You don't need to rebuild it for every deploy of this app — only when the Jieb
 
 ## Deploy to Vespa Cloud
 
-Sign up at <https://cloud.vespa-cloud.com/>, then:
+Sign up at <https://cloud.vespa.ai/>, then:
 
 ```sh
 vespa config set target cloud
