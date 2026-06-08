@@ -184,7 +184,7 @@ Behaviour in practice depends on how Lucene's synonym filters interact with the 
 
 ## References
 
-- [Lucene `TokenFilterFactory` SPI](https://lucene.apache.org/core/9_8_0/analysis/common/org/apache/lucene/analysis/TokenFilterFactory.html)
+- [Lucene `TokenFilterFactory` SPI](https://lucene.apache.org/core/9_8_0/core/org/apache/lucene/analysis/TokenFilterFactory.html)
 - [Vespa Lucene linguistics](https://docs.vespa.ai/en/lucene-linguistics.html)
 - Sibling: [`examples/lucene-linguistics/add-token-filter-factory`](../../lucene-linguistics/add-token-filter-factory) — generic Lucene SPI factory template (non-Chinese specific)
 - [Academia Sinica CKIP](https://ckip.iis.sinica.edu.tw/) | [HanLP](https://github.com/hankcs/HanLP) | [IK Analyzer](https://github.com/medcl/elasticsearch-analysis-ik) | [Jieba user-dict format](https://github.com/fxsjy/jieba#%E8%BD%BD%E5%85%A5%E8%AF%8D%E5%85%B8)

@@ -184,7 +184,7 @@ docker rm -f vespa
 
 ## 参考资料
 
-- [Lucene `TokenFilterFactory` SPI](https://lucene.apache.org/core/9_8_0/analysis/common/org/apache/lucene/analysis/TokenFilterFactory.html)
+- [Lucene `TokenFilterFactory` SPI](https://lucene.apache.org/core/9_8_0/core/org/apache/lucene/analysis/TokenFilterFactory.html)
 - [Vespa Lucene linguistics](https://docs.vespa.ai/en/lucene-linguistics.html)
 - 同层：[`examples/lucene-linguistics/add-token-filter-factory`](../../lucene-linguistics/add-token-filter-factory) —— 通用 Lucene SPI factory 模板（非中文专属）
 - [中研院 CKIP](https://ckip.iis.sinica.edu.tw/) | [HanLP](https://github.com/hankcs/HanLP) | [IK Analyzer](https://github.com/medcl/elasticsearch-analysis-ik) | [Jieba user-dict 格式](https://github.com/fxsjy/jieba#%E8%BD%BD%E5%85%A5%E8%AF%8D%E5%85%B8)
