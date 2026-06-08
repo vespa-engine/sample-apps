@@ -47,7 +47,7 @@ The `<conf><item key="id">Traditional-Simplified</item></conf>` block is how luc
 
 ## Build and deploy to Vespa Cloud
 
-Sign up at <https://cloud.vespa-cloud.com/>, then:
+Sign up at <https://cloud.vespa.ai/>, then:
 
 ```sh
 mvn clean package

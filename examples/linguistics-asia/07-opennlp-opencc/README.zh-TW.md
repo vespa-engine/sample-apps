@@ -80,7 +80,7 @@ return HK_TO_S.convert(input);
 
 ## 建置、測試、部署到 Vespa Cloud
 
-到 <https://cloud.vespa-cloud.com/> 申請免費試用，然後：
+到 <https://cloud.vespa.ai/> 申請免費試用，然後：
 
 ```sh
 mvn test

@@ -105,7 +105,7 @@ The two must **differ** for the transformation to take effect at index time. Whe
 
 ## Build, test, deploy to Vespa Cloud
 
-Sign up at <https://cloud.vespa-cloud.com/>, then:
+Sign up at <https://cloud.vespa.ai/>, then:
 
 ```sh
 mvn test

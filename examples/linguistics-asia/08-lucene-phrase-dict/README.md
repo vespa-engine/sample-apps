@@ -89,7 +89,7 @@ The filter is format-agnostic: any text file with one phrase per line (post-fold
 
 ## Build, test, deploy to Vespa Cloud
 
-Sign up at <https://cloud.vespa-cloud.com/>, then:
+Sign up at <https://cloud.vespa.ai/>, then:
 
 ```sh
 mvn test

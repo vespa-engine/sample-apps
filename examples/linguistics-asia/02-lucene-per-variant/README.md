@@ -37,7 +37,7 @@ Need cross-variant recall (zh-CN query finds zh-TW docs)? Use [03-lucene-icu](..
 
 ## Build and deploy to Vespa Cloud
 
-Sign up for a free Vespa Cloud trial at <https://cloud.vespa-cloud.com/>, then:
+Sign up for a free Vespa Cloud trial at <https://cloud.vespa.ai/>, then:
 
 ```sh
 mvn clean package

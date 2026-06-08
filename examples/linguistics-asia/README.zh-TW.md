@@ -180,7 +180,7 @@ brew install vespa-cli
 # Maven（02、03、06、07、08 子例需要）
 brew install maven
 
-# Vespa Cloud —— 到 https://cloud.vespa-cloud.com/ 申請免費試用
+# Vespa Cloud —— 到 https://cloud.vespa.ai/ 申請免費試用
 vespa config set target cloud
 vespa config set application TENANT.APP_NAME
 vespa auth login
