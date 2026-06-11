@@ -11,7 +11,7 @@ dependencies {
 
     implementation(libs.guava)
 
-    implementation("io.github.hakky54:ayza-for-pem:10.0.3")
+    implementation("io.github.hakky54:ayza-for-pem:10.0.5")
     implementation("org.eclipse.jetty:jetty-client:12.1.7")
     implementation("org.eclipse.jetty.http2:jetty-http2-client-transport:12.1.7")
     implementation("org.slf4j:slf4j-simple:2.0.17")
