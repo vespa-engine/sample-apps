@@ -356,7 +356,7 @@ python-dotenv==1.2.2
     #   visual-retrieval-colpali (pyproject.toml)
     #   uvicorn
     #   vidore-benchmark
-python-fasthtml==0.12.33
+python-fasthtml==0.14.2
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   lucide-fasthtml
