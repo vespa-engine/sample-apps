@@ -7,7 +7,7 @@
 # saved config triggers a meta-device path in transformers >=5 that
 # .from_pretrained() rejects. 4.45+ is fine.
 torch>=2.11.0
-transformers>=4.45,<5
+transformers>=5.0.0,<6 # auto updated from transformers>=4.45,<5 to avoid pointing at vulnerable versions
 
 # ONNX export + runtime (used both for export and for the optional INT8
 # quantization step in model2onnx.py).
