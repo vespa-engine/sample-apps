@@ -16,6 +16,6 @@ on:
 
 jobs:
   main:
-    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@main
+    uses: vespa-engine/gh-actions/.github/workflows/verify-markdown-guides.yml@d6a206637e259811059800dbee04fdcbc75aab3e # main
     with:
       test-config-path: "test/_test_config.yml"
