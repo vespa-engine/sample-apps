@@ -524,7 +524,7 @@ urllib3==2.7.0
     # via
     #   docker
     #   requests
-uvicorn==0.38.0
+uvicorn==0.49.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   python-fasthtml
