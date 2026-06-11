@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10, <3.12"
 license = { text = "Apache-2.0" }
 dependencies = [
-    "python-fasthtml==0.12.33",
+    "python-fasthtml==0.14.2",
     "uvicorn[standard]==0.38.0",
     "huggingface-hub",
     "pyvespa>=0.50.0",
