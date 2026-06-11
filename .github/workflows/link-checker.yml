@@ -17,7 +17,7 @@ on:
 
 jobs:
   test:
-    uses: vespa-engine/gh-actions/.github/workflows/jekyll-link-checker.yml@main
+    uses: vespa-engine/gh-actions/.github/workflows/jekyll-link-checker.yml@d6a206637e259811059800dbee04fdcbc75aab3e # main
     secrets:
       github-app-id: ${{ secrets.LINK_CHECKER_APP_ID }}
       github-app-priv-key: ${{ secrets.LINK_CHECKER_PRIVATE_KEY }}
