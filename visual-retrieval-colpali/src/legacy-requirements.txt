@@ -52,7 +52,7 @@ click==8.1.7
     #   uvicorn
 cloudpathlib==0.20.0
     # via weasel
-colpali-engine==0.3.1
+colpali-engine==0.3.17
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   vidore-benchmark
