@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/version_catalogs.html#sec::toml-dependencies-format
 
 [versions]
-guava = "33.4.6-jre"
+guava = "33.6.0-jre"
 junit = "4.13.2"
 
 [libraries]
