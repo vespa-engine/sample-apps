@@ -11,7 +11,7 @@
 
     <properties>
         <vespa_version>8.703.17</vespa_version>
-        <org.immutables.version>2.10.0</org.immutables.version>
+        <org.immutables.version>2.12.2</org.immutables.version>
     </properties>
 
     <dependencies>
