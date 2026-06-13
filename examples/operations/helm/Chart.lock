@@ -1,0 +1,9 @@
+dependencies:
+- name: config
+  repository: ""
+  version: 0.1.0
+- name: services
+  repository: ""
+  version: 0.1.0
+digest: sha256:7550b9a2ad831bd383e6bf22c51013efd466f8d287df676433766fd59e9aac29
+generated: "2025-04-10T10:54:29.929533+01:00"
