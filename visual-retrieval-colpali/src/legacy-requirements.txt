@@ -455,7 +455,7 @@ srsly==2.5.3
     #   spacy
     #   thinc
     #   weasel
-starlette==1.3.0
+starlette==1.3.1
     # via python-fasthtml
 sympy==1.14.0
     # via torch
