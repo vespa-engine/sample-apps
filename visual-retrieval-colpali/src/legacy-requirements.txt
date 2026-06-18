@@ -343,7 +343,7 @@ pyparsing==3.3.2
     # via
     #   httplib2
     #   matplotlib
-pypdf==6.13.2
+pypdf==6.13.3
     # via visual-retrieval-colpali (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
