@@ -180,6 +180,8 @@ def process_liquid(command):
 
 
 def parse_cmds(pre, attrs):
+    if pre is None:
+        return []
     cmds = []
     line_continuation = ""
     line_continuation_delimiter = "\\"
