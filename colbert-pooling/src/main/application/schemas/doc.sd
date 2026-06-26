@@ -1,0 +1,142 @@
+schema doc {
+
+    document doc {
+
+        field doc_id type string {
+            indexing: summary | attribute
+        }
+
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field text type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+    }
+
+    # Full non-pooled ColBERT embeddings (bfloat16, paged to disk).
+    # Used for exact MaxSim reranking in the second phase.
+    field colbert type tensor<bfloat16>(dt{}, x[128]) {
+        indexing: input text | embed colbert | summary | attribute
+        attribute: paged
+    }
+
+    # Hierarchically pooled + binarised ColBERT embeddings (in memory).
+    # HNSW-indexed for fast approximate nearest-neighbour retrieval.
+    field colbert_pooled_binary type tensor<int8>(dt{}, x[16]) {
+        indexing: input text | embed colbert-pooled | summary | attribute | index
+        attribute {
+            distance-metric: hamming
+        }
+        index {
+            hnsw {
+                max-links-per-node: 32
+                neighbors-to-explore-at-insert: 400
+            }
+        }
+    }
+
+    # Summary class for retrieving tensor fields (not included by default)
+    document-summary tensors {
+        summary doc_id {}
+        summary colbert {}
+        summary colbert_pooled_binary {}
+    }
+
+    fieldset default {
+        fields: title, text
+    }
+
+    # ------------------------------------------------------------------
+    # Rank profile: HNSW ANN on binary pooled → rerank with full MaxSim
+    # ------------------------------------------------------------------
+
+    rank-profile colbert-pooled-ann {
+
+        # All query tensors are set by ColBertSearcher at query time.
+        # The rq inputs are required for nearestNeighbor resolution on the content node.
+        inputs {
+            query(qt) tensor<float>(qt{}, x[128])
+            query(qtb) tensor<int8>(qt{}, x[16])
+            query(rq0) tensor<int8>(x[16])
+            query(rq1) tensor<int8>(x[16])
+            query(rq2) tensor<int8>(x[16])
+            query(rq3) tensor<int8>(x[16])
+            query(rq4) tensor<int8>(x[16])
+            query(rq5) tensor<int8>(x[16])
+            query(rq6) tensor<int8>(x[16])
+            query(rq7) tensor<int8>(x[16])
+            query(rq8) tensor<int8>(x[16])
+            query(rq9) tensor<int8>(x[16])
+            query(rq10) tensor<int8>(x[16])
+            query(rq11) tensor<int8>(x[16])
+            query(rq12) tensor<int8>(x[16])
+            query(rq13) tensor<int8>(x[16])
+            query(rq14) tensor<int8>(x[16])
+            query(rq15) tensor<int8>(x[16])
+            query(rq16) tensor<int8>(x[16])
+            query(rq17) tensor<int8>(x[16])
+            query(rq18) tensor<int8>(x[16])
+            query(rq19) tensor<int8>(x[16])
+            query(rq20) tensor<int8>(x[16])
+            query(rq21) tensor<int8>(x[16])
+            query(rq22) tensor<int8>(x[16])
+            query(rq23) tensor<int8>(x[16])
+            query(rq24) tensor<int8>(x[16])
+            query(rq25) tensor<int8>(x[16])
+            query(rq26) tensor<int8>(x[16])
+            query(rq27) tensor<int8>(x[16])
+            query(rq28) tensor<int8>(x[16])
+            query(rq29) tensor<int8>(x[16])
+            query(rq30) tensor<int8>(x[16])
+            query(rq31) tensor<int8>(x[16])
+        }
+
+        # First phase: hamming-based MaxSim on binary pooled embeddings.
+        # Documents are retrieved via nearestNeighbor operators in YQL;
+        # this scores them cheaply using the full binary query tensor.
+        function max_sim_binary() {
+            expression {
+                sum(
+                    reduce(
+                        1 - sum(
+                            hamming(query(qtb), attribute(colbert_pooled_binary)), x
+                        ) / (8 * 16),
+                        max, dt
+                    ),
+                    qt
+                )
+            }
+        }
+
+        first-phase {
+            expression: max_sim_binary()
+        }
+
+        # Second phase: exact MaxSim on full non-pooled bfloat16 embeddings.
+        function max_sim() {
+            expression {
+                sum(
+                    reduce(
+                        sum(query(qt) * attribute(colbert), x),
+                        max, dt
+                    ),
+                    qt
+                )
+            }
+        }
+
+        second-phase {
+            rerank-count: 100
+            expression: max_sim()
+        }
+
+        match-features {
+            max_sim_binary
+            max_sim
+        }
+    }
+}
