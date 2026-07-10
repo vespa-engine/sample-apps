@@ -9,6 +9,11 @@
 
 # Vespa Code And Operational Examples
 
+### BM25F-inspired cross-field ranking
+[![logo](/assets/vespa-logomark-tiny.png) BM25F-inspired cross-field search](bm25f)
+demonstrates cross-field ranking over title and body by composing BM25F-inspired ranking expressions from per-term and per-field ranking features.
+
+
 ### Vespa grouping and facets for organizing results
 [![logo](/assets/vespa-logomark-tiny.png) Grouping Results](part-purchases-demo)
 demonstrates Vespa grouping and faceting for query time result analytics.
