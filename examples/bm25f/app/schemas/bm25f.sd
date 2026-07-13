@@ -1,0 +1,119 @@
+schema bm25f {
+    document bm25f {
+        field title type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+
+        field body type string {
+            indexing: summary | index
+            index: enable-bm25
+        }
+    }
+
+    fieldset default {
+        fields: title, body
+    }
+
+    # BM25F-inspired cross-field ranking (see README for why "inspired":
+    # summed term-level df instead of document-level df, N-term cap,
+    # fieldset queries only).
+    rank-profile bm25f {
+        function k1() {
+            expression: 1.2
+        }
+
+        function b_title() {
+            expression: 0.75
+        }
+
+        function b_body() {
+            expression: 0.75
+        }
+
+        function weight_title() {
+            expression: 2.0
+        }
+
+        function weight_body() {
+            expression: 1.0
+        }
+
+        function len_norm_title() {
+            expression: 1 - b_title + b_title * fieldLength(title) / averageFieldLength(title)
+        }
+
+        function len_norm_body() {
+            expression: 1 - b_body + b_body * fieldLength(body) / averageFieldLength(body)
+        }
+
+        # Weighted, length-normalized term frequency for query term n, summed
+        # across fields (the core of BM25F). fieldTermMatch(field, n) uses the
+        # global query-term index — the same index space as the term{} labels
+        # of queryTermDocumentFrequency(field) — and yields 0 occurrences for
+        # nonexistent terms.
+        function term_wtf(n) {
+            expression: weight_title * fieldTermMatch(title, n).occurrences / len_norm_title + weight_body * fieldTermMatch(body, n).occurrences / len_norm_body
+        }
+
+        # Tensor literals are fixed at config time, so this supports up to 8
+        # query terms; terms beyond that are silently ignored. Labels for
+        # nonexistent terms get value 0 and drop out of the score in the join
+        # with idf (which only has cells for real terms).
+        function weighted_tf() {
+            expression {
+                tensor(term{}):{
+                    "0": term_wtf(0),
+                    "1": term_wtf(1),
+                    "2": term_wtf(2),
+                    "3": term_wtf(3),
+                    "4": term_wtf(4),
+                    "5": term_wtf(5),
+                    "6": term_wtf(6),
+                    "7": term_wtf(7)
+                }
+            }
+        }
+
+        # This profile requires fieldset queries (each term searching both
+        # fields), and for those the df is term-level: every field reports
+        # the same tensor, so reading it from either field is equivalent.
+        function document_frequency() {
+            expression: queryTermDocumentFrequency(title)
+        }
+
+        function idf() {
+            expression: log(1 + (num_docs_indexed - document_frequency + 0.5) / (document_frequency + 0.5))
+        }
+
+        function bm25f_score() {
+            expression: reduce(idf * weighted_tf / (k1 + weighted_tf), sum, term)
+        }
+
+        first-phase {
+            expression: bm25f_score
+        }
+
+        match-features {
+            queryTermDocumentFrequency(title)
+            queryTermDocumentFrequency(body)
+            rankingExpression(document_frequency)
+            rankingExpression(idf)
+            rankingExpression(weighted_tf)
+            rankingExpression(len_norm_title)
+            rankingExpression(len_norm_body)
+            rankingExpression(bm25f_score)
+            fieldLength(title)
+            fieldLength(body)
+            averageFieldLength(title)
+            averageFieldLength(body)
+            num_docs_indexed
+            fieldTermMatch(title, 0).occurrences
+            fieldTermMatch(title, 1).occurrences
+            fieldTermMatch(body, 0).occurrences
+            fieldTermMatch(body, 1).occurrences
+            bm25(title)
+            bm25(body)
+        }
+    }
+}

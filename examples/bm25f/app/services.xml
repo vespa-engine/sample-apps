@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0">
+  <container id="default" version="1.0">
+    <search/>
+    <document-api/>
+  </container>
+
+  <content id="bm25f" version="1.0">
+    <redundancy>1</redundancy>
+    <documents>
+      <document type="bm25f" mode="index"/>
+    </documents>
+    <nodes>
+      <node distribution-key="0" hostalias="node1"/>
+    </nodes>
+  </content>
+</services>

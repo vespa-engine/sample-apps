@@ -1,0 +1,6 @@
+{"put": "id:bm25f:bm25f::1", "fields": {"title": "vespa ranking engine", "body": "vespa is great for ranking many documents"}}
+{"put": "id:bm25f:bm25f::2", "fields": {"title": "vespa quick guide", "body": "get going with search"}}
+{"put": "id:bm25f:bm25f::3", "fields": {"title": "advanced vespa", "body": "tuning and profiles"}}
+{"put": "id:bm25f:bm25f::4", "fields": {"title": "cooking pasta", "body": "boil water then add pasta near vespa in Trondheim"}}
+{"put": "id:bm25f:bm25f::5", "fields": {"title": "gardening tips", "body": "plant flowers in spring for better ranking"}}
+{"put": "id:bm25f:bm25f::6", "fields": {"title": "unrelated things", "body": "nothing to see here"}}
