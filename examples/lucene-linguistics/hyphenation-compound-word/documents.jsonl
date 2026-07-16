@@ -1,0 +1,4 @@
+{"put":"id:test:doc::donau","fields":{"language":"de","title":"Donaudampfschiff"}}
+{"put":"id:test:doc::dampf","fields":{"language":"de","title":"Dampfschiff"}}
+{"put":"id:test:doc::sonne","fields":{"language":"de","title":"Sonnenblume"}}
+{"put":"id:test:doc::control","fields":{"language":"de","title":"Unverbundene Begriffe"}}
