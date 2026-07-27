@@ -28,7 +28,7 @@ import json
 import sys
 
 import numpy as np
-from transformers import AutoTokenizer
+from tokenizers import Tokenizer
 
 MAX_SEQ = 64
 
@@ -36,7 +36,8 @@ MAX_SEQ = 64
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("query", help="The query text.")
-    ap.add_argument("--checkpoint", default="jfkback/hypencoder.2_layer")
+    ap.add_argument("--tokenizer", default="app/models/tokenizer.json",
+                    help="Path to tokenizer.json (downloaded alongside the ONNX models).")
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--rerank", action="store_true",
                       help="Emit a body for hypencoder_rerank.")
@@ -58,11 +59,13 @@ def main() -> None:
         body["input.query(q_vec)"] = "embed(passage_embedder, @q)"
         body["q"] = args.query
     else:
-        tok = AutoTokenizer.from_pretrained(args.checkpoint, use_fast=True)
-        enc = tok([args.query], padding="max_length", truncation=True,
-                  max_length=MAX_SEQ, return_tensors="np")
-        body["input.query(input_ids)"] = [enc["input_ids"][0].astype(np.float32).tolist()]
-        body["input.query(attention_mask)"] = [enc["attention_mask"][0].astype(np.float32).tolist()]
+        tok = Tokenizer.from_file(args.tokenizer)
+        tok.enable_truncation(max_length=MAX_SEQ)
+        tok.enable_padding(length=MAX_SEQ, pad_id=0, pad_token="[PAD]")
+        enc = tok.encode(args.query)
+        body["input.query(input_ids)"] = [np.array(enc.ids, dtype=np.float32).tolist()]
+        body["input.query(attention_mask)"] = [
+            np.array(enc.attention_mask, dtype=np.float32).tolist()]
         if args.rerank:
             body["ranking.profile"] = "hypencoder_rerank"
             body["input.query(q_vec)"] = "embed(passage_embedder, @q)"
