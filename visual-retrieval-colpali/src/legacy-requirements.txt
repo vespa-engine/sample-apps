@@ -160,7 +160,7 @@ hpack==4.1.0
     # via h2
 httpcore==1.0.9
     # via httpx
-httplib2==0.31.2
+httplib2==0.32.0
     # via
     #   google-api-python-client
     #   google-auth-httplib2
@@ -282,7 +282,7 @@ peft==0.19.1
     # via
     #   colpali-engine
     #   vidore-benchmark
-pillow==12.2.0
+pillow==12.3.0
     # via
     #   colpali-engine
     #   matplotlib
@@ -319,7 +319,7 @@ psutil==7.2.2
     #   peft
 pyarrow==24.0.0
     # via datasets
-pyasn1==0.6.3
+pyasn1==0.6.4
     # via
     #   pyasn1-modules
     #   rsa
@@ -343,7 +343,7 @@ pyparsing==3.3.2
     # via
     #   httplib2
     #   matplotlib
-pypdf==6.13.3
+pypdf==6.14.2
     # via visual-retrieval-colpali (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
@@ -423,7 +423,7 @@ sentence-transformers==5.5.1
     #   vidore-benchmark
 sentencepiece==0.2.1
     # via vidore-benchmark
-setuptools==82.0.1
+setuptools==83.0.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   marisa-trie
@@ -467,7 +467,7 @@ threadpoolctl==3.6.0
     # via scikit-learn
 tokenizers==0.23.1
     # via transformers
-torch==2.12.1
+torch==2.13.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   accelerate
