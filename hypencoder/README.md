@@ -20,24 +20,26 @@ Requires at least Vespa 8.338.38.
 
 - Docker or Podman.
 - [Vespa CLI](https://docs.vespa.ai/en/vespa-cli.html) (`brew install vespa-cli` on macOS).
-- Python 3.10+ with `pip install -r requirements.txt`.
-- Hypencoder's reference implementation (required by `model2onnx.py`):
+- Python 3.10+ with `pip install -r requirements.txt` (just `numpy` and `tokenizers`).
 
-  ```bash
-  git clone https://github.com/jfkback/hypencoder-paper.git
-  git -C hypencoder-paper checkout 951ee82ddf2f
-  pip install -e ./hypencoder-paper
-  ```
+## Download the models
 
-## Export the ONNX models
+Pre-built ONNX exports live in [huggingface.co/andreer/hypencoder-onnx](https://huggingface.co/andreer/hypencoder-onnx). The passage encoder is
+fetched by Vespa at deploy time, so you only need the query encoder and the tokenizer
+locally:
 
 ```bash
-python model2onnx.py --checkpoint jfkback/hypencoder.2_layer
+mkdir -p app/models
+BASE=https://huggingface.co/andreer/hypencoder-onnx/resolve/main/2_layer
+curl -L -o app/models/query_encoder.onnx $BASE/query_encoder.onnx
+curl -L -o app/models/tokenizer.json     $BASE/tokenizer.json
 ```
 
-This writes `passage_encoder.onnx`, `query_encoder.onnx`, and `tokenizer.json` to `app/models/`, where `app/services.xml` and `app/schemas/doc.sd` reference them.
+`app/schemas/doc.sd` references `models/query_encoder.onnx`; `app/services.xml` points the
+[hugging-face-embedder](https://docs.vespa.ai/en/embedding.html#huggingface-embedder) at
+the passage encoder's URL. `encode_query.py` uses the tokenizer to build query tensors.
 
-For roughly 2-3x faster query-encoder inference on CPU at the cost of some retrieval-quality drift, add `--quantize-int8`.
+See [EXPORT.md](EXPORT.md) if you want to build the ONNX files yourself.
 
 ## Start Vespa
 

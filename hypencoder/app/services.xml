@@ -22,8 +22,9 @@
            of tensor expressions (matmul + bias + ReLU + LayerNorm +
            residual).
 
-       Run model2onnx.py before deploying to produce models/passage_encoder.onnx,
-       models/query_encoder.onnx, and models/tokenizer.json.
+       The passage encoder and tokenizer are fetched from the URLs below when the
+       application is deployed. The query encoder is a local file: see README.md
+       for the curl command that downloads it into app/models/.
        =========================================================== -->
   <container id="default" version="1.0">
 
@@ -31,8 +32,8 @@
          exported to ONNX. CLS pooling, no L2 normalization (matches
          TextEncoder.cls_pool in the original repo). -->
     <component id="passage_embedder" type="hugging-face-embedder">
-      <transformer-model path="models/passage_encoder.onnx"/>
-      <tokenizer-model path="models/tokenizer.json"/>
+      <transformer-model url="https://huggingface.co/andreer/hypencoder-onnx/resolve/main/2_layer/passage_encoder.onnx"/>
+      <tokenizer-model url="https://huggingface.co/andreer/hypencoder-onnx/resolve/main/2_layer/tokenizer.json"/>
       <pooling-strategy>cls</pooling-strategy>
       <normalize>false</normalize>
     </component>
