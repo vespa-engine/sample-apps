@@ -22,8 +22,9 @@
            of tensor expressions (matmul + bias + ReLU + LayerNorm +
            residual).
 
-       Run model2onnx.py before deploying to produce models/passage_encoder.onnx,
-       models/query_encoder.onnx, and models/tokenizer.json.
+       The passage encoder and tokenizer are fetched from the URLs below when the
+       application is deployed. The query encoder is a local file: see README.md
+       for the curl command that downloads it into app/models/.
        =========================================================== -->
   <container id="default" version="1.0">
 

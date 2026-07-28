@@ -31,6 +31,7 @@ import numpy as np
 from tokenizers import Tokenizer
 
 MAX_SEQ = 64
+PAD_TOKEN = "[PAD]"
 
 
 def main() -> None:
@@ -60,8 +61,11 @@ def main() -> None:
         body["q"] = args.query
     else:
         tok = Tokenizer.from_file(args.tokenizer)
+        pad_id = tok.token_to_id(PAD_TOKEN)
+        if pad_id is None:
+            sys.exit(f"{args.tokenizer}: no {PAD_TOKEN} token in the vocabulary")
         tok.enable_truncation(max_length=MAX_SEQ)
-        tok.enable_padding(length=MAX_SEQ, pad_id=0, pad_token="[PAD]")
+        tok.enable_padding(length=MAX_SEQ, pad_id=pad_id, pad_token=PAD_TOKEN)
         enc = tok.encode(args.query)
         body["input.query(input_ids)"] = [np.array(enc.ids, dtype=np.float32).tolist()]
         body["input.query(attention_mask)"] = [
