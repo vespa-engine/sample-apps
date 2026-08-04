@@ -7,15 +7,16 @@ import sys
 import csv
 import json
 import random
-import urllib.parse 
-import requests
 
 from metrics import ndcg, mrr, group_auc
+from vespa_client import connect, query_news, query_user_embedding
 
 
 data_dir = sys.argv[1] if len(sys.argv) > 1 else "../../mind/"
 sample_size = int(sys.argv[2]) if len(sys.argv) > 2 else 1000
 doc_type = "news"
+
+url, cert = connect()
 
 train_impressions_file = os.path.join(data_dir, "train", "behaviors.tsv")
 valid_impressions_file = os.path.join(data_dir, "dev", "behaviors.tsv")
@@ -46,34 +47,10 @@ def read_impressions_file(file_name):
     return impressions
 
 
-def parse_embedding(hit_json):
-    return hit_json["fields"]["embedding"]["values"]
-
-def query_user_embedding(user_id):
-    yql = 'select * from sources user where user_id contains "{}"'.format(user_id)
-    url = 'http://localhost:8080/search/?yql={}&hits=1'.format(urllib.parse.quote_plus(yql))  
-    result = requests.get(url).json()
-    return parse_embedding(result["root"]["children"][0])
-
-def query_news(user_vector, news_ids):
-    hits = len(news_ids)
-    nn_annotations = [
-        'targetHits:{}'.format(hits)
-    ]
-    nn_annotations = '{' + ','.join(nn_annotations) + '}'
-    nn_search = "({}nearestNeighbor(embedding, user_embedding))".format(nn_annotations)
-
+def query_news_ids(user_vector, news_ids):
     news_id_filter = [ 'news_id contains "{}"'.format(i) for i in news_ids ]
-    news_id_filter = " OR ".join(news_id_filter)
-
-    data = {
-        'hits': hits,
-        'yql': 'select * from sources news where {} AND ({})'.format(nn_search, news_id_filter),
-        'ranking.features.query(user_embedding)': str(user_vector),
-        'ranking.profile': 'recommendation',
-        'timeout': 10
-    }
-    return requests.post('http://localhost:8080/search/', json=data).json()
+    news_id_filter = "AND ({})".format(" OR ".join(news_id_filter))
+    return query_news(user_vector, len(news_ids), news_id_filter, url, cert, timeout=10)
 
 def find_hit(hits, news_id):
     for child in hits["root"]["children"]:
@@ -93,8 +70,8 @@ def predictions(hits, news_ids):
 
 def calc_impression(impression):
     user_id = impression["user_id"]
-    user_vector = query_user_embedding(user_id)
-    result = query_news(user_vector, impression["news_ids"])
+    user_vector = query_user_embedding(user_id, url, cert)
+    result = query_news_ids(user_vector, impression["news_ids"])
     preds = predictions(result, impression["news_ids"])
     labels = impression["labels"]
 
