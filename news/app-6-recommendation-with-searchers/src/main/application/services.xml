@@ -9,9 +9,7 @@
       </chain>
     </search>
     <document-api></document-api>
-    <nodes>
-      <node hostalias='node1'></node>
-    </nodes>
+    <nodes count="1" />
   </container>
 
   <content id='mind' version='1.0'>
@@ -20,9 +18,7 @@
       <document type='news' mode="index"/>
       <document type='user' mode="index"/>
     </documents>
-    <nodes>
-      <node hostalias="node1" distribution-key="0" />
-    </nodes>
+    <nodes count="1" />
   </content>
 
 </services>
