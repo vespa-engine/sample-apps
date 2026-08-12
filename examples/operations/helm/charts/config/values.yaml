@@ -1,0 +1,4 @@
+headlessName: "vespa-internal"
+serverReplicas: 3
+serverJvmArgs: "-Xms32M -Xmx128M"
+proxyJvmArgs: "-Xms32M -Xmx32M"

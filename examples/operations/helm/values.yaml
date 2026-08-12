@@ -1,0 +1,4 @@
+services:
+  enabled: true
+  content:
+    storage: 20Gi
