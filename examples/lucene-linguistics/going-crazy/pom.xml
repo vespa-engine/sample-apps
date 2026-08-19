@@ -76,4 +76,17 @@
     </dependency>
   </dependencies>
 
+  <!-- lucene-analysis-opennlp pulls opennlp-tools 1.9.4. 1.9.5 (same line) fixes
+       CVE-2026-42027 (critical). CVE-2026-40682 + CVE-2026-42440 need opennlp 2.5.9,
+       a major jump lucene 9.x is not built against - see VESPANG-3395. -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.opennlp</groupId>
+        <artifactId>opennlp-tools</artifactId>
+        <version>1.9.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>
