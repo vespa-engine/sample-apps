@@ -71,7 +71,7 @@ cymem==2.0.13
     #   preshed
     #   spacy
     #   thinc
-datasets==5.0.0
+datasets==5.0.1
     # via
     #   mteb
     #   vidore-benchmark
