@@ -11,9 +11,32 @@
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.11.4</junit.version>
-        <vespa_version>8.695.32</vespa_version>
+        <junit.version>5.14.4</junit.version>
+        <vespa_version>8.738.17</vespa_version>
     </properties>
+
+    <!-- vespa-feed-client 8.738.17 still pulls Bouncy Castle 1.84, affected by
+         CVE-2026-8763 (critical) + 16 HIGH CVEs fixed in BC 1.85; pinned here
+         until the platform ships 1.85+. Full rationale: PR / VESPANG-3395. -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>1.85.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>1.85</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk18on</artifactId>
+                <version>1.85</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -36,13 +59,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.22.1</version>
+            <version>2.22.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.18</version>
+            <version>1.6.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
