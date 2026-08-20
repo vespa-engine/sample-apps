@@ -38,3 +38,7 @@ search:
     - url: https://b4f1a714.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - suggestions_index.json
+    # vespacloud-docsearch.cloud-enclave | prod.aws-us-east-1
+    - url: https://ab1642f7.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json
