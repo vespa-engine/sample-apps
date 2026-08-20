@@ -45,6 +45,12 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analysis-opennlp</artifactId>
       <version>${lucene.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
