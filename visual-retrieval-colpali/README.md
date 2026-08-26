@@ -208,5 +208,5 @@ Huge thanks to the amazing projects that made it a joy to create this demo üôè
 - Freeing us from python dependency hell - [uv](https://astral.sh/uv/)
 - Allowing us to build **beautiful** full stack web apps in Python [FastHTML](https://fastht.ml/)
 - Introducing the ColPali architecture - [ColPali](https://huggingface.co/vidore/colpali-v1.2)
-- Adding `shadcn` components to FastHTML - [Shad4Fast](https://www.shad4fasthtml.com/)
+- Adding `shadcn` components to FastHTML - [Shad4Fast](https://github.com/curtis-allan/Shad4Fasthtml)
   
