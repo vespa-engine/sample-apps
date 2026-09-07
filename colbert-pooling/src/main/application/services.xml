@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<services version="1.0" xmlns:deploy="vespa" minimum-required-vespa-version="8.450.0">
+
+    <container id="default" version="1.0">
+        <document-api/>
+        <search>
+            <chain id="default" inherits="vespa">
+                <searcher id="ai.vespa.colbert.ColBertSearcher" bundle="colbert-pooling"/>
+            </chain>
+        </search>
+
+        <!-- Standard ColBERT (no pooling) – produces non-pooled bfloat16 embeddings -->
+        <component id="colbert"
+                   class="ai.vespa.colbert.PoolingColBertEmbedder"
+                   bundle="colbert-pooling">
+            <config name="ai.vespa.colbert.pooling-colbert-embedder">
+                <transformerModelPath>models/model_int8.onnx</transformerModelPath>
+                <tokenizerPath>models/tokenizer.json</tokenizerPath>
+                <poolFactor>0</poolFactor>
+            </config>
+        </component>
+
+        <!-- Pooled ColBERT – produces hierarchically pooled embeddings -->
+        <component id="colbert-pooled"
+                   class="ai.vespa.colbert.PoolingColBertEmbedder"
+                   bundle="colbert-pooling">
+            <config name="ai.vespa.colbert.pooling-colbert-embedder">
+                <transformerModelPath>models/model_int8.onnx</transformerModelPath>
+                <tokenizerPath>models/tokenizer.json</tokenizerPath>
+                <poolFactor>2</poolFactor>
+            </config>
+        </component>
+
+        <nodes>
+            <node hostalias="node1"/>
+        </nodes>
+    </container>
+
+    <content id="text" version="1.0">
+        <min-redundancy>1</min-redundancy>
+        <documents>
+            <document type="doc" mode="index"/>
+        </documents>
+        <nodes>
+            <node hostalias="node1" distribution-key="0"/>
+        </nodes>
+    </content>
+
+</services>
