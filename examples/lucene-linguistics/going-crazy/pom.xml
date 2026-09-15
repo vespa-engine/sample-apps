@@ -82,15 +82,15 @@
     </dependency>
   </dependencies>
 
-  <!-- lucene-analysis-opennlp pulls opennlp-tools 1.9.4. 1.9.5 (same line) fixes
-       CVE-2026-42027 (critical). CVE-2026-40682 + CVE-2026-42440 need opennlp 2.5.9,
-       a major jump lucene 9.x is not built against - see VESPANG-3395. -->
+  <!-- lucene-analysis-opennlp pulls opennlp-tools 1.9.4; pinned forward to clear
+       CVE-2026-40682/-42027/-42440 (fixed in 2.5.9) and CVE-2026-82617 (ReDoS in
+       RegexNameFinderFactory, fixed in 2.5.12) - see VESPANG-3395. -->
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.apache.opennlp</groupId>
         <artifactId>opennlp-tools</artifactId>
-        <version>2.5.9</version>
+        <version>2.5.12</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
