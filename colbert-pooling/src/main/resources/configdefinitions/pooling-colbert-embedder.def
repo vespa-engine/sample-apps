@@ -1,0 +1,33 @@
+namespace=ai.vespa.colbert
+
+# Model files – deployed with the application package
+transformerModelPath path
+tokenizerPath path
+
+# Token limits
+maxQueryTokens int default=39
+maxDocumentTokens int default=512
+transformerMaxTokens int default=518
+
+# Special token IDs (defaults for lightonai/ColBERT-Zero)
+transformerStartSequenceToken int default=50281
+transformerEndSequenceToken int default=50282
+transformerMaskToken int default=50284
+transformerPadToken int default=50284
+queryTokenId int default=50368
+documentTokenId int default=50369
+
+# Text to prepend to the input in query context (e.g. "search_query: ")
+prependQuery string default="search_query: "
+
+# Text to prepend to the input in document context (e.g. "search_document: ")
+prependDocument string default="search_document: "
+
+# ONNX input/output tensor names
+transformerInputIds string default="input_ids"
+transformerAttentionMask string default="attention_mask"
+transformerOutput string default="output"
+
+# Hierarchical token pooling factor.
+# 0 = no pooling (standard ColBERT); 2 = halve token count; 3 = keep ~1/3, etc.
+poolFactor int default=2

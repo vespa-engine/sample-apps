@@ -1,0 +1,4 @@
+<query-profile-type id="root">
+    <field name="ranking.features.query(qt)" type="tensor&lt;float&gt;(qt{},x[128])" />
+    <field name="ranking.features.query(qtb)" type="tensor&lt;int8&gt;(qt{},x[16])" />
+</query-profile-type>
