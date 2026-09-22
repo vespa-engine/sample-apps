@@ -26,6 +26,14 @@ search:
     - url: https://ba97230a.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - suggestions_index.json
+    # vespacloud-docsearch | prod.aws-us-east-1
+    - url: https://b42c9416.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json
+    # vespacloud-docsearch | prod.gcp-us-central1
+    - url: https://fe07fef0.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json
     # vespacloud-docsearch.cloud-enclave | prod.aws-us-east-1c
     - url: https://cd560c23.b68a8c0d.z.vespa-app.cloud/
       indexes:
@@ -36,5 +44,13 @@ search:
         - suggestions_index.json
     # vespacloud-docsearch.cloud-enclave | prod.gcp-us-central1-f
     - url: https://b4f1a714.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json
+    # vespacloud-docsearch.cloud-enclave | prod.aws-us-east-1
+    - url: https://ab1642f7.b68a8c0d.z.vespa-app.cloud/
+      indexes:
+        - suggestions_index.json
+    # vespacloud-docsearch.cloud-enclave | prod.gcp-us-central1
+    - url: https://af7a4515.b68a8c0d.z.vespa-app.cloud/
       indexes:
         - suggestions_index.json
