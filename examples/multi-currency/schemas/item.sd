@@ -1,0 +1,224 @@
+schema item {
+    document item {
+        field item_name type string {
+            indexing: index | summary
+            match: text
+            index: enable-bm25
+        }
+        field price type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+        field price_usd type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+        field price_aud type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_brl type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_cad type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_chf type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_cny type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_czk type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_dkk type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_eur type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_gbp type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_hkd type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_huf type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_idr type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_ils type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_inr type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_jpy type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_mad type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_mxn type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_myr type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_nok type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_nzd type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_php type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_pln type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_sgd type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_sek type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_thb type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_try type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_twd type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_vnd type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field price_zar type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+
+        field currency_ref type reference<currency> {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+    }
+    import field currency_ref.code as currency_code {}
+    import field currency_ref.idx as currency_idx {}
+    import field currency_ref.factor as currency_factor {}
+
+    fieldset default {
+    	fields: item_name
+    }
+
+    rank-profile default {
+        function price_usd() {
+            expression: attribute(price) * attribute(currency_factor)
+        }
+        first-phase {
+            expression: bm25(item_name) * log(price_usd)
+        }
+        summary-features {
+            attribute(price)
+            price_usd
+            bm25(item_name)
+        }
+    }
+
+    document-summary default {
+        summary item_name {}
+        summary currency_factor {}
+    }
+}
