@@ -598,11 +598,11 @@ for https ports for container clusters for secure client access:
 $ mv services.xml services.xml.open; mv services.xml.secure services.xml
 </pre>
 <pre data-test="exec" data-test-assert-contains="prepared and activated.">
-$ zip -r - . -x "tls/*" "pki/*" "scripts/*" "gke/*" "img/*" README.md .gitignore services.xml.open "*.yaml" | \
-    curl \
-      --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
-      --header Content-Type:application/zip --data-binary @- \
-      https://localhost:19071/application/v2/tenant/default/prepareandactivate
+$ zip -r /tmp/multinode-ha-app.zip . -x "tls/*" "pki/*" "scripts/*" "gke/*" "img/*" README.md .gitignore services.xml.open "*.yaml"
+$ curl \
+    --key pki/vespa/host.key --cert pki/vespa/host.pem --cacert pki/vespa/ca-vespa.pem \
+    --header Content-Type:application/zip --data-binary @/tmp/multinode-ha-app.zip \
+    https://localhost:19071/application/v2/tenant/default/prepareandactivate
 </pre>
 The changes are:
 ```xml
