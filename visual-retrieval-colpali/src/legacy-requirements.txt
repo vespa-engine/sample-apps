@@ -258,7 +258,7 @@ numpy==2.5.2
     #   thinc
     #   transformers
     #   vidore-benchmark
-oauthlib==3.3.1
+oauthlib==4.0.0
     # via python-fasthtml
 packaging==26.3
     # via
