@@ -270,7 +270,8 @@ def query_vespa(preferences, facet_filters=None):
         },
         "hits": 10,
         "ranking": "rank_cars",
-        "presentation.summary": "attributes",
+        # default summary, so we also get car_features, rendered as {label: value}
+        "presentation.format.tensors": "short-value",
         "ranking.features.query(user_preferences)": '{' + ','.join(features) + '}',
         "trace.level": 1
     }
@@ -450,7 +451,7 @@ def chat():
     try:
         # Get response from OpenAI
         response = client.responses.create(
-            model="gpt-5-mini",
+            model="gpt-6-luna",
             input=openai_messages,
             reasoning={"effort": "low"}
         )

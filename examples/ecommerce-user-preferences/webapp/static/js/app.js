@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Display search results and facets
             if (data.search_results) {
-                displaySearchResults(data.search_results, data.facet_results);
+                displaySearchResults(data.search_results, data.facet_results, data.preferences);
             }
         } catch (error) {
             console.error('Error fetching initial results:', error);
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Display search results if available
             if (data.search_results) {
-                displaySearchResults(data.search_results, data.facet_results);
+                displaySearchResults(data.search_results, data.facet_results, data.preferences);
             } else {
                 // Show initial state for car results but keep facets if they exist
                 resultsContainer.innerHTML = `
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Display search results if available
             if (data.search_results) {
-                displaySearchResults(data.search_results, data.facet_results);
+                displaySearchResults(data.search_results, data.facet_results, data.preferences);
             }
         } catch (error) {
             console.error('Error updating preferences:', error);
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Display search results if available
             if (data.search_results) {
-                displaySearchResults(data.search_results, data.facet_results);
+                displaySearchResults(data.search_results, data.facet_results, data.preferences);
             }
         } catch (error) {
             console.error('Error removing preference:', error);
@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Display updated search results
             if (data.search_results) {
-                displaySearchResults(data.search_results, data.facet_results);
+                displaySearchResults(data.search_results, data.facet_results, data.preferences);
             }
         } catch (error) {
             console.error('Error updating preferences:', error);
@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Display search results
-    function displaySearchResults(results, facetResults) {
+    function displaySearchResults(results, facetResults, preferences) {
         // Clear previous results
         resultsContainer.innerHTML = '';
         
@@ -581,11 +581,89 @@ document.addEventListener('DOMContentLoaded', function() {
             const fuelType = carCard.querySelector('.fuelType');
             fuelType.textContent = car.fields.fuelType;
             
+            // Clicking the card flips between the car and its score breakdown
+            renderScoreBreakdown(carCard.querySelector('.car-score'), preferences || {}, car.fields.car_features || {});
+            carCard.addEventListener('click', () => carCard.classList.toggle('show-score'));
+            
             resultsContainer.appendChild(carNode);
         });
         
         // Reset scroll position to top after displaying new results
         resultsContainer.scrollTop = 0;
+    }
+    
+    // Show how the rank_cars score is computed:
+    // sum(query(user_preferences) * attribute(car_features))
+    function renderScoreBreakdown(container, preferences, carFeatures) {
+        // Multiply the cells whose label is in both tensors, then add them up
+        const products = {};
+        Object.entries(preferences).forEach(([key, weight]) => {
+            if (carFeatures.hasOwnProperty(key)) {
+                products[key] = weight * carFeatures[key];
+            }
+        });
+        const relevance = Object.values(products).reduce((sum, value) => sum + value, 0);
+        const isCommon = key => products.hasOwnProperty(key);
+        
+        const formatNumber = value => parseFloat(value.toFixed(3)).toString();
+        
+        // Helper functions to render a heading and a label/value cell
+        const createHeading = title => {
+            const heading = document.createElement('div');
+            heading.className = 'spec-label';
+            heading.textContent = title;
+            return heading;
+        };
+        
+        const createCell = (key, tensor) => {
+            const cell = document.createElement('div');
+            if (!tensor.hasOwnProperty(key)) {
+                // This tensor doesn't have the label: leave the cell empty
+                return cell;
+            }
+            
+            cell.className = 'score-cell';
+            if (isCommon(key)) {
+                cell.classList.add('common');
+            }
+            
+            const keySpan = document.createElement('span');
+            keySpan.textContent = key;
+            cell.appendChild(keySpan);
+            
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'score-value';
+            valueSpan.textContent = formatNumber(tensor[key]);
+            cell.appendChild(valueSpan);
+            
+            return cell;
+        };
+        
+        // One row per label, in alphabetical order, so matching cells line up
+        const labels = [...new Set([...Object.keys(preferences), ...Object.keys(carFeatures)])].sort();
+        
+        const table = document.createElement('div');
+        table.className = 'score-table';
+        ['User preferences', 'Car features', 'Products'].forEach(title => {
+            table.appendChild(createHeading(title));
+        });
+        labels.forEach(key => {
+            [preferences, carFeatures, products].forEach(tensor => {
+                table.appendChild(createCell(key, tensor));
+            });
+        });
+        container.appendChild(table);
+        
+        // The relevance goes next to the table
+        const relevanceColumn = document.createElement('div');
+        relevanceColumn.appendChild(createHeading('Relevance'));
+        
+        const total = document.createElement('div');
+        total.className = 'score-relevance';
+        total.textContent = formatNumber(relevance);
+        relevanceColumn.appendChild(total);
+        
+        container.appendChild(relevanceColumn);
     }
     
     // Function to load car images asynchronously
