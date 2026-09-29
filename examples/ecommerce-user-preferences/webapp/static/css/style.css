@@ -231,6 +231,61 @@ body {
     font-size: 1.1em;
 }
 
+/* Score breakdown, shown instead of the image and specs when a card is clicked */
+.car-card {
+    cursor: pointer;
+}
+
+.car-score,
+.car-card.show-score .car-image,
+.car-card.show-score .car-specs {
+    display: none;
+}
+
+/* Relevance sits next to the table, or below it if the card is too narrow */
+.car-card.show-score .car-score {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* One row per label across the three tensor columns */
+.score-table {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 20px;
+    align-content: start;
+}
+
+.car-score .spec-label {
+    margin-bottom: 6px;
+}
+
+.score-cell {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.9em;
+    color: #333;
+}
+
+.score-cell.common {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.score-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.score-relevance {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: #333;
+    font-variant-numeric: tabular-nums;
+}
+
 /* Add a loading state for images */
 .car-image.loading {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
