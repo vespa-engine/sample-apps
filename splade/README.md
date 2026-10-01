@@ -159,7 +159,7 @@ It's also possible to retrieve/query using the `wand` vespa query operator. See 
 the documentation about using the [wand](https://docs.vespa.ai/en/using-wand-with-vespa.html#wand).
 
 We can also brute-force score and rank all documents that match a filter, this can also be
-accelerated by [using multiple search threads per query](https://search.vespa.ai/search?query=using%20multiple%20threads%20per%20search). 
+accelerated by [using multiple search threads per query](https://search.vespa.ai/query?query=using%20multiple%20threads%20per%20search). 
 
 <pre>
 vespa query 'yql=select * from doc where true' \
