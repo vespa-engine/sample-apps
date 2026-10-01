@@ -52,7 +52,7 @@ from vespa.application import Vespa
 from vespa.io import VespaResponse
 
 # Google Generative AI
-import google.generativeai as genai
+from google import genai
 
 # Torch and other ML libraries
 import torch
@@ -64,9 +64,11 @@ from pypdf import PdfReader
 # ColPali model and processor
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
-from vidore_benchmark.utils.image_utils import scale_image, get_base64_image
 
 # Other utilities
+import base64
+import io
+from PIL import Image
 from bs4 import BeautifulSoup
 import httpx
 from urllib.parse import urljoin, urlparse
@@ -78,6 +80,24 @@ load_dotenv()
 
 # Avoid warning from huggingface tokenizers
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+
+# Image helpers from vidore-benchmark 4.x, which no longer ships them.
+def scale_image(image: Image.Image, new_height: int = 1024) -> Image.Image:
+    """Scale an image to a new height while maintaining the aspect ratio."""
+    width, height = image.size
+    new_width = int(new_height * width / height)
+    return image.resize((new_width, new_height))
+
+
+def get_base64_image(img: Image.Image, add_url_prefix: bool = True) -> str:
+    """Convert a PIL image to a JPEG-base64 string."""
+    buffered = io.BytesIO()
+    img.save(buffered, format="jpeg")
+    b64_data = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return f"data:image/jpeg;base64,{b64_data}" if add_url_prefix else b64_data
+
+
 # -
 
 # ### Create a free trial in Vespa Cloud
@@ -123,7 +143,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or input(
 MODEL_NAME = "vidore/colpali-v1.2"
 
 # Configure Google Generative AI
-genai.configure(api_key=GEMINI_API_KEY)
+gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
 
 # Set device for Torch
 device = get_torch_device("auto")
@@ -132,7 +153,7 @@ print(f"Using device: {device}")
 # Load the ColPali model and processor
 model = ColPali.from_pretrained(
     MODEL_NAME,
-    torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+    dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
     device_map=device,
 ).eval()
 
@@ -352,7 +373,7 @@ print(f"Number of text with length == 0: {Counter(text_lengths)[0]}")
 #
 # The prompt for generating queries is taken from [this](https://danielvanstrien.xyz/posts/post-with-code/colpali/2024-09-23-generate_colpali_dataset.html#an-update-retrieval-focused-prompt) wonderful blog post by Daniel van Strien.
 #
-# We will use the Gemini API to generate these queries, with `gemini-1.5-flash-8b` as the model.
+# We will use the Gemini API to generate these queries, using `GEMINI_MODEL` from the configuration above.
 #
 
 # +
@@ -408,17 +429,15 @@ Only return JSON. Don't return any extra explanation text. """
 prompt_text, pydantic_model = get_retrieval_prompt()
 
 # +
-gemini_model = genai.GenerativeModel("gemini-1.5-flash-8b")
-
-
 def generate_queries(image, prompt_text, pydantic_model):
     try:
-        response = gemini_model.generate_content(
-            [image, "\n\n", prompt_text],
-            generation_config=genai.GenerationConfig(
-                response_mime_type="application/json",
-                response_schema=pydantic_model,
-            ),
+        response = gemini_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=[image, "\n\n", prompt_text],
+            config={
+                "response_mime_type": "application/json",
+                "response_schema": pydantic_model,
+            },
         )
         queries = json.loads(response.text)
     except Exception as _e:
@@ -447,22 +466,22 @@ pdf_pages[46]["queries"]
 # Generate queries async - keeping for now as we probably need when applying to the full dataset
 # import asyncio
 # from tenacity import retry, stop_after_attempt, wait_exponential
-# import google.generativeai as genai
 # from tqdm.asyncio import tqdm_asyncio
 
 # max_in_flight = 200  # Maximum number of concurrent requests
 
 
-# async def generate_queries_for_image_async(model, image, semaphore):
+# async def generate_queries_for_image_async(client, image, semaphore):
 #     @retry(stop=stop_after_attempt(3), wait=wait_exponential(), reraise=True)
 #     async def _generate():
 #         async with semaphore:
-#             result = await model.generate_content_async(
-#                 [image, "\n\n", prompt_text],
-#                 generation_config=genai.GenerationConfig(
-#                     response_mime_type="application/json",
-#                     response_schema=pydantic_model,
-#                 ),
+#             result = await client.aio.models.generate_content(
+#                 model=GEMINI_MODEL,
+#                 contents=[image, "\n\n", prompt_text],
+#                 config={
+#                     "response_mime_type": "application/json",
+#                     "response_schema": pydantic_model,
+#                 },
 #             )
 #             return json.loads(result.text)
 
@@ -474,14 +493,13 @@ pdf_pages[46]["queries"]
 
 
 # async def enrich_pdfs():
-#     gemini_model = genai.GenerativeModel("gemini-1.5-flash-8b")
 #     semaphore = asyncio.Semaphore(max_in_flight)
 #     tasks = []
 #     for pdf in pdf_pages:
 #         pdf["queries"] = []
 #         image = pdf.get("image")
 #         if image:
-#             task = generate_queries_for_image_async(gemini_model, image, semaphore)
+#             task = generate_queries_for_image_async(gemini_client, image, semaphore)
 #             tasks.append((pdf, task))
 
 #     # Run the tasks concurrently using asyncio.gather()

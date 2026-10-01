@@ -8,7 +8,8 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from fastcore.parallel import threaded
 from fasthtml.common import (
     Aside,
@@ -107,7 +108,8 @@ vespa_app: Vespa = VespaQueryClient(logger=logger)
 thread_pool = ThreadPoolExecutor()
 # Gemini config
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
 If the user query can not be interpreted as a question, or if the answer to the query can not be inferred from the images,
 answer with the exact phrase "I am sorry, I can't find enough relevant information on these pages to answer your question.".
@@ -115,9 +117,6 @@ Your response should be HTML formatted, but only simple tags, such as <b>. <p>, 
 This means that newlines will be replaced with <br> tags, bold text will be enclosed in <b> tags, and so on.
 Do NOT include backticks (`) in your response. Only simple HTML tags and text.
 """
-gemini_model = genai.GenerativeModel(
-    "gemini-2.5-flash", system_instruction=GEMINI_SYSTEM_PROMPT
-)
 STATIC_DIR = Path("static")
 IMG_DIR = STATIC_DIR / "full_images"
 SIM_MAP_DIR = STATIC_DIR / "sim_maps"
@@ -394,8 +393,10 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
         return text.replace("\n", "<br>")
 
     response_text = ""
-    async for chunk in await gemini_model.generate_content_async(
-        images + ["\n\n Query: ", query], stream=True
+    async for chunk in await gemini_client.aio.models.generate_content_stream(
+        model=GEMINI_MODEL,
+        contents=images + ["\n\n Query: ", query],
+        config=types.GenerateContentConfig(system_instruction=GEMINI_SYSTEM_PROMPT),
     ):
         if chunk.text:
             response_text += chunk.text

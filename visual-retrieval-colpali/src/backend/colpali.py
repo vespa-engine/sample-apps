@@ -11,9 +11,7 @@ import matplotlib.cm as cm
 
 from colpali_engine.models import ColPali, ColPaliProcessor
 from colpali_engine.utils.torch_utils import get_torch_device
-from vidore_benchmark.interpretability.torch_utils import (
-    normalize_similarity_map_per_query_token,
-)
+from colpali_engine.interpretability.similarity_map_utils import normalize_similarity_map
 from functools import lru_cache
 import logging
 
@@ -23,7 +21,7 @@ class SimMapGenerator:
     Generates similarity maps based on query embeddings and image patches using the ColPali model.
     """
 
-    colormap = cm.get_cmap("viridis")  # Preload colormap for efficiency
+    colormap = cm.viridis  # Preload colormap for efficiency
 
     def __init__(
         self,
@@ -54,7 +52,7 @@ class SimMapGenerator:
         """
         model = ColPali.from_pretrained(
             self.model_name,
-            torch_dtype=torch.bfloat16,  # Note that the embeddings created during feed were float32 -> binarized, yet setting this seem to produce the most similar results both locally (mps) and HF (Cuda)
+            dtype=torch.bfloat16,  # Note that the embeddings created during feed were float32 -> binarized, yet setting this seem to produce the most similar results both locally (mps) and HF (Cuda)
             device_map=self.device,
         ).eval()
 
@@ -92,9 +90,9 @@ class SimMapGenerator:
         vespa_sim_map_tensor = self._prepare_similarity_map_tensor(
             query_embs, vespa_sim_maps
         )
-        similarity_map_normalized = normalize_similarity_map_per_query_token(
-            vespa_sim_map_tensor
-        )
+        similarity_map_normalized = normalize_similarity_map(
+            vespa_sim_map_tensor.flatten(0, 1)
+        ).reshape(vespa_sim_map_tensor.shape)
 
         for idx, img in enumerate(original_images):
             for token_idx, token in token_idx_map.items():
@@ -139,7 +137,7 @@ class SimMapGenerator:
             torch.Tensor: The prepared similarity map tensor.
         """
         vespa_sim_map_tensor = torch.zeros(
-            (len(vespa_sim_maps), query_embs.size(1), self.n_patch, self.n_patch)
+            (len(vespa_sim_maps), query_embs.size(0), self.n_patch, self.n_patch)
         )
         for idx, vespa_sim_map in enumerate(vespa_sim_maps):
             for cell in vespa_sim_map["quantized"]["cells"]:
