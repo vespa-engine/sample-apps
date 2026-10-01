@@ -11,18 +11,16 @@ dependencies = [
     "huggingface-hub",
     "pyvespa>=0.50.0",
     "vespacli",
-    "torch",
-    "vidore-benchmark[interpretability]>=5.0.0,<5.1.0",
-    "colpali-engine==0.3.17",
+    "torch>=2.13.0",
+    "colpali-engine[interpretability]==0.3.18",
     "einops",
     "pypdf",
     "setuptools",
     "python-dotenv",
     "shad4fast>=1.2.1",
-    "google-generativeai>=0.7.2",
+    "google-genai>=1.0.0",
     "spacy",
-    "transformers==5.12.0",
-    "pip",
+    "transformers==5.17.0",
     "h11>=0.16.0",
 ]
 
@@ -35,8 +33,13 @@ feed = [
     "pydantic",
     "beautifulsoup4",
     "pdf2image",
-    "google-generativeai",
+    "google-genai>=1.0.0",
 ]
+
+# Hugging Face installs these next to src/requirements.txt; keep gradio equal to sdk_version in src/README.md.
+[dependency-groups]
+huggingface = ["gradio[oauth,mcp]==6.29.0", "spaces"]
+
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
 exclude = [
