@@ -17,6 +17,10 @@ def main():
     parser.add_argument("--load-model", action="store_true")
     args = parser.parse_args()
     source = args.source.resolve()
+    # Resolve before changing into the source directory.
+    env_file = args.env_file.resolve() if args.env_file else None
+    if env_file and not env_file.is_file():
+        parser.error(f"--env-file {args.env_file} does not exist")
     os.chdir(source)
     sys.path.insert(0, str(source))
 
@@ -27,8 +31,8 @@ def main():
     from starlette.testclient import TestClient
     import torch
 
-    if args.env_file:
-        load_dotenv(args.env_file.resolve())
+    if env_file:
+        load_dotenv(env_file)
     else:
         os.environ.update(
             {

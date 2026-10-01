@@ -38,7 +38,7 @@ VESPA_CLOUD_SECRET_TOKEN=vespa_cloud_xxxxxxxx
 GEMINI_API_KEY=asdf
 ```
 
-Optionally, set `GEMINI_MODEL` to use another Gemini model than the default `gemini-2.5-flash`.
+Optionally, set `GEMINI_MODEL` to use another Gemini model than the default `gemini-3.8-flash`.
 
 If you want to deploy the application to Huggingface, you also need to set a `HF_TOKEN` variable, with write permissions.
 This is personal, and must be created at [huggingface](https://huggingface.co/settings/tokens).
@@ -56,7 +56,7 @@ Skip to [Installing dependencies using `uv`](#installing-dependencies-using-uv) 
 
 ### Installing dependencies using `pip`
 
-`src/requirements.txt` contains the pinned versions used by the Hugging Face Space:
+`src/requirements.txt` contains the pinned versions used by the Hugging Face Space. It is compiled for Python 3.11:
 
 ```bash
 pip install -r src/requirements.txt
@@ -113,6 +113,7 @@ This will make sure that the dependencies in your `pyproject.toml` are compiled 
 Run it from this directory, because `--group` reads the `pyproject.toml` in the current directory.
 The `huggingface` group contains the Gradio SDK and `spaces` packages that Hugging Face installs next to `requirements.txt`, so the pins stay compatible with them.
 If you change the Gradio version there, set the same `sdk_version` in `src/README.md`.
+The command keeps the existing pins where they still satisfy `pyproject.toml`. To update a package, for example to pick up a security fix, add `--upgrade-package <package>`.
 
 ### Deploying to huggingface
 
@@ -160,6 +161,7 @@ python3.11 -m venv /tmp/colpali-hf-test
 The smoke test imports the app and requests its pages, with Vespa and the ColPali model mocked.
 Add `--env-file .env --load-model` to also connect to your Vespa application and load the real model (about 6 GB on the first download).
 The `Verify ColPali dependencies and startup` GitHub workflow runs these checks, including `--load-model`, on pull requests that change this directory.
+It also recompiles `src/requirements.txt` and fails if the result differs from the committed file.
 
 - **The Space build fails at `pip install` with `ResolutionImpossible`:** a pin in `src/requirements.txt` conflicts with what Hugging Face installs next to it (for example, `gradio[mcp]` limits the `pydantic` version). Recompile `src/requirements.txt` as described above, and check that `sdk_version` matches the Gradio version in `pyproject.toml`.
 - **Results look unrelated to the query, or the model load prints a `LOAD REPORT` with `MISSING` LoRA keys:** the installed `transformers` version doesn't load the ColPali adapter for this `colpali-engine` version. `--load-model` in the smoke test checks for this.

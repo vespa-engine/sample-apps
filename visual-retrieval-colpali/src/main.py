@@ -109,7 +109,7 @@ thread_pool = ThreadPoolExecutor()
 # Gemini config
 
 gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 GEMINI_SYSTEM_PROMPT = """If the user query is a question, try your best to answer it based on the provided images. 
 If the user query can not be interpreted as a question, or if the answer to the query can not be inferred from the images,
 answer with the exact phrase "I am sorry, I can't find enough relevant information on these pages to answer your question.".
@@ -357,7 +357,7 @@ async def get_suggestions(query: str = ""):
 async def message_generator(query_id: str, query: str, doc_ids: list):
     """Generator function to yield SSE messages for chat response"""
     images = []
-    num_images = 3  # Number of images before firing chat request
+    num_images = min(3, len(doc_ids))  # Number of images before firing chat request
     max_wait = 10  # seconds
     start_time = time.time()
     # Check if full images are ready on disk
@@ -384,7 +384,7 @@ async def message_generator(query_id: str, query: str, doc_ids: list):
     # yield message with number of images ready
     yield f"event: message\ndata: Generating response based on {len(images)} images...\n\n"
     if not images:
-        yield "event: message\ndata: Failed to send images to Gemini 2.5!\n\n"
+        yield "event: message\ndata: Failed to send images to Gemini!\n\n"
         yield "event: close\ndata: \n\n"
         return
 
