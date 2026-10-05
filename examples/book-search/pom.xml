@@ -12,30 +12,8 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.14.4</junit.version>
-        <vespa_version>8.738.17</vespa_version>
+        <vespa_version>8.763.13</vespa_version>
     </properties>
-
-    <!-- vespa-feed-client still pulls an older Bouncy Castle; pinned to 1.86, which
-         fixes CVE-2026-17508, CVE-2026-71888 and CVE-2026-71889. Full rationale: PR / VESPANG-3395. -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.86</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpkix-jdk18on</artifactId>
-                <version>1.86</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcutil-jdk18on</artifactId>
-                <version>1.86</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -64,7 +42,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.6.4</version>
+            <version>1.6.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
