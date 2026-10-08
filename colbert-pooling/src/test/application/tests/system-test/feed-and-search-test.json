@@ -1,0 +1,84 @@
+[
+    {
+        "name": "colbert-pooling system test",
+        "defaults": {
+            "cluster": "default",
+            "parameters": {
+                "timeout": "10s"
+            }
+        },
+        "steps": [
+            {
+                "name": "Feed document 0",
+                "request": {
+                    "method": "POST",
+                    "uri": "/document/v1/doc/doc/docid/0",
+                    "body": {
+                        "fields": {
+                            "doc_id": "0",
+                            "title": "Solar System Overview",
+                            "text": "The solar system consists of the Sun and the celestial bodies that orbit it, including eight planets, their moons, dwarf planets, asteroids, and comets."
+                        }
+                    }
+                },
+                "response": { "code": 200 }
+            },
+            {
+                "name": "Feed document 1",
+                "request": {
+                    "method": "POST",
+                    "uri": "/document/v1/doc/doc/docid/1",
+                    "body": {
+                        "fields": {
+                            "doc_id": "1",
+                            "title": "Machine Learning Basics",
+                            "text": "Machine learning is a branch of artificial intelligence where computers learn patterns from data without being explicitly programmed."
+                        }
+                    }
+                },
+                "response": { "code": 200 }
+            },
+            {
+                "name": "Feed document 2",
+                "request": {
+                    "method": "POST",
+                    "uri": "/document/v1/doc/doc/docid/2",
+                    "body": {
+                        "fields": {
+                            "doc_id": "2",
+                            "title": "Ocean Currents",
+                            "text": "Ocean currents are continuous movements of seawater driven by wind, temperature differences, salinity, and the Earth rotation."
+                        }
+                    }
+                },
+                "response": { "code": 200 }
+            },
+            {
+                "name": "BM25 query",
+                "request": {
+                    "method": "POST",
+                    "uri": "/search/",
+                    "body": {
+                        "yql": "select * from doc where userQuery()",
+                        "query": "machine learning artificial intelligence",
+                        "hits": 3
+                    }
+                },
+                "response": {
+                    "code": 200,
+                    "body": {
+                        "root": {
+                            "children": [
+                                {
+                                    "fields": {
+                                        "doc_id": "1"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    }
+]
