@@ -1,0 +1,11 @@
+apiVersion: v2
+name: vespa
+version: 0.1.0
+dependencies:
+  - name: config
+    alias: config
+    version: 0.1.0
+  - name: services
+    alias: services
+    version: 0.1.0
+    condition: services.enabled
