@@ -89,6 +89,9 @@ public class ReviewProcessor extends DocumentProcessor {
                                 // Can happen if review is fed for a non-existing item. Skip for now.
                                 return Progress.DONE;
                             }
+                        } else {
+                            // No item or rating to update, so there is no response to wait for.
+                            return Progress.DONE;
                         }
 
                     }
