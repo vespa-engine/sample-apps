@@ -26,7 +26,7 @@ services:
       - vespanet
     command: configserver,services
     healthcheck:
-      test: curl http://localhost:19071/state/v1/health
+      test: curl --silent --show-error http://localhost:19071/state/v1/health
       timeout: 10s
       retries: 3
       start_period: 40s
@@ -48,7 +48,7 @@ services:
       - vespanet
     command: configserver,services
     healthcheck:
-      test: curl http://localhost:19071/state/v1/health
+      test: curl --silent --show-error http://localhost:19071/state/v1/health
       timeout: 10s
       retries: 3
       start_period: 40s
@@ -70,7 +70,7 @@ services:
       - vespanet
     command: configserver,services
     healthcheck:
-      test: curl http://localhost:19071/state/v1/health
+      test: curl --silent --show-error http://localhost:19071/state/v1/health
       timeout: 10s
       retries: 3
       start_period: 40s
