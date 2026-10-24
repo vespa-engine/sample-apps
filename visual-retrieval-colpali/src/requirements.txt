@@ -376,7 +376,7 @@ pyjwt==2.15.1
     # via mcp
 pyparsing==3.3.3
     # via matplotlib
-pypdf==6.21.1
+pypdf==6.21.2
     # via visual-retrieval-colpali (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
