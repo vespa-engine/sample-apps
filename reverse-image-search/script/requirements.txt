@@ -3,8 +3,10 @@ transformers>=5.20.2
 torchvision>=0.29.1
 pillow>=13.0.0
 numpy>=2.4.6
+# [CANNOT-FIX] CVE-2026-57845: affects datasets through 5.1.0, the latest release.
+# No fixed version exists yet. Full rationale: VESPANG-3395. Verified 2026-10-26.
 datasets>=5.1.0
 pyvespa>=1.2.9
-huggingface_hub>=2.2.0
+huggingface_hub>=2.3.0
 hf-transfer>=0.1.9
 httpx>=0.28.1

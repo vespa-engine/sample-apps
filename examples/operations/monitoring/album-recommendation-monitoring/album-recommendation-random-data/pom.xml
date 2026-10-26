@@ -11,7 +11,8 @@
 
     <properties>
         <vespa_version>8.763.13</vespa_version>
-        <org.immutables.version>2.12.2</org.immutables.version>
+        <org.immutables.version>2.12.3</org.immutables.version>
+        <jetty.version>12.0.40</jetty.version>
     </properties>
 
     <!-- vespa-feed-client still pulls an older Bouncy Castle; pinned to 1.86, which
@@ -32,6 +33,15 @@
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcutil-jdk18on</artifactId>
                 <version>1.86</version>
+            </dependency>
+            <!-- vespa-feed-client 8.763.13 pulls Jetty 12.0.38; 12.0.39 fixes CVE-2026-77711 in jetty-client.
+                 The BOM moves every Jetty module to the same version. Full rationale: VESPANG-3395. -->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-bom</artifactId>
+                <version>${jetty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
