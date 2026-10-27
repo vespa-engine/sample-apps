@@ -1,0 +1,21 @@
+schema currency {
+    document currency {
+        field idx type byte {
+            indexing: summary | attribute
+            attribute: fast-search
+            rank: filter
+        }
+
+        field code type string {
+            indexing: attribute | summary
+            attribute: fast-search
+        }
+
+        # multiplier for converting to USD
+        field factor type double {
+            indexing: attribute | summary
+            attribute: fast-search
+            rank: filter
+        }
+    }
+}
