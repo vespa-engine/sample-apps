@@ -10,8 +10,8 @@
     <packaging>jar</packaging>
 
     <properties>
+        <org.immutables.version>2.12.3</org.immutables.version>
         <vespa_version>8.778.45</vespa_version>
-        <org.immutables.version>2.12.2</org.immutables.version>
     </properties>
 
     <!-- vespa-feed-client still pulls an older Bouncy Castle; pinned to 1.86, which

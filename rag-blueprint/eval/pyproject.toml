@@ -5,8 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "lightgbm>=4.6.0",
-    "pandas>=2.3.0",
-    "pyvespa>=0.57.0",
-    "scikit-learn>=1.7.0",
+    # [CANNOT-FIX] CVE-2026-92786: affects LightGBM through 4.7.0, the latest release.
+    # No fixed version exists yet. Full rationale: VESPANG-3395. Verified 2026-10-26.
+    "lightgbm>=4.7.0",
+    "pandas>=2.3.3",
+    "pyvespa>=1.2.9",
+    "scikit-learn>=1.7.2",
 ]
