@@ -1,0 +1,10 @@
+target/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+uv.lock
+
+# ONNX model files (large, export with export_model.py)
+src/main/application/models/
+models/

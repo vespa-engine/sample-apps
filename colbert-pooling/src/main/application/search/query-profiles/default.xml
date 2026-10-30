@@ -1,0 +1,4 @@
+<query-profile id="default" type="root">
+    <field name="maxHits">10</field>
+    <field name="ranking.profile">colbert-pooled-ann</field>
+</query-profile>
