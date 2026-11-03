@@ -47,7 +47,7 @@ vespa query 'yql=select * from lucene where default contains "dogs"' \
   'model.locale=en'
   
 # after this query log entry like this should appear:
-[2023-08-02 19:57:12.106] INFO    container        Container.com.yahoo.language.lucene.AnalyzerFactory	Analyzer for language=en is from a list of default language analyzers.
+[2026-11-03 14:54:53.540] CONFIG  container        Container.com.yahoo.language.lucene.LuceneLinguistics	Creating LuceneLinguistics with: configDir (<config-dir-name>)
 ```
 
 The query should return:
@@ -88,11 +88,19 @@ The query should return:
 ```shell
 vespa query 'yql=select * from lucene where default contains "dogs"' \
   'model.locale=en' \
-  'trace.level=2' | jq '.trace.children | last | .children[] | select(.message) | select(.message | test("YQL.*")) | .message'
+  'trace.level=3' |
+jq -r '
+  [.trace | .. | objects | .message? | strings] |
+  (
+    first(.[] | select(startswith("Stemming with"))),
+    first(.[] | select(startswith("YQL+ representation:")))
+  )
+'
 ```
 Output
 ```shell
-"YQL+ query parsed: [select * from lucene where default contains \"dog\" timeout 10000]"
+Stemming with default language ENGLISH using LuceneLinguistics
+YQL+ representation: select * from lucene where default contains ({stem: false, normalizeCase: false, id: 1}"dog") timeout 9995
 ```
 See that the `dogs` rewritten as `dog`.
 
