@@ -10,7 +10,7 @@ if [ -f "$FILE" ]; then
 else 
     echo "$FILE does not exist."
     echo "Downloading model https://data.vespa-cloud.com/sample-apps-data/clip_text_transformer.onnx" 
-    curl -L -o $DIR/text_transformer.onnx \
+    curl --fail --silent --show-error -L -o $DIR/text_transformer.onnx \
       https://data.vespa-cloud.com/sample-apps-data/clip_text_transformer.onnx
 fi
 

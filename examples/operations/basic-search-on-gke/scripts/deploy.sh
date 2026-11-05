@@ -27,7 +27,7 @@ zip -r - . \
   "http://$CFG_SRV_ENDPOINT/application/v2/tenant/default/prepareandactivate"
 
 kubectl exec vespa-0 -- bash -c \
-  'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/ApplicationStatus)" != "200" ]]
+  'while [[ "$(curl --silent --show-error -o /dev/null -w ''%{http_code}'' http://localhost:8080/ApplicationStatus)" != "200" ]]
   do
     sleep 10
   done'
