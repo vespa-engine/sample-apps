@@ -10,7 +10,7 @@
 # Vespa sample applications - Categorize using an LLM
 This is a set of scripts/installs to back up our presentation at:
 * [MLCon](https://mlconference.ai/machine-learning-advanced-development/adaptive-incontext-learning/)
-* [data science connect COLLIDE](https://datasciconnect.com/events/collide/agenda/)
+* [data science connect COLLIDE](https://datasciconnect.com/events/collide/)
 
 For any questions, please register at the
 [Vespa Slack](https://join.slack.com/t/vespatalk/shared_invite/zt-nq61o73o-Lsun7Fnm5N8uA6UAfIycIg)

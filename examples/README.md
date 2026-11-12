@@ -133,7 +133,7 @@ it is useful when you want to quickly do ranking experiments without rewriting a
 ### Categorize using an LLM
 [![logo](/assets/vespa-logomark-tiny.png) In-Context Learning](in-context-learning) This is a set of scripts/installs to back up the presentation using In-Context Learning at:
 * [MLCon](https://mlconference.ai/machine-learning-advanced-development/adaptive-incontext-learning/)
-* [data science connect COLLIDE](https://datasciconnect.com/events/collide/agenda/)
+* [data science connect COLLIDE](https://datasciconnect.com/events/collide/)
 
 ### Agentic Chatbot using Vespa
 
