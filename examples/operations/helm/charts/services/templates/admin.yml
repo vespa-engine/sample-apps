@@ -1,0 +1,50 @@
+# Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vespa-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vespa-admin
+      name: vespa-internal
+  serviceName: vespa-internal
+  template:
+    metadata:
+      labels:
+        app: vespa-admin
+        name: vespa-internal
+    spec:
+      initContainers:
+        - name: wait-for-configserver
+          image: curlimages/curl
+          env:
+            - name: CONFIGSERVER_NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: CONFIGSERVER_SERVICE
+              value: vespa-configserver-0.vespa-internal
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until curl -f http://vespa-configserver-0.vespa-internal.vespa.svc.cluster.local:19071/state/v1/health; do
+                echo "Waiting for Vespa ConfigServer to be ready in namespace $CONFIGSERVER_NAMESPACE...";
+                sleep 5;
+              done
+      containers:
+      - name: vespa-admin
+        image: vespaengine/vespa
+        args: ["services"]
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: vespa-config
+        securityContext:
+          runAsUser: 1000
+        resources:
+          requests:
+            memory: "1G"
+          limits:
+            memory: "1G"
