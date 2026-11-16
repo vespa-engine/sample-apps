@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
-<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties">
+<services version="1.0" xmlns:deploy="vespa" xmlns:preprocess="properties" minimum-required-vespa-version="8.788.13">
 
     <!--
         A container cluster handles incoming requests to the application and processes those requests,
@@ -35,6 +35,18 @@
              - Searchers: https://docs.vespa.ai/en/searcher-development.html
         -->
         <search/>
+
+        <!--
+            <skills> serves documents that describe this application to AI agents.
+            <schemas/> describes the schemas, fields and rank profiles at /skills/v1/schemas,
+            including the explanations in the schemas, so an agent can write queries for this application.
+            It is served with the same access as /search/.
+
+            Try it with: vespa skills get schemas
+        -->
+        <skills>
+            <schemas/>
+        </skills>
 
         <!--
             <nodes> specifies the nodes that should run this cluster.

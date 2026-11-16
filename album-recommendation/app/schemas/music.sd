@@ -6,23 +6,31 @@
 #  - https://docs.vespa.ai/en/schemas.html
 schema music {
 
+    # Explanations describe the schema, its fields and rank profiles to people and AI agents.
+    # They are served with the schemas skill enabled in services.xml.
+    explanation: Music albums, each with its artist, release year and a score per music category.
+
     document music {
 
         field artist type string {
             indexing: summary | index
+            explanation: The name of the artist or band.
         }
 
         field album type string {
             indexing: summary | index
             index: enable-bm25
+            explanation: The title of the album.
         }
 
         field year type int {
             indexing: summary | attribute
+            explanation: The year the album was released.
         }
 
         field category_scores type tensor<float>(cat{}) {
             indexing: summary | attribute
+            explanation: How much the album belongs to each music category, such as pop, rock or jazz, from 0 to 1.
         }
 
     }
@@ -38,6 +46,11 @@ schema music {
     # See
     #  - https://docs.vespa.ai/en/ranking.html
     rank-profile rank_albums inherits default {
+        explanation {
+            Recommends albums to a user: ranks by how well the album title matches the query text (BM25),
+            plus how well the album's category scores match the user's taste in `query(user_profile)`,
+            a score per category such as `{{cat:pop}:0.8,{cat:rock}:0.2}`.
+        }
         inputs {
             query(user_profile) tensor<float>(cat{})
         }

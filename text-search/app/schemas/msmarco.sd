@@ -1,30 +1,36 @@
 # Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 
 schema msmarco {
+    explanation: Web pages from the MS MARCO dataset, in English, for full text search.
+
     document msmarco {
 
         field language type string {
-            indexing: "en" | set_language 
+            indexing: "en" | set_language
         }
 
         field id type string {
             indexing: summary | attribute
+            explanation: The MS MARCO document id.
         }
 
         field title type string {
             indexing: index | summary
             index: enable-bm25
+            explanation: The title of the web page.
         }
 
         field url type string {
             indexing: index | summary
             index: enable-bm25
+            explanation: The URL of the web page, also searchable as text.
         }
 
         field body type string {
             indexing: index | summary
             summary: dynamic
             index: enable-bm25
+            explanation: The text of the web page. Results show a snippet around the matching words.
         }
 
     }
@@ -48,12 +54,14 @@ schema msmarco {
     }
 
     rank-profile default {
+        explanation: Ranks by how well the query matches the title, body and url (nativeRank).
         first-phase {
             expression: nativeRank(title, body,url)
         }
     }
 
     rank-profile bm25 inherits default {
+        explanation: Ranks by the sum of the BM25 scores of the title, body and url.
         first-phase {
             expression: bm25(title) + bm25(body) + bm25(url) 
         }

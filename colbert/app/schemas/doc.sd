@@ -3,18 +3,27 @@
 # See https://docs.vespa.ai/en/schemas.html
 schema doc {
 
+    explanation {
+        Passages of text, each with a title, searchable by text (BM25), by meaning (an E5 embedding),
+        and re-ranked by ColBERT token embeddings. Queries that rank by embeddings pass the query text
+        embedded by both models: `input.query(q)=embed(e5, @query)` and `input.query(qt)=embed(colbert, @query)`.
+    }
+
     document doc {
 
         field id type string {
-            indexing: summary 
+            indexing: summary
+            explanation: The id of the passage.
         }
         field title type string {
             indexing: index | summary
             index: enable-bm25
+            explanation: The title of the document the passage is from.
         }
         field chunk type string {
             indexing: index | summary
             index: enable-bm25
+            explanation: The text of the passage.
         }
     }
     fieldset default {
@@ -22,18 +31,27 @@ schema doc {
     }
 
     field embedding type tensor<bfloat16>(x[384]) {
-        indexing: (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index 
+        indexing: (input title || "") . " " . (input chunk || "") | embed e5 | attribute | index
 	    attribute {
 	        distance-metric: angular
 	    }
+        explanation {
+            The E5 embedding of the title and passage. Find passages similar in meaning with
+            `{targetHits: 100}nearestNeighbor(embedding, q)`, with `input.query(q)=embed(e5, @query)`.
+        }
     }
 
     field colbert type tensor<int8>(dt{}, x[16]) {
-        indexing: (input title || "") . " " . (input chunk || "") | embed colbert | attribute  
+        indexing: (input title || "") . " " . (input chunk || "") | embed colbert | attribute
+        explanation: The ColBERT token embeddings of the title and passage, used for re-ranking only.
     }
 
     # See https://docs.vespa.ai/en/ranking.html
     rank-profile default inherits default {
+        explanation {
+            Ranks by E5 similarity, then re-ranks the best matches by ColBERT MaxSim.
+            Needs both `query(q)` and `query(qt)`.
+        }
         inputs {
             query(qt) tensor<float>(qt{}, x[128])
             query(q) tensor<bfloat16>(x[384])
@@ -67,6 +85,7 @@ schema doc {
     }
 
     rank-profile bm25 inherits default {
+        explanation: Ranks by text match only: the sum of the BM25 scores of the title and passage. Needs no query embeddings.
         first-phase {
             expression: bm25(title) + bm25(chunk)
         }
@@ -76,6 +95,7 @@ schema doc {
     }
 
     rank-profile e5 inherits default {
+         explanation: Ranks by E5 similarity only. Needs `query(q)`.
          first-phase {
             expression: cos_sim
         }
@@ -85,6 +105,10 @@ schema doc {
     }
 
     rank-profile hybrid inherits default {
+        explanation {
+            Combines ColBERT MaxSim, E5 similarity and the BM25 scores of the passage and title
+            by reciprocal rank fusion. Needs both `query(q)` and `query(qt)`.
+        }
         global-phase {
             expression {
               reciprocal_rank(max_sim) + 
