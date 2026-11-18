@@ -17,7 +17,7 @@ It also features reciprocal rank fusion to fuse different rankings.
 
 
 <p data-test="run-macro init-deploy colbert">
-Requires at least Vespa 8.338.38
+Requires at least Vespa 8.788.13
 </p>
 
 ## To try this application
