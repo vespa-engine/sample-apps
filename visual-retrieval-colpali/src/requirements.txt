@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml --group huggingface --universal --python-version 3.11 -o src/requirements.txt
 accelerate==1.15.0
     # via peft
-annotated-doc==0.0.5
+annotated-doc==0.0.6
     # via
     #   fastapi
     #   typer
@@ -10,24 +10,22 @@ annotated-types==0.8.0
     # via pydantic
 anyio==4.16.0
     # via
+    #   fastapi
     #   google-genai
     #   gradio
     #   httpx
+    #   httpx2
     #   mcp
     #   sse-starlette
     #   starlette
     #   watchfiles
-apsw==3.54.1.0
-    # via apswutils
-apswutils==0.1.2
-    # via fastlite
 attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
 audioop-lts==0.2.2 ; python_full_version >= '3.13'
     # via gradio
-authlib==1.9.2
+authlib==1.9.5
     # via gradio
 beautifulsoup4==4.15.0
     # via python-fasthtml
@@ -50,7 +48,7 @@ cffi==2.1.1 ; platform_python_implementation != 'PyPy'
     # via cryptography
 charset-normalizer==3.5.2
     # via requests
-click==8.5.0
+click==8.5.1
     # via
     #   huggingface-hub
     #   spacy
@@ -62,7 +60,6 @@ colorama==0.4.6 ; sys_platform == 'win32'
     # via
     #   tqdm
     #   typer
-    #   uvicorn
     #   wasabi
 colpali-engine==0.3.18
     # via visual-retrieval-colpali (pyproject.toml)
@@ -82,9 +79,9 @@ cryptography==50.0.2
     #   joserfc
     #   pyjwt
     #   pyvespa
-cuda-bindings==13.4.4 ; python_full_version < '3.15' and sys_platform == 'linux'
+cuda-bindings==13.5.0 ; python_full_version < '3.15' and sys_platform == 'linux'
     # via torch
-cuda-pathfinder==1.8.5 ; python_full_version < '3.15' and sys_platform == 'linux'
+cuda-pathfinder==1.8.6 ; python_full_version < '3.15' and sys_platform == 'linux'
     # via cuda-bindings
 cuda-toolkit==13.0.3.0 ; sys_platform == 'linux'
     # via torch
@@ -103,17 +100,13 @@ einops==0.8.2
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   colpali-engine
-fastapi==0.162.0
+fastapi==0.162.5
     # via gradio
-fastcore==2.2.37
+fastcore==2.2.41
     # via
-    #   apswutils
-    #   fastlite
     #   python-fasthtml
     #   pyvespa
-fastlite==0.2.4
-    # via python-fasthtml
-filelock==4.2.6
+filelock==4.2.10
     # via
     #   huggingface-hub
     #   torch
@@ -124,15 +117,15 @@ fsspec==2026.9.0
     #   gradio-client
     #   huggingface-hub
     #   torch
-google-auth==2.62.0
+google-auth==2.62.2
     # via google-genai
-google-genai==2.34.0
+google-genai==3.3.0
     # via visual-retrieval-colpali (pyproject.toml)
-gradio==6.29.0
+gradio==6.32.0
     # via
     #   visual-retrieval-colpali (pyproject.toml:huggingface)
     #   spaces
-gradio-client==2.7.1
+gradio-client==2.7.2
     # via
     #   gradio
     #   hf-gradio
@@ -142,36 +135,43 @@ h11==0.16.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   httpcore
+    #   httpcore2
     #   uvicorn
 h2==4.4.1
     # via httpx
 hf-gradio==0.4.1
     # via gradio
-hf-xet==1.8.0 ; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
+hf-xet==1.8.0 ; platform_machine == 'AMD64' or platform_machine == 'ARM64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
     # via huggingface-hub
 hpack==4.2.0
     # via h2
 httpcore==1.0.9
     # via httpx
+httpcore2==2.16.0 ; sys_platform != 'emscripten'
+    # via httpx2
 httpr==0.7.8
     # via pyvespa
 httptools==0.9.0
     # via uvicorn
 httpx==0.28.1
     # via
-    #   google-genai
     #   gradio
     #   gradio-client
-    #   huggingface-hub
     #   mcp
-    #   python-fasthtml
     #   pyvespa
     #   safehttpx
     #   spaces
     #   weasel
 httpx-sse==0.4.3
     # via mcp
-huggingface-hub==1.33.0
+httpx2==2.16.0
+    # via
+    #   google-genai
+    #   huggingface-hub
+    #   python-fasthtml
+httpx2-jsfetch==1.0 ; python_full_version >= '3.12' and sys_platform == 'emscripten'
+    # via httpx2
+huggingface-hub==2.4.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   accelerate
@@ -186,6 +186,7 @@ idna==3.20
     # via
     #   anyio
     #   httpx
+    #   httpx2
     #   requests
 itsdangerous==2.2.0
     # via
@@ -197,7 +198,7 @@ jinja2==3.1.6
     #   pyvespa
     #   spacy
     #   torch
-joserfc==1.7.7
+joserfc==1.8.0
     # via authlib
 jsonschema==4.26.0
     # via mcp
@@ -211,7 +212,7 @@ lxml==6.1.3
     # via
     #   lucide-fasthtml
     #   pyvespa
-markdown-it-py==4.2.0
+markdown-it-py==4.3.0
     # via rich
 markupsafe==3.0.4
     # via
@@ -299,7 +300,7 @@ nvidia-cusparselt-cu13==0.8.1 ; sys_platform == 'linux'
     # via torch
 nvidia-nccl-cu13==2.29.7 ; sys_platform == 'linux'
     # via torch
-nvidia-nvjitlink==13.4.92 ; (platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')
+nvidia-nvjitlink==13.5.37 ; (platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')
     # via
     #   cuda-toolkit
     #   nvidia-cufft
@@ -328,7 +329,7 @@ packaging==26.3
     #   thinc
     #   transformers
     #   weasel
-pandas==3.1.0
+pandas==3.1.1
     # via
     #   gradio
     #   seaborn
@@ -364,6 +365,7 @@ pydantic==2.12.5
     #   spaces
     #   spacy
     #   thinc
+    #   typer
     #   weasel
 pydantic-core==2.41.5
     # via pydantic
@@ -377,7 +379,7 @@ pyjwt==2.15.1
     # via mcp
 pyparsing==3.3.3
     # via matplotlib
-pypdf==6.21.4
+pypdf==7.0.1
     # via visual-retrieval-colpali (pyproject.toml)
 python-dateutil==4.0.0
     # via
@@ -390,7 +392,7 @@ python-dotenv==1.2.4
     #   visual-retrieval-colpali (pyproject.toml)
     #   pydantic-settings
     #   uvicorn
-python-fasthtml==0.14.2
+python-fasthtml==0.14.23
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   lucide-fasthtml
@@ -420,7 +422,7 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2026.9.29
+regex==2026.11.9
     # via transformers
 requests==2.34.2
     # via
@@ -467,13 +469,13 @@ shad4fast==1.3.1
     # via visual-retrieval-colpali (pyproject.toml)
 shellingham==1.5.4
     # via typer
-smart-open==9.0.1
+smart-open==9.0.3
     # via weasel
 sniffio==1.3.1
     # via google-genai
 soupsieve==2.10 ; python_full_version < '3.11.5'
     # via beautifulsoup4
-soupsieve==3.0.4 ; python_full_version >= '3.11.5'
+soupsieve==4.1 ; python_full_version >= '3.11.5'
     # via beautifulsoup4
 spaces==0.51.3
     # via visual-retrieval-colpali (pyproject.toml:huggingface)
@@ -483,12 +485,12 @@ spacy-legacy==3.0.12
     # via spacy
 spacy-loggers==1.0.5
     # via spacy
-srsly==2.5.5
+srsly==2.5.6
     # via
     #   spacy
     #   thinc
     #   weasel
-sse-starlette==3.6.0
+sse-starlette==3.7.0
     # via mcp
 starlette==1.10.0
     # via
@@ -524,14 +526,18 @@ tqdm==4.70.1
     #   peft
     #   spacy
     #   transformers
-transformers==5.17.0
+transformers==5.20.2
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   colpali-engine
     #   peft
 triton==3.7.1 ; python_full_version < '3.15' and sys_platform == 'linux'
     # via torch
-typer==0.27.3
+truststore==0.10.5 ; sys_platform != 'emscripten'
+    # via
+    #   httpcore2
+    #   httpx2
+typer==0.29.1
     # via
     #   gradio
     #   hf-gradio
@@ -546,6 +552,7 @@ typing-extensions==4.16.0
     #   google-genai
     #   gradio
     #   gradio-client
+    #   httpx2
     #   huggingface-hub
     #   mcp
     #   opentelemetry-api
@@ -557,7 +564,7 @@ typing-extensions==4.16.0
     #   starlette
     #   torch
     #   typing-inspection
-typing-inspection==0.4.4
+typing-inspection==0.4.5
     # via
     #   fastapi
     #   mcp
@@ -571,7 +578,7 @@ urllib3==2.8.0
     # via
     #   docker
     #   requests
-uvicorn==0.49.0
+uvicorn==0.54.0
     # via
     #   visual-retrieval-colpali (pyproject.toml)
     #   gradio
@@ -593,6 +600,7 @@ weasel==1.0.1
 websockets==17.4
     # via
     #   google-genai
+    #   python-fasthtml
     #   uvicorn
 wrapt==2.5.2
     # via smart-open

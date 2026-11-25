@@ -14,24 +14,25 @@
         <vespa_version>8.788.13</vespa_version>
     </properties>
 
-    <!-- vespa-feed-client still pulls an older Bouncy Castle; pinned to 1.86, which
-         fixes CVE-2026-17508, CVE-2026-71888 and CVE-2026-71889. Full rationale: PR / VESPANG-3395. -->
+    <!-- vespa-feed-client still pulls an older Bouncy Castle; pinned to 1.87, which
+         fixes CVE-2026-103605, CVE-2026-103612 and CVE-2026-103617 (1.86 fixed CVE-2026-17508,
+         CVE-2026-71888 and CVE-2026-71889). Full rationale: PR / VESPANG-3395. -->
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.86</version>
+                <version>1.87</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk18on</artifactId>
-                <version>1.86</version>
+                <version>1.87</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcutil-jdk18on</artifactId>
-                <version>1.86</version>
+                <version>1.87</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
