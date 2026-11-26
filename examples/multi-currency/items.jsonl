@@ -1,0 +1,100 @@
+{"put": "id:shopping:item::item-1", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 3836, "item_name": "emerald gemstone bracelet"}}
+{"put": "id:shopping:item::item-2", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 14, "item_name": "Handmade ceramic ring dish"}}
+{"put": "id:shopping:item::item-3", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 45, "item_name": "Handmade wooden cutting board"}}
+{"put": "id:shopping:item::item-4", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 34, "item_name": "Personalized wooden cutting board"}}
+{"put": "id:shopping:item::item-5", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 7, "item_name": "Vintage letterpress greeting card"}}
+{"put": "id:shopping:item::item-6", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 4172, "item_name": "14k gold hammered ring"}}
+{"put": "id:shopping:item::item-7", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 1664, "item_name": "diamond engagement ring"}}
+{"put": "id:shopping:item::item-8", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 4027, "item_name": "sapphire drop earrings"}}
+{"put": "id:shopping:item::item-9", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 21, "item_name": "Handmade knitted scarf"}}
+{"put": "id:shopping:item::item-10", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 55, "item_name": "Personalized letterpress greeting card"}}
+{"put": "id:shopping:item::item-11", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 1, "item_name": "Minimalist beaded necklace"}}
+{"put": "id:shopping:item::item-12", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 24, "item_name": "Handcrafted hand stamped necklace"}}
+{"put": "id:shopping:item::item-13", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 49, "item_name": "Artisan crochet baby blanket"}}
+{"put": "id:shopping:item::item-14", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 17, "item_name": "Handcrafted macrame wall hanging"}}
+{"put": "id:shopping:item::item-15", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 20, "item_name": "Vintage crochet baby blanket"}}
+{"put": "id:shopping:item::item-16", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 29, "item_name": "Minimalist personalized leather wallet"}}
+{"put": "id:shopping:item::item-17", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 4241, "item_name": "custom engagement ring"}}
+{"put": "id:shopping:item::item-18", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 52, "item_name": "Personalized handmade pottery bowl"}}
+{"put": "id:shopping:item::item-19", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 20, "item_name": "Handmade resin keychain"}}
+{"put": "id:shopping:item::item-20", "fields": {"currency_ref": "id:shopping:currency::myr", "price": 23, "item_name": "Handcrafted macrame wall hanging"}}
+{"put": "id:shopping:item::item-21", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 23, "item_name": "Personalized personalized leather wallet"}}
+{"put": "id:shopping:item::item-22", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 63, "item_name": "Handcrafted geode coaster set"}}
+{"put": "id:shopping:item::item-23", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 63, "item_name": "Handmade leather journal"}}
+{"put": "id:shopping:item::item-24", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 3383, "item_name": "18k gold hoop earrings"}}
+{"put": "id:shopping:item::item-25", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 45, "item_name": "Rustic beaded necklace"}}
+{"put": "id:shopping:item::item-26", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 3408, "item_name": "18k gold hoop earrings"}}
+{"put": "id:shopping:item::item-27", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 36, "item_name": "Handmade personalized leather wallet"}}
+{"put": "id:shopping:item::item-28", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 41, "item_name": "Rustic beaded necklace"}}
+{"put": "id:shopping:item::item-29", "fields": {"currency_ref": "id:shopping:currency::php", "price": 52, "item_name": "Eco-friendly macrame wall hanging"}}
+{"put": "id:shopping:item::item-30", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 16, "item_name": "Minimalist beaded necklace"}}
+{"put": "id:shopping:item::item-31", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 48, "item_name": "Rustic ceramic mug"}}
+{"put": "id:shopping:item::item-32", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 11, "item_name": "Minimalist embroidered tea towel"}}
+{"put": "id:shopping:item::item-33", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 20, "item_name": "Handmade polymer clay earrings"}}
+{"put": "id:shopping:item::item-34", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 44, "item_name": "Boho ceramic ring dish"}}
+{"put": "id:shopping:item::item-35", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 9, "item_name": "Minimalist polymer clay earrings"}}
+{"put": "id:shopping:item::item-36", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 28, "item_name": "Artisan ceramic ring dish"}}
+{"put": "id:shopping:item::item-37", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 17, "item_name": "Eco-friendly beaded necklace"}}
+{"put": "id:shopping:item::item-38", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 26, "item_name": "Eco-friendly knitted scarf"}}
+{"put": "id:shopping:item::item-39", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 1, "item_name": "Custom polymer clay earrings"}}
+{"put": "id:shopping:item::item-40", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 3, "item_name": "Handcrafted leather journal"}}
+{"put": "id:shopping:item::item-41", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 20, "item_name": "Minimalist embroidered tea towel"}}
+{"put": "id:shopping:item::item-42", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 44, "item_name": "Boho polymer clay earrings"}}
+{"put": "id:shopping:item::item-43", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 27, "item_name": "Boho ceramic ring dish"}}
+{"put": "id:shopping:item::item-44", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 30, "item_name": "Personalized polymer clay earrings"}}
+{"put": "id:shopping:item::item-45", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 40, "item_name": "Handmade hand-poured soap"}}
+{"put": "id:shopping:item::item-46", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 17, "item_name": "Artisan felted wool slippers"}}
+{"put": "id:shopping:item::item-47", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 34, "item_name": "Custom personalized leather wallet"}}
+{"put": "id:shopping:item::item-48", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 18, "item_name": "Eco-friendly ceramic ring dish"}}
+{"put": "id:shopping:item::item-49", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 4, "item_name": "Artisan crochet baby blanket"}}
+{"put": "id:shopping:item::item-50", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 24, "item_name": "Handcrafted leather journal"}}
+{"put": "id:shopping:item::item-51", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 4550, "item_name": "emerald gemstone bracelet"}}
+{"put": "id:shopping:item::item-52", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 39, "item_name": "Handmade resin keychain"}}
+{"put": "id:shopping:item::item-53", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 35, "item_name": "Rustic felted wool slippers"}}
+{"put": "id:shopping:item::item-54", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 30, "item_name": "Minimalist hand-poured soap"}}
+{"put": "id:shopping:item::item-55", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 66, "item_name": "Handmade hand stamped necklace"}}
+{"put": "id:shopping:item::item-56", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 36, "item_name": "Custom personalized leather wallet"}}
+{"put": "id:shopping:item::item-57", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 2924, "item_name": "14k gold hammered ring"}}
+{"put": "id:shopping:item::item-58", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 45, "item_name": "Artisan felted wool slippers"}}
+{"put": "id:shopping:item::item-59", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 64, "item_name": "Artisan ceramic ring dish"}}
+{"put": "id:shopping:item::item-60", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 11, "item_name": "Minimalist embroidered tea towel"}}
+{"put": "id:shopping:item::item-61", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 14, "item_name": "Eco-friendly handmade pottery bowl"}}
+{"put": "id:shopping:item::item-62", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 56, "item_name": "Eco-friendly polymer clay earrings"}}
+{"put": "id:shopping:item::item-63", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 18, "item_name": "Minimalist macrame wall hanging"}}
+{"put": "id:shopping:item::item-64", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 4566, "item_name": "18k gold hoop earrings"}}
+{"put": "id:shopping:item::item-65", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 30, "item_name": "Eco-friendly personalized leather wallet"}}
+{"put": "id:shopping:item::item-66", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 46, "item_name": "Personalized letterpress greeting card"}}
+{"put": "id:shopping:item::item-67", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 43, "item_name": "Artisan knitted scarf"}}
+{"put": "id:shopping:item::item-68", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 56, "item_name": "Handmade felted wool slippers"}}
+{"put": "id:shopping:item::item-69", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 52, "item_name": "Vintage ceramic succulent planter"}}
+{"put": "id:shopping:item::item-70", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 46, "item_name": "Minimalist hand stamped necklace"}}
+{"put": "id:shopping:item::item-71", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 1849, "item_name": "diamond engagement ring"}}
+{"put": "id:shopping:item::item-72", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 18, "item_name": "Handcrafted hand-poured soap"}}
+{"put": "id:shopping:item::item-73", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 42, "item_name": "Eco-friendly embroidered tea towel"}}
+{"put": "id:shopping:item::item-74", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 4126, "item_name": "sapphire drop earrings"}}
+{"put": "id:shopping:item::item-75", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 35, "item_name": "Personalized polymer clay earrings"}}
+{"put": "id:shopping:item::item-76", "fields": {"currency_ref": "id:shopping:currency::cad", "price": 3714, "item_name": "custom engagement ring"}}
+{"put": "id:shopping:item::item-77", "fields": {"currency_ref": "id:shopping:currency::eur", "price": 10, "item_name": "Handmade handmade pottery bowl"}}
+{"put": "id:shopping:item::item-78", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 51, "item_name": "Handcrafted resin keychain"}}
+{"put": "id:shopping:item::item-79", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 42, "item_name": "Personalized embroidered tea towel"}}
+{"put": "id:shopping:item::item-80", "fields": {"currency_ref": "id:shopping:currency::aud", "price": 31, "item_name": "Personalized ceramic mug"}}
+{"put": "id:shopping:item::item-81", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 3876, "item_name": "18k gold hoop earrings"}}
+{"put": "id:shopping:item::item-82", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 2519, "item_name": "18k gold hoop earrings"}}
+{"put": "id:shopping:item::item-83", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 27, "item_name": "Boho wooden cutting board"}}
+{"put": "id:shopping:item::item-84", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 12, "item_name": "Minimalist hand-poured soap"}}
+{"put": "id:shopping:item::item-85", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 33, "item_name": "Custom geode coaster set"}}
+{"put": "id:shopping:item::item-86", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 37, "item_name": "Rustic ceramic ring dish"}}
+{"put": "id:shopping:item::item-87", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 18, "item_name": "Eco-friendly macrame wall hanging"}}
+{"put": "id:shopping:item::item-88", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 47, "item_name": "Vintage leather journal"}}
+{"put": "id:shopping:item::item-89", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 14, "item_name": "Minimalist personalized leather wallet"}}
+{"put": "id:shopping:item::item-90", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 1, "item_name": "Minimalist knitted scarf"}}
+{"put": "id:shopping:item::item-91", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 46, "item_name": "Handmade soy wax candle"}}
+{"put": "id:shopping:item::item-92", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 24, "item_name": "Vintage handmade pottery bowl"}}
+{"put": "id:shopping:item::item-93", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 28, "item_name": "Personalized ceramic ring dish"}}
+{"put": "id:shopping:item::item-94", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 17, "item_name": "Eco-friendly leather journal"}}
+{"put": "id:shopping:item::item-95", "fields": {"currency_ref": "id:shopping:currency::gbp", "price": 1207, "item_name": "emerald gemstone bracelet"}}
+{"put": "id:shopping:item::item-96", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 6, "item_name": "Eco-friendly hand stamped necklace"}}
+{"put": "id:shopping:item::item-97", "fields": {"currency_ref": "id:shopping:currency::cad", "price": 49, "item_name": "Handmade macrame wall hanging"}}
+{"put": "id:shopping:item::item-98", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 20, "item_name": "Vintage leather journal"}}
+{"put": "id:shopping:item::item-99", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 55, "item_name": "Personalized embroidered tea towel"}}
+{"put": "id:shopping:item::item-100", "fields": {"currency_ref": "id:shopping:currency::usd", "price": 42, "item_name": "Custom ceramic mug"}}
