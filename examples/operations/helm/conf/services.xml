@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright Vespa.ai. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root. -->
+<services version="1.0">
+
+  <admin version="2.0">
+    <configservers>
+      <configserver hostalias="node0" />
+      <configserver hostalias="node1" />
+      <configserver hostalias="node2" />
+    </configservers>
+    <cluster-controllers>
+      <cluster-controller hostalias="node0" jvm-options="-Xms32M -Xmx64M" /> <!-- jvm-options added only to shrink memory for testing - remove before real use -->
+      <cluster-controller hostalias="node1" jvm-options="-Xms32M -Xmx64M" />
+      <cluster-controller hostalias="node2" jvm-options="-Xms32M -Xmx64M" />
+    </cluster-controllers>
+    <slobroks>
+      <slobrok hostalias="node0" />
+      <slobrok hostalias="node1" />
+      <slobrok hostalias="node2" />
+    </slobroks>
+
+    <adminserver hostalias="node3" />
+  </admin>
+
+  <container id="feed" version="1.0">
+    <document-api />
+    <document-processing/>
+    <nodes>
+      <jvm options="-Xms32M -Xmx128M"/>  <!-- Added only to shrink memory for testing - remove before real use -->
+      <node hostalias="node4"/>
+      <node hostalias="node5"/>
+    </nodes>
+  </container>
+
+  <container id="query" version="1.0">
+    <search/>
+    <nodes>
+      <jvm options="-Xms32M -Xmx128M"/> <!-- Added only to shrink memory for testing - remove before real use -->
+      <node hostalias="node6" />
+      <node hostalias="node7" />
+    </nodes>
+  </container>
+
+  <content id="music" version="1.0">
+    <min-redundancy>2</min-redundancy>
+    <documents>
+      <document type="music" mode="index" />
+      <document-processing cluster="feed" />
+    </documents>
+    <nodes>
+      <node hostalias="node8" distribution-key="0" />
+      <node hostalias="node9" distribution-key="1" />
+    </nodes>
+  </content>
+</services>
